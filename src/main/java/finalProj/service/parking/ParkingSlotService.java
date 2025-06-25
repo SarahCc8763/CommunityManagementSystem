@@ -1,5 +1,6 @@
 package finalProj.service.parking;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +30,37 @@ public class ParkingSlotService {
 	@Autowired
 	private UsersRepository usersRepository;
 
+
+	
 	// 查詢所有車位資料
 	public List<ParkingSlot> findAll() {
 		return repository.findAll();
+	}
+
+	// 新增多筆
+	public List<ParkingSlot> createAll(List<ParkingSlot> parkingSlots) {
+		List<ParkingSlot> savedList = new ArrayList<>();
+
+		for (ParkingSlot parkingSlot : parkingSlots) {
+			String slotNumber = parkingSlot.getSlotNumber() != null ? parkingSlot.getSlotNumber().trim() : null;
+			Integer parkingTypeId = parkingSlot.getParkingTypeId();
+			Integer usersId = parkingSlot.getUsersId();
+
+			// 預設不可承租為 false
+			parkingSlot.setIsRentable(parkingSlot.getIsRentable() != null && parkingSlot.getIsRentable());
+
+			// 驗證欄位
+			if (slotNumber == null || slotNumber.isEmpty())
+				continue;
+			if (parkingTypeId == null || !parkingTypeRepository.existsById(parkingTypeId))
+				continue;
+			if (usersId == null || !usersRepository.existsById(usersId))
+				continue;
+
+			savedList.add(repository.save(parkingSlot));
+		}
+
+		return savedList;
 	}
 
 	// 新增車位資料
@@ -92,10 +121,10 @@ public class ParkingSlotService {
 		if (limit == null || typeId == null || eventStart == null || eventEnd == null) {
 			return null;
 		}
-		if(parkingTypeRepository.findById(typeId) == null) {
+		if (parkingTypeRepository.findById(typeId) == null) {
 			return null;
 		}
-		
+
 		Pageable pageable = PageRequest.of(0, limit);
 
 		return repository.findAvailableSlotsForEvent(typeId, eventStart, eventEnd, pageable);

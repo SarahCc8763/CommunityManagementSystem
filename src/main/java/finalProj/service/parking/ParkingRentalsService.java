@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.parking.ParkingRentals;
+import finalProj.domain.parking.ParkingSlot;
 import finalProj.repository.UsersRepository;
 import finalProj.repository.parking.ParkingRentalsRepository;
 import finalProj.repository.parking.ParkingSlotRepository;
@@ -26,6 +27,11 @@ public class ParkingRentalsService {
 	@Autowired
 	private UsersRepository usersRepository;
 
+	// 查詢可承租車位
+	public List<ParkingSlot> findAvailableSlots(Integer parkingTypeId, Date start, Date end) {
+	    return repository.findAvailableSlotsByTypeAndPeriod(parkingTypeId, start, end);
+	}
+	
 	// 查詢所有承租資料
 	public List<ParkingRentals> findAll() {
 		return repository.findAll();

@@ -27,10 +27,30 @@ CREATE TABLE parking_slot (
 --  FOREIGN KEY (parking_type_id) REFERENCES parking_type(id),
 --  FOREIGN KEY (users_id) REFERENCES Users(id)
 );
-INSERT INTO parking_slot (slot_number, [location], parking_type_id, users_id, license_plate, is_rentable)
+INSERT INTO parking_slot ([community_id],slot_number, [location], parking_type_id, users_id, license_plate, is_rentable)
 VALUES 
-('B2-M01', N'B2層機車區', 2, 1, NULL, 1),
-('B2-01', N'B2層A排', 1, 2, 'KFC-43', 0);
+(1,'B1-001', 'B1 A區', 1, 1, NULL, 1),
+(1, 'B1-002', 'B1 A區', 1, 1, NULL, 1),
+(1, 'B1-003', 'B1 A區', 2, 1, NULL, 1),
+(1, 'B1-004', 'B1 B區', 2, 1, NULL, 1),
+(1, 'B1-005', 'B1 B區', 3, 1, NULL, 0),
+(1, 'B1-006', 'B1 B區', 3, 1, 'ABC-1234', 0),
+(1, 'B2-001', 'B2 A區', 1, 1, NULL, 1),
+(1, 'B2-002', 'B2 A區', 2, 1, NULL, 1),
+(1, 'B2-003', 'B2 A區', 2, 1, NULL, 0),
+(1, 'B2-004', 'B2 B區', 1, 1, 'XYZ-8888', 0),
+(1, 'B2-005', 'B2 B區', 1, 1, NULL, 1),
+(2, 'B3-001', 'B3 A區', 1, 1, NULL, 1),
+(2, 'B3-002', 'B3 A區', 2, 1, NULL, 1),
+(2, 'B3-003', 'B3 B區', 3, 1, NULL, 0),
+(2, 'B3-004', 'B3 B區', 3, 1, NULL, 1),
+(2, 'B4-001', 'B4 A區', 2, 1, NULL, 1),
+(2, 'B4-002', 'B4 A區', 1, 1, NULL, 0),
+(2, 'B4-003', 'B4 B區', 2, 1, NULL, 1),
+(2, 'B4-004', 'B4 B區', 2, 1, NULL, 1),
+(2, 'B4-005', 'B4 B區', 1, 1, NULL, 1),
+(1, 'B2-M01', N'B2層機車區', 2, 1, NULL, 1),
+(1, 'B2-01', N'B2層A排', 1, 2, 'KFC-43', 0);
 
 -- parking_rentals 承租紀錄
 CREATE TABLE parking_rentals (

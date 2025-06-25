@@ -24,19 +24,25 @@ public class ParkingSlotController {
 	@Autowired
 	private ParkingSlotService service;
 
-	// 查詢所有車位種類
+	// 查詢所有車位資料
 	@GetMapping
 	public List<ParkingSlot> getAll() {
 		return service.findAll();
 	}
+	
+	// 新增車位資料 (多筆)
+	@PostMapping("/create-all")
+	public List<ParkingSlot> createAll(@RequestBody List<ParkingSlot> slot) {
+		return service.createAll(slot);
+	}
 
-	// 新增車位種類
-	@PostMapping
+	// 新增車位資料 (單筆)
+	@PostMapping("/create")
 	public ParkingSlot create(@RequestBody ParkingSlot slot) {
 		return service.create(slot);
 	}
 
-	// 修改車位種類
+	// 修改車位資料
 	@PutMapping("/{id}")
 	public ParkingSlot update(@RequestBody ParkingSlot slot, @PathVariable Integer id) {
 		slot.setId(id);
@@ -51,7 +57,7 @@ public class ParkingSlotController {
 	}
 
 
-	// 刪除車位種類
+	// 刪除車位資料
 	@DeleteMapping("/{id}")
 	public Boolean delete(@PathVariable Integer id) {
 		return service.delete(id);

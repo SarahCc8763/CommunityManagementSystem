@@ -21,7 +21,7 @@ public class ParkingSlot {
 	// 社區 Id
 	@Column(name = "community_id")
 	private Integer communityId;
-
+	
 	// 車位代碼
 	@Column(name = "slot_number", length = 10, nullable = false)
 	private String slotNumber;

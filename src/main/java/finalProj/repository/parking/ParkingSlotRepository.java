@@ -34,5 +34,8 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 		    @Param("eventEnd") Date eventEnd,
 		    Pageable pageable
 		);
+	
+
+
 
 }
