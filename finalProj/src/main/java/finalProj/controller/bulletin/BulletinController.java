@@ -1,7 +1,8 @@
 package finalProj.controller.bulletin;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -170,20 +171,8 @@ public class BulletinController {
     @PostMapping("/searchby")
     public BulletinResponse searchBulletinBy(@RequestBody Bulletin body) {
         BulletinResponse response = new BulletinResponse();
-        String category = "";
-        String title = "";
-        if (body.getCategory() == null || body.getCategory().getName() == null) {
-            category = null;
-        } else {
-            category = body.getCategory().getName();
-        }
-        if (body.getTitle() == null) {
-            title = null;
-        } else {
-            title = body.getTitle();
-        }
 
-        List<Bulletin> list = bulletinService.findByCategoryAndTitle(category, title);
+        List<Bulletin> list = bulletinService.findByCategoryAndTitle(body);
 
         if (list.isEmpty()) {
             response.setMessage("查無資料");
@@ -213,16 +202,10 @@ public class BulletinController {
 
     // 修改/刪除留言
     @PutMapping("/comment/{id}")
-    public BulletinComment updateBulletinComment(@PathVariable Integer id,
-            @RequestBody BulletinComment body) {
-
+    public BulletinComment updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
         if (body != null) {
             body.setId(id);
-            body.setTime(LocalDateTime.now());
-            body.setUser(userService.findById(body.getUser().getUserId()).get()); // 資料庫抓取完整用戶資料放進關聯屬性user
-            body.setBulletin(bulletinService.findById(body.getBulletin().getId())); // 資料庫抓取完整公告資料放進關聯屬性bulletin
-            return bulletinCommentService.save(body);
-
+            return bulletinCommentService.modify(body);
         }
         return null;
     }
@@ -231,7 +214,7 @@ public class BulletinController {
     //
     // 公告-分類
 
-    // 新增分類
+    // 新增公告分類
     @PostMapping("/category")
     public BulletinCategory postBulletinCategory(@RequestBody BulletinCategory body) {
         if (body != null) {
@@ -242,17 +225,27 @@ public class BulletinController {
         return null;
     }
 
-    // 刪除分類
-    // @DeleteMapping("/category/delete")
-    // public Boolean deleteBulletinCategory(@RequestBody BulletinCategory body) {
-    // if (body != null && body.getName() != null) {
-    // Boolean result = bulletinCategoryService.deleteByName(body.getName());
-    // System.out.println(result);
-    // if (result) {
-    // return true;
+    // 刪除公告分類
+    @DeleteMapping("/category/delete")
+    public Map<String, Object> deleteBulletinCategory(@RequestBody BulletinCategory body) {
+        Map<String, Object> response = new HashMap<>();
+        if (body != null && body.getName() != null) {
+            response.put("result", bulletinCategoryService.deleteByName(body.getName()));
+
+        } else {
+            response.put("result", "未提供刪除分類所需資料");
+        }
+        return response;
+    }
+
+    // 修改公告分類-不能用，因為name是主鍵不能修改，除非要新增Id當主鍵
+    // @PutMapping("/category/modify")
+    // public BulletinCategory modifyBulletinCategory(@RequestBody BulletinCategory
+    // body) {
+    // if (body != null) {
+    // return bulletinCategoryService.modify(body);
     // }
+    // return null;
     // }
 
-    // return false;
-    // }
 }

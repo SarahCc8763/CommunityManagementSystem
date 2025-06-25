@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "bulletin_category")
@@ -30,6 +31,9 @@ public class BulletinCategory {
     @JoinColumn(name = "community_id", nullable = true)
     @JsonBackReference("community-bulletin-category")
     private Community community;
+
+    @Transient
+    private String newName;
 
     public String getName() {
         return name;
@@ -58,5 +62,13 @@ public class BulletinCategory {
 
     public void setCommunity(Community community) {
         this.community = community;
+    }
+
+    public String getNewName() {
+        return newName;
+    }
+
+    public void setNewName(String newName) {
+        this.newName = newName;
     }
 }

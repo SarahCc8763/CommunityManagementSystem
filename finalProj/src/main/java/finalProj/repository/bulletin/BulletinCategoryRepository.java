@@ -12,4 +12,6 @@ public interface BulletinCategoryRepository extends JpaRepository<BulletinCatego
     public Optional<BulletinCategory> findByName(String name);
 
     public void deleteByName(String name);
+
+    public boolean existsByName(String name);
 }

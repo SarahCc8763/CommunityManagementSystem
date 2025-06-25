@@ -83,8 +83,19 @@ public class BulletinService {
         return bulletinRepository.existsById(id);
     }
 
-    public List<Bulletin> findByCategoryAndTitle(String category, String title) {
-
+    public List<Bulletin> findByCategoryAndTitle(Bulletin body) {
+        String category = "";
+        String title = "";
+        if (body.getCategory() == null || body.getCategory().getName() == null) {
+            category = null;
+        } else {
+            category = body.getCategory().getName();
+        }
+        if (body.getTitle() == null) {
+            title = null;
+        } else {
+            title = body.getTitle();
+        }
         return bulletinRepository.findByCategoryAndTitle(category, title);
     }
 }
