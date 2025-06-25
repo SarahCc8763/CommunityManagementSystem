@@ -9,8 +9,7 @@ import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
-import finalProj.domain.ticket.Ticket;
-import jakarta.persistence.CascadeType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,11 +24,12 @@ public class Community {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Integer ID; // 社區流水號
+	private Integer communityId; // 社區流水號
 
-	@JsonManagedReference("community")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Ticket> tickets;
+	// @JsonManagedReference("community")
+	// @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval =
+	// true)
+	// private List<Ticket> tickets;
 
 	@Column(name = "name")
 	private String name; // 社區名稱
@@ -66,16 +66,16 @@ public class Community {
 
 	@Override
 	public String toString() {
-		return "community [ID=" + ID + ", name=" + name + ", address=" + address + ", createTime=" + createTime
+		return "community [ID=" + communityId + ", name=" + name + ", address=" + address + ", createTime=" + createTime
 				+ ", function=" + function + "]";
 	}
 
-	public Integer getID() {
-		return ID;
+	public Integer getCommunityId() {
+		return communityId;
 	}
 
-	public void setID(Integer iD) {
-		ID = iD;
+	public void setCommunityId(Integer iD) {
+		communityId = iD;
 	}
 
 	public String getName() {
@@ -108,6 +108,54 @@ public class Community {
 
 	public void setFunction(Integer function) {
 		this.function = function;
+	}
+
+	// public List<Ticket> getTickets() {
+	// return tickets;
+	// }
+
+	// public void setTickets(List<Ticket> tickets) {
+	// this.tickets = tickets;
+	// }
+
+	public List<Bulletin> getBulletins() {
+		return bulletins;
+	}
+
+	public void setBulletins(List<Bulletin> bulletins) {
+		this.bulletins = bulletins;
+	}
+
+	public List<BulletinCategory> getBulletinCategories() {
+		return bulletinCategories;
+	}
+
+	public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
+		this.bulletinCategories = bulletinCategories;
+	}
+
+	public List<FaqCategory> getFaqCategories() {
+		return faqCategories;
+	}
+
+	public void setFaqCategories(List<FaqCategory> faqCategories) {
+		this.faqCategories = faqCategories;
+	}
+
+	public List<FeedbackCategory> getFeedbackCategories() {
+		return feedbackCategories;
+	}
+
+	public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
+		this.feedbackCategories = feedbackCategories;
+	}
+
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
 	}
 
 	// facility VARBINARY(MAX)

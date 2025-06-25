@@ -27,10 +27,10 @@ public class BulletinService {
         return bulletinRepository.findAll();
     }
 
-    public List<Bulletin> findById(Integer id) {
+    public Bulletin findById(Integer id) {
         Optional<Bulletin> optional = bulletinRepository.findById(id);
         if (optional.isPresent()) {
-            return List.of(optional.get());
+            return optional.get();
         }
 
         return null;

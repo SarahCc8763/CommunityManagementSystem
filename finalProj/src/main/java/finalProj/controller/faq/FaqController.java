@@ -1,4 +1,4 @@
-package finalProj.controller;
+package finalProj.controller.faq;
 
 import java.util.Arrays;
 import java.util.List;

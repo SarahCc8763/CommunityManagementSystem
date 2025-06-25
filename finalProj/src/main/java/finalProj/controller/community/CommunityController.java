@@ -26,7 +26,7 @@ public class CommunityController {
 	// Create
 	@PostMapping
 	public Community create(@RequestBody Community community) {
-		// TODO: 呼叫 service.save(ticket)
+		// service.save(ticket)
 		Community result = communityService.save(community);
 		return result;
 	}
@@ -34,14 +34,14 @@ public class CommunityController {
 	// Findall
 	@GetMapping
 	public List<Community> findAll() {
-		// TODO: 呼叫 service.findAll()
+		// service.findAll()
 		return communityService.findAll(); // 空清單回傳
 	}
 
 	// ReadbyId
 	@GetMapping("/{id}")
 	public Community findById(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.findById(id)
+		// service.findById(id)
 		Community result = communityService.findById(id);
 		return result;
 	}
@@ -60,7 +60,7 @@ public class CommunityController {
 	// Update
 	@PutMapping("/{id}")
 	public Community update(@PathVariable Integer id, @RequestBody Community community) {
-		// TODO: 呼叫 service.update(id, ticket)
+		// service.update(id, ticket)
 
 		Community result = communityService.update(id, community);
 		return result;
@@ -69,7 +69,7 @@ public class CommunityController {
 	// Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// service.delete(id)
 		boolean result = communityService.remove(id);
 		return result;
 	}

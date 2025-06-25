@@ -1,7 +1,7 @@
-package finalProj.controller;
+package finalProj.controller.bulletin;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.User;
 import finalProj.domain.bulletin.Bulletin;
+import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
 import finalProj.dto.BulletinResponse;
 import finalProj.service.UserService;
+import finalProj.service.bulletin.BulletinCategoryService;
 import finalProj.service.bulletin.BulletinCommentService;
 import finalProj.service.bulletin.BulletinService;
+import finalProj.service.community.CommunityService;
 
 @RestController
 @RequestMapping("/api/bulletin")
@@ -32,6 +35,12 @@ public class BulletinController {
 
     @Autowired
     private BulletinCommentService bulletinCommentService;
+
+    @Autowired
+    BulletinCategoryService bulletinCategoryService;
+
+    @Autowired
+    CommunityService communityService;
 
     // 新增公告
     @PostMapping
@@ -147,7 +156,7 @@ public class BulletinController {
                 response.setSuccess(false);
                 response.setMessage("資料不存在");
             } else {
-                List<Bulletin> list = bulletinService.findById(id);
+                List<Bulletin> list = List.of(bulletinService.findById(id));
                 response.setCount(Long.valueOf(list.size()));
                 response.setSuccess(true);
                 response.setMessage("查詢成功");
@@ -197,26 +206,39 @@ public class BulletinController {
     public BulletinComment postBulletinComment(@PathVariable Integer bulletinId, @RequestBody BulletinComment body) {
         User user = userService.findById(body.getUser().getUserId()).get();
         body.setUser(user);
-        body.setBulletin(bulletinService.findById(bulletinId).get(0));
+        body.setBulletin(bulletinService.findById(bulletinId));
 
         return bulletinCommentService.save(body);
     }
 
     // 修改/刪除留言
-    // @PutMapping("/comment/{id}")
-    // public BulletinComment updateBulletinComment(@PathVariable Integer id,
-    // @RequestBody BulletinComment body) {
+    @PutMapping("/comment/{id}")
+    public BulletinComment updateBulletinComment(@PathVariable Integer id,
+            @RequestBody BulletinComment body) {
 
-    // if (body != null) {
-    // body.se
+        if (body != null) {
+            body.setId(id);
+            body.setTime(LocalDateTime.now());
+            body.setUser(userService.findById(body.getUser().getUserId()).get()); // 資料庫抓取完整用戶資料放進關聯屬性user
+            body.setBulletin(bulletinService.findById(body.getBulletin().getId())); // 資料庫抓取完整公告資料放進關聯屬性bulletin
+            return bulletinCommentService.save(body);
 
-    // // Optional<BulletinComment> optional = bulletinCommentService.findById(id);
-    // // if (optional.isPresent()) {
+        }
+        return null;
+    }
 
-    // BulletinComment comment = bulletinCommentService.findById(cid).get();
-    // comment.setContent(body.getContent());
-    // return bulletinCommentService.save(comment);
-    // }
-    // }return null;
-    // }
+    //
+    //
+    // 公告-分類
+
+    // 新增分類
+    @PostMapping("/category")
+    public BulletinCategory postBulletinCategory(@RequestBody BulletinCategory body) {
+        if (body != null) {
+            body.setCommunity(communityService.findById(body.getCommunity().getCommunityId()));
+            return bulletinCategoryService.save(body);
+
+        }
+        return null;
+    }
 }
