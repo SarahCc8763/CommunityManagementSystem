@@ -1,0 +1,222 @@
+package finalProj.domin.ticket;
+
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import finalProj.domin.community.Community;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "ticket")
+public class Ticket {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id; // ticket流水號
+
+	@JsonBackReference("tickets")
+	@ManyToOne
+	@JoinColumn(name = "community_id", nullable = false)
+	private Community community;//(社區)多對一(ticket)
+
+	@JsonManagedReference("ticket")
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TicketComment> comments;//(ticket)一對多(留言)
+
+	@JsonManagedReference("ticket")
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TicketAttachment> attachments;//(ticket)一對多(附件)
+	
+	@JsonManagedReference("ticket")
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TicketIssueCostAttachment> costAttachment;//(ticket)一對多(金額附件)
+
+
+	@Column(name = "reporter_id")
+	private Integer reporterId; // 創建者ID
+
+	@Column(name = "title")
+	private String title; // 問題標題
+
+	@Column(name = "assigner_id")
+	private Integer assignerId; // 被指定者(管理員)
+
+	@Column(name = "[status]") // 保留字加中括號
+	private String status; // 問題狀態
+
+	@Column(name = "issue_description")
+	private String issueDescription; // 問題敘述
+
+	@Column(name = "Cost")
+	private Integer cost; // 修繕費用（屬性小寫 cost）
+
+	@Column(name = "action_time", nullable = true)
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "GMT+8")
+	private java.util.Date actionTime; // 更改時間
+
+	@Column(name = "action_by")
+	private Integer actionBy; // 誰更動的
+
+	@CreationTimestamp // Hibernate annotation 自動填入當前時間
+	@Column(name = "start_date", nullable = false, updatable = false)
+	private java.util.Date startDate; // ticket創建時間
+
+	@Column(name = "end_date")
+	private java.util.Date endDate; // ticket結束時間
+
+	@Column(name = "notes")
+	private String notes; // 備註
+	
+
+	@Override
+	public String toString() {
+		return "Ticket [id=" + id + ", community=" + community + ", comments=" + comments + ", attachments="
+				+ attachments + ", reporterId=" + reporterId + ", title=" + title + ", assignerId=" + assignerId
+				+ ", status=" + status + ", issueDescription=" + issueDescription + ", cost=" + cost + ", actionTime="
+				+ actionTime + ", actionBy=" + actionBy + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", notes=" + notes + ", costAttachment=" + costAttachment + "]";
+	}
+
+	public List<TicketAttachment> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<TicketAttachment> attachments) {
+		this.attachments = attachments;
+	}
+
+	public List<TicketIssueCostAttachment> getCostAttachment() {
+		return costAttachment;
+	}
+
+	public void setCostAttachment(List<TicketIssueCostAttachment> costAttachment) {
+		this.costAttachment = costAttachment;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+
+	public List<TicketComment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<TicketComment> comments) {
+		this.comments = comments;
+	}
+
+	public Integer getReporterId() {
+		return reporterId;
+	}
+
+	public void setReporterId(Integer reporterId) {
+		this.reporterId = reporterId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public Integer getAssignerId() {
+		return assignerId;
+	}
+
+	public void setAssignerId(Integer assignerId) {
+		this.assignerId = assignerId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getIssueDescription() {
+		return issueDescription;
+	}
+
+	public void setIssueDescription(String issueDescription) {
+		this.issueDescription = issueDescription;
+	}
+
+	public Integer getCost() {
+		return cost;
+	}
+
+	public void setCost(Integer cost) {
+		this.cost = cost;
+	}
+
+	public java.util.Date getActionTime() {
+		return actionTime;
+	}
+
+	public void setActionTime(java.util.Date actionTime) {
+		this.actionTime = actionTime;
+	}
+
+	public Integer getActionBy() {
+		return actionBy;
+	}
+
+	public void setActionBy(Integer actionBy) {
+		this.actionBy = actionBy;
+	}
+
+	public java.util.Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(java.util.Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public java.util.Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(java.util.Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+}
