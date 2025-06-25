@@ -241,4 +241,18 @@ public class BulletinController {
         }
         return null;
     }
+
+    // 刪除分類
+    // @DeleteMapping("/category/delete")
+    // public Boolean deleteBulletinCategory(@RequestBody BulletinCategory body) {
+    // if (body != null && body.getName() != null) {
+    // Boolean result = bulletinCategoryService.deleteByName(body.getName());
+    // System.out.println(result);
+    // if (result) {
+    // return true;
+    // }
+    // }
+
+    // return false;
+    // }
 }

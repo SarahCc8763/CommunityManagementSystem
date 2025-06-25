@@ -30,6 +30,8 @@ public class BulletinCategoryService {
     }
 
     public void deleteByName(String name) {
+
         bulletinCategoryRepository.deleteByName(name);
+
     }
 }
