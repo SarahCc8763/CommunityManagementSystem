@@ -1,0 +1,115 @@
+-- create database finalProj
+use finalProj
+ 
+SELECT * FROM users
+INSERT INTO [dbo].[users] ([name],last_alter_at) VALUES ('A',getDate()), ('B',getDate()), ('C',getDate());
+
+-- parking_type 車位種類
+CREATE TABLE parking_type (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    community_id INT,
+    [type] NVARCHAR(10) NOT NULL,
+--  FOREIGN KEY (community_id) REFERENCES community(id)
+);
+INSERT INTO parking_type ([type]) VALUES (N'汽車'), (N'機車'), (N'電動車');
+
+-- parking_slot 車位資料
+CREATE TABLE parking_slot (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    community_id INT,
+    slot_number VARCHAR(10) NOT NULL,
+    [location] VARCHAR(20),
+    parking_type_id INT NOT NULL,
+    users_id INT NOT NULL DEFAULT 1,
+    license_plate VARCHAR(10),
+    is_rentable BIT NOT NULL DEFAULT 0,
+--  FOREIGN KEY (community_id) REFERENCES community(id),
+--  FOREIGN KEY (parking_type_id) REFERENCES parking_type(id),
+--  FOREIGN KEY (users_id) REFERENCES Users(id)
+);
+INSERT INTO parking_slot (slot_number, [location], parking_type_id, users_id, license_plate, is_rentable)
+VALUES 
+('B2-M01', N'B2層機車區', 2, 1, NULL, 1),
+('B2-01', N'B2層A排', 1, 2, 'KFC-43', 0);
+
+-- parking_rentals 承租紀錄
+CREATE TABLE parking_rentals (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    users_id INT NOT NULL,
+    parking_slot_id INT NOT NULL,
+    rent_buy_start DATETIME NOT NULL,
+    rent_end DATETIME NOT NULL,
+    license_plate VARCHAR(10) NOT NULL,
+    [status] BIT NOT NULL DEFAULT 0,
+--  FOREIGN KEY (users_id) REFERENCES users(id),
+--  FOREIGN KEY (parking_slot_id) REFERENCES parking_slot(slot_number)
+);
+INSERT INTO parking_rentals (users_id, parking_slot_id, rent_buy_start, rent_end, license_plate, [status])
+VALUES 
+(2, 1, '2023-04-24 12:00:00', '2025-04-24 12:00:00', 'KFC-43', 1);
+
+-- temporary_parking_applications 臨停申請紀錄
+CREATE TABLE temporary_parking_applications (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    units_id INT NOT NULL,
+    visitor_name NVARCHAR(10) NOT NULL,
+    license_plate VARCHAR(10) NOT NULL,
+    parking_type_id INT NOT NULL,
+    request_time DATETIME DEFAULT GETDATE(),
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    purpose NVARCHAR(50) NOT NULL,
+    parking_slot_id INT NOT NULL,
+--  FOREIGN KEY (units_id) REFERENCES units(id),
+--  FOREIGN KEY (parking_type_id) REFERENCES parking_type(id),
+--  FOREIGN KEY (parking_slot_id) REFERENCES parking_slot(id)
+);
+INSERT INTO temporary_parking_applications 
+(units_id, visitor_name, license_plate, parking_type_id, start_time, end_time, purpose, parking_slot_id)
+VALUES 
+(1, N'Julia', 'KFC-43', 1, '2025-04-28 12:00:00', '2025-04-28 16:00:00', N'維修', 2);
+
+-- lottery_events 抽籤活動
+CREATE TABLE lottery_events (
+    id INT PRIMARY KEY,
+    title NVARCHAR(50) NOT NULL,
+    started_at DATETIME NOT NULL DEFAULT GETDATE(),
+    ended_at DATETIME NOT NULL,
+	users_id INT NOT NULL,
+	created_at DATETIME NOT NULL,
+--  FOREIGN KEY (id) REFERENCES bulletin(id)
+);
+INSERT INTO [dbo].[lottery_events] (id, title, started_at, ended_at, users_id, created_at)
+VALUES 
+(1, N'114年度機車位抽籤','2025-06-15','2025-06-15', 1, getDate()),
+(2, N'115年度機車位抽籤','2025-06-15','2025-06-15',1, getDate());
+
+-- lottery_event_spaces 抽籤車位表
+CREATE TABLE lottery_event_spaces (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    lottery_events_id INT NOT NULL,
+    parking_slot_id INT NOT NULL,
+--  FOREIGN KEY (lottery_events_id) REFERENCES lottery_events(id),
+--  FOREIGN KEY (parking_slot_id) REFERENCES parking_slot(id)
+);
+INSERT INTO lottery_event_spaces (lottery_events_id, parking_slot_id)
+VALUES 
+(1, 1),
+(2, 2);
+
+-- lottery_apply 抽籤申請表
+CREATE TABLE lottery_apply (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    users_id INT NOT NULL,
+    lottery_events_id INT NOT NULL,
+    applied_at DATETIME DEFAULT GETDATE(),
+    lottery_event_spaces_id INT,
+--  FOREIGN KEY (users_id) REFERENCES users(id),
+--  FOREIGN KEY (lottery_events_id) REFERENCES lottery_events(id),
+--  FOREIGN KEY (lottery_event_spaces_id) REFERENCES lottery_event_spaces(id)
+);
+ALTER TABLE lottery_apply
+ADD CONSTRAINT uq_lottery_applicant UNIQUE (lottery_events_id, users_id);
+
+INSERT INTO lottery_apply (users_id, lottery_events_id, lottery_event_spaces_id)
+VALUES (2, 1, 1), (3, 2, NULL);
