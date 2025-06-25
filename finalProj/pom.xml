@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tw.com.ispan</groupId>
-	<artifactId>finalProject</artifactId>
+	<artifactId>finalProjBack</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>finalProject</name>
-	<description>finalProj</description>
+	<name>finalProjBack</name>
+	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,24 +30,24 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
-	
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+		    <groupId>com.nimbusds</groupId>
+		    <artifactId>nimbus-jose-jwt</artifactId>
+		    <version>10.3</version>
 		</dependency>
-
-	
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20250107</version>
 		</dependency>
-	
-	
-	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 		<dependency>
