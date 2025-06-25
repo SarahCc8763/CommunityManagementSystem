@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.ticket.Ticket;
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketComment;
 import finalProj.dto.ticket.CommentDTO;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;

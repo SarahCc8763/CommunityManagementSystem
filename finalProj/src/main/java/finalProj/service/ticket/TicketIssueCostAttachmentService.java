@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.ticket.Ticket;
-import finalProj.domin.ticket.TicketIssueCostAttachment;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketIssueCostAttachment;
 import finalProj.repository.ticket.TicketIssueCostAttachmentRepository;
 import finalProj.repository.ticket.TicketRepository;
 

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import finalProj.domin.ticket.Ticket;
-import finalProj.domin.ticket.TicketAttachment;
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketAttachment;
+import finalProj.domain.ticket.TicketComment;
 import finalProj.repository.ticket.TicketAttachmentRepository;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;

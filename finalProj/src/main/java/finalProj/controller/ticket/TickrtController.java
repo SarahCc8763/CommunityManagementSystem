@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.Ticket;
+import finalProj.domain.ticket.Ticket;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.TicketDTO;
 import finalProj.service.ticket.TicketService;

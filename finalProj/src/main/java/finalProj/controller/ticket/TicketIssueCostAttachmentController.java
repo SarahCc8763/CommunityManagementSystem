@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.TicketIssueCostAttachment;
+import finalProj.domain.ticket.TicketIssueCostAttachment;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.TicketIssueCostAttachmentDTO;
 import finalProj.service.ticket.TicketIssueCostAttachmentService;

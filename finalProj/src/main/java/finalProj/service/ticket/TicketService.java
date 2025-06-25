@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.community.Community;
-import finalProj.domin.ticket.Ticket;
+import finalProj.domain.community.Community;
+import finalProj.domain.ticket.Ticket;
 import finalProj.dto.ticket.TicketDTO;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.ticket.TicketAttachmentRepository;

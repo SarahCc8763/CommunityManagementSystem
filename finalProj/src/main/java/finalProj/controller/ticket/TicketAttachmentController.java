@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import finalProj.domin.ticket.TicketAttachment;
+import finalProj.domain.ticket.TicketAttachment;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.FileUploadDTO;
 import finalProj.service.ticket.TicketAttachmentService;

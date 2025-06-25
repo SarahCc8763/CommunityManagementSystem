@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.TicketComment;
 
 
 public interface TicketCommentRepository extends JpaRepository<TicketComment, Integer> {

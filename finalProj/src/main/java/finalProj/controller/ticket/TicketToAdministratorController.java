@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.TicketToAdministrator;
+import finalProj.domain.ticket.TicketToAdministrator;
 import finalProj.service.ticket.TicketToAdministratorService;
 
 @RestController

@@ -1,10 +1,10 @@
-package finalProj.domin.community;
+package finalProj.domain.community;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import finalProj.domin.ticket.Ticket;
+import finalProj.domain.ticket.Ticket;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

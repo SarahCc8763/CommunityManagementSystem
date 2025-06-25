@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.community.Community;
+import finalProj.domain.community.Community;
 import finalProj.repository.community.CommunityRepository;
 
 @Service
@@ -55,7 +55,7 @@ public class CommunityService {
 	// 修改社區
 	public Community update(Integer id, Community community) {
 		if (communityRepository.existsById(id)) {
-			community.setID(id); // 確保 ID 正確綁定
+			community.setCommunityId(id); // 確保 ID 正確綁定
 			return communityRepository.save(community);
 		}
 		return null;

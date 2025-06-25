@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import finalProj.domin.ticket.IssueTypeAndTicket;
+import finalProj.domain.ticket.IssueTypeAndTicket;
 
 
 public interface IssueTypeAndTicketRepository extends JpaRepository<IssueTypeAndTicket, Integer> {
