@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.IssueType;
+import finalProj.domain.ticket.IssueType;
 import finalProj.service.ticket.IssueTypeService;
 
 @RestController
@@ -44,7 +44,7 @@ public class IssueTypeController {
 		return result;
 	}
 
-//	// Update
+	// // Update
 	@PutMapping("/{id}")
 	public IssueType update(@PathVariable Integer id, @RequestBody IssueType issueType) {
 		// TODO: 呼叫 service.update(id, ticket)
@@ -53,7 +53,7 @@ public class IssueTypeController {
 		return result;
 	}
 
-//	// Delete
+	// // Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable Integer id) {
 		// TODO: 呼叫 service.delete(id)

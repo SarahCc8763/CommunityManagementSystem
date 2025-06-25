@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.TicketIssueCostAttachment;
+import finalProj.domain.ticket.TicketIssueCostAttachment;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.TicketIssueCostAttachmentDTO;
 import finalProj.service.ticket.TicketIssueCostAttachmentService;
@@ -67,12 +67,13 @@ public class TicketIssueCostAttachmentController {
 			return new ApiResponse<>(false, "更新失敗：" + e.getMessage(), null);
 		}
 	}
-	//查詢ticket下的所有金額附件
+
+	// 查詢ticket下的所有金額附件
 	@GetMapping("/ticket/{ticketId}")
 	public List<TicketIssueCostAttachment> findByTicketId(@PathVariable("ticketId") Integer ticketId) {
 		return ticketIssueCostAttachmentService.findByTicketId(ticketId);
 	}
-	
+
 	// 刪除留言
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable("id") Integer id) {
@@ -80,11 +81,11 @@ public class TicketIssueCostAttachmentController {
 		boolean result = ticketIssueCostAttachmentService.remove(id);
 		return result;
 	}
-	//查詢所有金額附件
+
+	// 查詢所有金額附件
 	@GetMapping("/All")
 	public List<TicketIssueCostAttachment> findAll() {
 		return ticketIssueCostAttachmentService.findAll();
 	}
-	
 
 }

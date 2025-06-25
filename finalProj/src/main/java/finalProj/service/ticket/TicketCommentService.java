@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.ticket.Ticket;
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketComment;
 import finalProj.dto.ticket.CommentDTO;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;
@@ -92,9 +92,9 @@ public class TicketCommentService {
 
 	// 刪除留言
 	public boolean remove(Integer id) {
-		if (id!=null) {
+		if (id != null) {
 			Optional<TicketComment> opt = ticketCommentRepository.findById(id);
-			if(opt.isPresent()) {
+			if (opt.isPresent()) {
 				ticketCommentRepository.delete(opt.get());
 				return true;
 			}

@@ -2,9 +2,8 @@ package finalProj.repository.ticket;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import finalProj.domin.ticket.IssueType;
-
+import finalProj.domain.ticket.IssueType;
 
 public interface IssueTypeRepository extends JpaRepository<IssueType, Integer> {
-    
+
 }

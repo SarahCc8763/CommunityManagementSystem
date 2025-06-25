@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import finalProj.domin.ticket.Ticket;
-import finalProj.domin.ticket.TicketAttachment;
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketAttachment;
+import finalProj.domain.ticket.TicketComment;
 import finalProj.repository.ticket.TicketAttachmentRepository;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;
@@ -45,7 +45,8 @@ public class TicketAttachmentService {
 			throw new RuntimeException("檔案讀取失敗：" + e.getMessage());
 		}
 	}
-	//上傳	
+
+	// 上傳
 	public TicketAttachment saveBase64(String fileName, String base64Data, Integer uploadedBy, Integer ticketId,
 			Integer commentID) {
 		try {
@@ -74,8 +75,8 @@ public class TicketAttachmentService {
 			throw new RuntimeException("Base64 處理失敗：" + e.getMessage());
 		}
 	}
-	
-	//修改
+
+	// 修改
 	public TicketAttachment update(String fileName, String base64Data, Integer uploadedBy, Integer ticketId,
 			Integer commentID, Integer id) {
 		byte[] decoded = Base64.getDecoder().decode(base64Data);
@@ -85,7 +86,7 @@ public class TicketAttachmentService {
 		TA.setFileName(fileName);
 		TA.setUploadedBy(uploadedBy);
 		TA.setUploadedAt(new Date());
-		
+
 		return ticketAttachmentRepository.save(TA);
 	}
 
@@ -96,8 +97,8 @@ public class TicketAttachmentService {
 	public List<TicketAttachment> findAll() {
 		return ticketAttachmentRepository.findAll();
 	}
-	
-	//刪除附件
+
+	// 刪除附件
 	public boolean remove(Integer id) {
 		if (id != null) {
 			if (ticketAttachmentRepository.existsById(id)) {

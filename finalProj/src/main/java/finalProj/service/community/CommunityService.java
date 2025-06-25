@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domin.community.Community;
+import finalProj.domain.community.Community;
 import finalProj.repository.community.CommunityRepository;
 
 @Service
@@ -42,9 +42,9 @@ public class CommunityService {
 
 	// 刪除一筆資料
 	public boolean remove(Integer id) {
-		if(id!=null) {
+		if (id != null) {
 			Optional<Community> opt = communityRepository.findById(id);
-			if(opt.isPresent()) {
+			if (opt.isPresent()) {
 				communityRepository.delete(opt.get());
 				return true;
 			}
@@ -68,11 +68,11 @@ public class CommunityService {
 
 	// 查詢社區名稱
 	public List<Community> findByCommunityName(String name) {
-	    if (name != null) {
-	        List<Community> result = communityRepository.findByName(name);
-	        return result.isEmpty() ? null : result;
-	    }
-	    return null;
+		if (name != null) {
+			List<Community> result = communityRepository.findByName(name);
+			return result.isEmpty() ? null : result;
+		}
+		return null;
 	}
 
 }

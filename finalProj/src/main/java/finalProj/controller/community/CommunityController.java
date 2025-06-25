@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.community.Community;
+import finalProj.domain.community.Community;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.service.community.CommunityService;
 

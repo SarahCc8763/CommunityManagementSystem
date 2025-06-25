@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.TicketComment;
+import finalProj.domain.ticket.TicketComment;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.CommentDTO;
 import finalProj.service.ticket.TicketCommentService;
@@ -65,13 +65,13 @@ public class TicketCommentController {
 	// 更新留言
 	@PutMapping("/{id}")
 	public ApiResponse<TicketComment> update(@PathVariable("id") Integer id,
-	                                         @RequestBody CommentDTO commentDTO) {
-	    try {
-	        TicketComment result = ticketCommentService.update(id, commentDTO);
-	        return new ApiResponse<>(true, "留言更新成功", result);
-	    } catch (IllegalArgumentException e) {
-	        return new ApiResponse<>(false, e.getMessage(), null);
-	    }
+			@RequestBody CommentDTO commentDTO) {
+		try {
+			TicketComment result = ticketCommentService.update(id, commentDTO);
+			return new ApiResponse<>(true, "留言更新成功", result);
+		} catch (IllegalArgumentException e) {
+			return new ApiResponse<>(false, e.getMessage(), null);
+		}
 	}
 
 }

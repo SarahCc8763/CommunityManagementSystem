@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.TicketToAdministrator;
+import finalProj.domain.ticket.TicketToAdministrator;
 import finalProj.service.ticket.TicketToAdministratorService;
 
 @RestController
@@ -29,12 +29,12 @@ public class TicketToAdministratorController {
 	public List<TicketToAdministrator> findByTicketId(@PathVariable Integer ticketId) {
 		return ticketToAdministratorService.findByTicketId(ticketId);
 	}
-	
+
 	@GetMapping("/vendor/{vendorId}")
 	public List<TicketToAdministrator> findByVendorId(@PathVariable Integer vendorId) {
 		return ticketToAdministratorService.findByVendorId(vendorId);
 	}
-	
+
 	// DTO for request body
 	public static class TicketToAdministratorRequest {
 		private Integer ticketId;

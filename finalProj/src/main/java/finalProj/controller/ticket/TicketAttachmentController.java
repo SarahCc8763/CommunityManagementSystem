@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import finalProj.domin.ticket.TicketAttachment;
+import finalProj.domain.ticket.TicketAttachment;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.dto.ticket.FileUploadDTO;
 import finalProj.service.ticket.TicketAttachmentService;
@@ -42,14 +42,15 @@ public class TicketAttachmentController {
 			return new ApiResponse<>(false, e.getMessage(), null);
 		}
 	}
-	//上傳圖片(base64)
+
+	// 上傳圖片(base64)
 	@PostMapping("/upload/base64/multiple")
 	public ApiResponse<List<Integer>> uploadMultipleBase64(@RequestBody List<FileUploadDTO> files) {
 		List<Integer> savedIds = new ArrayList<>();
 		try {
 			for (FileUploadDTO dto : files) {
 				TicketAttachment saved = ticketAttachmentService.saveBase64(dto.getFileName(), dto.getBase64Data(),
-						dto.getUploadedBy(), dto.getTicketId(),dto.getCommentID());
+						dto.getUploadedBy(), dto.getTicketId(), dto.getCommentID());
 
 				savedIds.add(saved.getId());
 			}
@@ -58,7 +59,8 @@ public class TicketAttachmentController {
 			return new ApiResponse<>(false, "上傳失敗：" + e.getMessage(), null);
 		}
 	}
-	//查看附件內容
+
+	// 查看附件內容
 	@GetMapping("/view/{id}")
 	public ResponseEntity<byte[]> viewAttachment(@PathVariable("id") Integer id) {
 		return ticketAttachmentService.findById(id).map(attachment -> {
@@ -69,47 +71,47 @@ public class TicketAttachmentController {
 			return new ResponseEntity<>(attachment.getFile(), headers, HttpStatus.OK);
 		}).orElse(ResponseEntity.notFound().build());
 	}
-	//查看所有附件
+
+	// 查看所有附件
 	@GetMapping("/All")
-	public ApiResponse<List<TicketAttachment>> findAllAttachment(){
+	public ApiResponse<List<TicketAttachment>> findAllAttachment() {
 		try {
-	        List<TicketAttachment> list = ticketAttachmentService.findAll();
-	        return new ApiResponse<>(true, "取得所有附件成功", list);
-	    } catch (Exception e) {
-	        return new ApiResponse<>(false, "查詢失敗：" + e.getMessage(), null);
-	    }
+			List<TicketAttachment> list = ticketAttachmentService.findAll();
+			return new ApiResponse<>(true, "取得所有附件成功", list);
+		} catch (Exception e) {
+			return new ApiResponse<>(false, "查詢失敗：" + e.getMessage(), null);
+		}
 	}
-	//刪除附件
+
+	// 刪除附件
 	@DeleteMapping("{id}")
 	public boolean reomve(@PathVariable("id") Integer id) {
-		if(id!=null) {
+		if (id != null) {
 			return ticketAttachmentService.remove(id);
-		}else {
-			
+		} else {
+
 			return false;
 		}
 	}
-	
-	
+
 	// 修改圖片(base64)
 	@PutMapping("/update/base64/{id}")
 	public ApiResponse<Integer> updateBase64(
-	        @PathVariable("id") Integer id,
-	        @RequestBody FileUploadDTO dto) {
-	    try {
-	        TicketAttachment updated = ticketAttachmentService.update(
-	                dto.getFileName(),
-	                dto.getBase64Data(),
-	                dto.getUploadedBy(),
-	                dto.getTicketId(),
-	                dto.getCommentID(),
-	                id
-	        );
+			@PathVariable("id") Integer id,
+			@RequestBody FileUploadDTO dto) {
+		try {
+			TicketAttachment updated = ticketAttachmentService.update(
+					dto.getFileName(),
+					dto.getBase64Data(),
+					dto.getUploadedBy(),
+					dto.getTicketId(),
+					dto.getCommentID(),
+					id);
 
-	        return new ApiResponse<>(true, "更新成功", updated.getId());
-	    } catch (Exception e) {
-	        return new ApiResponse<>(false, "更新失敗：" + e.getMessage(), null);
-	    }
+			return new ApiResponse<>(true, "更新成功", updated.getId());
+		} catch (Exception e) {
+			return new ApiResponse<>(false, "更新失敗：" + e.getMessage(), null);
+		}
 	}
 
 }

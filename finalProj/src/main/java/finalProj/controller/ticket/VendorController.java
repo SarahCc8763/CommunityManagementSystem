@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domin.ticket.Vendor;
+import finalProj.domain.ticket.Vendor;
 import finalProj.service.ticket.VendorService;
 
 @RestController
@@ -36,7 +36,7 @@ public class VendorController {
 		return vendorService.findAll(); // 空清單回傳
 	}
 
-//	// Read by id
+	// // Read by id
 	@GetMapping("/{id}")
 	public Vendor findById(@PathVariable Integer id) {
 		// TODO: 呼叫 service.findById(id)
@@ -44,7 +44,7 @@ public class VendorController {
 		return result;
 	}
 
-//	// Update
+	// // Update
 	@PutMapping("/{id}")
 	public Vendor update(@PathVariable Integer id, @RequestBody Vendor vendor) {
 		// TODO: 呼叫 service.update(id, ticket)
@@ -53,7 +53,7 @@ public class VendorController {
 		return result;
 	}
 
-//	// Delete
+	// // Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable Integer id) {
 		// TODO: 呼叫 service.delete(id)
