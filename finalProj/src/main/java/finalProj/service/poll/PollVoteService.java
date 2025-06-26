@@ -1,5 +1,6 @@
 package finalProj.service.poll;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,12 @@ public class PollVoteService {
         Users user = optionalUser.get();
         Poll poll = optionalPoll.get();
 
+        // 如果投票已截止，應已透過前端阻攔
+        if (poll.getEnd().isBefore(LocalDateTime.now())) {
+            System.out.println("投票已截止");
+            return null;
+        }
+
         // 檢查該選項是否屬於該投票
         if (!option.getPoll().getId().equals(poll.getId())) {
             System.out.println("該選項不屬於該投票");
@@ -87,35 +94,32 @@ public class PollVoteService {
                 newVote.setIsChecked(true);
                 return pollVoteRepository.save(newVote);
             }
+        } else {
+            // 單選邏輯：
+
+            // 1. 現有已勾選的先全部取消
+            List<PollVote> allVotes = pollVoteRepository.findByUser_UsersIdAndPoll_Id(user.getUsersId(), poll.getId());
+            for (PollVote pv : allVotes) {
+                if (pv.getIsChecked()) {
+                    pv.setIsChecked(false);
+                    pollVoteRepository.save(pv);
+                }
+            }
+
+            // 2. 若這次點的是本來已經選過的 → 因為上面已經取消了，所以不用再傳
+            if (existingVoteOpt.isPresent() && existingVoteOpt.get().getIsChecked()) {
+                return null; // 表示「取消投票」
+            }
+
+            // 3. 沒投過，或剛剛取消過 → 勾選這個選項
+            PollVote voteToSave = existingVoteOpt.orElse(new PollVote());
+            voteToSave.setUser(user);
+            voteToSave.setOption(option);
+            voteToSave.setPoll(poll);
+            voteToSave.setIsChecked(true);
+            return pollVoteRepository.save(voteToSave);
+
         }
-        // else {
-        // // 單選邏輯：
-        // // 1. 取消其他選項的 isChecked = true
-        // List<PollVote> allVotes =
-        // pollVoteRepository.findByUser_UsersIdAndPoll_Id(user.getUsersId(),
-        // poll.getId());
-        // for (PollVote pv : allVotes) {
-        // if (pv.getIsChecked()) {
-        // pv.setIsChecked(false);
-        // pollVoteRepository.save(pv);
-        // }
-        // }
-
-        // // // 2. 如果剛剛點的是已經存在，就切換選擇狀態
-        // // if (existingVoteOpt.isPresent()) {
-        // // PollVote oldVote = existingVoteOpt.get();
-        // // oldVote.setIsChecked(!existingVoteOpt.get().getIsChecked());
-        // // return pollVoteRepository.save(oldVote);
-        // // }
-
-        // // // 3. 勾選目前選項（新增或更新）
-        // // PollVote voteToSave = existingVoteOpt.orElse(new PollVote());
-        // // voteToSave.setUser(user);
-        // // voteToSave.setOption(option);
-        // // voteToSave.setPoll(poll);
-        // // voteToSave.setIsChecked(true);
-        // // return pollVoteRepository.save(voteToSave);
-        // }
     }
 
 }

@@ -33,6 +33,4 @@ public class FaqCategoryService {
         faqCategoryRepository.deleteByName(name);
     }
 
-    // 分類或關鍵字查詢
-
 }

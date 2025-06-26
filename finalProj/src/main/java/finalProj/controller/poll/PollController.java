@@ -43,7 +43,7 @@ public class PollController {
         }
     }
 
-    // 新增投票紀錄
+    // 新增/修改投票紀錄
     @PostMapping("/{id}/vote")
     public ResponseEntity<?> vote(@PathVariable Integer id, @RequestBody PollVote vote) {
         vote.setPollId(id);

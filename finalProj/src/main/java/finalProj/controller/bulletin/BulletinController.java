@@ -34,9 +34,11 @@ import finalProj.service.bulletin.BulletinCategoryService;
 import finalProj.service.bulletin.BulletinCommentService;
 import finalProj.service.bulletin.BulletinService;
 import finalProj.service.community.CommunityService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/bulletin")
+@Slf4j
 public class BulletinController {
     @Autowired
     UsersRepository usersRepository;
@@ -56,7 +58,14 @@ public class BulletinController {
     @Autowired
     private BulletinAttachmentRepository bulletinAttachmentRepository;
 
-    // 新增公告
+    //
+    //
+    // ------ 公告 ------
+    //
+    //
+
+    // -- 新增公告 --
+
     @PostMapping
     public BulletinResponse postBulletin(@RequestBody Bulletin bulletin) {
         BulletinResponse response = new BulletinResponse();
@@ -93,8 +102,9 @@ public class BulletinController {
     }
 
     //
+    // -- 下載公告附件 --
     //
-    // 下載公告附件
+
     @GetMapping("/attachments/{id}")
     public ResponseEntity<byte[]> downloadAttachment(@PathVariable Integer id) {
         Optional<BulletinAttachment> optional = bulletinAttachmentRepository.findById(id);
@@ -135,9 +145,9 @@ public class BulletinController {
     //
 
     //
+    // -- 修改公告 --
     //
-    //
-    // 修改公告
+
     @PutMapping("/{id}")
     public BulletinResponse putBulletin(@PathVariable Integer id, @RequestBody Bulletin body) {
         BulletinResponse response = new BulletinResponse();
@@ -179,8 +189,8 @@ public class BulletinController {
     }
 
     //
+    // -- 在現有公告新增投票--
     //
-    // 在現有公告新增投票
     @PostMapping("/{id}/poll")
     public ResponseEntity<?> addPollToBulletin(@PathVariable Integer id, @RequestBody Poll poll) {
         try {
@@ -196,9 +206,9 @@ public class BulletinController {
     }
 
     //
+    // -- 刪除公告 --
     //
-    //
-    // 刪除
+
     @DeleteMapping("/{id}")
     public BulletinResponse deleteBulletin(@PathVariable Integer id) {
         BulletinResponse response = new BulletinResponse();
@@ -225,9 +235,9 @@ public class BulletinController {
     }
 
     //
+    // -- 查詢公告 --
     //
-    //
-    // 查詢
+
     // 查詢所有公告
     @GetMapping
     public BulletinResponse findAllBulletin() {
@@ -287,10 +297,12 @@ public class BulletinController {
 
     //
     //
+    // ------ 公告的留言 ------
     //
-    // 公告-留言
+    //
 
-    // 新增留言
+    // -- 新增留言 --
+
     @PostMapping("/{bulletinId}/comment")
     public BulletinComment postBulletinComment(@PathVariable Integer bulletinId, @RequestBody BulletinComment body) {
         Users user = usersRepository.findById(body.getUser().getUsersId()).get();
@@ -300,7 +312,10 @@ public class BulletinController {
         return bulletinCommentService.save(body);
     }
 
-    // 修改/刪除留言
+    //
+    // -- 修改/刪除留言--
+    //
+
     @PutMapping("/comment/{id}")
     public BulletinComment updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
         if (body != null) {
@@ -312,9 +327,12 @@ public class BulletinController {
 
     //
     //
-    // 公告-分類
+    // ------ 公告的分類 ------
+    //
+    //
 
-    // 新增公告分類
+    // -- 新增公告分類 --
+
     @PostMapping("/category")
     public BulletinCategory postBulletinCategory(@RequestBody BulletinCategory body) {
         if (body != null) {
@@ -325,17 +343,29 @@ public class BulletinController {
         return null;
     }
 
-    // 刪除公告分類
-    @DeleteMapping("/category/delete")
-    public Map<String, Object> deleteBulletinCategory(@RequestBody BulletinCategory body) {
-        Map<String, Object> response = new HashMap<>();
-        if (body != null && body.getName() != null) {
-            response.put("result", bulletinCategoryService.deleteByName(body.getName()));
+    //
+    // -- 刪除公告分類 --
+    //
 
-        } else {
+    @DeleteMapping("/category/delete")
+    public ResponseEntity<Map<String, Object>> deleteBulletinCategory(@RequestBody BulletinCategory body) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (body == null || body.getName() == null) {
+            log.warn("刪除分類失敗：未提供必要資料");
             response.put("result", "未提供刪除分類所需資料");
+            return ResponseEntity.badRequest().body(response);
         }
-        return response;
+
+        log.info("收到刪除公告分類請求：{}", body.getName());
+        String result = bulletinCategoryService.deleteByName(body.getName());
+        response.put("result", result);
+
+        if (result.contains("成功")) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(400).body(response); // 可視情況改成 404 or 409
+        }
     }
 
     // 修改公告分類-不能用，因為name是主鍵不能修改，除非要新增Id當主鍵
@@ -348,7 +378,10 @@ public class BulletinController {
     // return null;
     // }
 
-    // 查詢全部公告分類
+    //
+    // -- 查詢全部公告分類 --
+    //
+
     @GetMapping("/category")
     public List<BulletinCategory> findAllBulletinCategory() {
         return bulletinCategoryService.findAll();
