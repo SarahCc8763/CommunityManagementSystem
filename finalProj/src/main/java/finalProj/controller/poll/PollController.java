@@ -4,13 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.poll.Poll;
+import finalProj.domain.poll.PollVote;
 import finalProj.service.poll.PollService;
+import finalProj.service.poll.PollVoteService;
 
 @RestController
 @RequestMapping("/api/poll")
@@ -21,6 +24,9 @@ public class PollController {
 
     @Autowired
     private PollService pollService;
+
+    @Autowired
+    private PollVoteService pollVoteService;
 
     // 更新投票
     //
@@ -34,6 +40,17 @@ public class PollController {
             return ResponseEntity.ok("投票更新成功");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("找不到指定的投票");
+        }
+    }
+
+    // 新增投票紀錄
+    @PostMapping("/{id}/vote")
+    public ResponseEntity<?> vote(@PathVariable Integer id, @RequestBody PollVote vote) {
+        vote.setPollId(id);
+        if (pollVoteService.vote(vote) != null) {
+            return ResponseEntity.ok("投票成功");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("投票資料有誤");
         }
     }
 

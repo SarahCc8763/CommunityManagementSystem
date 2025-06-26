@@ -42,6 +42,17 @@ public class PollVote {
     @Transient
     private Integer voteUser;
 
+    @Transient
+    private Integer pollId;
+
+    public Integer getPollId() {
+        return pollId;
+    }
+
+    public void setPollId(Integer pollId) {
+        this.pollId = pollId;
+    }
+
     public Integer getId() {
         return id;
     }
