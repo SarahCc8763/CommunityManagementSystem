@@ -9,9 +9,9 @@ import org.hibernate.annotations.DynamicInsert;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import finalProj.domain.User;
 import finalProj.domain.community.Community;
 import finalProj.domain.poll.Poll;
+import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,7 +48,7 @@ public class Bulletin {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("bulletin-user")
-    private User user;
+    private Users user;
 
     @Column(name = "bulletin_is_pinned")
     private Boolean isPinned;
@@ -138,11 +138,11 @@ public class Bulletin {
         this.category = category;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 

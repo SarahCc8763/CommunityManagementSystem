@@ -7,7 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import finalProj.domain.User;
+import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +40,7 @@ public class BulletinComment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference("bulletinComment-user")
-    private User user;
+    private Users user;
 
     @Column(name = "bulletin_comment_time", insertable = false)
     private LocalDateTime time;
@@ -82,11 +82,11 @@ public class BulletinComment {
         this.comment = comment;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 

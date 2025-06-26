@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domain.User;
+import finalProj.domain.users.Users;
 import finalProj.repository.UserRepository;
 
 @Service
@@ -17,15 +17,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> findAll() {
+    public List<Users> findAll() {
         return userRepository.findAll();
     }
 
-    public Optional<User> findById(Integer id) {
+    public Optional<Users> findById(Integer id) {
         return userRepository.findById(id);
     }
 
-    public User save(User entity) {
+    public Users save(Users entity) {
         return userRepository.save(entity);
     }
 

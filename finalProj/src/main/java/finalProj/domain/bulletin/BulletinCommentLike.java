@@ -2,8 +2,8 @@ package finalProj.domain.bulletin;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import finalProj.domain.User;
 import finalProj.domain.embed.BulletinCommentLikeId;
+import finalProj.domain.users.Users;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,7 +23,7 @@ public class BulletinCommentLike {
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     @JsonBackReference("bulletinCommentLike-user")
-    private User user;
+    private Users user;
 
     @Column(name = "bulletin_comment_like_is_valid", insertable = false)
     private Boolean isValid;
@@ -40,11 +40,11 @@ public class BulletinCommentLike {
         this.comment = bulletinComment;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 

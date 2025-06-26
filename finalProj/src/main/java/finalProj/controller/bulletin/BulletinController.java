@@ -1,10 +1,17 @@
 package finalProj.controller.bulletin;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,11 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import finalProj.domain.User;
 import finalProj.domain.bulletin.Bulletin;
+import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
+import finalProj.domain.poll.Poll;
+import finalProj.domain.users.Users;
 import finalProj.dto.BulletinResponse;
+import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.service.UserService;
 import finalProj.service.bulletin.BulletinCategoryService;
 import finalProj.service.bulletin.BulletinCommentService;
@@ -43,6 +53,9 @@ public class BulletinController {
     @Autowired
     CommunityService communityService;
 
+    @Autowired
+    private BulletinAttachmentRepository bulletinAttachmentRepository;
+
     // 新增公告
     @PostMapping
     public BulletinResponse postBulletin(@RequestBody Bulletin bulletin) {
@@ -51,24 +64,80 @@ public class BulletinController {
             response.setSuccess(false);
             response.setMessage("請輸入資料");
         } else {
-            Bulletin bean = bulletinService.insert(bulletin);
-            if (bean == null) {
-                response.setSuccess(false);
-                response.setMessage("新增失敗");
-            } else {
-                response.setSuccess(true);
-                response.setMessage("新增成功");
-            }
+            try {
+                // 轉換每個附件的 base64 → byte[]
+                if (bulletin.getAttachments() != null) {
+                    for (BulletinAttachment attachment : bulletin.getAttachments()) {
+                        if (attachment.getFileDataBase64() != null) {
+                            byte[] data = Base64.getDecoder().decode(attachment.getFileDataBase64());
+                            attachment.setFileData(data);
+                        }
+                    }
+                }
 
+                Bulletin saved = bulletinService.insert(bulletin);
+                if (saved == null) {
+                    response.setSuccess(false);
+                    response.setMessage("新增失敗");
+                } else {
+                    response.setSuccess(true);
+                    response.setMessage("新增成功");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setSuccess(false);
+                response.setMessage("處理失敗：" + e.getMessage());
+            }
         }
         return response;
-
     }
 
     //
     //
+    // 下載公告附件
+    @GetMapping("/attachments/{id}")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Integer id) {
+        Optional<BulletinAttachment> optional = bulletinAttachmentRepository.findById(id);
+        if (!optional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        BulletinAttachment attachment = optional.get();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(attachment.getMimeType()));
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(attachment.getFileName())
+                .build());
+
+        return new ResponseEntity<>(attachment.getFileData(), headers,
+                HttpStatus.OK);
+    }
+    // //對應前端(先放著)
+    // function downloadAttachment(id, filename) {
+    // fetch(`/attachments/${id}`)
+    // .then(response => {
+    // if (!response.ok) throw new Error("下載失敗");
+    // return response.blob();
+    // })
+    // .then(blob => {
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = filename; // 從資料庫中取的原始檔名
+    // a.click();
+    // window.URL.revokeObjectURL(url);
+    // })
+    // .catch(error => {
+    // alert("下載失敗：" + error.message);
+    // });
+    // }
     //
-    // 修改
+
+    //
+    //
+    //
+    // 修改公告
     @PutMapping("/{id}")
     public BulletinResponse putBulletin(@PathVariable Integer id, @RequestBody Bulletin body) {
         BulletinResponse response = new BulletinResponse();
@@ -76,23 +145,54 @@ public class BulletinController {
         if (id == null) {
             response.setSuccess(false);
             response.setMessage("未提供要修改哪筆資料");
+            return response;
+        }
 
-        } else if (!bulletinService.existsById(id)) {
+        if (!bulletinService.existsById(id)) {
             response.setSuccess(false);
             response.setMessage("資料不存在");
+            return response;
+        }
 
-        } else {
-            body.setId(id);
-            Bulletin bulletin = bulletinService.modify(body);
-            if (bulletin == null) {
-                response.setSuccess(false);
-                response.setMessage("修改失敗");
-            } else {
-                response.setSuccess(true);
-                response.setMessage("修改成功");
+        body.setId(id); // 使用 setId，因為你的主鍵是 id
+
+        // 如果 attachments 有 base64，先解碼
+        if (body.getAttachments() != null) {
+            for (BulletinAttachment attachment : body.getAttachments()) {
+                if (attachment.getFileDataBase64() != null) {
+                    attachment.setFileData(Base64.getDecoder().decode(attachment.getFileDataBase64()));
+                }
             }
         }
+
+        Bulletin updated = bulletinService.modify(body);
+
+        if (updated != null) {
+            response.setSuccess(true);
+            response.setMessage("修改成功");
+        } else {
+            response.setSuccess(false);
+            response.setMessage("修改失敗");
+        }
+
         return response;
+    }
+
+    //
+    //
+    // 在現有公告新增投票
+    @PostMapping("/{id}/poll")
+    public ResponseEntity<?> addPollToBulletin(@PathVariable Integer id, @RequestBody Poll poll) {
+        try {
+            Poll createdPoll = bulletinService.addPollToBulletin(id, poll);
+            return ResponseEntity.ok("投票建立成功，ID: " + createdPoll.getId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("發生錯誤：" + e.getMessage());
+        }
     }
 
     //
@@ -193,7 +293,7 @@ public class BulletinController {
     // 新增留言
     @PostMapping("/{bulletinId}/comment")
     public BulletinComment postBulletinComment(@PathVariable Integer bulletinId, @RequestBody BulletinComment body) {
-        User user = userService.findById(body.getUser().getUserId()).get();
+        Users user = userService.findById(body.getUser().getUsersId()).get();
         body.setUser(user);
         body.setBulletin(bulletinService.findById(bulletinId));
 
@@ -248,4 +348,9 @@ public class BulletinController {
     // return null;
     // }
 
+    // 查詢全部公告分類
+    @GetMapping("/category")
+    public List<BulletinCategory> findAllBulletinCategory() {
+        return bulletinCategoryService.findAll();
+    }
 }

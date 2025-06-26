@@ -3,7 +3,7 @@ package finalProj.domain.feedback;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import finalProj.domain.User;
+import finalProj.domain.users.Users;
 
 @Entity
 @Table(name = "feedback_reply")
@@ -19,7 +19,7 @@ public class FeedbackReply {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @Column(name = "feedback_reply", nullable = false, length = 2000)
     private String reply;
@@ -44,11 +44,11 @@ public class FeedbackReply {
         this.feedback = feedback;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 

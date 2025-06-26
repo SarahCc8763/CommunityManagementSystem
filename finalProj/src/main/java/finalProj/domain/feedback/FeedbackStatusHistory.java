@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import finalProj.domain.User;
+import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,7 +36,7 @@ public class FeedbackStatusHistory {
     @ManyToOne
     @JoinColumn(name = "changed_by_user_id")
     @JsonBackReference("feedbackStatusHistory-user")
-    private User changedBy;
+    private Users changedBy;
 
     @Column(name = "feedback_status_history_changed_at", insertable = false)
     private LocalDateTime changedAt;
@@ -74,11 +74,11 @@ public class FeedbackStatusHistory {
         this.newStatus = newStatus;
     }
 
-    public User getChangedBy() {
+    public Users getChangedBy() {
         return changedBy;
     }
 
-    public void setChangedBy(User changedBy) {
+    public void setChangedBy(Users changedBy) {
         this.changedBy = changedBy;
     }
 

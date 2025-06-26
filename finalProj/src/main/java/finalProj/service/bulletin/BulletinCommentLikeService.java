@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domain.User;
 import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.embed.BulletinCommentLikeId;
+import finalProj.domain.users.Users;
 import finalProj.repository.UserRepository;
 import finalProj.repository.bulletin.BulletinCommentLikeRepository;
 import finalProj.repository.bulletin.BulletinCommentRepository;
@@ -49,7 +49,7 @@ public class BulletinCommentLikeService {
 
         // 查出關聯的 Comment 和 User 實體
         BulletinComment comment = bulletinCommentRepository.findById(commentId).get();
-        User user = userRepository.findById(userId).get();
+        Users user = userRepository.findById(userId).get();
 
         // 建立按讚紀錄
         BulletinCommentLike like = new BulletinCommentLike();

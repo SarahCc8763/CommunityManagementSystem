@@ -3,7 +3,7 @@ package finalProj.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import finalProj.domain.User;
+import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +30,7 @@ public class PollVote {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference("pollVote-user")
-    private User user;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "poll_option_id")
@@ -58,11 +58,11 @@ public class PollVote {
         this.poll = poll;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 
@@ -88,7 +88,7 @@ public class PollVote {
     }
 
     public Integer getVoteUser() {
-        voteUser = user.getUserId();
+        voteUser = user.getUsersId();
         return voteUser;
     }
 

@@ -31,6 +31,9 @@ public class BulletinAttachment {
     @Column(name = "bulletin_attachment_mime_type", nullable = false, length = 20)
     private String mimeType;
 
+    @Transient // 不存入資料庫，只作為接收 JSON 時用的欄位
+    private String fileDataBase64;
+
     // Getters and Setters
 
     public Integer getId() {
@@ -93,6 +96,14 @@ public class BulletinAttachment {
     public String toString() {
         return "BulletinAttachment [id=" + id + ", bulletin=" + bulletin + ", fileName=" + fileName + ", fileData="
                 + Arrays.toString(fileData) + ", mimeType=" + mimeType + "]";
+    }
+
+    public String getFileDataBase64() {
+        return fileDataBase64;
+    }
+
+    public void setFileDataBase64(String fileDataBase64) {
+        this.fileDataBase64 = fileDataBase64;
     }
 
 }

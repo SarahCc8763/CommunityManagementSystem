@@ -7,8 +7,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import finalProj.domain.User;
 import finalProj.domain.community.Community;
+import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,12 +41,12 @@ public class Feedback {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference("feedback-user")
-    private User user;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "handler_id")
     @JsonBackReference("feedback-handler")
-    private User handler;
+    private Users handler;
 
     @Column(name = "feedback_submit_at", insertable = false)
     private LocalDateTime submittedAt;
@@ -141,19 +141,19 @@ public class Feedback {
         this.category = category;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 
-    public User getHandler() {
+    public Users getHandler() {
         return handler;
     }
 
-    public void setHandler(User handler) {
+    public void setHandler(Users handler) {
         this.handler = handler;
     }
 
