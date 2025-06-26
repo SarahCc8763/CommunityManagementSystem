@@ -11,9 +11,9 @@ import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.embed.BulletinCommentLikeId;
 import finalProj.domain.users.Users;
-import finalProj.repository.UserRepository;
 import finalProj.repository.bulletin.BulletinCommentLikeRepository;
 import finalProj.repository.bulletin.BulletinCommentRepository;
+import finalProj.repository.users.UsersRepository;
 
 @Service
 @Transactional
@@ -26,7 +26,7 @@ public class BulletinCommentLikeService {
     private BulletinCommentRepository bulletinCommentRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository userRepository;
 
     public List<BulletinCommentLike> findAll() {
         return bulletinCommentLikeRepository.findAll();

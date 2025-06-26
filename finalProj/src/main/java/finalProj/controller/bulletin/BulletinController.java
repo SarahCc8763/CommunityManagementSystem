@@ -29,7 +29,7 @@ import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
 import finalProj.dto.BulletinResponse;
 import finalProj.repository.bulletin.BulletinAttachmentRepository;
-import finalProj.service.UserService;
+import finalProj.repository.users.UsersRepository;
 import finalProj.service.bulletin.BulletinCategoryService;
 import finalProj.service.bulletin.BulletinCommentService;
 import finalProj.service.bulletin.BulletinService;
@@ -39,7 +39,7 @@ import finalProj.service.community.CommunityService;
 @RequestMapping("/api/bulletin")
 public class BulletinController {
     @Autowired
-    UserService userService;
+    UsersRepository usersRepository;
 
     @Autowired
     private BulletinService bulletinService;
@@ -293,7 +293,7 @@ public class BulletinController {
     // 新增留言
     @PostMapping("/{bulletinId}/comment")
     public BulletinComment postBulletinComment(@PathVariable Integer bulletinId, @RequestBody BulletinComment body) {
-        Users user = userService.findById(body.getUser().getUsersId()).get();
+        Users user = usersRepository.findById(body.getUser().getUsersId()).get();
         body.setUser(user);
         body.setBulletin(bulletinService.findById(bulletinId));
 
