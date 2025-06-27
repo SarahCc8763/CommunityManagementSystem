@@ -30,7 +30,7 @@ public class Ticket {
 
 	@JsonBackReference("tickets")
 	@ManyToOne
-	@JoinColumn(name = "community_id", nullable = false)
+	@JoinColumn(name = "community_id", nullable = false, referencedColumnName = "id")
 	private Community community;//(社區)多對一(ticket)
 
 	@JsonManagedReference("ticket")

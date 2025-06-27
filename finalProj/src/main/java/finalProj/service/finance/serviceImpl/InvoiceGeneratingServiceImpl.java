@@ -1,0 +1,145 @@
+
+package finalProj.service.finance.serviceImpl;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import finalProj.domain.finance.BillingPeriod;
+import finalProj.domain.finance.FeeType;
+import finalProj.domain.finance.Invoice;
+import finalProj.domain.users.Units;
+import finalProj.domain.users.Users;
+import finalProj.repository.finance.BillingPeriodRepository;
+import finalProj.repository.finance.FeeTypeRepository;
+import finalProj.repository.finance.InvoiceRepository;
+import finalProj.repository.users.UnitsRepository;
+import finalProj.repository.users.UsersRepository;
+import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
+
+@Service
+public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
+
+    @Autowired
+    private UnitsRepository unitsRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    // @Autowired
+    // private ParkingRepository parkingRepository;
+
+    @Autowired
+    private FeeTypeRepository feeTypeRepository;
+
+    @Autowired
+    private BillingPeriodRepository billingPeriodRepository;
+
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    @Override
+    public void generateInvoices(String feeTypeName, String billingPeriodCode, BigDecimal unitPrice) {
+        FeeType feeType = feeTypeRepository.findByDescription(feeTypeName)
+                .orElseThrow(() -> new IllegalArgumentException("無效的費用類別：" + feeTypeName));
+
+        BillingPeriod billingPeriod = billingPeriodRepository.findByPeriodCode(billingPeriodCode)
+                .orElseThrow(() -> new IllegalArgumentException("無效的期別代碼：" + billingPeriodCode));
+
+        switch (feeTypeName) {
+            case "管理費":
+                generateManagementFeeInvoices(feeType, billingPeriod);
+                break;
+            case "清潔費":
+                generateCleaningFeeInvoices(feeType, billingPeriod);
+                break;
+            // case "車位管理費":
+            // generateParkingFeeInvoices(feeType, billingPeriod, unitPrice);
+            // break;
+            default:
+                throw new IllegalArgumentException("不支援的費用類別：" + feeTypeName);
+        }
+    }
+
+    // 產生以坪數為單位的管理費
+
+    private void generateManagementFeeInvoices(FeeType feeType, BillingPeriod billingPeriod) {
+        List<Units> units = unitsRepository.findAll();
+
+        for (Units unit : units) {
+            List<Users> users = usersRepository.findByUnitOrderByMoveInDateAsc(unit);
+            if (users == null || users.isEmpty()) {
+                continue; // ✅ 若無住戶則略過該單位，不產生 invoice
+            }
+            Users user = users.get(0);
+            BigDecimal unitCount = unit.getPing();
+            BigDecimal unitPrice = feeType.getAmountPerUnit();
+            BigDecimal totalAmount = unitCount.multiply(unitPrice);
+
+            Invoice invoice = new Invoice();
+            invoice.setUsers(user);
+            invoice.setFeeType(feeType);
+            invoice.setBillingPeriod(billingPeriod);
+            invoice.setPeriodName(billingPeriod.getPeriodName());
+            invoice.setDeadline(billingPeriod.getDueDate());
+            invoice.setUnitCount(unitCount);
+            invoice.setUnitPrice(unitPrice);
+            invoice.setTotalAmount(totalAmount);
+            invoice.setAmountDue(totalAmount);
+
+            invoiceRepository.save(invoice);
+        }
+    }
+
+    // 清潔費
+    private void generateCleaningFeeInvoices(FeeType feeType, BillingPeriod billingPeriod) {
+        List<Units> units = unitsRepository.findAll();
+
+        for (Units unit : units) {
+            List<Users> users = usersRepository.findByUnitOrderByMoveInDateAsc(unit);
+            if (users == null || users.isEmpty()) {
+                continue; // ✅ 若無住戶則略過該單位
+            }
+            Users user = users.get(0);
+            BigDecimal unitCount = BigDecimal.ONE;
+            BigDecimal unitPrice = feeType.getAmountPerUnit();
+            BigDecimal totalAmount = unitPrice;
+
+            Invoice invoice = new Invoice();
+            invoice.setUsers(user);
+            invoice.setFeeType(feeType);
+            invoice.setBillingPeriod(billingPeriod);
+            invoice.setPeriodName(billingPeriod.getPeriodName());
+            invoice.setDeadline(billingPeriod.getDueDate());
+            invoice.setUnitCount(unitCount);
+            invoice.setUnitPrice(unitPrice);
+            invoice.setTotalAmount(totalAmount);
+            invoice.setAmountDue(totalAmount);
+
+            invoiceRepository.save(invoice);
+        }
+    }
+    // // 產生車位Invoice
+
+    // private void generateParkingFeeInvoices(FeeType feeType, BillingPeriod
+    // billingPeriod, BigDecimal unitPrice) {
+    // List<Parking> parkings = parkingRepository.findAll();
+
+    // for (Parking parking : parkings) {
+    // Users owner = parking.getOwner();
+    // if (owner != null) {
+    // Invoice invoice = new Invoice();
+    // invoice.setUser(owner);
+    // invoice.setFeeType(feeType);
+    // invoice.setBillingPeriod(billingPeriod);
+    // invoice.setUnitCount(BigDecimal.ONE);
+    // invoice.setUnitPrice(unitPrice);
+    // invoice.setAmount(unitPrice);
+
+    // invoiceRepository.save(invoice);
+    // }
+    // }
+    // }
+}

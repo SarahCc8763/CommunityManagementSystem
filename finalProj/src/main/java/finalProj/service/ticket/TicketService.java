@@ -14,7 +14,7 @@ import finalProj.dto.ticket.TicketDTO;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.ticket.TicketAttachmentRepository;
 import finalProj.repository.ticket.TicketRepository;
-import finalProj.repository.ticket.UsersRepository;
+import finalProj.repository.users.UsersRepository;
 
 @Service
 @Transactional
