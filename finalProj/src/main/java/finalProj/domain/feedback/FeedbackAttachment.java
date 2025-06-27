@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "feedback_attachment")
@@ -38,7 +39,19 @@ public class FeedbackAttachment {
     @Column(name = "feedback_attachment_file_size", nullable = false)
     private Integer fileSize;
 
+    @Transient // 不存入資料庫，只作為接收 JSON 時用的欄位
+    private String fileDataBase64;
+
     // Getters and Setters
+
+    public String getFileDataBase64() {
+        return fileDataBase64;
+    }
+
+    public void setFileDataBase64(String fileDataBase64) {
+        this.fileDataBase64 = fileDataBase64;
+    }
+
     public Integer getId() {
         return id;
     }

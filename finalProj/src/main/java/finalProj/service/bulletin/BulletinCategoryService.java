@@ -33,6 +33,11 @@ public class BulletinCategoryService {
     }
 
     public BulletinCategory save(BulletinCategory entity) {
+        if (entity.getName() == null) {
+            log.warn("分類新增失敗：分類名稱不能為空");
+            return null;
+
+        }
         return bulletinCategoryRepository.save(entity);
     }
 
@@ -48,8 +53,14 @@ public class BulletinCategoryService {
     // }
 
     // 刪除分類
-    public String deleteByName(String name) {
-        log.info("準備刪除分類：{}", name);
+    public String deleteByName(BulletinCategory entity) {
+        String name = entity.getName();
+        if (name == null) {
+            log.warn("分類刪除失敗：未提供分類名稱");
+            return "未提供分類名稱，刪除失敗";
+        }
+
+        log.info("準備刪除分類：{}", entity.getName());
 
         if (!bulletinCategoryRepository.existsByName(name)) {
             log.warn("分類刪除失敗：找不到分類 {}", name);

@@ -355,14 +355,13 @@ public class BulletinController {
     public ResponseEntity<Map<String, Object>> deleteBulletinCategory(@RequestBody BulletinCategory body) {
         Map<String, Object> response = new HashMap<>();
 
-        if (body == null || body.getName() == null) {
-            log.warn("刪除分類失敗：未提供必要資料");
+        if (body == null) {
             response.put("result", "未提供刪除分類所需資料");
             return ResponseEntity.badRequest().body(response);
         }
 
-        log.info("收到刪除公告分類請求：{}", body.getName());
-        String result = bulletinCategoryService.deleteByName(body.getName());
+        log.info("收到刪除公告分類請求：{}", body);
+        String result = bulletinCategoryService.deleteByName(body);
         response.put("result", result);
 
         if (result.contains("成功")) {

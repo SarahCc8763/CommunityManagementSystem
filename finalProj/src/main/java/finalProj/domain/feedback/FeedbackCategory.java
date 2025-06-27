@@ -25,7 +25,7 @@ public class FeedbackCategory {
     @Column(name = "feedback_category_id")
     private Integer id;
 
-    @Column(name = "feedback_category_category_name", nullable = false)
+    @Column(name = "feedback_category_name", nullable = false)
     private String name;
 
     @Column(name = "feedback_category_description")
@@ -76,5 +76,13 @@ public class FeedbackCategory {
 
     public void setCommunity(Community community) {
         this.community = community;
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 }

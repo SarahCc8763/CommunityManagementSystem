@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -46,6 +48,7 @@ public class Feedback {
     @ManyToOne
     @JoinColumn(name = "handler_id")
     @JsonBackReference("feedback-handler")
+    // @JsonIgnoreProperties("feedback-handler")
     private Users handler;
 
     @Column(name = "feedback_submit_at", insertable = false)

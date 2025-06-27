@@ -1,29 +1,38 @@
 package finalProj.service.feedback;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.boot.query.FetchDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.community.Community;
 import finalProj.domain.feedback.Feedback;
+import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.users.Users;
 import finalProj.repository.community.CommunityRepository;
+import finalProj.repository.feedback.FeedbackAttachmentRepository;
 import finalProj.repository.feedback.FeedbackCategoryRepository;
 import finalProj.repository.feedback.FeedbackRepository;
 import finalProj.repository.users.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class FeedbackService {
     @Autowired
     private FeedbackRepository feedbackRepository;
     @Autowired
     private FeedbackCategoryRepository feedbackCategoryRepository;
+    @Autowired
+    private FeedbackAttachmentRepository feedbackAttachmentRepository;
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -37,34 +46,59 @@ public class FeedbackService {
         // 確認資料完整性
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
-                || feedback.getHandler() == null || feedback.getHandler().getUsersId() == null
                 || feedback.getCommunity() == null || feedback.getCommunity().getCommunityId() == null) {
             return null;
         }
 
-        // 從傳入的類別id尋找完整類別、反映人、處理者、社區物件
+        // 從傳入的類別id尋找完整類別、反映人、社區物件
         Optional<FeedbackCategory> optionalCategory = feedbackCategoryRepository
                 .findById(feedback.getCategory().getId());
         Optional<Users> optionalUser = usersRepository.findById(feedback.getUser().getUsersId());
-        Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
+
         Optional<Community> optionalCommunity = communityRepository.findById(feedback.getCommunity().getCommunityId());
 
         // 任何一個沒找到就傳null
-        if (!optionalCategory.isPresent() || !optionalUser.isPresent() || !optionalHandler.isPresent()
-                || !optionalCommunity.isPresent()) {
+        if (!optionalCategory.isPresent() || !optionalUser.isPresent() || !optionalCommunity.isPresent()) {
+            log.info("找不到對應的類別、反映使用者、處理者或社區");
             return null;
         }
+
+        if (feedback.getHandler() != null && feedback.getHandler().getUsersId() != null) {
+            Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
+            if (optionalHandler.isEmpty()) {
+                log.info("找不到對應的處理者");
+                return null;
+            }
+            feedback.setHandler(optionalHandler.get());
+        }
+
         // 如果找到就放到要新增的feedback物件的對應屬性裡
         feedback.setCategory(optionalCategory.get());
         feedback.setUser(optionalUser.get());
-        feedback.setHandler(optionalHandler.get());
         feedback.setCommunity(optionalCommunity.get());
 
-        return feedbackRepository.save(feedback);
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+        List<FeedbackAttachment> attachments = feedback.getAttachments();
+        if (attachments != null) {
+            attachments.forEach(a -> {
+                a.setFeedback(savedFeedback);
+                feedbackAttachmentRepository.save(a);
+                log.info("附件儲存成功：{}", a.getFileName());
+            });
+        }
+        log.info("Feedback儲存成功：Id為 {}", savedFeedback.getId());
+        return savedFeedback;
 
     }
 
     public Feedback modify(Feedback feedback) {
+        Optional<Feedback> optionalFeedback = feedbackRepository.findById(feedback.getId());
+        if (optionalFeedback.isEmpty()) {
+            log.info("找不到對應的Feedback");
+            return null;
+        }
+
         // 確認資料完整性
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
@@ -85,23 +119,50 @@ public class FeedbackService {
                 || !optionalCommunity.isPresent()) {
             return null;
         }
+        Users user = (optionalUser.get());
+        Community community = optionalCommunity.get();
 
-        // 如果找到就放到要新增的feedback物件的對應屬性裡
-        feedback.setCategory(optionalCategory.get());
-        feedback.setUser(optionalUser.get());
-        feedback.setHandler(optionalHandler.get());
-        feedback.setCommunity(optionalCommunity.get());
-        feedback.setLastUpdated(LocalDateTime.now());
+        Feedback existing = optionalFeedback.get();
+        if (!user.equals(existing.getHandler()) || !community.equals(existing.getCommunity())) {
+            log.info("傳入的反映者或社區與原資料不符，修改失敗");
+            return null;
+        }
+
+        // 如果都找到就放到要新增的feedback物件的對應屬性裡
+        existing.setCategory(optionalCategory.get());
+        existing.setUser(user);
+        existing.setHandler(optionalHandler.get());
+        existing.setCommunity(community);
+        existing.setLastUpdated(LocalDateTime.now());
         if (feedback.getUserRating() == null) {
             feedbackRepository.findById(feedback.getId())
-                    .ifPresent(original -> feedback.setUserRating(original.getUserRating()));
+                    .ifPresent(original -> existing.setUserRating(original.getUserRating()));
         }
         if (feedback.getStatus() == null) {
             feedbackRepository.findById(feedback.getId())
-                    .ifPresent(original -> feedback.setStatus(original.getStatus()));
+                    .ifPresent(original -> existing.setStatus(original.getStatus()));
         }
 
-        return feedbackRepository.save(feedback);
+        // 移除舊附件
+        if (existing.getAttachments() != null && !existing.getAttachments().isEmpty()) {
+            feedbackAttachmentRepository.deleteAll(existing.getAttachments());
+            existing.getAttachments().clear();
+            log.debug("已刪除舊有附件");
+        }
+
+        // 加入新附件（若有）
+        if (feedback.getAttachments() != null && !feedback.getAttachments().isEmpty()) {
+            List<FeedbackAttachment> newAttachments = new ArrayList<>();
+            for (FeedbackAttachment newAttachment : feedback.getAttachments()) {
+                newAttachment.setFeedback(existing);
+                newAttachments.add(newAttachment);
+                log.debug("加入新附件：{}", newAttachment.getFileName());
+            }
+            existing.setAttachments(newAttachments);
+        }
+
+        return feedbackRepository.save(existing);
+
     }
 
     public boolean deleteFeedback(Integer id) {
