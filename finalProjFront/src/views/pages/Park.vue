@@ -32,7 +32,3 @@ import axios from '@/plugins/axios.js';
 
 
 </script>
-
-<style>
-    
-    </style>

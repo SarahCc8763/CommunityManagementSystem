@@ -55,18 +55,35 @@ VALUES
 -- parking_rentals 承租紀錄
 CREATE TABLE parking_rentals (
     id INT IDENTITY(1,1) PRIMARY KEY,
+	community_id INT,
     users_id INT NOT NULL,
     parking_slot_id INT NOT NULL,
     rent_buy_start DATETIME NOT NULL,
     rent_end DATETIME NOT NULL,
     license_plate VARCHAR(10) NOT NULL,
     [status] BIT NOT NULL DEFAULT 0,
+	approved BIT NOT NULL DEFAULT 0,
+	approved_id INT,
+	updated_at DATETIME,
+	created_at DATETIME,
 --  FOREIGN KEY (users_id) REFERENCES users(id),
 --  FOREIGN KEY (parking_slot_id) REFERENCES parking_slot(slot_number)
 );
-INSERT INTO parking_rentals (users_id, parking_slot_id, rent_buy_start, rent_end, license_plate, [status])
-VALUES 
-(2, 1, '2023-04-24 12:00:00', '2025-04-24 12:00:00', 'KFC-43', 1);
+INSERT INTO parking_rentals (
+    community_id, users_id, parking_slot_id, rent_buy_start, rent_end,
+    license_plate, status, approved, approved_id, updated_at, created_at
+) VALUES
+(1, 201, 301, '2025-07-01 08:00:00', '2025-08-01 08:00:00', 'ABC-1234', 0, 0, NULL, GETDATE(), GETDATE()),
+(1, 202, 302, '2025-07-02 09:00:00', '2025-08-02 09:00:00', 'DEF-5678', 1, 0, NULL, GETDATE(), GETDATE()),
+(2, 203, 303, '2025-07-03 10:00:00', '2025-08-03 10:00:00', 'GHI-9012', 1, 0, NULL, GETDATE(), GETDATE()),
+(2, 204, 304, '2025-07-04 11:00:00', '2025-08-04 11:00:00', 'JKL-3456', 0, 0, NULL, GETDATE(), GETDATE()),
+(3, 205, 305, '2025-07-05 12:00:00', '2025-08-05 12:00:00', 'MNO-7890', 1, 0, NULL, GETDATE(), GETDATE()),
+(1, 206, 306, '2025-06-01 08:00:00', '2025-07-01 08:00:00', 'PQR-1111', 1, 1, 101, GETDATE(), GETDATE()),
+(2, 207, 307, '2025-06-02 09:00:00', '2025-07-02 09:00:00', 'STU-2222', 1, 1, 102, GETDATE(), GETDATE()),
+(2, 208, 308, '2025-06-03 10:00:00', '2025-07-03 10:00:00', 'VWX-3333', 0, 1, 102, GETDATE(), GETDATE()),
+(3, 209, 309, '2025-06-04 11:00:00', '2025-07-04 11:00:00', 'YZA-4444', 1, 1, 103, GETDATE(), GETDATE()),
+(3, 210, 310, '2025-06-05 12:00:00', '2025-07-05 12:00:00', 'BCD-5555', 0, 1, 101, GETDATE(), GETDATE());
+
 
 -- temporary_parking_applications 臨停申請紀錄
 CREATE TABLE temporary_parking_applications (

@@ -27,6 +27,9 @@
                                 <RouterLink class="dropdown-item" to="/pages/park/initialize">停車場建置 (管理員)</RouterLink>
                             </li>
                             <li>
+                                <RouterLink class="dropdown-item" to="/pages/park/slot">社區車位 (管理員)</RouterLink>
+                            </li>
+                            <li>
                                 <RouterLink class="dropdown-item" to="/pages/park/rental-front">承租車位 (一般住戶)</RouterLink>
                             </li>
                             <li>

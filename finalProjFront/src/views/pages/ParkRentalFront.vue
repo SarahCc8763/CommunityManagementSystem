@@ -1,38 +1,235 @@
 <template>
-    <h1>停車場功能</h1>
+    <h2>查詢可承租車位</h2>
     <div>
-        <h2>承租社區車位</h2>
-        <div>
-            
+        <label>起始時間：<input type="datetime-local" v-model="start" /></label><br />
+        <label>結束時間：<input type="datetime-local" v-model="end" /></label><br />
+        <label>車位種類：
+            <select v-model="selectedType">
+                <option v-for="type in parkingTypes" :key="type.id" :value="type.id">
+                    {{ type.label }}
+                </option>
+            </select>
+        </label>
+        <button @click="fetchAvailableSlots">查詢</button>
+        <h3>查詢結果：</h3>
+        <table v-if="availableSlots.length" border="1">
+            <thead>
+                <tr>
+                    <th>流水號</th>
+                    <th>車位編號</th>
+                    <th>位置</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="slot in availableSlots" :key="slot.id">
+                    <td>{{ slot.id }}</td>
+                    <td>{{ slot.slotNumber }}</td>
+                    <td>{{ slot.location }}</td>
+                    <td><!-- 加上 data-bs-toggle / data-bs-target -->
+                        <!-- data-bs-toggle / data-bs-target 交給 Bootstrap 處理開窗 -->
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rentalModal"
+                            @click="prepareRental(slot)">
+                            我要承租
+                        </button>
+
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p v-else>尚無可承租車位。</p>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="rentalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">承租車位</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- v-if：只有在資料備妥才顯示 -->
+                <div class="modal-body" v-if="rentalSlot">
+                    <p><strong>承租者：</strong>{{ userName }}</p>
+                    <p><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</p>
+                    <p><strong>車位區域：</strong>{{ rentalSlot.location }}</p>
+
+                    <label class="form-label mt-2">承租起始日：</label>
+                    <input type="datetime-local" class="form-control" v-model="rentStart" :min="minStartDate" />
+
+                    <label class="form-label mt-2">承租截止日：</label>
+                    <input type="datetime-local" class="form-control" v-model="rentEnd" :min="minEndDate" />
+
+                    <label class="form-label mt-2">登記車牌：</label>
+                    <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" />
+
+                    <div class="text-end mt-3">
+                        <button class="btn btn-success" @click="submitRental">送出承租</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-<!-- 
-    承租社區車位 -> 以時間區段、車種查詢可承租車位 -> 點選後進入新增承租頁面 (一般用戶) -> 管理員審核
-    -> 搜尋自己的承租資訊 (一般用戶) -> 修改承租資訊 (一般用戶) -> 管理員審核
-    -> 模糊搜尋所有承租資訊 (管理員) -> 修改承租資訊 (管理員) -> 2次確認
-    臨時停車申請 -> 以時間區段、車種申請臨時停車 (一般住戶) -> 即時顯示是否overlapping -> 管理員審核
-    -> 搜尋自己的臨時停車 (一般用戶) -> 修改臨時停車 (一般用戶) -> 管理員審核
-    -> 模糊搜尋所有臨時停車 (管理員) -> 修改臨時停車 (管理員) -> 2次確認
-    抽籤活動     -> 新增抽籤活動及抽籤車位 (管理員)
-    -> 模糊查詢所有抽籤活動 -> 修改抽籤活動 (管理員) -> 2次確認
-    -> 模糊查詢所有抽籤活動 -> 申請參與 (一般用戶) / 取消參與
-    -> 搜尋自己參與的抽籤 (一般用戶) -> 修改臨時停車 (一般用戶) -> 管理員審核
-    
-    <button @click="testRead">查詢</button>
-    <button @click="testCreate">新增</button>
-    <button @click="testUpdate">修改</button>
-    <button @click="testDelete">刪除</button>
-    -->
+
+
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import axios from '@/plugins/axios.js'
 
-import axios from '@/plugins/axios.js';
+const start = ref('')
+const end = ref('')
+const selectedType = ref(1)
 
+const parkingTypes = [
+    { id: 1, label: '汽車' },
+    { id: 2, label: '機車' },
+    { id: 3, label: '電動車' },
+    { id: 4, label: '殘障車位' }
+]
+
+function formatDateTime(datetimeStr) {
+    return datetimeStr.replace('T', ' ') + ':00'
+}
+
+const availableSlots = ref([])
+
+async function fetchAvailableSlots() {
+    if (!start.value || !end.value || !selectedType.value) return
+    const res = await axios.get('/park/parking-rentals/available-slots', {
+        params: {
+            parkingTypeId: selectedType.value,
+            start: formatDateTime(start.value),
+            end: formatDateTime(end.value)
+        }
+    })
+    availableSlots.value = res.data
+    console.log(availableSlots.value);
+}
+
+const selectedSlot = ref(null)
+const selectedRange = ref('1') // 初始為近一年
+const rentalHistory = ref([])
+const modalInstance = ref(null)
+
+async function fetchHistory() {
+    if (!selectedSlot.value) return
+    try {
+        const res = await axios.get(`/park/parking-rentals/${selectedSlot.value.id}/history`, {
+            params: {
+                range: selectedRange.value // 可為 1, 3, 5, all
+            }
+        })
+        rentalHistory.value = res.data
+    } catch (error) {
+        console.error('載入歷史紀錄失敗', error)
+        rentalHistory.value = []
+    }
+}
+
+function viewDetails(slot) {
+    selectedSlot.value = slot
+    selectedRange.value = '1'
+    fetchHistory()
+
+    if (modalInstance.value) {
+        modalInstance.value.show()
+    }
+}
+
+const rentalSlot = ref(null)
+const userName = ref('')
+const rentStart = ref('')
+const rentEnd = ref('')
+const licensePlate = ref('')
+
+const minStartDate = new Date().toISOString().slice(0, 16)
+const minEndDate = computed(() => {
+    if (!rentStart.value) return ''
+    const d = new Date(rentStart.value)
+    d.setMonth(d.getMonth() + 1)      // 至少 +1 月
+    return d.toISOString().slice(0, 16)
+})
+
+/* -------- 點「我要承租」時呼叫 -------- */
+function prepareRental(slot) {
+    rentalSlot.value = slot
+    // 取得登入者姓名（假設 localStorage 暫存 userId）
+    //   fetchUserName()
+
+    rentStart.value = minStartDate
+    rentEnd.value = minEndDate.value
+    licensePlate.value = ''
+}
+
+/* -------- 後端撈取使用者名稱 -------- */
+// async function fetchUserName () {
+//   try {
+//     const uid = JSON.parse(localStorage.getItem('user'))?.id
+//     const { data } = await axios.get(`/users/${uid}`)
+//     userName.value = data.name
+//   } catch (e) {
+//     console.error('取得使用者名稱失敗', e)
+//     userName.value = '(未知)'
+//   }
+// }
+
+/* -------- 檢查車牌 & 送出 -------- */
+function plateOK(plate) {
+    return /^[A-Za-z0-9-]+$/.test(plate)   // 僅英數與 dash
+}
+
+async function submitRental() {
+    if (!plateOK(licensePlate.value)) {
+        alert('車牌不可含中文，僅能輸入英數字與 -')
+        return
+    }
+
+    try {
+        const payload = {
+            // usersId: JSON.parse(localStorage.getItem('user')).id,
+            usersId: 2,
+            parkingSlotId: rentalSlot.value.id,
+            rentBuyStart: rentStart.value.replace('T', ' ') + ':00',
+            rentEnd: rentEnd.value.replace('T', ' ') + ':00',
+            licensePlate: licensePlate.value,
+            status: false
+        }
+
+        const res = await axios.post('/park/parking-rentals', payload)
+
+        // 判斷回傳資料是否為空或無效
+        if (!res.data || Object.keys(res.data).length === 0) {
+            alert('承租失敗，請稍後再試')
+            console.warn('後端回傳為空：', res)
+            return
+        }
+
+        alert('承租成功！')
+        console.log('後端回傳：', res.data)
+    } catch (e) {
+        console.error(e)
+        alert('承租失敗，請稍後再試')
+    }
+}
+
+
+onMounted(() => {
+    const now = new Date()
+    const isoStr = now.toISOString().slice(0, 16)
+    start.value = isoStr
+    const later = new Date(now.getTime() + 60 * 60 * 1000)
+    end.value = later.toISOString().slice(0, 16)
+    fetchAvailableSlots()
+})
+
+watch([start, end, selectedType], ([newStart, newEnd, newType]) => {
+    if (newStart && newEnd && newType) {
+        fetchAvailableSlots()
+    }
+})
 
 </script>
-
-<style>
-    
-    </style>

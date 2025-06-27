@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.parking.ParkingSlot;
 import finalProj.dto.parking.ParkingSlotQueryDTO;
+import finalProj.repository.parking.ParkingSlotRepository;
 import finalProj.service.parking.ParkingSlotService;
 
 //車位資料 Controller
@@ -23,11 +25,14 @@ public class ParkingSlotController {
 
 	@Autowired
 	private ParkingSlotService service;
+	
+	@Autowired
+	ParkingSlotRepository repository;
 
-	// 查詢所有車位資料
+	// 查詢某社區所有車位資料
 	@GetMapping
-	public List<ParkingSlot> getAll() {
-		return service.findAll();
+	public List<ParkingSlot> getAll(@RequestParam Integer communityId) {
+		return repository.findByCommunityId(communityId);
 	}
 	
 	// 新增車位資料 (多筆)

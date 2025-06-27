@@ -6,6 +6,7 @@ import Login from "@/views/secure/Login.vue";
 import Product from "@/views/pages/Product.vue"
 import Park from "@/views/pages/Park.vue"
 import ParkInitialize from "@/views/pages/ParkInitialize.vue"
+import ParkSlot from "@/views/pages/ParkSlot.vue";
 import ParkRentalFront from "@/views/pages/ParkRentalFront.vue"
 import ParkRentalBack from "@/views/pages/ParkRentalBack.vue"
 
@@ -44,6 +45,11 @@ const routes = [
         path: "/pages/park/initialize",
         name: "parkInitialize",
         component: ParkInitialize,
+    },
+    {
+        path: "/pages/park/slot",
+        name: "parkSlot",
+        component: ParkSlot,
     },
     {
         path: "/pages/park/rental-front",
