@@ -36,10 +36,9 @@ public class FeedbackCategory {
     @JsonBackReference("community-feedback-category")
     private Community community;
 
-    @OneToMany
-    @JoinColumn(name = "feedback_category")
+    @OneToMany(mappedBy = "category")
     @JsonManagedReference("feedback-category")
-    public List<Feedback> feedbacks;
+    private List<Feedback> feedbacks;
 
     @Override
     public String toString() {

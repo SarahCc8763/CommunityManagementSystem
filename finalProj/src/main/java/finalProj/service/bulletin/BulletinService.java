@@ -41,6 +41,10 @@ public class BulletinService {
         return bulletinRepository.findAll();
     }
 
+    public Long count() {
+        return bulletinRepository.count();
+    }
+
     //
     // ------ 透過id查詢 -------
     //

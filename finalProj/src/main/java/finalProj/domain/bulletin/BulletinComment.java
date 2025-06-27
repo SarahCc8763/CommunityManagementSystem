@@ -52,14 +52,40 @@ public class BulletinComment {
     @JsonManagedReference("bulletinComment-like")
     private List<BulletinCommentLike> bulletinCommentLikes;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    @JsonBackReference("bulletinComment-parent")
+    private BulletinComment parentComment;
+
+    @OneToMany(mappedBy = "parentComment")
+    @JsonManagedReference("bulletinComment-parent")
+    private List<BulletinComment> replies;
+
     @Transient
     private Long likeCount;
 
     //
     //
     // getters and setters
+
     public Integer getId() {
         return id;
+    }
+
+    public BulletinComment getParentComment() {
+        return parentComment;
+    }
+
+    public void setParentComment(BulletinComment parentComment) {
+        this.parentComment = parentComment;
+    }
+
+    public List<BulletinComment> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<BulletinComment> replies) {
+        this.replies = replies;
     }
 
     public void setId(Integer id) {

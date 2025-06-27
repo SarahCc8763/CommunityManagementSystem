@@ -28,8 +28,8 @@ import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
 import finalProj.dto.BulletinResponse;
-import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.repository.users.UsersRepository;
+import finalProj.service.bulletin.BulletinAttachmentService;
 import finalProj.service.bulletin.BulletinCategoryService;
 import finalProj.service.bulletin.BulletinCommentService;
 import finalProj.service.bulletin.BulletinService;
@@ -41,7 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BulletinController {
     @Autowired
-    UsersRepository usersRepository;
+
+    //
+    // 之後應該改成用service
+    private UsersRepository usersRepository;
+    //
 
     @Autowired
     private BulletinService bulletinService;
@@ -50,13 +54,13 @@ public class BulletinController {
     private BulletinCommentService bulletinCommentService;
 
     @Autowired
-    BulletinCategoryService bulletinCategoryService;
+    private BulletinCategoryService bulletinCategoryService;
 
     @Autowired
-    CommunityService communityService;
+    private CommunityService communityService;
 
     @Autowired
-    private BulletinAttachmentRepository bulletinAttachmentRepository;
+    private BulletinAttachmentService bulletinAttachmentService;
 
     //
     //
@@ -107,7 +111,7 @@ public class BulletinController {
 
     @GetMapping("/attachments/{id}")
     public ResponseEntity<byte[]> downloadAttachment(@PathVariable Integer id) {
-        Optional<BulletinAttachment> optional = bulletinAttachmentRepository.findById(id);
+        Optional<BulletinAttachment> optional = bulletinAttachmentService.findById(id);
         if (!optional.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -246,8 +250,8 @@ public class BulletinController {
             response.setMessage("查無資料");
             response.setSuccess(false);
         } else {
-            List<Bulletin> list = bulletinService.findAll();
-            response.setCount(Long.valueOf(list.size()));
+
+            response.setCount(bulletinService.count());
             response.setSuccess(true);
             response.setMessage("查詢成功");
             response.setList(bulletinService.findAll());
@@ -322,7 +326,7 @@ public class BulletinController {
             body.setId(id);
             return bulletinCommentService.modify(body);
         }
-        return null;
+        throw new RuntimeException("修改失敗");
     }
 
     //

@@ -34,7 +34,7 @@ public class Feedback {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "feedback_category")
+    @JoinColumn(name = "feedback_category_id")
     @JsonBackReference("feedback-category")
     private FeedbackCategory category;
 
@@ -51,7 +51,7 @@ public class Feedback {
     @Column(name = "feedback_submit_at", insertable = false)
     private LocalDateTime submittedAt;
 
-    @Column(name = "feedback_status")
+    @Column(name = "feedback_status", insertable = false)
     private String status;
 
     @Column(name = "feedback_last_updated_at", insertable = false)

@@ -11,12 +11,13 @@ import finalProj.domain.bulletin.Bulletin;
 
 @Repository
 public interface BulletinRepository extends JpaRepository<Bulletin, Integer> {
-    public boolean existsById(Integer id);
+        @SuppressWarnings("null")
+        public boolean existsById(Integer id);
 
-    @Query("SELECT DISTINCT b FROM Bulletin b " +
-            "LEFT JOIN b.category bc " +
-            "WHERE (:category IS NULL OR bc.name = :category) " +
-            "AND (:title IS NULL OR b.title like %:title%) ")
-    public List<Bulletin> findByCategoryAndTitle(@Param("category") String category,
-            @Param("title") String title);
+        @Query("SELECT DISTINCT b FROM Bulletin b " +
+                        "LEFT JOIN b.category bc " +
+                        "WHERE (:category IS NULL OR bc.name = :category) " +
+                        "AND (:title IS NULL OR b.title like %:title%) ")
+        public List<Bulletin> findByCategoryAndTitle(@Param("category") String category,
+                        @Param("title") String title);
 }
