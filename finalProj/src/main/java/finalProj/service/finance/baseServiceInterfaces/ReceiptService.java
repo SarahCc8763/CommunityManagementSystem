@@ -1,7 +1,8 @@
 package finalProj.service.finance.baseServiceInterfaces;
 
 import finalProj.domain.finance.Receipt;
+import finalProj.dto.finance.ReceiptDTO;
 
-public interface ReceiptService extends BaseService<Receipt, Long> {
-    Receipt confirmPayment(Long invoiceId, Receipt receiptData);
+public interface ReceiptService extends BaseService<Receipt, Integer> {
+    Receipt createReceipt(ReceiptDTO dto);
 }

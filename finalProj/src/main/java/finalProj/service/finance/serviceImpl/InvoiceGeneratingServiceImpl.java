@@ -18,9 +18,10 @@ import finalProj.repository.finance.FeeTypeRepository;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.users.UnitsRepository;
 import finalProj.repository.users.UnitsUsersRepository;
-
 import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
+import jakarta.transaction.Transactional;
 
+@Transactional
 @Service
 public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
 
@@ -74,10 +75,12 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
             if (unitUsers == null || unitUsers.isEmpty())
                 continue;
-
-            Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
             BigDecimal unitCount = unit.getPing();
+            Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
             BigDecimal unitPrice = feeType.getAmountPerUnit();
+            if (unitPrice == null || unitCount == null) {
+                throw new IllegalArgumentException("單價或坪數為 null，無法計算金額");
+            }
             BigDecimal totalAmount = unitCount.multiply(unitPrice);
 
             Invoice invoice = new Invoice();

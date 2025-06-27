@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Units")
+@Table(name = "units")
 public class Units {
 
     @Id
@@ -97,15 +97,14 @@ public class Units {
         this.community = community;
     }
 
- // Optional: toString()
+    // Optional: toString()
     @Override
-	public String toString() {
-		return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
-				+ ", ping=" + ping + ", point=" + point + ", community=" + community + ", getUnitsId()=" + getUnitsId()
-				+ ", getUnit()=" + getUnit() + ", getFloor()=" + getFloor() + ", getBuilding()=" + getBuilding()
-				+ ", getPing()=" + getPing() + ", getPoint()=" + getPoint() + ", getCommunity()=" + getCommunity()
-				+ "]";
-	}
+    public String toString() {
+        return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
+                + ", ping=" + ping + ", point=" + point + ", community=" + community + ", getUnitsId()=" + getUnitsId()
+                + ", getUnit()=" + getUnit() + ", getFloor()=" + getFloor() + ", getBuilding()=" + getBuilding()
+                + ", getPing()=" + getPing() + ", getPoint()=" + getPoint() + ", getCommunity()=" + getCommunity()
+                + "]";
+    }
 
 }
-
