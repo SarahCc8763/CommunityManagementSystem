@@ -11,12 +11,14 @@ import finalProj.domain.finance.BillingPeriod;
 import finalProj.domain.finance.FeeType;
 import finalProj.domain.finance.Invoice;
 import finalProj.domain.users.Units;
+import finalProj.domain.users.UnitsUsers;
 import finalProj.domain.users.Users;
 import finalProj.repository.finance.BillingPeriodRepository;
 import finalProj.repository.finance.FeeTypeRepository;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.users.UnitsRepository;
-import finalProj.repository.users.UsersRepository;
+import finalProj.repository.users.UnitsUsersRepository;
+
 import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
 
 @Service
@@ -26,7 +28,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     private UnitsRepository unitsRepository;
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UnitsUsersRepository unitsUsersRepository;
 
     // @Autowired
     // private ParkingRepository parkingRepository;
@@ -69,11 +71,11 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
         List<Units> units = unitsRepository.findAll();
 
         for (Units unit : units) {
-            List<Users> users = usersRepository.findByUnitOrderByMoveInDateAsc(unit);
-            if (users == null || users.isEmpty()) {
-                continue; // ✅ 若無住戶則略過該單位，不產生 invoice
-            }
-            Users user = users.get(0);
+            List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
+            if (unitUsers == null || unitUsers.isEmpty())
+                continue;
+
+            Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
             BigDecimal unitCount = unit.getPing();
             BigDecimal unitPrice = feeType.getAmountPerUnit();
             BigDecimal totalAmount = unitCount.multiply(unitPrice);
@@ -98,11 +100,11 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
         List<Units> units = unitsRepository.findAll();
 
         for (Units unit : units) {
-            List<Users> users = usersRepository.findByUnitOrderByMoveInDateAsc(unit);
-            if (users == null || users.isEmpty()) {
-                continue; // ✅ 若無住戶則略過該單位
-            }
-            Users user = users.get(0);
+            List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
+            if (unitUsers == null || unitUsers.isEmpty())
+                continue;
+
+            Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
             BigDecimal unitCount = BigDecimal.ONE;
             BigDecimal unitPrice = feeType.getAmountPerUnit();
             BigDecimal totalAmount = unitPrice;

@@ -24,9 +24,6 @@ public class InvoiceResponse {
     @Column(name = "last_response", columnDefinition = "varchar(max)")
     private String lastResponse;
 
-    @Column(name = "users_id")
-    private Integer usersId;
-
     // 表格關係
     @ManyToOne
     @JoinColumn(name = "users_id", insertable = false, updatable = false)
@@ -41,15 +38,7 @@ public class InvoiceResponse {
         return invoiceResponseId;
     }
 
-    public Integer getUsersId() {
-        return usersId;
-    }
-
-    public void setUsersId(Integer usersId) {
-        this.usersId = usersId;
-    }
-
-    public void setInvoiceResponseIdd(Integer invoiceResponseId) {
+    public void setInvoiceResponseId(Integer invoiceResponseId) {
         this.invoiceResponseId = invoiceResponseId;
     }
 
@@ -75,6 +64,22 @@ public class InvoiceResponse {
 
     public void setLastResponse(String lastResponse) {
         this.lastResponse = lastResponse;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
 }
