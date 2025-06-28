@@ -118,13 +118,6 @@ const menuList = ref([
     ]
   },
   {
-    title: '公告',
-    children: [
-      { label: '重要通知', routeName: 'announcement-important' },
-      { label: '最新公告', routeName: 'announcement-latest' }
-    ]
-  },
-  {
     title: '預約系統',
     children: [
       { label: '健身房預約', routeName: 'reservation-gym' },
@@ -169,7 +162,14 @@ const menuList = ref([
       { label: '停車預約', routeName: 'reservation-parking' },  // 共用同個路徑去韋韋那頁
       { label: '承租車位管理', routeName: 'parking-rent' }
     ]
-  }
+  },
+  {
+    title: '公告',
+    children: [
+      { label: '重要通知', routeName: 'announcement-important' },
+      { label: '最新公告', routeName: 'announcement-latest' }
+    ]
+  },
 ]
 
 )
