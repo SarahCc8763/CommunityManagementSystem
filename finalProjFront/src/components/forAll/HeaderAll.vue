@@ -40,9 +40,14 @@
         <span class="welcome">你好，{{ user.name }}</span>
         <span class="points">{{ user.points }} pt</span>
       </div>
-      <div v-else class="avatar placeholder"></div>
+      <div v-else class="avatar placeholder">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + user.avatar + ')' }"></div>
-      <button @click.stop="isLoggedIn ? logout() : login()" class="auth-button">
+      <button @click.stop="isLoggedIn ? logout() : triggerLogin()" class="auth-button">
         {{ isLoggedIn ? '登出' : '登入' }}
       </button>
     </div>
@@ -52,11 +57,13 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { useUserStore } from '@/stores/UserStore'
 
 const router = useRouter()
+const userStore = useUserStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
 
@@ -69,18 +76,37 @@ const user = ref({
   avatar: 'https://randomuser.me/api/portraits/women/72.jpg',
   points: 120
 })
+
 // 回首頁
 const goHome = () => {
   router.push('/')
+}
+
+// 觸發全局登入事件
+const triggerLogin = () => {
+  // 觸發自定義事件，讓 App.vue 顯示登入模態框
+  window.dispatchEvent(new CustomEvent('show-login-modal'))
+}
+
+// 處理登入成功
+const handleLoginSuccess = (loginData) => {
+  isLoggedIn.value = true
+  user.value.name = loginData.username
 }
 
 // 登入登出切換
 const login = () => {
   isLoggedIn.value = true
 }
+
 const logout = () => {
   isLoggedIn.value = false
+  // 觸發全局登出事件
+  window.dispatchEvent(new CustomEvent('logout'))
+  // 同時更新 UserStore
+  userStore.logout()
 }
+
 // 滑鼠移出 header，下拉收起
 const closeDropdown = () => {
   activeIndex.value = null
@@ -90,22 +116,39 @@ const keepDropdown = () => {
   // 不做事，只為阻止滑鼠移開事件讓 dropdown 收起
 }
 
-// // 點擊子功能導頁與 API 日誌（可改）
-// const handleNavigate = async (item) => {
-//   try {
-//     await axios.post('/api/log', {
-//       user: user.value.name,
-//       action: 'navigate',
-//       target: item.routeName
-//     })
-//   } catch (e) {
-//     console.error('Log API 失敗', e)
-//   }
-//   router.push({ name: item.routeName }
-// }
+// 點擊子功能導頁
+const handleNavigate = (item) => {
+  router.push({ name: item.routeName })
+}
 
+// 監聽登入成功事件
+const handleGlobalLoginSuccess = (event) => {
+  handleLoginSuccess(event.detail)
+}
 
+// 監聽登出事件
+const handleGlobalLogout = () => {
+  isLoggedIn.value = false
+}
 
+onMounted(() => {
+  // 監聽全局登入成功事件
+  window.addEventListener('login-success', handleGlobalLoginSuccess)
+  // 監聽全局登出事件
+  window.addEventListener('logout', handleGlobalLogout)
+  
+  // 初始化登入狀態
+  isLoggedIn.value = userStore.isAuthenticated
+  if (userStore.isAuthenticated) {
+    user.value.name = userStore.name
+  }
+})
+
+onUnmounted(() => {
+  // 移除事件監聽器
+  window.removeEventListener('login-success', handleGlobalLoginSuccess)
+  window.removeEventListener('logout', handleGlobalLogout)
+})
 
 //分類功能清單
 const menuList = ref([
@@ -169,169 +212,250 @@ const menuList = ref([
       { label: '重要通知', routeName: 'announcement-important' },
       { label: '最新公告', routeName: 'announcement-latest' }
     ]
-  },
-]
-
-)
+  }
+])
 
 </script>
 
 <style scoped>
 .header {
+  width: 100vw;
+  height: 72px;
+  min-height: 72px;
+  max-height: 72px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 14px 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 0 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   z-index: 2000;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 .logo img {
-  height: 40px;
+  height: 44px;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
 
 .logo img:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(2deg);
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.15));
 }
 
 /* 主選單列 (大分類) */
 .nav {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   align-items: center;
 }
 
 .nav-item {
   font-size: 16px;
-  color: #333;
+  color: #2d3748;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: color 0.3s, background-color 0.3s;
+  padding: 12px 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-weight: 500;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+  border-radius: 2px;
 }
 
 .nav-item:hover,
 .nav-item.active {
-  color: #007acc;
-  background-color: #e6f0fa;
-  font-weight: 600;
+  color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
 }
 
-
+.nav-item:hover::before,
+.nav-item.active::before {
+  width: 80%;
+}
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .welcome-block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.2;
+  line-height: 1.3;
+  animation: slideInRight 0.5s ease-out;
 }
 
 .welcome {
   font-size: 15px;
-  color: #444;
+  color: #2d3748;
+  font-weight: 500;
 }
 
 .points {
   font-size: 13px;
-  color: #888;
+  color: #667eea;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 1px solid #ddd;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .placeholder {
-  background-color: #ccc;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+  border: 2px dashed #cbd5e0;
+}
+
+.placeholder svg {
+  opacity: 0.6;
 }
 
 .auth-button {
-  background-color: #007acc;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 12px 24px;
+  border-radius: 25px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.auth-button:hover::before {
+  left: 100%;
 }
 
 .auth-button:hover {
-  background-color: #005f99;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
 }
 
 /* Mega Menu 下拉容器 */
 .mega-menu {
   position: absolute;
-  top: 58px;
+  top: 70px;
   left: 0;
   right: 0;
-  background: white;
-  box-shadow: 0 8px 30px rgb(0 0 0 / 0.1);
-  border-radius: 8px;
-  padding: 24px 48px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 32px 48px;
   z-index: 9999;
   user-select: text;
-
-
   display: flex;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: megaMenuSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes dropdownFade {
+@keyframes megaMenuSlide {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px) scale(0.95);
   }
-
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-.dropdown-menu.mega {
-  top: 40px;
-  left: 0;
-  right: 0;
-  background: #fff;
-  padding: 24px 48px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  z-index: 10;
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Mega Menu 容器內的 flex 排版 */
 .mega-grid {
   display: flex;
-  gap: 45px;
+  gap: 48px;
   justify-content: center;
 }
 
 .dropdown-item {
   display: block;
-  padding: 8px 16px;
-  color: #333;
+  padding: 12px 20px;
+  color: #2d3748;
   text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
 }
 
 .dropdown-item:hover {
-  background: #f0f0f0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: #667eea;
+  transform: translateX(4px);
 }
 
 /* 當前滑鼠選中的分類：醒目 */
@@ -350,44 +474,115 @@ const menuList = ref([
 /* 每個分類區塊 */
 .mega-category {
   flex: 1 1 250px;
-  /* 每個分類最小寬度250px，平均撐開 */
   opacity: 0.5;
-  transition: opacity 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
   user-select: none;
-
   display: flex;
   flex-direction: column;
-  /* 大標題+子選項縱向排列 */
 }
 
 .mega-category:hover {
   opacity: 1 !important;
-  /* 滑鼠滑到分類，自動變深 */
+  transform: translateY(-4px);
 }
 
 /* 大分類標題 */
 .category-title {
-
-  margin-bottom: 15px;
-  color: #308421;
-  font-size: 13px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 4px;
+  margin-bottom: 20px;
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 700;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  padding-bottom: 8px;
   user-select: text;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* 子功能項目 */
 .category-items .dropdown-item {
-  padding: 8px 0;
-  font-size: 13px;
-  color: #333;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #4a5568;
   cursor: pointer;
   user-select: text;
-  transition: color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  margin: 2px 0;
 }
 
 .category-items .dropdown-item:hover {
-  color: #59cc6e;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.08);
+  padding-left: 8px;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+  .nav {
+    gap: 20px;
+  }
+  
+  .nav-item {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .mega-grid {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 20px;
+  }
+  
+  .nav {
+    display: none;
+  }
+  
+  .user-info {
+    gap: 12px;
+  }
+  
+  .auth-button {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    padding: 6px 4px;
+    gap: 4px;
+  }
+  .logo img {
+    height: 32px;
+  }
+  .user-info {
+    gap: 6px;
+  }
+  .auth-button {
+    padding: 7px 12px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .welcome {
+    font-size: 12px;
+  }
+  .points {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
 }
 </style>

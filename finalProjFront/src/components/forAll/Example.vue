@@ -1,7 +1,12 @@
 <template>
-    <BannerImage :imageSrc="myImage" heading="XX管理區" subtext="為您提供ＯＯ服務, 以及ＸＸ服務" textAlign="left" />
+     <div class="d-flex">
+        <main>
+            <BannerImage :imageSrc="myImage" heading="XX管理區" subtext="為您提供ＯＯ服務, 以及ＸＸ服務" textAlign="left" />
 
-    <FeatureCards :features="cards" />
+            <FeatureCards :features="cards" />
+        </main>
+        
+     </div>
 </template>
 
 <script setup>
@@ -11,19 +16,19 @@ import FeatureCards from '@/components/forAll/FeatureCards.vue'
 
 const cards = [
     {
-        icon: '問ＧＰＴ適合的bootstrap icon',
+        icon: 'bi bi-emoji-smile',//問ＧＰＴ適合的bootstrap icon
         title: '第一個功能',
         description: '功能細節解說',
         link: '/你的路徑'
     },
     {
-        icon: 'bi-？？',
-        title: '第一個功能',
+        icon: 'bi bi-emoji-neutral',
+        title: '第二個功能',
         description: '功能細節解說',
         link: '/你的路徑'
     },
     {
-        icon: 'bi-？？',
+        icon: 'bi bi-emoji-frown',
         title: '第三個功能',
         description: '功能細節解說',
         link: '/你的路徑'
