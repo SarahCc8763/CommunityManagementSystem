@@ -46,6 +46,7 @@ public class FeedbackCategoryService {
     public String deleteById(Integer id) {
         Optional<FeedbackCategory> categoryOpt = feedbackCategoryRepository.findById(id);
         if (categoryOpt.isEmpty()) {
+            log.error("分類刪除失敗：該分類不存在");
             return "該分類不存在";
         }
         FeedbackCategory entity = categoryOpt.get();

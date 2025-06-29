@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.boot.query.FetchDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.community.Community;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackAttachment;
@@ -166,8 +164,12 @@ public class FeedbackService {
     }
 
     public boolean deleteFeedback(Integer id) {
-
-        return false;
+        if (feedbackRepository.existsById(id)) {
+            feedbackRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Feedback findById(Integer id) {
@@ -175,7 +177,7 @@ public class FeedbackService {
         return optional.orElse(null);
     }
 
-    public boolean existById(Integer id) {
+    public boolean existsById(Integer id) {
         return feedbackRepository.existsById(id);
     }
 

@@ -5,8 +5,13 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +25,34 @@ import org.springframework.web.bind.annotation.RestController;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
+import finalProj.domain.feedback.FeedbackReply;
+import finalProj.domain.users.Users;
 import finalProj.dto.FeedbackResponse;
+import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
+import finalProj.service.feedback.FeedbackReplyService;
 import finalProj.service.feedback.FeedbackService;
+import finalProj.service.users.UsersService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/feedback")
+@Slf4j
 public class feedbackController {
+    @Autowired
+    private UsersService usersService;
+
     @Autowired
     private FeedbackService feedbackService;
 
     @Autowired
     private FeedbackCategoryService feedbackCategoryService;
+
+    @Autowired
+    private FeedbackAttachmentService feedbackAttachmentService;
+
+    @Autowired
+    private FeedbackReplyService feedbackReplyService;
 
     //
     //
@@ -40,7 +61,7 @@ public class feedbackController {
     //
 
     //
-    // -- 新增 --
+    // -- 新增意見主表 --
     //
 
     @PostMapping
@@ -80,7 +101,7 @@ public class feedbackController {
     }
 
     //
-    // -- 修改 --
+    // -- 修改意見主表 --
     //
 
     @PutMapping("/{id}")
@@ -92,7 +113,7 @@ public class feedbackController {
             return response;
         }
         feedback.setId(id);
-        if (!feedbackService.existById(id)) {
+        if (!feedbackService.existsById(id)) {
             response.setSuccess(false);
             response.setMessage("欲修改資料不存在");
             return response;
@@ -129,10 +150,10 @@ public class feedbackController {
     }
 
     //
-    // --查詢 --
+    // --查詢意見主表 --
     //
 
-    // 查詢所有
+    // 查詢所有意見
     @GetMapping
     public FeedbackResponse getAllFeedbacks() {
         FeedbackResponse response = new FeedbackResponse();
@@ -149,11 +170,11 @@ public class feedbackController {
         return response;
     }
 
-    // 查詢單筆
+    // 查詢單筆意見
     @GetMapping("/{id}")
     public FeedbackResponse getFeedbackById(@PathVariable Integer id) {
         FeedbackResponse response = new FeedbackResponse();
-        if (!feedbackService.existById(id)) {
+        if (!feedbackService.existsById(id)) {
             response.setSuccess(false);
             response.setMessage("查無該資料");
         } else {
@@ -166,9 +187,33 @@ public class feedbackController {
         }
         return response;
     }
+
+    //
+    // -- 下載意見附件 --
+    //
+
+    @GetMapping("/attachments/{id}")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Integer id) {
+        Optional<FeedbackAttachment> optional = feedbackAttachmentService.findById(id);
+        if (!optional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        FeedbackAttachment attachment = optional.get();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(attachment.getMimeType()));
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(attachment.getFileName())
+                .build());
+
+        return new ResponseEntity<>(attachment.getAttachment(), headers,
+                HttpStatus.OK);
+    }
+
     //
     //
-    // ------ ------
+    // ------ 意見分類------
     //
     //
     // -- 新增意見分類 --
@@ -212,5 +257,55 @@ public class feedbackController {
         } else {
             return ResponseEntity.status(400).body(response);
         }
+    }
+
+    //
+    //
+    // ------ 意見的回應 ------
+    //
+    //
+
+    // -- 新增意見回應 --
+
+    @PostMapping("/{id}/reply")
+    public FeedbackReply postFeedbackReply(@PathVariable Integer id, @RequestBody FeedbackReply body) {
+        if (!feedbackService.existsById(id)) {
+            log.warn("意見主表不存在");
+            return null;
+        }
+        if (body.getUser() == null || body.getUser().getUsersId() == null) {
+            log.warn("使用者資料有誤");
+            return null;
+        }
+        Users user = usersService.findById(body.getUser().getUsersId());
+        body.setUser(user);
+        body.setFeedback(feedbackService.findById(id));
+
+        // return feedbackReplyService.insert(body); //待修正-->更新statusHistory
+    }
+
+    // -- 修改意見回應 --
+
+    @PutMapping("/{id}/reply/{replyId}")
+    public FeedbackReply putFeedbackReply(@PathVariable Integer id, @PathVariable Integer replyId,
+            @RequestBody FeedbackReply body) {
+        if (!feedbackService.existsById(id)) {
+            log.warn("意見主表不存在");
+            return null;
+        }
+        if (!feedbackReplyService.existsById(replyId)) {
+            log.warn("意見回應不存在");
+            return null;
+        }
+        if (body == null) {
+            log.warn("請求資料有誤");
+            return null;
+        }
+        if (body.getUser() == null || body.getUser().getUsersId() == null) {
+            log.warn("使用者資料有誤");
+            return null;
+        }
+        body.setId(replyId);
+        return feedbackReplyService.modify(body);
     }
 }

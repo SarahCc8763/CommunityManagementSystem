@@ -87,6 +87,10 @@ public class UsersService {
 		return null;
 	}
 
+	public Users findById(Integer id) {
+		return usersRepository.findById(id).orElse(null);
+	}
+
 	// public Boolean changePassword(String email, String oldPass, String newPass) {
 	// if (newPass != null && newPass.length() != 0) {
 	// Users bean = this.login(email, oldPass);

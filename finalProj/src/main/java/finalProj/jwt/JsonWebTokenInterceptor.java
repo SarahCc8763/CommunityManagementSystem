@@ -14,7 +14,6 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
     @Autowired
     private JsonWebTokenUtility jwtUtility;
 
-    @SuppressWarnings("null")
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {

@@ -27,6 +27,9 @@ public class FeedbackReply {
     @Column(name = "feedback_reply_replied_at", insertable = false)
     private LocalDateTime repliedAt;
 
+    @Transient
+    private String feedbackStatus;
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -75,5 +78,13 @@ public class FeedbackReply {
                 ", reply='" + reply + "'" +
                 ", repliedAt=" + repliedAt +
                 '}';
+    }
+
+    public String getFeedbackStatus() {
+        return feedbackStatus;
+    }
+
+    public void setFeedbackStatus(String feedbackStatus) {
+        this.feedbackStatus = feedbackStatus;
     }
 }
