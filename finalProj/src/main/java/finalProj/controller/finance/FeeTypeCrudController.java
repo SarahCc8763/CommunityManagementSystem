@@ -26,16 +26,19 @@ public class FeeTypeCrudController {
     @Autowired
     private FeeTypeService feeTypeService;
 
+    // 【功能】取得所有費用類型
     @GetMapping
     public List<FeeType> getAll() {
         return feeTypeService.findAll();
     }
 
+    // 【功能】依ID查詢單一費用類型
     @GetMapping("/{id}")
     public FeeType getById(@PathVariable Integer id) {
         return feeTypeService.findById(id);
     }
 
+    // 【功能】建立新費用類型
     @PostMapping
     public FeeType create(@RequestBody FeeTypeDTO dto) {
         FeeType feeType = new FeeType();
@@ -50,6 +53,7 @@ public class FeeTypeCrudController {
         return feeTypeService.save(feeType);
     }
 
+    // 【功能】更新費用類型內容
     @PutMapping("/{id}")
     public FeeType update(@PathVariable Integer id, @RequestBody FeeTypeDTO dto) {
         FeeType existing = feeTypeService.findById(id);
@@ -65,6 +69,7 @@ public class FeeTypeCrudController {
         return feeTypeService.save(existing);
     }
 
+    // 【功能】刪除費用類型
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         feeTypeService.deleteById(id);

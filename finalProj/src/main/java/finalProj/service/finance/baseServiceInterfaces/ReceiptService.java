@@ -4,5 +4,5 @@ import finalProj.domain.finance.Receipt;
 import finalProj.dto.finance.ReceiptDTO;
 
 public interface ReceiptService extends BaseService<Receipt, Integer> {
-    Receipt createReceipt(ReceiptDTO dto);
+    ReceiptDTO createReceipt(ReceiptDTO dto);
 }

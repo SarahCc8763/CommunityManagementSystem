@@ -1,29 +1,41 @@
 <template>
   <div id="app">
     <HeaderAll />
-    <!-- <BeforeLogIn /> -->
-    <!-- <Home /> -->
-    <!-- <RouterView /> -->
+    
     <main class="main-content"> 
      
+      <!-- 這裡是左右的Nav -->
         <LeftSideNav />
-        <div class="main-area">
+        <RightSideNav :show="showRightNav" @close="showRightNav = false" />
+       <div class="main-area" :class="{ 'with-right-nav': showRightNav }" @click="showRightNav && (showRightNav = false)">
+          <button class="right-nav-toggle" @click="showRightNav = true">
+            <i class="bi bi-layout-sidebar-inset"></i>
+          </button>
+          
+              <div v-if="!showRightNav" class="drawer-tab" @click="showRightNav = true">
+                <i class="bi bi-chevron-left"></i>
+                <span class="drawer-tab-text">更多</span>
+              </div>
+              <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
+          <!-- 左右Nav結束 -->
+
+
+
+          <!-- 大家想測試的頁面可以放這裡喔～ -->
           <!-- <Example /> -->
-          <Home />
+           <!-- <Home /> -->
+            <Invoice />
+
+
         </div>
-        <RightSideNav />
      
     </main>
 
+      </div>
     <FooterAll /> 
 
     <!-- 登入模態框 -->
-    <LoginModal 
-      :isVisible="showLogin" 
-      @close="showLogin = false"
-      @login-success="handleLoginSuccess"
-    />
-  </div>
+    <LoginModal  :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
 </template>
 
 
@@ -32,35 +44,40 @@
 
 
 <script setup>
+//功能類import
 import { RouterLink, RouterView } from 'vue-router'
-import HeaderAll from './components/forAll/HeaderAll.vue';
+import { useUserStore } from '@/stores/UserStore'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+
+//固定的頁首頁尾以及側邊欄位
+import FooterAll from './components/forAll/main/FooterAll.vue';
+import LoginModal from './components/forAll/main/LoginModal.vue';
+import HeaderAll from './components/forAll/main/HeaderAll.vue';
+import RightSideNav from './components/forAll/main/RightSideNav.vue';
+import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
+
+
+
+//還沒改好router但先放著的頁面 
 import Home from './views/Home.vue';
 import BeforeLogIn from './views/BeforeLogIn.vue';
-import BannerImage from './components/forAll/BannerImage.vue';
-import happyFaces from '@/assets/images/finance/happyFaces.jpg';
-import Finance from './components/finance/Finance.vue';
-import FooterAll from './components/forAll/FooterAll.vue';
-import LoginModal from './components/forAll/LoginModal.vue';
-import Example from './components/forAll/Example.vue';
-import RightSideNav from './components/forAll/RightSideNav.vue';
-
-import { useUserStore } from '@/stores/UserStore'
-import LeftSideNav from './components/forAll/LeftSideNav.vue';
-import { ref, onMounted, onUnmounted } from 'vue'
+import finUser from '@/components/finance/finUser/finUser.vue';
+import Invoice from '@/components/finance/finUser/Invoice.vue';
 
 const user = useUserStore()
 const showLogin = ref(false)
+const showRightNav = ref(false)
 
 //以下放的是測試登入登出的假資料
 // 登入
 user.login({
   name: '王小明',
   username: 'ming123',
-  avatarUrl: 'https://i.pravatar.cc/100?img=13', // 可省略
+  avatarUrl: 'https://i.pravatar.cc/100?img=13', 
 })
 
-// 登出
-// user.logout()
+
 
 // 監聽SideNav的登入按鈕事件
 const handleShowLoginModal = () => {
@@ -149,7 +166,7 @@ onUnmounted(() => {
   left: 0;
   bottom: 0;
   width: 80px;
-  z-index: 1001;
+  z-index: 2101;
   background: rgba(255,255,255,0.95);
   box-shadow: 2px 0 8px rgba(0,0,0,0.04);
   display: flex;
@@ -173,7 +190,7 @@ onUnmounted(() => {
   flex: 1;
   min-width: 0;
   margin-left: 80px;
-  margin-right: 320px;
+  margin-right: 0;
   padding-top: 72px;
   min-height: calc(100vh - 72px);
   display: flex;
@@ -186,6 +203,34 @@ onUnmounted(() => {
   margin-right: auto;
   box-shadow: 0 2px 16px rgba(0,0,0,0.04);
   border-radius: 16px;
+  position: relative;
+  transition: margin-right 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.main-area.with-right-nav {
+  margin-right: 320px;
+}
+.right-nav-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #667eea;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.right-nav-toggle:hover {
+  background: #f0f4f8;
+  box-shadow: 0 4px 16px rgba(102,126,234,0.12);
 }
 
 @keyframes fadeIn {
@@ -218,5 +263,57 @@ onUnmounted(() => {
   .right-side-nav {
     display: none;
   }
+}
+
+.drawer-tab {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 2100;
+  background: #fff;
+  color: #667eea;
+  border-radius: 24px 0 0 24px;
+  box-shadow: 0 2px 12px rgba(102,126,234,0.10);
+  padding: 8px 14px 8px 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  border: 2px solid #e2e8f0;
+  border-right: none;
+  min-width: 44px;
+  height: 48px;
+}
+.drawer-tab:hover {
+  background: #f0f4f8;
+  color: #5a67d8;
+  box-shadow: 0 4px 20px rgba(102,126,234,0.16);
+}
+.drawer-tab i {
+  font-size: 24px;
+  margin-right: 2px;
+}
+.drawer-tab-text {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #667eea;
+  user-select: none;
+}
+.drawer-mask {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 320px;
+  bottom: 0;
+  background: rgba(0,0,0,0.08);
+  z-index: 2000;
+  cursor: pointer;
+  border-radius: 0 0 16px 16px;
 }
 </style>

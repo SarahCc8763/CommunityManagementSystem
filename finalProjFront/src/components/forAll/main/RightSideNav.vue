@@ -1,5 +1,8 @@
 <template>
-  <aside class="right-side-nav">
+  <aside class="right-side-nav" :class="{ open: show }">
+    <button class="right-nav-close" @click="emit('close')">
+      <i class="bi bi-x-circle-fill"></i>
+    </button>
    
 
 <!-- 社區活動 -->
@@ -118,7 +121,14 @@
 </template>
 
 <script setup>
-// 右側 SideNav 組件
+import { defineProps, defineEmits } from 'vue'
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false
+  }
+})
+const emit = defineEmits(['close'])
 </script>
 
 <style scoped>
@@ -134,7 +144,38 @@
   top: 72px;
   right: 0;
   bottom: 0;
-  z-index: 1001;
+  z-index: 2001;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+}
+.right-side-nav.open {
+  transform: translateX(0);
+}
+.right-nav-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #fff;
+  border: 2px solid #667eea;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #4c51bf;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s, box-shadow 0.2s, border 0.2s, color 0.2s;
+}
+.right-nav-close:hover {
+  background: #667eea;
+  color: #fff;
+  border-color: #4c51bf;
+  box-shadow: 0 4px 16px rgba(102,126,234,0.16);
 }
 
 .right-side-nav > * {

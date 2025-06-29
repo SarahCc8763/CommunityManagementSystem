@@ -1,9 +1,13 @@
 package finalProj.service.finance.serviceImpl;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import finalProj.domain.finance.Invoice;
 import finalProj.domain.finance.Receipt;
@@ -22,9 +26,24 @@ public class ReceiptServiceImpl implements ReceiptService {
     private ReceiptRepository receiptRepository;
 
     @Override
-    public Receipt createReceipt(ReceiptDTO dto) {
+    public ReceiptDTO createReceipt(ReceiptDTO dto) {
+        if (dto.getInvoiceId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "必須指定 invoiceId");
+        }
+        if (dto.getAmountPay() == null || dto.getAmountPay().signum() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "金額不得為空或負數");
+        }
         Invoice invoice = invoiceRepository.findById(dto.getInvoiceId())
-                .orElseThrow(() -> new RuntimeException("發票不存在: ID = " + dto.getInvoiceId()));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "發票不存在: ID = " + dto.getInvoiceId()));
+
+        // 檢查是否已存在收據
+        Optional<Receipt> existed = receiptRepository.findAll().stream()
+                .filter(r -> r.getInvoice() != null && r.getInvoice().getInvoiceId().equals(dto.getInvoiceId()))
+                .findFirst();
+        if (existed.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "該發票已經有收據，請勿重複繳費");
+        }
 
         Receipt receipt = new Receipt();
         receipt.setInvoice(invoice);
@@ -34,8 +53,26 @@ public class ReceiptServiceImpl implements ReceiptService {
         receipt.setDebitAt(dto.getDebitAt());
         receipt.setAmountPay(dto.getAmountPay());
         receipt.setInstallments(dto.getInstallments());
+        receipt.setNote(dto.getNote());
 
-        return receiptRepository.save(receipt);
+        Receipt saved = receiptRepository.save(receipt);
+        return toDTO(saved);
+    }
+
+    // Receipt 轉 DTO
+    private ReceiptDTO toDTO(Receipt entity) {
+        if (entity == null)
+            return null;
+        ReceiptDTO dto = new ReceiptDTO();
+        dto.setReceiptId(entity.getReceiptId());
+        dto.setInvoiceId(entity.getInvoice() != null ? entity.getInvoice().getInvoiceId() : null);
+        dto.setPaymentMethod(entity.getPaymentMethod());
+        dto.setPaidAt(entity.getPaidAt());
+        dto.setDebitAt(entity.getDebitAt());
+        dto.setAmountPay(entity.getAmountPay());
+        dto.setInstallments(entity.getInstallments());
+        dto.setNote(entity.getNote());
+        return dto;
     }
 
     @Override
@@ -59,8 +96,8 @@ public class ReceiptServiceImpl implements ReceiptService {
         receiptRepository.deleteById(id);
     }
 
-    private Integer generateReceiptNum() {
-        // 可替換為實際邏輯，例如資料庫流水號或時間戳
-        return (int) (System.currentTimeMillis() % 1000000);
+    private String generateReceiptNum() {
+        // 使用 UUID 字串作為收據號碼
+        return UUID.randomUUID().toString();
     }
 }

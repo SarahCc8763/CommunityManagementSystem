@@ -24,6 +24,15 @@ public class InvoiceResponse {
     @Column(name = "last_response", columnDefinition = "varchar(max)")
     private String lastResponse;
 
+    @Column(name = "verified")
+    private Boolean verified;
+
+    @Column(name = "verified_time")
+    private LocalDateTime verifiedTime;
+
+    @Column(name = "verified_by")
+    private Integer verifiedBy;
+
     // 表格關係
     @ManyToOne
     @JoinColumn(name = "users_id", insertable = false, updatable = false)
@@ -80,6 +89,30 @@ public class InvoiceResponse {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public LocalDateTime getVerifiedTime() {
+        return verifiedTime;
+    }
+
+    public void setVerifiedTime(LocalDateTime verifiedTime) {
+        this.verifiedTime = verifiedTime;
+    }
+
+    public Integer getVerifiedBy() {
+        return verifiedBy;
+    }
+
+    public void setVerifiedBy(Integer verifiedBy) {
+        this.verifiedBy = verifiedBy;
     }
 
 }

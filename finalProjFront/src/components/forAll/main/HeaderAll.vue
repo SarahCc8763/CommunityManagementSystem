@@ -397,65 +397,51 @@ body {
 /* Mega Menu 下拉容器 */
 .mega-menu {
   position: absolute;
-  top: 70px;
+  top: 72px;
   left: 0;
   right: 0;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  padding: 32px 48px;
+  padding: 0 32px 32px 32px;
   z-index: 9999;
   user-select: text;
   display: flex;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: megaMenuSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* animation: megaMenuSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+  padding-top: 0;
 }
 
-@keyframes megaMenuSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Mega Menu 容器內的 flex 排版 */
 .mega-grid {
   display: flex;
-  gap: 48px;
-  justify-content: center;
+  gap: 32px;
+  justify-content: flex-start;
+  max-width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  overflow-x: visible;
 }
 
-.dropdown-item {
-  display: block;
-  padding: 12px 20px;
-  color: #2d3748;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-}
-
-.dropdown-item:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+.category-title {
+  margin: 0;
+  padding: 12px 16px;
   color: #667eea;
-  transform: translateX(4px);
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  padding-bottom: 8px;
+  user-select: text;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 當前滑鼠選中的分類：醒目 */
@@ -473,7 +459,9 @@ body {
 
 /* 每個分類區塊 */
 .mega-category {
-  flex: 1 1 250px;
+  min-width: 140px;
+  max-width: 180px;
+  flex: 0 0 160px;
   opacity: 0.5;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
@@ -485,19 +473,6 @@ body {
 .mega-category:hover {
   opacity: 1 !important;
   transform: translateY(-4px);
-}
-
-/* 大分類標題 */
-.category-title {
-  margin-bottom: 20px;
-  color: #667eea;
-  font-size: 14px;
-  font-weight: 700;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
-  padding-bottom: 8px;
-  user-select: text;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* 子功能項目 */

@@ -24,32 +24,37 @@ public class ReceiptController {
     @Autowired
     private ReceiptService receiptService;
 
+    // 【功能】建立收據（繳費後由系統產生）
     @PostMapping
-    public ResponseEntity<Receipt> createReceipt(@RequestBody ReceiptDTO dto) {
+    public ResponseEntity<ReceiptDTO> createReceipt(@RequestBody ReceiptDTO dto) {
         try {
-            Receipt saved = receiptService.createReceipt(dto);
+            ReceiptDTO saved = receiptService.createReceipt(dto);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build(); // 或可客製錯誤訊息
         }
     }
 
+    // 【功能】查詢所有收據
     @GetMapping
     public ResponseEntity<List<Receipt>> getAllReceipts() {
         return ResponseEntity.ok(receiptService.findAll());
     }
 
+    // 【功能】查詢單一收據明細
     @GetMapping("/{id}")
     public ResponseEntity<Receipt> getReceiptById(@PathVariable Integer id) {
         return ResponseEntity.ok(receiptService.findById(id));
     }
 
+    // 【功能】更新收據內容
     @PutMapping("/{id}")
     public ResponseEntity<Receipt> updateReceipt(@PathVariable Integer id, @RequestBody Receipt receipt) {
         receipt.setReceiptId(id);
         return ResponseEntity.ok(receiptService.save(receipt));
     }
 
+    // 【功能】刪除收據
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReceipt(@PathVariable Integer id) {
         receiptService.deleteById(id);

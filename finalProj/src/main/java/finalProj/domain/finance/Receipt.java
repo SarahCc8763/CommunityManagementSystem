@@ -1,5 +1,6 @@
 package finalProj.domain.finance;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import finalProj.domain.users.Users;
@@ -14,7 +15,7 @@ public class Receipt extends BaseEntity {
     private Integer receiptId;
 
     @Column(name = "receipt_num")
-    private Integer receiptNum;
+    private String receiptNum;
 
     @Column(name = "payment_method", length = 20)
     private String paymentMethod;
@@ -26,7 +27,7 @@ public class Receipt extends BaseEntity {
     private LocalDateTime debitAt;
 
     @Column(name = "amount_pay")
-    private Integer amountPay;
+    private BigDecimal amountPay;
 
     @Column(name = "installments", length = 10)
     private String installments;
@@ -64,11 +65,11 @@ public class Receipt extends BaseEntity {
         this.receiptId = receiptId;
     }
 
-    public Integer getReceiptNum() {
+    public String getReceiptNum() {
         return receiptNum;
     }
 
-    public void setReceiptNum(Integer receiptNum) {
+    public void setReceiptNum(String receiptNum) {
         this.receiptNum = receiptNum;
     }
 
@@ -96,11 +97,11 @@ public class Receipt extends BaseEntity {
         this.debitAt = debitAt;
     }
 
-    public Integer getAmountPay() {
+    public BigDecimal getAmountPay() {
         return amountPay;
     }
 
-    public void setAmountPay(Integer amountPay) {
+    public void setAmountPay(BigDecimal amountPay) {
         this.amountPay = amountPay;
     }
 
