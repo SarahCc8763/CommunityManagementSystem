@@ -56,4 +56,5 @@ public class InvoiceController {
     public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam Boolean status) {
         return invoiceService.updateInvoiceStatus(invoiceId, status);
     }
+    //
 }
