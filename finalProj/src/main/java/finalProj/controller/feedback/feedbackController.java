@@ -273,6 +273,10 @@ public class feedbackController {
             log.warn("意見主表不存在");
             return null;
         }
+        if (body == null) {
+            log.warn("請求資料有誤");
+            return null;
+        }
         if (body.getUser() == null || body.getUser().getUsersId() == null) {
             log.warn("使用者資料有誤");
             return null;
@@ -281,7 +285,7 @@ public class feedbackController {
         body.setUser(user);
         body.setFeedback(feedbackService.findById(id));
 
-        // return feedbackReplyService.insert(body); //待修正-->更新statusHistory
+        return feedbackReplyService.insert(body);
     }
 
     // -- 修改意見回應 --

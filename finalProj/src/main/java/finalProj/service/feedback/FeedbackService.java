@@ -13,11 +13,13 @@ import finalProj.domain.community.Community;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
+import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.users.Users;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.feedback.FeedbackAttachmentRepository;
 import finalProj.repository.feedback.FeedbackCategoryRepository;
 import finalProj.repository.feedback.FeedbackRepository;
+import finalProj.repository.feedback.FeedbackStatusHistoryRepository;
 import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +37,8 @@ public class FeedbackService {
     private UsersRepository usersRepository;
     @Autowired
     private CommunityRepository communityRepository;
-
+    @Autowired
+    private FeedbackStatusHistoryRepository feedbackStatusHistoryRepository;
     //
     // 新增
     //
@@ -77,6 +80,7 @@ public class FeedbackService {
 
         Feedback savedFeedback = feedbackRepository.save(feedback);
 
+        // 儲存附件
         List<FeedbackAttachment> attachments = feedback.getAttachments();
         if (attachments != null) {
             attachments.forEach(a -> {
@@ -86,6 +90,15 @@ public class FeedbackService {
             });
         }
         log.info("Feedback儲存成功：Id為 {}", savedFeedback.getId());
+
+        // 新增狀態歷史紀錄
+        FeedbackStatusHistory feedbackStatusHistory = new FeedbackStatusHistory();
+        feedbackStatusHistory.setFeedback(savedFeedback);
+        feedbackStatusHistory.setOldStatus(null);
+        feedbackStatusHistory.setNewStatus(savedFeedback.getStatus());
+        feedbackStatusHistory.setChangedAt(LocalDateTime.now());
+        feedbackStatusHistory.setChangedBy(savedFeedback.getUser());
+        feedbackStatusHistoryRepository.save(feedbackStatusHistory);
         return savedFeedback;
 
     }
@@ -132,13 +145,8 @@ public class FeedbackService {
         existing.setHandler(optionalHandler.get());
         existing.setCommunity(community);
         existing.setLastUpdated(LocalDateTime.now());
-        if (feedback.getUserRating() == null) {
-            feedbackRepository.findById(feedback.getId())
-                    .ifPresent(original -> existing.setUserRating(original.getUserRating()));
-        }
-        if (feedback.getStatus() == null) {
-            feedbackRepository.findById(feedback.getId())
-                    .ifPresent(original -> existing.setStatus(original.getStatus()));
+        if (feedback.getUserRating() != null) {
+            existing.setUserRating(feedback.getUserRating());
         }
 
         // 移除舊附件
@@ -157,6 +165,19 @@ public class FeedbackService {
                 log.debug("加入新附件：{}", newAttachment.getFileName());
             }
             existing.setAttachments(newAttachments);
+        }
+
+        // 修改狀態歷史紀錄
+        if (feedback.getStatus() != null && !feedback.getStatus().equals(existing.getStatus())) {
+            log.info("狀態有變更，修改意見狀態，並新增狀態歷史紀錄");
+            FeedbackStatusHistory feedbackStatusHistory = new FeedbackStatusHistory();
+            feedbackStatusHistory.setFeedback(existing);
+            feedbackStatusHistory.setOldStatus(existing.getStatus());
+            feedbackStatusHistory.setNewStatus(feedback.getStatus());
+            existing.setStatus(feedback.getStatus());
+            feedbackStatusHistory.setChangedAt(LocalDateTime.now());
+            feedbackStatusHistory.setChangedBy(user);
+            feedbackStatusHistoryRepository.save(feedbackStatusHistory);
         }
 
         return feedbackRepository.save(existing);

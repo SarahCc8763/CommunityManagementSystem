@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.feedback.FeedbackReply;
+import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.users.Users;
 import finalProj.repository.feedback.FeedbackReplyRepository;
+import finalProj.repository.feedback.FeedbackStatusHistoryRepository;
 import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,12 @@ public class FeedbackReplyService {
     @Autowired
     private UsersRepository usersRepository;
 
+    // @Autowired
+    // private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private FeedbackStatusHistoryRepository feedbackStatusHistoryRepository;
+
     public List<FeedbackReply> findAll() {
         return feedbackReplyRepository.findAll();
     }
@@ -32,10 +40,26 @@ public class FeedbackReplyService {
         return feedbackReplyRepository.findById(id);
     }
 
-    // public FeedbackReply insert(FeedbackReply entity) {
-    // entity.getFeedback().setStatus(entity.getFeedbackStatus());
-    // return feedbackReplyRepository.save(entity);
-    // }
+    public FeedbackReply insert(FeedbackReply entity) {
+
+        // 設定時間（如果你的實體有 createdAt 類欄位）
+        entity.setRepliedAt(LocalDateTime.now());
+
+        // 儲存 FeedbackReply
+        FeedbackReply savedReply = feedbackReplyRepository.save(entity);
+
+        // 建立並儲存 FeedbackStatusHistory
+        FeedbackStatusHistory statusHistory = new FeedbackStatusHistory();
+        statusHistory.setFeedback(entity.getFeedback());
+        statusHistory.setChangedBy(entity.getUser());
+        statusHistory.setOldStatus(entity.getPreFeedBackStatus());
+        statusHistory.setNewStatus(entity.getNewFeedBackStatus()); // 或你定義的狀態列舉/字串
+        statusHistory.setChangedAt(LocalDateTime.now());
+
+        feedbackStatusHistoryRepository.save(statusHistory);
+
+        return savedReply;
+    }
 
     public FeedbackReply modify(FeedbackReply entity) {
         Optional<Users> optional = usersRepository.findById(entity.getUser().getUsersId());

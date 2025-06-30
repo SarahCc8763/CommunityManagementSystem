@@ -28,7 +28,10 @@ public class FeedbackReply {
     private LocalDateTime repliedAt;
 
     @Transient
-    private String feedbackStatus;
+    private String preFeedBackStatus;
+
+    @Transient
+    private String newFeedBackStatus;
 
     // Getters and Setters
     public Integer getId() {
@@ -80,11 +83,21 @@ public class FeedbackReply {
                 '}';
     }
 
-    public String getFeedbackStatus() {
-        return feedbackStatus;
+    public String getPreFeedBackStatus() {
+        preFeedBackStatus = feedback.getStatus();
+        return preFeedBackStatus;
     }
 
-    public void setFeedbackStatus(String feedbackStatus) {
-        this.feedbackStatus = feedbackStatus;
+    public void setPreFeedBackStatus(String preFeedBackStatus) {
+        this.preFeedBackStatus = preFeedBackStatus;
     }
+
+    public String getNewFeedBackStatus() {
+        return newFeedBackStatus;
+    }
+
+    public void setNewFeedBackStatus(String newFeedBackStatus) {
+        this.newFeedBackStatus = newFeedBackStatus;
+    }
+
 }
