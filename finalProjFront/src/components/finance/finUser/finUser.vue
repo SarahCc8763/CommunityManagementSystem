@@ -13,7 +13,7 @@
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/finance/happyFaces.jpg';
 import FeatureCards from '@/components/forAll/FeatureCards.vue'
-import SideNav from '@/components/forAll/SideNav.vue'
+import SideNav from '@/components/forAll/main/LeftSideNav.vue'
 const cards = [
     {
         icon: 'bi-receipt',
