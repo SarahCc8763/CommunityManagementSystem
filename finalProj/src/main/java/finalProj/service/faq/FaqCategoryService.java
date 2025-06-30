@@ -33,4 +33,8 @@ public class FaqCategoryService {
         faqCategoryRepository.deleteByName(name);
     }
 
+    public Optional<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name) {
+        return faqCategoryRepository.findByCommunity_CommunityIdAndName(id, name);
+    }
+
 }

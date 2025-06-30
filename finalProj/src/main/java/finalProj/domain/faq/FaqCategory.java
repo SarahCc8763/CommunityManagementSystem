@@ -12,6 +12,9 @@ import java.util.*;
 @Table(name = "faq_category")
 public class FaqCategory {
     @Id
+    @Column(name = "faq_category_id")
+    private Integer id;
+
     @Column(name = "faq_category_name", length = 20)
     private String name;
 
@@ -51,5 +54,13 @@ public class FaqCategory {
 
     public void setCommunity(Community community) {
         this.community = community;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

@@ -8,8 +8,12 @@ import org.springframework.stereotype.Repository;
 import finalProj.domain.faq.FaqCategory;
 
 @Repository
-public interface FaqCategoryRepository extends JpaRepository<FaqCategory, String> {
+public interface FaqCategoryRepository extends JpaRepository<FaqCategory, Integer> {
     public Optional<FaqCategory> findByName(String name);
 
     public void deleteByName(String name);
+
+    // findByCommunity_CommunityIdAndName
+    public Optional<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name);
+
 }

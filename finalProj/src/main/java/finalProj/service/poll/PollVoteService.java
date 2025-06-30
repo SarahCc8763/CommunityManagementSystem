@@ -16,9 +16,11 @@ import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
 import finalProj.repository.poll.PollVoteRepository;
 import finalProj.repository.users.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class PollVoteService {
     @Autowired
     private PollRepository pollRepository;
@@ -55,6 +57,7 @@ public class PollVoteService {
         Optional<Poll> optionalPoll = pollRepository.findById(vote.getPollId());
 
         if (optionalOption.isEmpty() || optionalUser.isEmpty() || optionalPoll.isEmpty()) {
+            log.warn("找不到選項、使用者或投票");
             return null;
         }
 
@@ -64,13 +67,13 @@ public class PollVoteService {
 
         // 如果投票已截止，應已透過前端阻攔
         if (poll.getEnd().isBefore(LocalDateTime.now())) {
-            System.out.println("投票已截止");
+            log.info("投票已截止");
             return null;
         }
 
         // 檢查該選項是否屬於該投票
         if (!option.getPoll().getId().equals(poll.getId())) {
-            System.out.println("該選項不屬於該投票");
+            log.warn("選項不屬於該投票");
             return null;
         }
 
@@ -84,7 +87,8 @@ public class PollVoteService {
             // 複選邏輯：toggle 該選項
             if (existingVoteOpt.isPresent()) {
                 PollVote oldVote = existingVoteOpt.get();
-                oldVote.setIsChecked(false);
+                log.info("已經投票過，切換 已投票/未投票 狀態");
+                oldVote.setIsChecked(!oldVote.getIsChecked());
                 return pollVoteRepository.save(oldVote);
             } else {
                 PollVote newVote = new PollVote();
@@ -95,29 +99,53 @@ public class PollVoteService {
                 return pollVoteRepository.save(newVote);
             }
         } else {
-            // 單選邏輯：
+            // 先找這個選項的舊投票
+            PollVote voteToSave = existingVoteOpt.orElse(null);
 
-            // 1. 現有已勾選的先全部取消
+            // 1. 如果有投票紀錄（即使 isChecked 為 false）：
+            if (voteToSave != null) {
+                boolean currentStatus = voteToSave.getIsChecked();
+
+                if (currentStatus) {
+                    // 已勾選 → 取消勾選
+                    voteToSave.setIsChecked(false);
+                    log.info("取消投票：{}", option.getText());
+                    return pollVoteRepository.save(voteToSave);
+                } else {
+                    // 未勾選 → 先取消所有其他選項
+                    List<PollVote> allVotes = pollVoteRepository.findByUser_UsersIdAndPoll_Id(user.getUsersId(),
+                            poll.getId());
+                    for (PollVote pv : allVotes) {
+                        if (pv.getIsChecked()) {
+                            pv.setIsChecked(false);
+                        }
+                    }
+                    pollVoteRepository.saveAll(allVotes);
+
+                    // 勾選目前的選項
+                    voteToSave.setIsChecked(true);
+                    log.info("重新投票：{}", option.getText());
+                    return pollVoteRepository.save(voteToSave);
+                }
+            }
+
+            // 2. 沒投過該選項 → 一樣先取消所有舊選項
             List<PollVote> allVotes = pollVoteRepository.findByUser_UsersIdAndPoll_Id(user.getUsersId(), poll.getId());
             for (PollVote pv : allVotes) {
                 if (pv.getIsChecked()) {
                     pv.setIsChecked(false);
-                    pollVoteRepository.save(pv);
                 }
             }
+            pollVoteRepository.saveAll(allVotes);
 
-            // 2. 若這次點的是本來已經選過的 → 因為上面已經取消了，所以不用再傳
-            if (existingVoteOpt.isPresent() && existingVoteOpt.get().getIsChecked()) {
-                return null; // 表示「取消投票」
-            }
-
-            // 3. 沒投過，或剛剛取消過 → 勾選這個選項
-            PollVote voteToSave = existingVoteOpt.orElse(new PollVote());
-            voteToSave.setUser(user);
-            voteToSave.setOption(option);
-            voteToSave.setPoll(poll);
-            voteToSave.setIsChecked(true);
-            return pollVoteRepository.save(voteToSave);
+            // 建立新的投票
+            PollVote newVote = new PollVote();
+            newVote.setUser(user);
+            newVote.setOption(option);
+            newVote.setPoll(poll);
+            newVote.setIsChecked(true);
+            log.info("新投票：{}", option.getText());
+            return pollVoteRepository.save(newVote);
 
         }
     }

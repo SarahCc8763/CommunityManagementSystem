@@ -53,4 +53,10 @@ public class FaqFaqKeywordId implements Serializable {
     public int hashCode() {
         return Objects.hash(faqId, faqKeywordId);
     }
+
+    @Override
+    public String toString() {
+        return "FaqFaqKeywordId [faqId=" + faqId + ", faqKeywordId=" + faqKeywordId + "]";
+    }
+
 }

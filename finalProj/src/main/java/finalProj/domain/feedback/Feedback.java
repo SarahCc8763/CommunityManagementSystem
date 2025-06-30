@@ -52,7 +52,7 @@ public class Feedback {
     @Column(name = "feedback_submit_at", insertable = false)
     private LocalDateTime submittedAt;
 
-    @Column(name = "feedback_status", insertable = false)
+    @Column(name = "feedback_status")
     private String status;
 
     @Column(name = "feedback_last_updated_at", insertable = false)

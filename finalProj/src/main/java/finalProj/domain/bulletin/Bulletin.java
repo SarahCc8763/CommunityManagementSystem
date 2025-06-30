@@ -24,6 +24,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @DynamicInsert
@@ -41,9 +42,12 @@ public class Bulletin {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "bulletin_category")
+    @JoinColumn(name = "bulletin_category_id")
     @JsonBackReference("bulletin-category")
     private BulletinCategory category;
+
+    @Transient
+    private String categoryName;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -200,5 +204,16 @@ public class Bulletin {
 
     public void setComments(List<BulletinComment> comments) {
         this.comments = comments;
+    }
+
+    public String getCategoryName() {
+        if (category != null) {
+            categoryName = category.getName();
+        }
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

@@ -18,12 +18,15 @@ import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.repository.bulletin.BulletinCategoryRepository;
 import finalProj.repository.bulletin.BulletinRepository;
 import finalProj.repository.poll.PollRepository;
+import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
 @Slf4j
 public class BulletinService {
+
+    private final UsersRepository usersRepository;
 
     @Autowired
     private BulletinRepository bulletinRepository;
@@ -36,6 +39,10 @@ public class BulletinService {
 
     @Autowired
     private PollRepository pollRepository;
+
+    BulletinService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
 
     public List<Bulletin> findAll() {
         return bulletinRepository.findAll();
@@ -71,7 +78,8 @@ public class BulletinService {
         try {
             // 1. 確認分類是否存在
             Optional<BulletinCategory> optional = bulletinCategoryRepository
-                    .findByName(entity.getCategory().getName());
+                    .findByCommunity_CommunityIdAndName(entity.getCommunity().getCommunityId(),
+                            entity.getCategory().getName());
 
             if (!optional.isPresent()) {
                 log.warn("新增公告失敗：分類 '{}' 不存在，請先建立分類", entity.getCategory().getName());
@@ -106,7 +114,9 @@ public class BulletinService {
                         log.debug("設定投票選項關聯：{}", option.getText());
                     }
                 }
-
+                if (poll.getStart() == null) {
+                    poll.setStart(LocalDateTime.now());
+                }
                 pollRepository.save(poll);
                 log.info("投票儲存成功，標題：{}", poll.getTitle());
             }
@@ -146,7 +156,8 @@ public class BulletinService {
                     entity.getDescription() != null ? entity.getDescription() : existing.getDescription());
             existing.setRemoveTime(entity.getRemoveTime() != null ? entity.getRemoveTime() : existing.getRemoveTime());
             existing.setCommunity(entity.getCommunity() != null ? entity.getCommunity() : existing.getCommunity());
-            existing.setUser(entity.getUser() != null ? entity.getUser() : existing.getUser());
+            existing.setUser(entity.getUser() != null ? usersRepository.findById(entity.getUser().getUsersId()).get()
+                    : existing.getUser());
 
             existing.setModifyTime(LocalDateTime.now());
             log.debug("公告基本資訊已更新");
@@ -154,12 +165,14 @@ public class BulletinService {
             // 更新分類（若有）
             if (entity.getCategory() != null) {
                 Optional<BulletinCategory> categoryOpt = bulletinCategoryRepository
-                        .findByName(entity.getCategory().getName());
+                        .findByCommunity_CommunityIdAndName(entity.getCommunity().getCommunityId(),
+                                entity.getCategory().getName());
                 if (categoryOpt.isPresent()) {
                     existing.setCategory(categoryOpt.get());
                     log.debug("公告分類已更新為：{}", categoryOpt.get().getName());
                 } else {
                     log.warn("公告分類更新失敗：找不到分類 '{}'", entity.getCategory().getName());
+                    return null;
                 }
             }
 

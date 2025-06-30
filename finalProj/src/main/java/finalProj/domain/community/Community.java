@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinCategory;
+import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,6 +63,10 @@ public class Community {
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-feedback")
 	private List<Feedback> feedbacks;
+	// 社區-FAQ
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-faq")
+	private List<Faq> faqs;
 
 	@Override
 	public String toString() {

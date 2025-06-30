@@ -351,17 +351,17 @@ public class BulletinController {
     // -- 刪除公告分類 --
     //
 
-    @DeleteMapping("/category/delete")
-    public ResponseEntity<Map<String, Object>> deleteBulletinCategory(@RequestBody BulletinCategory body) {
+    @DeleteMapping("/category/{id}")
+    public ResponseEntity<Map<String, Object>> deleteBulletinCategory(@PathVariable Integer id) {
         Map<String, Object> response = new HashMap<>();
 
-        if (body == null) {
+        if (id == null) {
             response.put("result", "未提供刪除分類所需資料");
             return ResponseEntity.badRequest().body(response);
         }
 
-        log.info("收到刪除公告分類請求：{}", body);
-        String result = bulletinCategoryService.deleteByName(body);
+        log.info("收到刪除公告分類請求：{}", id);
+        String result = bulletinCategoryService.delete(id);
         response.put("result", result);
 
         if (result.contains("成功")) {
@@ -371,8 +371,8 @@ public class BulletinController {
         }
     }
 
-    // 修改公告分類-不能用，因為name是主鍵不能修改，除非要新增Id當主鍵
-    // @PutMapping("/category/modify")
+    // 暫不提供修改
+    // @PutMapping("/category/{id}")
     // public BulletinCategory modifyBulletinCategory(@RequestBody BulletinCategory
     // body) {
     // if (body != null) {

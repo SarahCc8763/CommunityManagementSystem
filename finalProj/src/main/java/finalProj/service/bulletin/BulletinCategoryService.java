@@ -53,28 +53,23 @@ public class BulletinCategoryService {
     // }
 
     // 刪除分類
-    public String deleteByName(BulletinCategory entity) {
-        String name = entity.getName();
-        if (name == null) {
-            log.warn("分類刪除失敗：未提供分類名稱");
-            return "未提供分類名稱，刪除失敗";
-        }
+    public String delete(Integer id) {
 
-        log.info("準備刪除分類：{}", entity.getName());
+        log.info("準備刪除分類：{}", id);
 
-        if (!bulletinCategoryRepository.existsByName(name)) {
-            log.warn("分類刪除失敗：找不到分類 {}", name);
+        if (!bulletinCategoryRepository.existsById(id)) {
+            log.warn("分類刪除失敗：找不到分類 {}", id);
             return "找不到該分類，刪除失敗";
         }
 
-        var categoryOpt = bulletinCategoryRepository.findByName(name);
+        var categoryOpt = bulletinCategoryRepository.findById(id);
         if (categoryOpt.isPresent() && !categoryOpt.get().getBulletins().isEmpty()) {
-            log.warn("分類刪除失敗：{} 存在關聯公告，無法刪除", name);
+            log.warn("分類刪除失敗：存在關聯公告，無法刪除");
             return "有外鍵約束，刪除失敗";
         }
 
-        bulletinCategoryRepository.deleteByName(name);
-        log.info("分類刪除成功：{}", name);
+        bulletinCategoryRepository.deleteById(id);
+        log.info("分類刪除成功：{}", id);
         return "刪除成功";
     }
 

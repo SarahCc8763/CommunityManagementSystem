@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +21,10 @@ import jakarta.persistence.Table;
 @Table(name = "bulletin_category")
 public class BulletinCategory {
     @Id
+    @Column(name = "bulletin_category_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @Column(name = "bulletin_category_name", length = 20)
     private String name;
 

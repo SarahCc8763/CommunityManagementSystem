@@ -77,6 +77,7 @@ public class FeedbackService {
         feedback.setCategory(optionalCategory.get());
         feedback.setUser(optionalUser.get());
         feedback.setCommunity(optionalCommunity.get());
+        feedback.setStatus("待處理");
 
         Feedback savedFeedback = feedbackRepository.save(feedback);
 
@@ -95,7 +96,7 @@ public class FeedbackService {
         FeedbackStatusHistory feedbackStatusHistory = new FeedbackStatusHistory();
         feedbackStatusHistory.setFeedback(savedFeedback);
         feedbackStatusHistory.setOldStatus(null);
-        feedbackStatusHistory.setNewStatus(savedFeedback.getStatus());
+        feedbackStatusHistory.setNewStatus("待處理");
         feedbackStatusHistory.setChangedAt(LocalDateTime.now());
         feedbackStatusHistory.setChangedBy(savedFeedback.getUser());
         feedbackStatusHistoryRepository.save(feedbackStatusHistory);
@@ -134,7 +135,7 @@ public class FeedbackService {
         Community community = optionalCommunity.get();
 
         Feedback existing = optionalFeedback.get();
-        if (!user.equals(existing.getHandler()) || !community.equals(existing.getCommunity())) {
+        if (!user.equals(existing.getUser()) || !community.equals(existing.getCommunity())) {
             log.info("傳入的反映者或社區與原資料不符，修改失敗");
             return null;
         }
@@ -147,6 +148,9 @@ public class FeedbackService {
         existing.setLastUpdated(LocalDateTime.now());
         if (feedback.getUserRating() != null) {
             existing.setUserRating(feedback.getUserRating());
+        }
+        if (!"已結案".equals(existing.getStatus()) && "已結案".equals(feedback.getStatus())) {
+            existing.setResolvedAt(LocalDateTime.now());
         }
 
         // 移除舊附件

@@ -6,7 +6,18 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.*;
+import finalProj.domain.community.Community;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "faq")
@@ -23,7 +34,7 @@ public class Faq {
     private String answer;
 
     @ManyToOne
-    @JoinColumn(name = "faq_category")
+    @JoinColumn(name = "faq_category_id")
     @JsonBackReference("faq-category")
     private FaqCategory category;
 
@@ -36,6 +47,11 @@ public class Faq {
     @OneToMany(mappedBy = "faq", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("faq-keyword")
     private List<FaqFaqKeyword> keywordLinks;
+
+    @ManyToOne
+    @JoinColumn(name = "community_id")
+    @JsonBackReference("community-faq")
+    private Community community;
 
     @Transient
     private String keywords;
@@ -113,5 +129,13 @@ public class Faq {
 
     public void setKeywords(String keywords) {
         this.keywords = keywords;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
     }
 }
