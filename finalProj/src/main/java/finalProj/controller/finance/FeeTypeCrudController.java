@@ -42,14 +42,25 @@ public class FeeTypeCrudController {
     @PostMapping
     public FeeType create(@RequestBody FeeTypeDTO dto) {
         FeeType feeType = new FeeType();
+
+        // 核心欄位（不能少，否則 JPA 會報 not-null 錯誤）
+        feeType.setFeeCode(dto.getFeeCode());
+        feeType.setAmountPerUnit(dto.getAmountPerUnit());
+        feeType.setUnit(dto.getUnit());
+
+        // 其他欄位
         feeType.setDescription(dto.getDescription());
+        feeType.setFrequency(dto.getFrequency());
         feeType.setNote(dto.getNote());
         feeType.setStatus(dto.getStatus());
         feeType.setCommunityId(dto.getCommunityId());
         feeType.setCreatedBy(dto.getCreatedBy());
         feeType.setUpdatedBy(dto.getUpdatedBy());
+
+        // 時間戳
         feeType.setCreatedAt(LocalDateTime.now());
         feeType.setLastUpdated(LocalDateTime.now());
+
         return feeTypeService.save(feeType);
     }
 

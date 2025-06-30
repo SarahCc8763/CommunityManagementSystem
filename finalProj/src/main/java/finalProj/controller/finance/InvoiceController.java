@@ -26,32 +26,32 @@ public class InvoiceController {
         return invoiceService.findById(invoiceId);
     }
 
-    // 【功能】建立新發票
+    // 【功能】建立新請款
     @PostMapping
     public Invoice create(@RequestBody Invoice invoice) {
         return invoiceService.save(invoice);
     }
 
-    // 【功能】更新發票內容
+    // 【功能】更新請款內容
     @PutMapping("/{invoiceId}")
     public Invoice update(@PathVariable Integer invoiceId, @RequestBody Invoice updated) {
         updated.setInvoiceId(invoiceId);
         return invoiceService.save(updated);
     }
 
-    // 【功能】刪除發票
+    // 【功能】刪除請款
     @DeleteMapping("/{invoiceId}")
     public void delete(@PathVariable Integer invoiceId) {
         invoiceService.deleteById(invoiceId);
     }
 
-    // 【功能】依期別代碼產生/查詢該期所有發票
+    // 【功能】依期別代碼產生/查詢該期所有請款
     @GetMapping("/generate/{periodCode}")
     public List<Invoice> generateByPeriod(@PathVariable String periodCode) {
         return invoiceService.generateInvoicesForPeriod(periodCode);
     }
 
-    // 【功能】更新發票狀態（如已繳/未繳）
+    // 【功能】更新請款狀態（如已繳/未繳）
     @PutMapping("/status/{invoiceId}")
     public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam Boolean status) {
         return invoiceService.updateInvoiceStatus(invoiceId, status);
