@@ -11,4 +11,6 @@ import finalProj.domain.users.UnitsUsers;
 @Repository
 public interface UnitsUsersRepository extends JpaRepository<UnitsUsers, Integer> {
     List<UnitsUsers> findByUnitOrderByUser_UsersIdAsc(Units unit);
+
+    List<UnitsUsers> findByUser_UsersId(Integer usersId);
 }

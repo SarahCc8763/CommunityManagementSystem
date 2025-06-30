@@ -2,7 +2,7 @@
   <div class="invoice-container">
     <h2 class="serif-title">未繳帳單</h2>
     <div v-if="invoices.length === 0" class="no-invoice">
-      <i class="bi bi-emoji-smile"></i> 目前沒有未繳帳單！
+      <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
     </div>
     <div v-else class="invoice-list">
       <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card">
@@ -13,51 +13,119 @@
         <div class="invoice-details">
           <div class="detail-row">
             <span>單位數：</span>
-            <span>{{ invoice.unit_count }}</span>
+            <span>{{ invoice.unitCount }}</span>
           </div>
           <div class="detail-row">
             <span>單價：</span>
             <span>NT$ {{ invoice.unitPrice.toLocaleString() }}</span>
           </div>
         </div>
-        <button class="pay-btn">去繳費</button>
+        <button class="pay-btn" @click="openPayModal(invoice)">去繳費</button>
       </div>
       <div class="total-row">
         <span>總金額：</span>
         <span class="total-amount">NT$ {{ totalAmount.toLocaleString() }}</span>
       </div>
     </div>
+
+    <!-- 付款 Modal -->
+    <div v-if="showPayModal" class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <h4>選擇付款方式</h4>
+          <div class="mb-3">
+            <select v-model="payMethod" class="form-select">
+              <option value="remit">匯款</option>
+              <option value="credit">線上刷卡</option>
+              <option value="cash">現金</option>
+            </select>
+          </div>
+          <div v-if="payMethod==='remit'">
+            <div class="alert alert-info mb-2">請匯款至：00銀行 123123123</div>
+            <div class="mb-2">
+              <label>帳號末五碼</label>
+              <input v-model="remitCode" class="form-control" maxlength="5" />
+            </div>
+            <div class="mb-2">
+              <label>備註（選填）</label>
+              <input v-model="remitNote" class="form-control" />
+            </div>
+            <button class="btn btn-primary w-100" @click="submitRemit">送出匯款回覆</button>
+          </div>
+          <div v-else-if="payMethod==='credit'">
+            <div class="alert alert-success">即將導向綠界線上刷卡頁面（模擬）</div>
+            <button class="btn btn-success w-100" @click="goCredit">前往刷卡</button>
+          </div>
+          <div v-else-if="payMethod==='cash'">
+            <div class="alert alert-warning">請於辦公室時間至櫃檯繳費</div>
+            <button class="btn btn-secondary w-100" @click="closePayModal">我知道了</button>
+          </div>
+          <button class="btn btn-link mt-2 w-100" @click="closePayModal">取消</button>
+          <div v-if="payMsg" class="alert alert-info mt-2">{{ payMsg }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 
-// 靜態假資料，未來可用 API 替換
-const invoices = ref([
-  {
-    invoiceId: 1001,
-    amountDue: 3200,
-    unit_count: 8,
-    unitPrice: 400
-  },
-  {
-    invoiceId: 1002,
-    amountDue: 1500,
-    unit_count: 3,
-    unitPrice: 500
-  },
-  {
-    invoiceId: 1003,
-    amountDue: 2100,
-    unit_count: 7,
-    unitPrice: 300
-  }
-])
-
+const invoices = ref([])
 const totalAmount = computed(() =>
-  invoices.value.reduce((sum, inv) => sum + inv.amountDue, 0)
+  invoices.value.reduce((sum, inv) => sum + Number(inv.amountDue), 0)
 )
+
+const showPayModal = ref(false)
+const payMethod = ref('remit')
+const remitCode = ref('')
+const remitNote = ref('')
+const payMsg = ref('')
+let currentInvoice = null
+
+const fetchInvoices = async () => {
+  // 假設有登入用戶ID，這裡用1測試
+  const userId = 1
+  const res = await axios.get('/finance/invoices')
+  // 只顯示屬於該用戶且status為false的發票
+  invoices.value = res.data.filter(inv => inv.users && inv.users.usersId === userId && inv.status === false)
+}
+
+const openPayModal = (invoice) => {
+  showPayModal.value = true
+  payMethod.value = 'remit'
+  remitCode.value = ''
+  remitNote.value = ''
+  payMsg.value = ''
+  currentInvoice = invoice
+}
+const closePayModal = () => {
+  showPayModal.value = false
+  payMsg.value = ''
+}
+const submitRemit = async () => {
+  if (!remitCode.value.match(/^\d{5}$/)) {
+    payMsg.value = '請輸入正確的帳號末五碼'
+    return
+  }
+  try {
+    await axios.post(`/finance/invoice-responses?userId=${currentInvoice.users.usersId}`, {
+      invoiceId: currentInvoice.invoiceId,
+      accountCode: remitCode.value,
+      lastResponse: remitNote.value
+    })
+    payMsg.value = '匯款回覆已送出！'
+    setTimeout(() => { closePayModal(); fetchInvoices() }, 1200)
+  } catch (e) {
+    payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
+  }
+}
+const goCredit = () => {
+  payMsg.value = '（模擬）已導向綠界刷卡頁面...'
+  setTimeout(() => { closePayModal(); fetchInvoices() }, 1200)
+}
+onMounted(fetchInvoices)
 </script>
 
 <style scoped>
@@ -163,6 +231,31 @@ const totalAmount = computed(() =>
   color: #d53f8c;
   font-size: 1.4rem;
   font-weight: 900;
+}
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-wrapper {
+  width: 100vw;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px rgba(102,126,234,0.18);
+  padding: 24px 18px 18px 18px;
+}
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 @media (max-width: 600px) {
   .invoice-container {

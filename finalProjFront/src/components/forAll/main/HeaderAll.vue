@@ -4,9 +4,9 @@
 <template>
   <header class="header" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <div class="logo" @click="goHome">
+    <router-link to="/" class="logo" style="cursor:pointer;">
       <img src="https://img.freepik.com/premium-vector/building-logo-design-vector_67715-609.jpg" alt="Logo" />
-    </div>
+    </router-link>
 
     <!-- 主選單列：直接展示所有大分類 -->
     <nav class="nav">
@@ -171,9 +171,13 @@ const menuList = ref([
   {
     title: '繳費資訊',
     children: [
-      { label: '待繳帳單', routeName: 'bill-unpaid' },
-      { label: '繳費明細', routeName: 'bill-history' },
-      { label: '財務報表', routeName: 'financial-report' }
+      { label: '待繳帳單', routeName: 'Invoice' },
+      { label: '繳費紀錄', routeName: 'InvoiceHistory' },
+      { label: '新增費用類型', routeName: 'FeeTypeAdd' },
+      { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
+      { label: '新增發票', routeName: 'InvoiceAdd' },
+      { label: '新增收據', routeName: 'ReceiptAdd' },
+      { label: '發票回覆', routeName: 'InvoiceResponseAdd' },
     ]
   },
   {

@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.finance.Invoice;
+import finalProj.domain.finance.FeeType;
+import finalProj.domain.users.UnitsUsers;
 import finalProj.repository.finance.InvoiceRepository;
+import finalProj.repository.finance.FeeTypeRepository;
+import finalProj.repository.users.UnitsUsersRepository;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
 
 @Service
@@ -15,6 +19,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    private FeeTypeRepository feeTypeRepository;
+
+    @Autowired
+    private UnitsUsersRepository unitsUsersRepository;
 
     @Override
     public Invoice save(Invoice invoice) {
@@ -51,6 +61,21 @@ public class InvoiceServiceImpl implements InvoiceService {
             return invoiceRepository.save(invoice);
         }
         return null;
+    }
+
+    @Override
+    public java.math.BigDecimal getUnitCountByUserAndFeeType(Integer usersId, Integer feeTypeId) {
+        FeeType feeType = feeTypeRepository.findById(feeTypeId).orElse(null);
+        if (feeType == null)
+            return java.math.BigDecimal.ONE;
+        if ("管理費".equals(feeType.getDescription())) {
+            // 取得用戶對應的單位坪數
+            java.util.List<UnitsUsers> list = unitsUsersRepository.findByUser_UsersId(usersId);
+            if (list != null && !list.isEmpty() && list.get(0).getUnit() != null) {
+                return list.get(0).getUnit().getPing();
+            }
+        }
+        return java.math.BigDecimal.ONE;
     }
 
 }

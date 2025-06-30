@@ -60,4 +60,13 @@ public class ReceiptController {
         receiptService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    // 依用戶ID查詢收據
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Receipt>> getReceiptsByUserId(@PathVariable Integer userId) {
+        List<Receipt> all = receiptService.findAll();
+        List<Receipt> filtered = all.stream()
+                .filter(r -> r.getUsers() != null && r.getUsers().getUsersId().equals(userId)).toList();
+        return ResponseEntity.ok(filtered);
+    }
 }

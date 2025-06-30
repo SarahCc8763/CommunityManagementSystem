@@ -17,4 +17,6 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
     List<Invoice> findAll();
 
     void deleteById(Integer invoiceId);
+
+    java.math.BigDecimal getUnitCountByUserAndFeeType(Integer usersId, Integer feeTypeId);
 }

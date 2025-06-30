@@ -522,10 +522,4 @@ const emit = defineEmits(['close'])
     padding: 20px;
   }
 }
-
-@media (max-width: 768px) {
-  .right-side-nav {
-    display: none;
-  }
-}
 </style> 

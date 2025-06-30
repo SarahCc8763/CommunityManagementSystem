@@ -1,31 +1,34 @@
 <template>
   <div id="app">
-    <HeaderAll />
+    <BeforeLogIn />
+    <!-- <HeaderAll /> -->
     
     <main class="main-content"> 
      
+      
       <!-- 這裡是左右的Nav -->
-        <LeftSideNav />
+       <!--    <LeftSideNav /> -->
+      
         <RightSideNav :show="showRightNav" @close="showRightNav = false" />
        <div class="main-area" :class="{ 'with-right-nav': showRightNav }" @click="showRightNav && (showRightNav = false)">
-          <button class="right-nav-toggle" @click="showRightNav = true">
+          <button class="right-nav-toggle" @click.stop="showRightNav = true">
             <i class="bi bi-layout-sidebar-inset"></i>
           </button>
           
-              <div v-if="!showRightNav" class="drawer-tab" @click="showRightNav = true">
+              <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
                 <i class="bi bi-chevron-left"></i>
                 <span class="drawer-tab-text">更多</span>
               </div>
               <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
           <!-- 左右Nav結束 -->
 
-
+<RouterView />
 
           <!-- 大家想測試的頁面可以放這裡喔～ -->
           <!-- <Example /> -->
            <!-- <Home /> -->
-            <Invoice />
-
+            <!-- <Invoice /> -->
+<!-- <FeeTypeAdd /> -->
 
         </div>
      
@@ -44,10 +47,13 @@
 
 
 <script setup>
+
+   // ...原本的 code
 //功能類import
 import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { watch } from 'vue'
 
 
 //固定的頁首頁尾以及側邊欄位
@@ -64,11 +70,17 @@ import Home from './views/Home.vue';
 import BeforeLogIn from './views/BeforeLogIn.vue';
 import finUser from '@/components/finance/finUser/finUser.vue';
 import Invoice from '@/components/finance/finUser/Invoice.vue';
+import FeeTypeAdd from './components/finance/finUser/FeeTypeAdd.vue';
+
+
 
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
 
+   watch(showRightNav, (val) => {
+     console.log('測試點擊showRightNav:', val)
+   })
 //以下放的是測試登入登出的假資料
 // 登入
 user.login({
@@ -251,17 +263,6 @@ onUnmounted(() => {
   }
   .main-area {
     margin-right: 220px;
-  }
-}
-
-@media (max-width: 900px) {
-  .main-area {
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .left-side-nav,
-  .right-side-nav {
-    display: none;
   }
 }
 

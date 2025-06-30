@@ -56,5 +56,10 @@ public class InvoiceController {
     public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam Boolean status) {
         return invoiceService.updateInvoiceStatus(invoiceId, status);
     }
-    //
+
+    // 新增API：取得單位數
+    @GetMapping("/unit-count")
+    public java.math.BigDecimal getUnitCount(@RequestParam Integer usersId, @RequestParam Integer feeTypeId) {
+        return invoiceService.getUnitCountByUserAndFeeType(usersId, feeTypeId);
+    }
 }
