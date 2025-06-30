@@ -16,6 +16,7 @@ public class BillingPeriodDTO {
     private FeeTypeDTO feeType;
     private Integer communityId;
     private Boolean status;
+    private Integer feeTypeId;
 
     // BaseEntity 欄位
     private String createdBy;

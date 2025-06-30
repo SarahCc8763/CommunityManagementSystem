@@ -36,6 +36,7 @@ public class BillingPeriodCurdController {
 
     // Entity 轉 DTO
     private BillingPeriodDTO toDTO(BillingPeriod entity) {
+
         if (entity == null)
             return null;
         BillingPeriodDTO dto = new BillingPeriodDTO();
@@ -68,6 +69,7 @@ public class BillingPeriodCurdController {
 
     // DTO 轉 Entity（for create/update）
     private BillingPeriod toEntity(BillingPeriodDTO dto) {
+
         BillingPeriod entity = new BillingPeriod();
         entity.setBillingPeriodId(dto.getBillingPeriodId());
         entity.setPeriodName(dto.getPeriodName());
@@ -78,12 +80,18 @@ public class BillingPeriodCurdController {
         entity.setNote(dto.getNote());
         entity.setStatus(dto.getStatus());
         entity.setCommunityId(dto.getCommunityId());
+
         // FeeType 關聯
-        if (dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null) {
-            FeeType feeType = feeTypeRepository.findById(dto.getFeeType().getFeeTypeId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID"));
+
+        if ((dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null)
+                || dto.getFeeTypeId() != null) {
+
+            Integer id = dto.getFeeType() != null ? dto.getFeeType().getFeeTypeId() : dto.getFeeTypeId();
+            FeeType feeType = feeTypeRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID: " + id));
             entity.setFeeType(feeType);
         }
+
         return entity;
     }
 
@@ -116,22 +124,40 @@ public class BillingPeriodCurdController {
         if (existing == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "找不到對應期別 ID: " + id);
         }
-        // 更新欄位
-        existing.setPeriodName(dto.getPeriodName());
-        existing.setPeriodCode(dto.getPeriodCode());
-        existing.setStartDate(dto.getStartDate());
-        existing.setEndDate(dto.getEndDate());
-        existing.setDueDate(dto.getDueDate());
-        existing.setNote(dto.getNote());
-        existing.setStatus(dto.getStatus());
-        existing.setCommunityId(dto.getCommunityId());
-        existing.setLastUpdated(LocalDateTime.now());
+
+        // 更新欄位（僅在不為 null 時才更新）
+        if (dto.getPeriodName() != null)
+            existing.setPeriodName(dto.getPeriodName());
+        if (dto.getPeriodCode() != null)
+            existing.setPeriodCode(dto.getPeriodCode());
+        if (dto.getStartDate() != null)
+            existing.setStartDate(dto.getStartDate());
+        if (dto.getEndDate() != null)
+            existing.setEndDate(dto.getEndDate());
+        if (dto.getDueDate() != null)
+            existing.setDueDate(dto.getDueDate());
+        if (dto.getNote() != null)
+            existing.setNote(dto.getNote());
+        if (dto.getStatus() != null)
+            existing.setStatus(dto.getStatus());
+        if (dto.getCommunityId() != null)
+            existing.setCommunityId(dto.getCommunityId());
+
         // FeeType 關聯
-        if (dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null) {
-            FeeType feeType = feeTypeRepository.findById(dto.getFeeType().getFeeTypeId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID"));
+        if ((dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null)
+                || dto.getFeeTypeId() != null) {
+
+            Integer feeTypeId = dto.getFeeType() != null
+                    ? dto.getFeeType().getFeeTypeId()
+                    : dto.getFeeTypeId();
+
+            FeeType feeType = feeTypeRepository.findById(feeTypeId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID: " + feeTypeId));
             existing.setFeeType(feeType);
         }
+
+        existing.setLastUpdated(LocalDateTime.now());
+
         BillingPeriod saved = billingPeriodService.save(existing);
         return toDTO(saved);
     }

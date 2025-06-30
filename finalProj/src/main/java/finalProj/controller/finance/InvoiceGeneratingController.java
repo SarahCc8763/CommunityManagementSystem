@@ -17,7 +17,7 @@ public class InvoiceGeneratingController {
     @Autowired
     private InvoiceGeneratingService invoiceGeneratingService;
 
-    // 【功能】批次產生發票（依費用類型、期別、單價）
+    // 【功能】批次產生請款（依費用類型、期別、單價）
     @PostMapping("/generate")
     public ResponseEntity<String> generateInvoices(@RequestBody InvoiceGenerateRequest request) {
         invoiceGeneratingService.generateInvoices(request.getFeeTypeName(), request.getBillingPeriodCode(),
