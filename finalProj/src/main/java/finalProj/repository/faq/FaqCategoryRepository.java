@@ -15,7 +15,7 @@ public interface FaqCategoryRepository extends JpaRepository<FaqCategory, Intege
     public void deleteByName(String name);
 
     // findByCommunity_CommunityIdAndName
-    public Optional<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name);
+    public List<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name);
 
     public List<FaqCategory> findByCommunity_CommunityId(Integer id);
 

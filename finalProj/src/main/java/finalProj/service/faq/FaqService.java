@@ -92,14 +92,19 @@ public class FaqService {
         if (entity != null) {
             // 找關鍵字
             String[] keywordArray = entity.getKeywords().split(",");
-            Optional<FaqCategory> optionalCat = faqCategoryRepository.findByCommunity_CommunityIdAndName(
+            List<FaqCategory> optionalCat = faqCategoryRepository.findByCommunity_CommunityIdAndName(
                     entity.getCommunity().getCommunityId(), entity.getCategory().getName());
-            if (!optionalCat.isPresent()) {
+            if (optionalCat.isEmpty()) {
                 log.warn("找不到分類 ");
                 return null;
             }
-            log.info("找到分類物件: " + optionalCat.get().getName());
-            entity.setCategory(optionalCat.get());
+            if (optionalCat.size() > 1) {
+                log.warn("找到多個分類 ");
+                return null;
+
+            }
+            log.info("找到分類物件: " + optionalCat.get(0).getName());
+            entity.setCategory(optionalCat.get(0));
             Faq faq = faqRepository.save(entity); // 新增FAQ物件(不含關鍵字)
             for (String word : keywordArray) {
                 Optional<FaqKeyword> optional = faqKeywordRepository.findByWord(word);

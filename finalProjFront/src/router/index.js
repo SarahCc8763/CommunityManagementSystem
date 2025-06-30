@@ -3,7 +3,7 @@ import Home from '@/views/Home.vue'
 import TicketList from '@/views/TicketList.vue'
 import TicketForm from '@/views/TicketForm.vue'
 import TicketDetailView from '@/views/TicketDetailView.vue'
-import Faq from '@/components/faq/Faq.vue'
+import Faq from '@/views/faq/Faq.vue'
 
 
 

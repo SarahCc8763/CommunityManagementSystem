@@ -160,26 +160,29 @@ public class FaqController {
         return response;
     }
 
-    @GetMapping("/category")
-    public String[] findAllCategory() {
+    @GetMapping("/{communityId}/category")
+    public String[] findAllCategory(@PathVariable Integer communityId) {
+        if (communityId == null) {
+            return null;
+        }
 
-        // 待修正
-        // 待修正
-        // 待修正
-        // 待修正
-        // 待修正
-
-        List<FaqCategory> list = faqCategoryService.findByCommunity_CommunityId(1); // 待修正
+        List<FaqCategory> list = faqCategoryService.findByCommunity_CommunityId(communityId); // 待修正
         String[] category = new String[list.size()];
 
         for (int i = 0; i < list.size(); i++) {
             category[i] = list.get(i).getName();
         }
         return category;
-        // 待修正
-        // 待修正
-        // 待修正
-        // 待修正
-        // 待修正
+
     }
+
+    @PostMapping("/category")
+    public FaqCategory addCategory(@RequestBody FaqCategory body) {
+        if (body == null) {
+            return null;
+        }
+        return faqCategoryService.save(body);
+
+    }
+
 }

@@ -13,6 +13,7 @@ import java.util.*;
 public class FaqCategory {
     @Id
     @Column(name = "faq_category_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "faq_category_name", length = 20)

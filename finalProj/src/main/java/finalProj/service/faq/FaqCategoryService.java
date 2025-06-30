@@ -9,13 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.faq.FaqCategory;
 import finalProj.repository.faq.FaqCategoryRepository;
+import finalProj.service.community.CommunityService;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class FaqCategoryService {
 
     @Autowired
     private FaqCategoryRepository faqCategoryRepository;
+    @Autowired
+    private CommunityService CommunityService;
 
     public List<FaqCategory> findAll() {
         return faqCategoryRepository.findAll();
@@ -26,6 +31,14 @@ public class FaqCategoryService {
     }
 
     public FaqCategory save(FaqCategory entity) {
+        if (entity.getCommunity() == null || entity.getCommunity().getCommunityId() == null) {
+            return null;
+        }
+        if (!findByCommunity_CommunityIdAndName(entity.getCommunity().getCommunityId(), entity.getName()).isEmpty()) {
+            log.error("FAQ 分類已經存在");
+            return null;
+        }
+        entity.setCommunity(CommunityService.findById(entity.getCommunity().getCommunityId()));
         return faqCategoryRepository.save(entity);
     }
 
@@ -33,7 +46,7 @@ public class FaqCategoryService {
         faqCategoryRepository.deleteByName(name);
     }
 
-    public Optional<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name) {
+    public List<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name) {
         return faqCategoryRepository.findByCommunity_CommunityIdAndName(id, name);
     }
 
