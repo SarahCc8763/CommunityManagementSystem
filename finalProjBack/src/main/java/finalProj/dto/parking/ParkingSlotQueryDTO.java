@@ -4,11 +4,18 @@ import java.util.Date;
 
 public class ParkingSlotQueryDTO {
 	
+	private Integer communityId;
     private Integer typeId;
     private Date eventStart;
     private Date eventEnd;
     private Integer limit;
     
+	public Integer getCommunityId() {
+		return communityId;
+	}
+	public void setCommunityId(Integer communityId) {
+		this.communityId = communityId;
+	}
 	public Integer getTypeId() {
 		return typeId;
 	}

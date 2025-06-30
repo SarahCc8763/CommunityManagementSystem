@@ -40,7 +40,7 @@
                     <label class="form-label">車位擁有人</label>
                     <select class="form-select" v-model="filter.usersId">
                         <option value="">所有擁有人</option>
-                        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
                     </select>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -76,8 +76,8 @@
             <tr v-for="slot in filteredSlots" :key="slot.id">
                 <td>{{ slot.slotNumber }}</td>
                 <td>{{ slot.location }}</td>
-                <td>{{ getParkingTypeLabel(slot.parkingTypeId) }}</td>
-                <td>{{ getUserName(slot.usersId) }}</td>
+                <td>{{ slot.parkingTypeName || '未知' }}</td>
+                <td>{{ slot.userName || '未知' }}</td>
                 <td>{{ slot.licensePlate || '無' }}</td>
                 <td>{{ slot.isRentable ? '是' : '否' }}</td>
                 <td>
@@ -122,29 +122,29 @@
             <div>
                 <label>車位代碼：
                     <input v-model="form.slotNumber" class="form-control" :readonly="isEditMode" />
-                </label>
+                </label><br>
                 <label>位置：
                     <input v-model="form.location" class="form-control" />
-                </label>
+                </label><br>
                 <label>車位種類：
                     <select v-model="form.parkingTypeId" class="form-select">
                         <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
                     </select>
-                </label>
+                </label><br>
                 <label>車位擁有人：
                     <select v-model="form.usersId" class="form-select">
-                        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
                     </select>
-                </label>
+                </label><br>
                 <label>車牌：
                     <input v-model="form.licensePlate" class="form-control" />
-                </label>
+                </label><br>
                 <label>是否可承租：
                     <select v-model="form.isRentable" class="form-select">
                         <option :value="true">是</option>
                         <option :value="false">否</option>
                     </select>
-                </label>
+                </label><br>
             </div>
             <button class="btn btn-primary mt-2" @click="isEditMode ? saveEdit() : submitNewSlot()">儲存</button>
         </div>
@@ -157,80 +157,71 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios.js'
+import useUserStore from '@/stores/user.js';
+
+const userStore = useUserStore();
+const communityId = userStore.community
 
 const isEditMode = ref(false)
 
 const form = ref({
     id: null,
-    communityId,
     slotNumber: '',
     location: '',
-    parkingTypeId: '',
-    usersId: '',
+    parkingTypeId: null,  // 注意這裡
+    usersId: null,        // 改為 usersId
     licensePlate: '',
     isRentable: true
 })
+
 
 
 const slots = ref([])
 const editing = ref({})
-// const communityId = JSON.parse(localStorage.getItem('user')).communityId
-const communityId = 1
-
-const parkingTypes = [
-    { id: 1, label: '汽車' },
-    { id: 2, label: '機車' },
-    { id: 3, label: '電動車' },
-    { id: 4, label: '殘障車位' }
-]
-
-const users = ref([
-    { id: 1, name: '建商' },
-    { id: 2, name: '林淑貞' },
-    { id: 3, name: '張大明' }
-])
-
-const newSlot = ref({
-    communityId,
-    slotNumber: '',
-    location: '',
-    parkingTypeId: '',
-    usersId: '',
-    licensePlate: '',
-    isRentable: true
-})
+const parkingTypes = ref([])
+const users = ref([])
 
 async function submitNewSlot() {
+    console.log('送出資料：', form.value)
     try {
-        const res = await axios.post('/park/parking-slots/create', newSlot.value)
+        const res = await axios.post(`/park/parking-slots?communityId=${communityId}`, {
+            slotNumber: form.value.slotNumber?.trim() || null,
+            location: form.value.location?.trim() || null,
+            licensePlate: form.value.licensePlate?.trim() || null,
+            isRentable: form.value.isRentable === true,
+            parkingType: parkingTypes.value.find(t => t.id === Number(form.value.parkingTypeId))?.label || null,
+            usersId: form.value.usersId !== '' ? Number(form.value.usersId) : null
+        })
         alert('新增成功')
-        // 清空欄位
-        newSlot.value = {
+
+        // 清空表單
+        form.value = {
             communityId,
             slotNumber: '',
             location: '',
-            parkingTypeId: '',
-            usersId: '',
+            parkingTypeId: null,
+            usersId: null,
             licensePlate: '',
             isRentable: true
         }
+
         fetchSlots()
-        // Bootstrap 會自動根據 data-bs-dismiss 關閉 Modal
     } catch (e) {
         console.error('新增失敗', e)
         alert('新增失敗')
     }
 }
 
+
+
 function openAddModal() {
     isEditMode.value = false
     form.value = {
         id: null,
-        communityId,
         slotNumber: '',
         location: '',
-        parkingTypeId: '',
-        usersId: '',
+        parkingTypeId: null,
+        usersId: null,
         licensePlate: '',
         isRentable: true
     }
@@ -238,44 +229,64 @@ function openAddModal() {
 
 function openEditModal(slot) {
     isEditMode.value = true
-    form.value = { ...slot }
+    form.value = {
+        id: slot.id,
+        slotNumber: slot.slotNumber,
+        location: slot.location,
+        parkingTypeId: slot.parkingTypeId,
+        usersId: slot.usersId,
+        licensePlate: slot.licensePlate,
+        isRentable: slot.isRentable
+    }
 }
 
-function getParkingTypeLabel(id) {
-    const type = parkingTypes.find(t => t.id === id)
-    return type ? type.label : `未知(${id})`
+const fetchType = async () => {
+    const res = await axios.get(`/park/parking-types?communityId=${communityId}`)
+    // 將 type 改名為 label，保留 id
+    parkingTypes.value = res.data.data.map(t => ({
+    id: t.id,
+    label: t.type
+}))
 }
 
-function getUserName(id) {
-    const user = users.value.find(u => u.id === id)
-    return user ? user.name : `未知(${id})`
+
+
+const fetchUsers = async () => {
+    const res = await axios.get(`/users?communityId=${communityId}`)
+    users.value = res.data.data
 }
 
 const filter = ref({
     slotNumber: '',
     location: '',
-    parkingTypeId: '',
-    usersId: '',
+    parkingTypeId: null,
+    usersId: null,
     licensePlate: '',
     isRentable: ''
 })
 
+
 const filteredSlots = computed(() => {
     return slots.value.filter(slot => {
+        const filterUserId = filter.value.usersId !== null && filter.value.usersId !== '' ? Number(filter.value.usersId) : null
+        const filterTypeId = filter.value.parkingTypeId !== null && filter.value.parkingTypeId !== '' ? Number(filter.value.parkingTypeId) : null
+
         return (
             (!filter.value.slotNumber || slot.slotNumber.includes(filter.value.slotNumber)) &&
             (!filter.value.location || slot.location.includes(filter.value.location)) &&
-            (!filter.value.parkingTypeId || slot.parkingTypeId === parseInt(filter.value.parkingTypeId)) &&
-            (!filter.value.usersId || slot.usersId === parseInt(filter.value.usersId)) &&
+            (!filterTypeId || slot.parkingTypeId === filterTypeId) &&
+            (!filterUserId || slot.usersId === filterUserId) &&
             (!filter.value.licensePlate || (slot.licensePlate || '').includes(filter.value.licensePlate)) &&
             (filter.value.isRentable === '' || slot.isRentable === (filter.value.isRentable === 'true'))
         )
     })
 })
 
+
+
 const fetchSlots = async () => {
     const res = await axios.get(`/park/parking-slots?communityId=${communityId}`)
-    slots.value = res.data
+    slots.value = res.data.data
 }
 
 
@@ -285,6 +296,7 @@ async function saveEdit() {
         await axios.put(`/park/parking-slots/${form.value.id}`, form.value)
         alert('修改成功')
         fetchSlots()
+
     } catch (e) {
         console.error('修改失敗', e)
         alert('修改失敗')
@@ -300,5 +312,10 @@ const deleteSlot = async (id) => {
     }
 }
 
-onMounted(fetchSlots)
+onMounted(() => {
+    fetchUsers()
+    fetchType()
+    fetchSlots()
+})
+
 </script>

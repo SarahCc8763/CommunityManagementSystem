@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.Bulletin;
-import finalProj.domain.Users;
 import finalProj.domain.parking.LotteryApply;
 import finalProj.domain.parking.LotteryEventSpace;
 import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.users.Users;
 import finalProj.dto.parking.DrawLotsResultDTO;
 import finalProj.dto.parking.LotteryEventSpaceDTO;
 import finalProj.dto.parking.LotteryEventUpdateRequest;

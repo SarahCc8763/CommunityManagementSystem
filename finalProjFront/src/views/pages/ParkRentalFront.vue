@@ -1,5 +1,5 @@
 <template>
-    <h2>查詢可承租車位</h2>
+    <h2>可承租車位</h2>
     <div>
         <label>起始時間：<input type="datetime-local" v-model="start" /></label><br />
         <label>結束時間：<input type="datetime-local" v-model="end" /></label><br />
@@ -26,14 +26,12 @@
                     <td>{{ slot.id }}</td>
                     <td>{{ slot.slotNumber }}</td>
                     <td>{{ slot.location }}</td>
-                    <td><!-- 加上 data-bs-toggle / data-bs-target -->
+                    <td>
                         <!-- data-bs-toggle / data-bs-target 交給 Bootstrap 處理開窗 -->
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rentalModal"
                             @click="prepareRental(slot)">
                             我要承租
                         </button>
-
-
                     </td>
                 </tr>
             </tbody>
@@ -79,17 +77,23 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios.js'
+import useUserStore from '@/stores/user.js';
+
+const userStore = useUserStore();
+const communityId = userStore.community
 
 const start = ref('')
 const end = ref('')
+const parkingTypes = ref([])
 const selectedType = ref(1)
 
-const parkingTypes = [
-    { id: 1, label: '汽車' },
-    { id: 2, label: '機車' },
-    { id: 3, label: '電動車' },
-    { id: 4, label: '殘障車位' }
-]
+const fetchType = async () => {
+    const res = await axios.get(`/park/parking-types?communityId=${communityId}`)
+    parkingTypes.value = res.data.data.map(t => ({
+        id: t.id,
+        label: t.type
+    }))
+}
 
 function formatDateTime(datetimeStr) {
     return datetimeStr.replace('T', ' ') + ':00'
@@ -224,6 +228,7 @@ onMounted(() => {
     const later = new Date(now.getTime() + 60 * 60 * 1000)
     end.value = later.toISOString().slice(0, 16)
     fetchAvailableSlots()
+    fetchType()
 })
 
 watch([start, end, selectedType], ([newStart, newEnd, newType]) => {

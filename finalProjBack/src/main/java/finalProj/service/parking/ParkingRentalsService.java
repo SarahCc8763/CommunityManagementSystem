@@ -28,8 +28,8 @@ public class ParkingRentalsService {
 	private UsersRepository usersRepository;
 
 	// 查詢可承租車位
-	public List<ParkingSlot> findAvailableSlots(Integer parkingTypeId, Date start, Date end) {
-	    return repository.findAvailableSlotsByTypeAndPeriod(parkingTypeId, start, end);
+	public List<ParkingSlot> findAvailableSlots(Integer communityId, Integer parkingTypeId, Date start, Date end) {
+	    return repository.findAvailableSlotsByTypeAndPeriod(communityId, parkingTypeId, start, end);
 	}
 	
 	// 查詢所有承租資料
@@ -58,8 +58,8 @@ public class ParkingRentalsService {
 
 	// 新增承租紀錄
 	public ParkingRentals create(ParkingRentals rental) {
-		Integer usersId = rental.getUsersId();
-		Integer parkingSlotId = rental.getParkingSlotId();
+		Integer usersId = rental.getUsers().getUsersId();
+		Integer parkingSlotId = rental.getParkingSlot().getId();
 		Date rentBuyStart = rental.getRentBuyStart();
 		Date rentEnd = rental.getRentEnd();
 		String licensePlate = rental.getLicensePlate();
@@ -92,8 +92,8 @@ public class ParkingRentalsService {
 	// 修改承租紀錄
 	public ParkingRentals update(ParkingRentals rental) {
 		Integer id = rental.getId();
-		Integer usersId = rental.getUsersId();
-		Integer parkingSlotId = rental.getParkingSlotId();
+		Integer usersId = rental.getUsers().getUsersId();
+		Integer parkingSlotId = rental.getParkingSlot().getId();
 		Date rentBuyStart = rental.getRentBuyStart();
 		Date rentEnd = rental.getRentEnd();
 		String licensePlate = rental.getLicensePlate();

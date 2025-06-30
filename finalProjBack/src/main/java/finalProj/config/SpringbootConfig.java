@@ -8,6 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SpringbootConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/park/**").allowedMethods("GET", "POST", "PUT", "DELETE");
+		registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE");
 	}
 }

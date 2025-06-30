@@ -2,17 +2,35 @@ package finalProj.dto.parking;
 
 import java.util.Date;
 
-public class RentalHistoryDTO {
-	private String licensePlate;
-	private Date startDate;
-	private Date endDate;
-	private Boolean status;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-	public RentalHistoryDTO(String licensePlate, Date startDate, Date endDate, Boolean status) {
-		this.licensePlate = licensePlate;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.status = status;
+public class RentalHistoryDTO {
+	private Integer id;
+	private String licensePlate;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date rentBuyStart;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date rentEnd;
+	private Boolean status;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date createdAt;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date updatedAt;
+	private Boolean approved;
+
+	// 關聯的部分
+	private String slotNumber;
+	private String location;
+	private String parkingType;
+	private String userName;
+	private String approverName;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getLicensePlate() {
@@ -23,20 +41,20 @@ public class RentalHistoryDTO {
 		this.licensePlate = licensePlate;
 	}
 
-	public Date getStartDate() {
-		return startDate;
+	public Date getRentBuyStart() {
+		return rentBuyStart;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setRentBuyStart(Date rentBuyStart) {
+		this.rentBuyStart = rentBuyStart;
 	}
 
-	public Date getEndDate() {
-		return endDate;
+	public Date getRentEnd() {
+		return rentEnd;
 	}
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setRentEnd(Date rentEnd) {
+		this.rentEnd = rentEnd;
 	}
 
 	public Boolean getStatus() {
@@ -45,6 +63,70 @@ public class RentalHistoryDTO {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Boolean getApproved() {
+		return approved;
+	}
+
+	public void setApproved(Boolean approved) {
+		this.approved = approved;
+	}
+
+	public String getSlotNumber() {
+		return slotNumber;
+	}
+
+	public void setSlotNumber(String slotNumber) {
+		this.slotNumber = slotNumber;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getParkingType() {
+		return parkingType;
+	}
+
+	public void setParkingType(String parkingType) {
+		this.parkingType = parkingType;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getApproverName() {
+		return approverName;
+	}
+
+	public void setApproverName(String approverName) {
+		this.approverName = approverName;
 	}
 
 }

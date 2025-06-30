@@ -17,22 +17,34 @@ public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, 
 	@Query("""
 			    SELECT ps
 			    FROM ParkingSlot ps
-			    WHERE ps.parkingTypeId = :parkingTypeId
+			    WHERE ps.community.id = :communityId
+			      AND ps.parkingType.id = :parkingTypeId
 			      AND ps.isRentable = true
 			      AND ps.id NOT IN (
-			        SELECT pr.parkingSlotId
+			        SELECT pr.parkingSlot.id
 			        FROM ParkingRentals pr
 			        WHERE (
 			          pr.rentBuyStart <= :end AND pr.rentEnd >= :start
 			        )
 			      )
 			""")
-	List<ParkingSlot> findAvailableSlotsByTypeAndPeriod(@Param("parkingTypeId") Integer parkingTypeId,
-			@Param("start") Date start, @Param("end") Date end);
+	List<ParkingSlot> findAvailableSlotsByTypeAndPeriod(
+			@Param("communityId") Integer communityId,
+			@Param("parkingTypeId") Integer parkingTypeId, 
+			@Param("start") Date start, 
+			@Param("end") Date end);
 
-	@Query("SELECT r FROM ParkingRentals r WHERE r.parkingSlotId = :slotId"
-			+ " AND (:startDate IS NULL OR r.rentBuyStart >= :startDate)")
-	List<ParkingRentals> findHistoryBySlotIdAndStartDate(@Param("slotId") Integer slotId,
+	@Query("""
+			    SELECT r FROM ParkingRentals r
+			    WHERE r.community.id = :communityId
+				  AND r.parkingSlot.id = :slotId
+			      AND (:startDate IS NULL OR r.rentBuyStart >= :startDate)
+			""")
+	List<ParkingRentals> findHistoryBySlotIdAndStartDate(
+			@Param("communityId") Integer communityId,
+		    @Param("slotId") Integer slotId,
 			@Param("startDate") Date startDate);
+
+	List<ParkingRentals> findByCommunity_CommunityId(Integer communityId);
 
 }

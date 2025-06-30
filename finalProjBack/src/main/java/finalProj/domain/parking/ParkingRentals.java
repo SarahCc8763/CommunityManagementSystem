@@ -2,13 +2,18 @@ package finalProj.domain.parking;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import finalProj.domain.community.Community;
+import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 // 承租紀錄表
@@ -22,17 +27,29 @@ public class ParkingRentals {
 	@Column(name = "id")
 	private Integer id;
 
-	// 社區 Id
-	@Column(name = "community_id")
-	private Integer communityId;
+	// 多對一到社區
+	@JsonBackReference("community-parkingRentals")
+	@ManyToOne
+	@JoinColumn(name = "community_id", referencedColumnName = "id")
+	private Community community;
 
-	// 承租者 Id
-	@Column(name = "users_id", nullable = false)
-	private Integer usersId;
+	// 多對一到車位資料
+	@JsonBackReference("parkingSlot-parkingRentals")
+	@ManyToOne
+	@JoinColumn(name = "parking_slot_id", referencedColumnName = "id")
+	private ParkingSlot parkingSlot;
 
-	// 車位 Id
-	@Column(name = "parking_slot_id", nullable = false)
-	private Integer parkingSlotId;
+	// 多對一到承租者
+	@JsonBackReference("users-parkingRentals")
+	@ManyToOne
+	@JoinColumn(name = "users_id", referencedColumnName = "users_id")
+	private Users users;
+
+	// 多對一到審核人
+	@JsonBackReference("users-approver")
+	@ManyToOne
+	@JoinColumn(name = "approved_id", referencedColumnName = "users_id")
+	private Users approver;
 
 	// 承租起始日
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
@@ -56,10 +73,6 @@ public class ParkingRentals {
 	@Column(name = "approved", nullable = false)
 	private Boolean approved = false;
 
-	// 審核人 Id（管理員）
-	@Column(name = "approved_id")
-	private Integer approvedId;
-
 	// 最後更新時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	@Column(name = "updated_at")
@@ -70,12 +83,14 @@ public class ParkingRentals {
 	@Column(name = "created_at")
 	private Date createdAt;
 
+	// ---------------------------------------------------------------------------------------
+
 	@Override
 	public String toString() {
-		return "ParkingRentals [id=" + id + ", communityId=" + communityId + ", usersId=" + usersId + ", parkingSlotId="
-				+ parkingSlotId + ", rentBuyStart=" + rentBuyStart + ", rentEnd=" + rentEnd + ", licensePlate="
-				+ licensePlate + ", status=" + status + ", approved=" + approved + ", approvedId=" + approvedId
-				+ ", updatedAt=" + updatedAt + ", createdAt=" + createdAt + "]";
+		return "ParkingRentals [id=" + id + ", community=" + community + ", parkingSlot=" + parkingSlot + ", users="
+				+ users + ", approver=" + approver + ", rentBuyStart=" + rentBuyStart + ", rentEnd=" + rentEnd
+				+ ", licensePlate=" + licensePlate + ", status=" + status + ", approved=" + approved + ", updatedAt="
+				+ updatedAt + ", createdAt=" + createdAt + "]";
 	}
 
 	public Integer getId() {
@@ -86,28 +101,36 @@ public class ParkingRentals {
 		this.id = id;
 	}
 
-	public Integer getCommunityId() {
-		return communityId;
+	public Community getCommunity() {
+		return community;
 	}
 
-	public void setCommunityId(Integer communityId) {
-		this.communityId = communityId;
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 
-	public Integer getUsersId() {
-		return usersId;
+	public ParkingSlot getParkingSlot() {
+		return parkingSlot;
 	}
 
-	public void setUsersId(Integer usersId) {
-		this.usersId = usersId;
+	public void setParkingSlot(ParkingSlot parkingSlot) {
+		this.parkingSlot = parkingSlot;
 	}
 
-	public Integer getParkingSlotId() {
-		return parkingSlotId;
+	public Users getUsers() {
+		return users;
 	}
 
-	public void setParkingSlotId(Integer parkingSlotId) {
-		this.parkingSlotId = parkingSlotId;
+	public void setUsers(Users users) {
+		this.users = users;
+	}
+
+	public Users getApprover() {
+		return approver;
+	}
+
+	public void setApprover(Users approver) {
+		this.approver = approver;
 	}
 
 	public Date getRentBuyStart() {
@@ -148,14 +171,6 @@ public class ParkingRentals {
 
 	public void setApproved(Boolean approved) {
 		this.approved = approved;
-	}
-
-	public Integer getApprovedId() {
-		return approvedId;
-	}
-
-	public void setApprovedId(Integer approvedId) {
-		this.approvedId = approvedId;
 	}
 
 	public Date getUpdatedAt() {
