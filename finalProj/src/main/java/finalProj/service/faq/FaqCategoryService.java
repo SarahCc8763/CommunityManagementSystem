@@ -37,4 +37,8 @@ public class FaqCategoryService {
         return faqCategoryRepository.findByCommunity_CommunityIdAndName(id, name);
     }
 
+    public List<FaqCategory> findByCommunity_CommunityId(Integer id) {
+        return faqCategoryRepository.findByCommunity_CommunityId(id);
+    }
+
 }

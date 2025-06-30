@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.faq.Faq;
+import finalProj.domain.faq.FaqCategory;
 import finalProj.dto.FaqDto;
 import finalProj.dto.FaqResponse;
+import finalProj.service.faq.FaqCategoryService;
 import finalProj.service.faq.FaqService;
 
 @RestController
@@ -24,6 +26,9 @@ public class FaqController {
 
     @Autowired
     private FaqService faqService;
+
+    @Autowired
+    private FaqCategoryService faqCategoryService;
 
     @PostMapping
     public FaqResponse postFaq(@RequestBody Faq faq) {
@@ -153,5 +158,28 @@ public class FaqController {
             response.setList(list);
         }
         return response;
+    }
+
+    @GetMapping("/category")
+    public String[] findAllCategory() {
+
+        // 待修正
+        // 待修正
+        // 待修正
+        // 待修正
+        // 待修正
+
+        List<FaqCategory> list = faqCategoryService.findByCommunity_CommunityId(1); // 待修正
+        String[] category = new String[list.size()];
+
+        for (int i = 0; i < list.size(); i++) {
+            category[i] = list.get(i).getName();
+        }
+        return category;
+        // 待修正
+        // 待修正
+        // 待修正
+        // 待修正
+        // 待修正
     }
 }

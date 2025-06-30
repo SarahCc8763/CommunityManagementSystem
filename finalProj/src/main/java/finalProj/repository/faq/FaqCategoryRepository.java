@@ -1,5 +1,6 @@
 package finalProj.repository.faq;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ public interface FaqCategoryRepository extends JpaRepository<FaqCategory, Intege
 
     // findByCommunity_CommunityIdAndName
     public Optional<FaqCategory> findByCommunity_CommunityIdAndName(Integer id, String name);
+
+    public List<FaqCategory> findByCommunity_CommunityId(Integer id);
 
 }
