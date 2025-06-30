@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import FeeTypeAdd from '../components/finance/finUser/FeeTypeAdd.vue'
-import BillingPeriodAdd from '../components/finance/finUser/BillingPeriodAdd.vue'
-import InvoiceAdd from '../components/finance/finUser/InvoiceAdd.vue'
+import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
+import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
-import ReceiptAdd from '../components/finance/finUser/ReceiptAdd.vue'
+import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
 
 const router = createRouter({
