@@ -19,21 +19,26 @@ public class IssueTypeAndTicketController {
 
 	@Autowired
 	private IssueTypeAndTicketService issueTypeAndTicketService;
-
-	@PostMapping
-	public IssueTypeAndTicket add(@RequestBody IssueTypeAndTicket issueTypeAndTicket) {
-		return issueTypeAndTicketService.create(issueTypeAndTicket.getTicketId(), issueTypeAndTicket.getIssueTypeId());
+	
+	@GetMapping
+	public List<IssueTypeAndTicket> findAll(){
+		return issueTypeAndTicketService.findAll();
 	}
 
-	@GetMapping("/ticket/{ticketId}")
-	public List<IssueTypeAndTicket> findByTicket(@PathVariable Integer ticketId) {
-		return issueTypeAndTicketService.findByTicketId(ticketId);
-	}
-
-	// DTO for request body
-	public static class TicketIssueRequest {
-		private Integer ticketId;
-		private Integer issueTypeId;
-		// getter / setter
-	}
+//	@PostMapping
+//	public IssueTypeAndTicket add(@RequestBody IssueTypeAndTicket issueTypeAndTicket) {
+//		return issueTypeAndTicketService.create(issueTypeAndTicket.getTicket(), issueTypeAndTicket.getIssueType());
+//	}
+//
+//	@GetMapping("/ticket/{ticketId}")
+//	public List<IssueTypeAndTicket> findByTicket(@PathVariable Integer ticketId) {
+//		return issueTypeAndTicketService.findByTicket(ticketId);
+//	}
+//
+//	// DTO for request body
+//	public static class TicketIssueRequest {
+//		private Integer ticketId;
+//		private Integer issueTypeId;
+//		// getter / setter
+//	}
 }

@@ -1,12 +1,22 @@
-package finalProj.domin.ticket;
+package finalProj.domain.users;
 
 import java.util.Date;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import finalProj.domain.community.Community;
+import finalProj.domain.ticket.Ticket;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -20,28 +30,28 @@ public class Users {
 	@Column(name = "users_id")
 	private Integer usersId;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false,length = 100)
 	private String name;
 
-	@Column(name = "gender")
+	@Column(name = "gender",length = 10)
 	private String gender;
 
-	@Column(name = "contact_info")
+	@Column(name = "contact_info", length = 255)
 	private String contactInfo;
 
-	@Column(name = "emergency_contact_name")
+	@Column(name = "emergency_contact_name", length = 100)
 	private String emergencyContactName;
 
-	@Column(name = "emergency_contact_phone")
+	@Column(name = "emergency_contact_phone", length = 50)
 	private String emergencyContactPhone;
 
-	@Column(name = "emergency_contact_relation")
+	@Column(name = "emergency_contact_relation", length = 50)
 	private String emergencyContactRelation;
 
-	@Column(name = "line_id")
+	@Column(name = "line_id", length = 100)
 	private String lineId;
 
-	@Column(name = "state")
+	@Column(name = "state",length = 50)
 	private String state;
 
 	@Column(name = "create_at", updatable = false)
@@ -52,14 +62,48 @@ public class Users {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAlterAt;
 
-	@Column(name = "photo")
+	@Column(name = "photo", length = 500)
 	private String photo; // 儲存圖片 URL
 
-	@Column(name = "email", unique = true)
+	@Column(name = "email", unique = true, length = 100)
 	private String email;
+	
+//	@Column(name = "password", nullable = false, length = 100)
+//	@JsonIgnore // 防止 password 被序列化回傳
+//	private String password;
+//
+//	@Column(name = "states", columnDefinition = "INT DEFAULT 0")
+//	private Integer states = 0;
+//
+//	@Column(name = "login_fail_times", columnDefinition = "INT DEFAULT 0")
+//	private Integer loginFailTimes = 0;
+//
+//	@Column(name = "last_failed_login")
+//	private LocalDateTime lastFailedLogin;
+//
+//	@Column(name = "account_locked_until")
+//	private LocalDateTime accountLockedUntil;
+	
+	
+	@JsonBackReference("communityUser")
+	@ManyToOne
+	@JoinColumn(name = "community_id",referencedColumnName = "id")
+	private Community community;
+	
+	
+	// 這個 user 曾報修過的 tickets
+	@JsonManagedReference("reporterIdTicket")
+	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> reportedTickets;
 
-	@Column(name = "community_id")
-	private Integer communityId;
+	// 這個 user 被指派處理的 tickets
+	@JsonManagedReference("assignerIdTicket")
+	@OneToMany(mappedBy = "assignerId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> assignedTickets;
+	
+	public Integer getUsersId() {
+		return usersId;
+	}
 
 	@Override
 	public String toString() {
@@ -67,11 +111,15 @@ public class Users {
 				+ ", emergencyContactName=" + emergencyContactName + ", emergencyContactPhone=" + emergencyContactPhone
 				+ ", emergencyContactRelation=" + emergencyContactRelation + ", lineId=" + lineId + ", state=" + state
 				+ ", createAt=" + createAt + ", lastAlterAt=" + lastAlterAt + ", photo=" + photo + ", email=" + email
-				+ ", communityId=" + communityId + "]";
+				+ ", community=" + community + "]";
 	}
 
-	public Integer getUsersId() {
-		return usersId;
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 
 	public void setUsersId(Integer usersId) {
@@ -174,12 +222,6 @@ public class Users {
 		this.email = email;
 	}
 
-	public Integer getCommunityId() {
-		return communityId;
-	}
 
-	public void setCommunityId(Integer communityId) {
-		this.communityId = communityId;
-	}
 
 }

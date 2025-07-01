@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,14 +16,17 @@ public class IssueTypeAndTicket {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	@Column(name = "ticket_id")
-	private Integer ticketId;// ticket流水號
-	@Column(name = "issue_type_id")
-	private Integer issueTypeId;// 問題類別流水號
+
+	@ManyToOne
+	@JoinColumn(name = "ticket_id")
+	private Ticket ticket;// ticket流水號
+	@ManyToOne
+	@JoinColumn(name = "issue_type_id")
+	private IssueType issueType;
 
 	@Override
 	public String toString() {
-		return "IssueTypeAndTicket [id=" + id + ", ticketId=" + ticketId + ", issueTypeId=" + issueTypeId + "]";
+		return "IssueTypeAndTicket [id=" + id + ", ticket=" + ticket + ", issueType=" + issueType + "]";
 	}
 
 	public Integer getId() {
@@ -32,20 +37,20 @@ public class IssueTypeAndTicket {
 		this.id = id;
 	}
 
-	public Integer getTicketId() {
-		return ticketId;
+	public Ticket getTicket() {
+		return ticket;
 	}
 
-	public void setTicketId(Integer ticketId) {
-		this.ticketId = ticketId;
+	public void setTicket(Ticket ticket) {
+		this.ticket = ticket;
 	}
 
-	public Integer getIssueTypeId() {
-		return issueTypeId;
+	public IssueType getIssueType() {
+		return issueType;
 	}
 
-	public void setIssueTypeId(Integer issueTypeId) {
-		this.issueTypeId = issueTypeId;
-	}
+	public void setIssueType(IssueType issueType) {
+		this.issueType = issueType;
+	}// 問題類別流水號
 
 }

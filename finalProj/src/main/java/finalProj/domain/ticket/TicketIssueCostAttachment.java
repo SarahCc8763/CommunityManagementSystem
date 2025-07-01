@@ -21,7 +21,7 @@ public class TicketIssueCostAttachment {
 	@Column(name = "id")
 	private Integer id;// Cost_attachment流水號
 	
-	@JsonBackReference("costAttachment")
+	@JsonBackReference("ticketCostAttachment")
 	@ManyToOne
 	@JoinColumn(name = "ticket_id", nullable = false)
 	private Ticket ticket;
