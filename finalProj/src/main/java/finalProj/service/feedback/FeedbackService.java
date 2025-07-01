@@ -86,6 +86,7 @@ public class FeedbackService {
         if (attachments != null) {
             attachments.forEach(a -> {
                 a.setFeedback(savedFeedback);
+
                 feedbackAttachmentRepository.save(a);
                 log.info("附件儲存成功：{}", a.getFileName());
             });
@@ -169,8 +170,10 @@ public class FeedbackService {
             List<FeedbackAttachment> newAttachments = new ArrayList<>();
             for (FeedbackAttachment newAttachment : feedback.getAttachments()) {
                 newAttachment.setFeedback(existing);
+                newAttachment.setFileSize(newAttachment.getFileDataBase64().length() * 3 / 4);
                 newAttachments.add(newAttachment);
                 log.debug("加入新附件：{}", newAttachment.getFileName());
+                feedbackAttachmentRepository.save(newAttachment);
             }
             existing.setAttachments(newAttachments);
         }

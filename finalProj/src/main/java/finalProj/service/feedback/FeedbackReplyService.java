@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.users.Users;
 import finalProj.repository.feedback.FeedbackReplyRepository;
+import finalProj.repository.feedback.FeedbackRepository;
 import finalProj.repository.feedback.FeedbackStatusHistoryRepository;
 import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class FeedbackReplyService {
     private FeedbackReplyRepository feedbackReplyRepository;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     // @Autowired
     // private FeedbackRepository feedbackRepository;
@@ -41,22 +45,44 @@ public class FeedbackReplyService {
     }
 
     public FeedbackReply insert(FeedbackReply entity) {
-
-        // 設定時間（如果你的實體有 createdAt 類欄位）
+        // 設定回覆時間
         entity.setRepliedAt(LocalDateTime.now());
 
-        // 儲存 FeedbackReply
+        // 儲存回覆
         FeedbackReply savedReply = feedbackReplyRepository.save(entity);
 
-        // 建立並儲存 FeedbackStatusHistory
-        FeedbackStatusHistory statusHistory = new FeedbackStatusHistory();
-        statusHistory.setFeedback(entity.getFeedback());
-        statusHistory.setChangedBy(entity.getUser());
-        statusHistory.setOldStatus(entity.getPreFeedBackStatus());
-        statusHistory.setNewStatus(entity.getNewFeedBackStatus()); // 或你定義的狀態列舉/字串
-        statusHistory.setChangedAt(LocalDateTime.now());
+        // 檢查是否需要建立狀態歷史記錄
+        String newStatus = entity.getNewFeedBackStatus();
+        String oldStatus = entity.getPreFeedBackStatus();
 
-        feedbackStatusHistoryRepository.save(statusHistory);
+        if (newStatus != null && !newStatus.equals(oldStatus)) {
+            // 查詢 Feedback（這邊應該是用 feedbackId 而不是 userId）
+            Integer feedbackId = entity.getFeedback().getId();
+            Optional<Feedback> optFeedback = feedbackRepository.findById(feedbackId);
+
+            if (optFeedback.isPresent()) {
+                Feedback feedback = optFeedback.get();
+
+                // 更新 feedback 的狀態
+                feedback.setStatus(newStatus);
+                feedback.setLastUpdated(LocalDateTime.now());
+                feedbackRepository.save(feedback); // 寫入資料庫
+
+                // 建立狀態歷史紀錄
+                FeedbackStatusHistory statusHistory = new FeedbackStatusHistory();
+                statusHistory.setFeedback(feedback);
+                statusHistory.setChangedBy(entity.getUser());
+                statusHistory.setOldStatus(oldStatus);
+                statusHistory.setNewStatus(newStatus);
+                statusHistory.setChangedAt(LocalDateTime.now());
+
+                feedbackStatusHistoryRepository.save(statusHistory);
+            } else {
+                log.warn("找不到 Feedback，ID: {}", feedbackId);
+            }
+        } else {
+            log.info("狀態未變更，跳過建立歷史紀錄");
+        }
 
         return savedReply;
     }

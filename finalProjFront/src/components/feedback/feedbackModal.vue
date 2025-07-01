@@ -22,7 +22,7 @@
                         <select v-model="form.category.id" class="form-select">
                             <option disabled value="">請選擇分類</option>
                             <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                                {{ cat.id }} {{ cat.name }}
+                                {{ cat.name }}
                             </option>
                         </select>
                     </div>
@@ -104,6 +104,7 @@ const convertFiles = (fileList) => {
                 fileDataBase64: base64,
             })
         }
+
         reader.readAsDataURL(file)
     })
 }
@@ -129,7 +130,7 @@ const submitFeedback = async () => {
 
         const res = await axios[method](url, payload)
         console.log(payload);
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.success === true) {
             swal.fire({ icon: 'success', title: '成功', text: '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
@@ -168,10 +169,11 @@ onMounted(fetchCategories)
 onMounted(() => {
     window.addEventListener('load-feedback-for-edit', (e) => {
         const feedback = e.detail
+        console.log(feedback);
         form.id = feedback.list[0].id
         form.title = feedback.list[0].title
         form.description = feedback.list[0].description
-        form.category.id = feedback.list[0].category?.id || ''
+        form.category = feedback.list[0].category || ''
         attachments.value = feedback.list[0].attachments || []
     })
 })

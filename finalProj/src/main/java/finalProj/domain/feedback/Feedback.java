@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -22,6 +23,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "feedback")
+// @JsonIgnoreProperties({"handler", "community", "attachments",
+// "statusHistories", "replies"})
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +39,7 @@ public class Feedback {
 
     @ManyToOne
     @JoinColumn(name = "feedback_category_id")
-    @JsonBackReference("feedback-category")
+    // @JsonBackReference("feedback-category")
     private FeedbackCategory category;
 
     @ManyToOne
@@ -88,7 +91,7 @@ public class Feedback {
                 + ", user=" + user + ", handler=" + handler + ", submittedAt=" + submittedAt + ", status=" + status
                 + ", lastUpdated=" + lastUpdated + ", resolvedAt=" + resolvedAt + ", userRating=" + userRating
                 + ", community=" + community + ", attachments=" + attachments + ", statusHistories=" + statusHistories
-                + "]";
+                + ", replies=" + replies + "]";
     }
 
     public Community getCommunity() {

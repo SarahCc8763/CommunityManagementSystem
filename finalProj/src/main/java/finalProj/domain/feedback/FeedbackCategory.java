@@ -4,6 +4,7 @@ package finalProj.domain.feedback;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -19,6 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "feedback_category")
+@JsonIgnoreProperties({ "feedbacks" })
 public class FeedbackCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,7 @@ public class FeedbackCategory {
     private Community community;
 
     @OneToMany(mappedBy = "category")
-    @JsonManagedReference("feedback-category")
+    // @JsonManagedReference("feedback-category")
     private List<Feedback> feedbacks;
 
     @Override

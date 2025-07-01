@@ -29,7 +29,7 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 @JsonIgnoreProperties({ "password", "feedbacks", "feedbackReplies", "feedbackStatusHistories", "pollVotes",
 		"bulletinComments",
-		"bulletinCommentLikes", "bulletins", "handledFeedbacks" })
+		"bulletinCommentLikes", "bulletins", "handledFeedbacks", "community" })
 public class Users {
 
 	@Id
