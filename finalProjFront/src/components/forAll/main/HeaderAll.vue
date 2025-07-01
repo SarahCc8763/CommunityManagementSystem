@@ -2,7 +2,7 @@
 
 
 <template>
-  <header class="header" @mouseleave="closeDropdown">
+  <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
     <router-link to="/" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
@@ -122,6 +122,7 @@ const keepDropdown = () => {
 // 點擊子功能導頁
 const handleNavigate = (item) => {
   router.push({ name: item.routeName })
+  activeIndex.value = null // 跳轉後自動收起下拉選單
 }
 
 // 監聽登入成功事件
@@ -222,9 +223,14 @@ const menuList = ref([
   }
 ])
 
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
+
 </script>
 
 <style scoped>
+/* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 .header {
   width: 100vw;
   height: 72px;
@@ -233,7 +239,6 @@ const menuList = ref([
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 0 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -242,7 +247,6 @@ const menuList = ref([
   top: 0;
   left: 0;
   right: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
 }
 

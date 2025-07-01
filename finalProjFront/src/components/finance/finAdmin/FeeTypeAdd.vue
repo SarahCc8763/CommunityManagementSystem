@@ -84,10 +84,10 @@
   </div>
 
   <!-- 顯示每筆資料 -->
-  <div class="container mt-4">
+  <div class="container mt-4" :class="{ 'dark-mode': isDarkMode }">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="tag-style px-4 py-2">
+      <div class="tag-style px-4 py-2" :class="{ 'dark-mode': isDarkMode }">
         <h4 class="mb-0 fw-bold text-primary section-title">費用類別列表</h4>
       </div>
       <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#feeTypeModal">
@@ -96,7 +96,7 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table align-middle table-hover table-borderless shadow-sm rounded">
+      <table class="table align-middle table-hover table-borderless shadow-sm rounded" :class="{ 'dark-mode': isDarkMode }">
         <thead class=" text-secondary border-bottom">
           <tr>
             <th scope="col">費用代碼</th>
@@ -208,25 +208,3 @@ onMounted(() => {
   // fetchFeeTypes()
 })
 </script>
-
-<style>
-.table {
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-th {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-td {
-  vertical-align: middle;
-  font-size: 0.95rem;
-}
-
-.modal {
-  padding-top: 100px;
-  /* 避開 header */
-}
-</style>

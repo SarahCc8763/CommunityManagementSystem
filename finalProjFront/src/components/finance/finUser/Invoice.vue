@@ -1,26 +1,34 @@
 <template>
   <div class="invoice-container">
-    <h2 class="serif-title">未繳帳單</h2>
+    <div class="tag-style px-4 py-2 mb-4">
+      <h4 class="mb-0 fw-bold section-title">待繳帳單</h4>
+    </div>
     <div v-if="invoices.length === 0" class="no-invoice">
       <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
     </div>
     <div v-else class="invoice-list">
       <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card">
         <div class="invoice-header">
-          <span class="invoice-id">帳單編號：{{ invoice.invoiceId }}</span>
-          <span class="amount-due">NT$ {{ invoice.amountDue.toLocaleString() }}</span>
-        </div>
-        <div class="invoice-details">
-          <div class="detail-row">
-            <span>單位數：</span>
-            <span>{{ invoice.unitCount }}</span>
+          <div class="header-main">
+            <span class="invoice-id">帳單編號：{{ invoice.invoiceId }}</span>
+            <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
           </div>
-          <div class="detail-row">
-            <span>單價：</span>
-            <span>NT$ {{ invoice.unitPrice.toLocaleString() }}</span>
+          <div class="header-amount">
+            <span class="amount-due">NT$ {{ invoice.amountDue.toLocaleString() }}</span>
           </div>
         </div>
-        <button class="pay-btn" @click="openPayModal(invoice)">去繳費</button>
+        <div class="invoice-info-row">
+          <div><span class="info-label">費用類型：</span>{{ invoice.feeType?.description || '—' }}</div>
+          <div><span class="info-label">期別：</span>{{ invoice.periodName }}</div>
+        </div>
+        <div class="invoice-info-row">
+          <div><span class="info-label">單位數：</span>{{ invoice.unitCount }}</div>
+          <div><span class="info-label">單價：</span>NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
+        </div>
+        <div class="invoice-info-row">
+          <div><span class="info-label">繳費截止日：</span>{{ formatDate(invoice.deadline) }}</div>
+        </div>
+        <button v-if="invoice.status === false || invoice.status === 'pending'" class="pay-btn" @click="openPayModal(invoice)">去繳費</button>
       </div>
       <div class="total-row">
         <span>總金額：</span>
@@ -35,13 +43,20 @@
           <h4>選擇付款方式</h4>
           <div class="mb-3">
             <select v-model="payMethod" class="form-select">
+              <option disabled value="">請選擇付款方式</option>
               <option value="remit">匯款</option>
               <option value="credit">線上刷卡</option>
               <option value="cash">現金</option>
             </select>
           </div>
           <div v-if="payMethod==='remit'">
-            <div class="alert alert-info mb-2">請匯款至：00銀行 123123123</div>
+            <div class="alert alert-info mb-2">
+              請匯款至：00銀行 123123123<br>
+              <span class="text-danger">提醒您於 {{ formatDate(currentInvoice.deadline) }} 前完成繳款，匯款後請於下方提供帳號末五碼，以利對帳。</span>
+            </div>
+            <div v-if="payMsg==='請輸入正確的帳號末五碼'" class="text-danger mb-1" style="font-size:0.98rem;">
+              {{ payMsg }}
+            </div>
             <div class="mb-2">
               <label>帳號末五碼</label>
               <input v-model="remitCode" class="form-control" maxlength="5" />
@@ -57,11 +72,14 @@
             <button class="btn btn-success w-100" @click="goCredit">前往刷卡</button>
           </div>
           <div v-else-if="payMethod==='cash'">
-            <div class="alert alert-warning">請於辦公室時間至櫃檯繳費</div>
+            <div class="alert alert-warning">
+              辦公室時間為 9:00~17:00，請於上班時間至管理室櫃檯繳費。<br>
+              <span class="text-danger">提醒您於 {{ formatDate(currentInvoice.deadline) }} 前完成繳款，繳費後請主動告知管理員。</span>
+            </div>
             <button class="btn btn-secondary w-100" @click="closePayModal">我知道了</button>
           </div>
           <button class="btn btn-link mt-2 w-100" @click="closePayModal">取消</button>
-          <div v-if="payMsg" class="alert alert-info mt-2">{{ payMsg }}</div>
+          <div v-if="payMsg && payMsg !== 'success'" class="alert alert-info mt-2">{{ payMsg }}</div>
         </div>
       </div>
     </div>
@@ -71,30 +89,65 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
-const invoices = ref([])
+const invoices = ref([
+  {
+    invoiceId: 'INV20240601',
+    amountDue: 3200,
+    unitCount: 32,
+    unitPrice: 100,
+    users: { usersId: 1, name: '王小明' },
+    feeType: { description: '管理費' },
+    periodName: '2024年6月',
+    deadline: '2024-06-30',
+    status: false
+  },
+  {
+    invoiceId: 'INV20240602',
+    amountDue: 1500,
+    unitCount: 15,
+    unitPrice: 100,
+    users: { usersId: 1, name: '王小明' },
+    feeType: { description: '清潔費' },
+    periodName: '2024年6月',
+    deadline: '2024-06-30',
+    status: 'pending' // 審核中
+  }
+])
 const totalAmount = computed(() =>
   invoices.value.reduce((sum, inv) => sum + Number(inv.amountDue), 0)
 )
 
 const showPayModal = ref(false)
-const payMethod = ref('remit')
+const payMethod = ref('')
 const remitCode = ref('')
 const remitNote = ref('')
 const payMsg = ref('')
 let currentInvoice = null
 
-const fetchInvoices = async () => {
-  // 假設有登入用戶ID，這裡用1測試
-  const userId = 1
-  const res = await axios.get('/finance/invoices')
-  // 只顯示屬於該用戶且status為false的發票
-  invoices.value = res.data.filter(inv => inv.users && inv.users.usersId === userId && inv.status === false)
+const formatDate = (date) => {
+  if (!date) return ''
+  if (typeof date === 'string') return date.replace('T', ' ').slice(0, 16)
+  return date.toLocaleString()
+}
+
+const statusText = (invoice) => {
+  if (invoice.status === false) return '未繳'
+  if (invoice.status === 'pending') return '審核中'
+  if (invoice.status === true) return '已繳'
+  return '—'
+}
+const statusBadgeClass = (invoice) => {
+  if (invoice.status === false) return 'badge-primary'
+  if (invoice.status === 'pending') return 'badge-warning'
+  if (invoice.status === true) return 'badge-success'
+  return 'badge-secondary'
 }
 
 const openPayModal = (invoice) => {
   showPayModal.value = true
-  payMethod.value = 'remit'
+  payMethod.value = ''
   remitCode.value = ''
   remitNote.value = ''
   payMsg.value = ''
@@ -110,22 +163,36 @@ const submitRemit = async () => {
     return
   }
   try {
-    await axios.post(`/finance/invoice-responses?userId=${currentInvoice.users.usersId}`, {
-      invoiceId: currentInvoice.invoiceId,
-      accountCode: remitCode.value,
-      lastResponse: remitNote.value
+    // 模擬後端回覆
+    // await axios.post(`/finance/invoice-responses?userId=${currentInvoice.users.usersId}`, {
+    //   invoiceId: currentInvoice.invoiceId,
+    //   accountCode: remitCode.value,
+    //   lastResponse: remitNote.value
+    // })
+    currentInvoice.status = 'pending'
+    showPayModal.value = false
+    Swal.fire({
+      icon: 'success',
+      title: '管理員已收到您的回覆',
+      text: '會盡快審核，請耐心等候。',
+      confirmButtonText: '確定',
+      customClass: { popup: 'swal2-custom' }
     })
-    payMsg.value = '匯款回覆已送出！'
-    setTimeout(() => { closePayModal(); fetchInvoices() }, 1200)
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
   }
 }
 const goCredit = () => {
-  payMsg.value = '（模擬）已導向綠界刷卡頁面...'
-  setTimeout(() => { closePayModal(); fetchInvoices() }, 1200)
+  showPayModal.value = false
+  Swal.fire({
+    icon: 'success',
+    title: '管理員已收到您的回覆',
+    text: '會盡快審核，請耐心等候。',
+    confirmButtonText: '確定',
+    customClass: { popup: 'swal2-custom' }
+  })
 }
-onMounted(fetchInvoices)
+// onMounted(fetchInvoices)
 </script>
 
 <style scoped>
@@ -176,27 +243,37 @@ onMounted(fetchInvoices)
 .invoice-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   font-size: 1.1rem;
   font-weight: 600;
   color: #4a5568;
   margin-bottom: 8px;
+  gap: 12px;
 }
-.amount-due {
-  color: #667eea;
+.header-main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.header-amount {
   font-size: 1.2rem;
   font-weight: 800;
+  color: #667eea;
+  align-self: flex-end;
 }
-.invoice-details {
+.invoice-info-row {
   display: flex;
+  flex-direction: row;
   gap: 32px;
   font-size: 1rem;
   color: #4a5568;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
-.detail-row {
-  display: flex;
-  gap: 8px;
+.info-label {
+  font-weight: 600;
+  color: #667eea;
+  margin-right: 4px;
 }
 .pay-btn {
   align-self: flex-end;
@@ -256,6 +333,30 @@ onMounted(fetchInvoices)
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.badge-primary {
+  background: #e0e7ff;
+  color: #3b82f6;
+}
+.badge-warning {
+  background: #fef3c7;
+  color: #f59e42;
+}
+.badge-success {
+  background: #d1fae5;
+  color: #10b981;
+}
+.badge-secondary {
+  background: #e5e7eb;
+  color: #6b7280;
 }
 @media (max-width: 600px) {
   .invoice-container {

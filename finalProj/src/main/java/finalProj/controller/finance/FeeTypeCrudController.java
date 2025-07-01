@@ -26,58 +26,94 @@ public class FeeTypeCrudController {
     @Autowired
     private FeeTypeService feeTypeService;
 
+    // Entity 轉 DTO
+    private FeeTypeDTO toDTO(FeeType entity) {
+        if (entity == null)
+            return null;
+        FeeTypeDTO dto = new FeeTypeDTO();
+        dto.setFeeTypeId(entity.getFeeTypeId());
+        dto.setFeeCode(entity.getFeeCode());
+        dto.setDescription(entity.getDescription());
+        dto.setAmountPerUnit(entity.getAmountPerUnit());
+        dto.setUnit(entity.getUnit());
+        dto.setFrequency(entity.getFrequency());
+        dto.setNote(entity.getNote());
+        dto.setStatus(entity.getActiveStatus());
+        dto.setCommunityId(entity.getCommunityId());
+        dto.setCreatedBy(entity.getCreatedBy());
+        dto.setUpdatedBy(entity.getUpdatedBy());
+        return dto;
+    }
+
+    // DTO 轉 Entity
+    private FeeType toEntity(FeeTypeDTO dto) {
+        FeeType entity = new FeeType();
+        entity.setFeeTypeId(dto.getFeeTypeId());
+        entity.setFeeCode(dto.getFeeCode());
+        entity.setDescription(dto.getDescription());
+        entity.setAmountPerUnit(dto.getAmountPerUnit());
+        entity.setUnit(dto.getUnit());
+        entity.setFrequency(dto.getFrequency());
+        entity.setNote(dto.getNote());
+        entity.setActiveStatus(dto.getStatus());
+        entity.setCommunityId(dto.getCommunityId());
+        entity.setCreatedBy(dto.getCreatedBy());
+        entity.setUpdatedBy(dto.getUpdatedBy());
+        return entity;
+    }
+
     // 【功能】取得所有費用類型
     @GetMapping
-    public List<FeeType> getAll() {
-        return feeTypeService.findAll();
+    public List<FeeTypeDTO> getAll() {
+        return feeTypeService.findAll().stream().map(this::toDTO).toList();
     }
 
     // 【功能】依ID查詢單一費用類型
     @GetMapping("/{id}")
-    public FeeType getById(@PathVariable Integer id) {
-        return feeTypeService.findById(id);
+    public FeeTypeDTO getById(@PathVariable Integer id) {
+        FeeType entity = feeTypeService.findById(id);
+        if (entity == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "找不到費用類別 ID: " + id);
+        }
+        return toDTO(entity);
     }
 
     // 【功能】建立新費用類型
     @PostMapping
-    public FeeType create(@RequestBody FeeTypeDTO dto) {
-        FeeType feeType = new FeeType();
-
-        // 核心欄位（不能少，否則 JPA 會報 not-null 錯誤）
-        feeType.setFeeCode(dto.getFeeCode());
-        feeType.setAmountPerUnit(dto.getAmountPerUnit());
-        feeType.setUnit(dto.getUnit());
-
-        // 其他欄位
-        feeType.setDescription(dto.getDescription());
-        feeType.setFrequency(dto.getFrequency());
-        feeType.setNote(dto.getNote());
-        feeType.setStatus(dto.getStatus());
-        feeType.setCommunityId(dto.getCommunityId());
-        feeType.setCreatedBy(dto.getCreatedBy());
-        feeType.setUpdatedBy(dto.getUpdatedBy());
-
-        // 時間戳
+    public FeeTypeDTO create(@RequestBody FeeTypeDTO dto) {
+        // 檢查 feeCode 是否重複
+        List<FeeType> all = feeTypeService.findAll();
+        if (all.stream().anyMatch(f -> f.getFeeCode().equals(dto.getFeeCode()))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "費用代碼已存在");
+        }
+        FeeType feeType = toEntity(dto);
         feeType.setCreatedAt(LocalDateTime.now());
         feeType.setLastUpdated(LocalDateTime.now());
-
-        return feeTypeService.save(feeType);
+        FeeType saved = feeTypeService.save(feeType);
+        return toDTO(saved);
     }
 
     // 【功能】更新費用類型內容
     @PutMapping("/{id}")
-    public FeeType update(@PathVariable Integer id, @RequestBody FeeTypeDTO dto) {
+    public FeeTypeDTO update(@PathVariable Integer id, @RequestBody FeeTypeDTO dto) {
         FeeType existing = feeTypeService.findById(id);
         if (existing == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "找不到費用類別 ID: " + id);
         }
-        existing.setDescription(dto.getDescription());
-        existing.setNote(dto.getNote());
-        existing.setStatus(dto.getStatus());
-        existing.setCommunityId(dto.getCommunityId());
-        existing.setUpdatedBy(dto.getUpdatedBy());
+        // 只更新有傳入的欄位
+        if (dto.getDescription() != null)
+            existing.setDescription(dto.getDescription());
+        if (dto.getNote() != null)
+            existing.setNote(dto.getNote());
+        if (dto.getStatus() != null)
+            existing.setActiveStatus(dto.getStatus());
+        if (dto.getCommunityId() != null)
+            existing.setCommunityId(dto.getCommunityId());
+        if (dto.getUpdatedBy() != null)
+            existing.setUpdatedBy(dto.getUpdatedBy());
         existing.setLastUpdated(LocalDateTime.now());
-        return feeTypeService.save(existing);
+        FeeType saved = feeTypeService.save(existing);
+        return toDTO(saved);
     }
 
     // 【功能】刪除費用類型

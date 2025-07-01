@@ -1,10 +1,10 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
 
-    <HeaderAll />
+    <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
-        <LeftSideNav />
+        <LeftSideNav :isDarkMode="isDarkMode" />
         <RightSideNav :show="showRightNav" @close="showRightNav = false" />
 
         <button class="right-nav-toggle" @click.stop="showRightNav = true">

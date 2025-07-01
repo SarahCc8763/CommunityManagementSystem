@@ -8,7 +8,7 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     List<Invoice> generateInvoicesForPeriod(String periodCode);
 
-    Invoice updateInvoiceStatus(Integer id, Boolean status);
+    Invoice updateInvoiceStatus(Integer id, String status);
 
     Invoice save(Invoice invoice);
 

@@ -6,6 +6,7 @@ import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+import Invoice from '../components/finance/finUser/Invoice.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,11 @@ const router = createRouter({
       path: '/finance/invoice/history',
       name: 'InvoiceHistory',
       component: InvoiceHistory,
+    },
+    {
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice
     },
     // {
     //   path: '/',

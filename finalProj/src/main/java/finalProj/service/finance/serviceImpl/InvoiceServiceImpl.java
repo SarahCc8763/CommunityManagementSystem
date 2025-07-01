@@ -53,7 +53,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice updateInvoiceStatus(Integer invoiceId, Boolean status) {
+    public Invoice updateInvoiceStatus(Integer invoiceId, String status) {
         Optional<Invoice> optional = invoiceRepository.findById(invoiceId);
         if (optional.isPresent()) {
             Invoice invoice = optional.get();

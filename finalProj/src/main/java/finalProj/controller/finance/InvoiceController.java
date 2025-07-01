@@ -51,10 +51,12 @@ public class InvoiceController {
         return invoiceService.generateInvoicesForPeriod(periodCode);
     }
 
-    // 【功能】更新請款狀態（如已繳/未繳）
+    // 【功能】更新請款狀態（如已繳/未繳/審核中）
     @PutMapping("/status/{invoiceId}")
-    public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam Boolean status) {
-        return invoiceService.updateInvoiceStatus(invoiceId, status);
+    public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam String status) {
+        Invoice invoice = invoiceService.findById(invoiceId);
+        invoice.setStatus(status);
+        return invoiceService.save(invoice);
     }
 
     // 新增API：取得單位數

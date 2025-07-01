@@ -1,5 +1,5 @@
 <template>
-    <aside class="left-side-nav">
+    <aside class="left-side-nav" :class="{ 'dark-mode': isDarkMode }">
       <!-- 會員頭像區（登入後才顯示） -->
       <div v-if="UserStore.isAuthenticated" class="user-section">
         <div class="user-profile-card new-member-card no-border-card">
@@ -166,16 +166,18 @@
     // 移除事件監聽器
     window.removeEventListener('logout', handleGlobalLogout)
   })
+
+  const props = defineProps({
+    isDarkMode: { type: Boolean, default: false }
+  })
   </script>
   
   <style scoped>
+  /* 僅保留 layout/spacing/animation，移除 .user-profile-card、.placeholder-card 的背景、border、box-shadow，這些交由 custom-bootstrap.scss 控制 */
   .left-side-nav {
     min-width: 320px;
     max-width: 320px;
     width: 320px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
     padding: 24px;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
     animation: slideInLeft 0.6s ease-out;
@@ -191,12 +193,16 @@
     align-items: stretch;
     padding: 36px 24px 28px 24px;
     border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-    background: linear-gradient(135deg, #fff 60%, #f8fafc 100%);
-    border: 1.5px solid #e2e8f0;
     margin-bottom: 12px;
     position: relative;
     min-height: 320px;
+  }
+
+  .placeholder-card {
+    border-radius: 24px;
+    padding: 36px 24px 28px 24px;
+    margin-bottom: 12px;
+    position: relative;
   }
 
   .member-avatar-block {
@@ -339,24 +345,8 @@
     border-color: #5a67d8;
   }
 
-  /* 登入前placeholder樣式 */
   .login-placeholder {
     margin-bottom: 32px;
-  }
-
-  .placeholder-card {
-    background: linear-gradient(135deg, rgba(226, 232, 240, 0.8) 0%, rgba(203, 213, 224, 0.8) 100%);
-    border-radius: 20px;
-    padding: 24px;
-    border: 2px dashed rgba(160, 174, 192, 0.3);
-    text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .placeholder-card:hover {
-    border-color: rgba(102, 126, 234, 0.5);
-    background: linear-gradient(135deg, rgba(226, 232, 240, 0.9) 0%, rgba(203, 213, 224, 0.9) 100%);
-    transform: translateY(-2px);
   }
 
   .placeholder-avatar {

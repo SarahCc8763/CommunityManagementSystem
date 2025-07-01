@@ -58,11 +58,11 @@ public class BaseEntity {
         this.updatedBy = updatedBy;
     }
 
-    public Boolean getStatus() {
+    public Boolean getActiveStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setActiveStatus(Boolean status) {
         this.status = status;
     }
 

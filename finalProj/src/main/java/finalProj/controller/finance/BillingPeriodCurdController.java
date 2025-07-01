@@ -47,7 +47,7 @@ public class BillingPeriodCurdController {
         dto.setEndDate(entity.getEndDate());
         dto.setDueDate(entity.getDueDate());
         dto.setNote(entity.getNote());
-        dto.setStatus(entity.getStatus());
+        dto.setStatus(entity.getActiveStatus());
         dto.setCommunityId(entity.getCommunityId());
         // 巢狀 FeeTypeDTO
         if (entity.getFeeType() != null) {
@@ -61,7 +61,7 @@ public class BillingPeriodCurdController {
             feeTypeDTO.setUnit(feeType.getUnit());
             feeTypeDTO.setNote(feeType.getNote());
             feeTypeDTO.setCommunityId(feeType.getCommunityId());
-            feeTypeDTO.setStatus(feeType.getStatus());
+            feeTypeDTO.setStatus(feeType.getActiveStatus());
             dto.setFeeType(feeTypeDTO);
         }
         return dto;
@@ -78,7 +78,7 @@ public class BillingPeriodCurdController {
         entity.setEndDate(dto.getEndDate());
         entity.setDueDate(dto.getDueDate());
         entity.setNote(dto.getNote());
-        entity.setStatus(dto.getStatus());
+        entity.setActiveStatus(dto.getStatus());
         entity.setCommunityId(dto.getCommunityId());
 
         // FeeType 關聯
@@ -139,7 +139,7 @@ public class BillingPeriodCurdController {
         if (dto.getNote() != null)
             existing.setNote(dto.getNote());
         if (dto.getStatus() != null)
-            existing.setStatus(dto.getStatus());
+            existing.setActiveStatus(dto.getStatus());
         if (dto.getCommunityId() != null)
             existing.setCommunityId(dto.getCommunityId());
 

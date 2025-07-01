@@ -58,6 +58,9 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         response.setLastResponse(dto.getLastResponse());
         response.setLastResponseTime(LocalDateTime.now());
         response.setVerified(false);
+        // 新增：同步將 invoice 狀態設為 PENDING
+        invoice.setStatus("PENDING");
+        invoiceRepository.save(invoice);
         InvoiceResponse saved = invoiceResponseRepository.save(response);
         return toDTO(saved);
     }
@@ -114,10 +117,10 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         entity.setVerified(true);
         entity.setVerifiedTime(LocalDateTime.now());
         entity.setVerifiedBy(adminId);
-        // 同步將 invoice 狀態設為已繳
+        // 同步將 invoice 狀態設為 PAID
         Invoice invoice = entity.getInvoice();
         if (invoice != null) {
-            invoice.setStatus(true);
+            invoice.setStatus("PAID");
             invoiceRepository.save(invoice);
         }
         InvoiceResponse saved = invoiceResponseRepository.save(entity);

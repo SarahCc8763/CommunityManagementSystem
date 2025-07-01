@@ -19,53 +19,10 @@
     </section>
 
 
-    <section class="py-5 bg-light">
-        <div class="container">
-            <h2 class="serif-title text-center mb-4 fw-bold">社區功能導覽</h2>
-            <div class="row g-4">
-                <div class="col-md-4" v-for="feature in features" :key="feature.title">
-                    <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature.link)">
-                        <div class="card-body text-center">
-                            <i :class="['bi', feature.icon, 'animated-icon']" class="display-4 text-success mb-3"></i>
-                            <h5 class="card-title fw-bold">{{ feature.title }}</h5>
-                            <p class="card-text text-muted">{{ feature.description }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <SlideShow :images="slideshowImages" carousel-id="home-carousel" />
 
-    <div class="home-container">
-        <!-- 歡迎橫幅 -->
-        <div class="welcome-banner">
-            <div class="banner-content">
-                <h1 class="banner-title">歡迎來到智慧社區管理系統</h1>
-                <p class="banner-subtitle">讓您的居住生活更加便利與安全</p>
-                <div class="banner-stats">
-                    <div class="stat-item">
-                        <i class="bi bi-people"></i>
-                        <span>1,234 住戶</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="bi bi-shield-check"></i>
-                        <span>24/7 保全</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="bi bi-star"></i>
-                        <span>98% 滿意度</span>
-                    </div>
-                </div>
-            </div>
-            <div class="banner-image">
-                <i class="bi bi-building"></i>
-            </div>
-        </div>
-
-        <!-- 最新公告區域 -->
-        <div class="announcements-section">
+<!-- 最新公告區域 -->
+<div class="announcements-section">
             <div class="section-header">
                 <h2 class="serif-title section-title">
                     <i class="bi bi-megaphone"></i>
@@ -124,53 +81,65 @@
                     </div>
                 </div>
 
-                <!-- 活動公告 -->
-                <div class="announcement-card event">
-                    <div class="announcement-header">
-                        <div class="announcement-badge">
-                            <i class="bi bi-calendar-event"></i>
-                            活動
-                        </div>
-                        <div class="announcement-date">2024/12/05</div>
-                    </div>
-                    <h3 class="announcement-title">社區健康講座</h3>
-                    <p class="announcement-content">
-                        本週六下午2點將舉辦「冬季養生保健」講座，邀請專業醫師為住戶講解冬季健康管理要點，
-                        地點：社區會議室，名額有限，請提前報名。
-                    </p>
-                    <div class="announcement-footer">
-                        <span class="announcement-author">健康促進組</span>
-                        <button class="read-more-btn">
-                            <i class="bi bi-arrow-right"></i>
-                            閱讀更多
-                        </button>
-                    </div>
-                </div>
+               
 
-                <!-- 服務公告 -->
-                <div class="announcement-card service">
-                    <div class="announcement-header">
-                        <div class="announcement-badge">
-                            <i class="bi bi-tools"></i>
-                            服務
+            
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="serif-title text-center mb-4 fw-bold">社區功能導覽</h2>
+            <div class="row g-4">
+                <div class="col-md-4" v-for="feature in features" :key="feature.title">
+                    <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature.link)">
+                        <div class="card-body text-center">
+                            <i :class="['bi', feature.icon, 'animated-icon']" class="display-4 text-success mb-3"></i>
+                            <h5 class="card-title fw-bold">{{ feature.title }}</h5>
+                            <p class="card-text text-muted">{{ feature.description }}</p>
                         </div>
-                        <div class="announcement-date">2024/12/03</div>
-                    </div>
-                    <h3 class="announcement-title">新增智慧門禁系統</h3>
-                    <p class="announcement-content">
-                        為提升社區安全性，本社區已全面升級智慧門禁系統，支援手機APP開門、訪客預約等功能，
-                        詳細使用說明請至管理室索取或查看APP教學。
-                    </p>
-                    <div class="announcement-footer">
-                        <span class="announcement-author">技術支援組</span>
-                        <button class="read-more-btn">
-                            <i class="bi bi-arrow-right"></i>
-                            閱讀更多
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <SlideShow :images="slideshowImages" carousel-id="home-carousel" />
+
+    <div class="home-container">
+        <!-- 歡迎橫幅 -->
+        <div class="welcome-banner">
+            <div class="banner-content">
+                <h1 class="banner-title">歡迎來到智慧社區管理系統</h1>
+                <p class="banner-subtitle">讓您的居住生活更加便利與安全</p>
+                <div class="banner-stats">
+                    <div class="stat-item">
+                        <i class="bi bi-people"></i>
+                        <span>1,234 住戶</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>24/7 保全</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="bi bi-star"></i>
+                        <span>98% 滿意度</span>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-image">
+                <i class="bi bi-building"></i>
+            </div>
+        </div>
+
+        
     </div>
 
 
