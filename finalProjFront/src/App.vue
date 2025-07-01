@@ -1,17 +1,12 @@
 <template>
-  <div id="app">
-    <!-- <BeforeLogIn /> -->
+  <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
+
     <HeaderAll />
-
     <main class="main-content">
+      <aside>
+        <LeftSideNav />
+        <RightSideNav :show="showRightNav" @close="showRightNav = false" />
 
-
-      <!-- 這裡是左右的Nav -->
-      <LeftSideNav />
-
-      <RightSideNav :show="showRightNav" @close="showRightNav = false" />
-      <div class="main-area" :class="{ 'with-right-nav': showRightNav }"
-        @click="showRightNav && (showRightNav = false)">
         <button class="right-nav-toggle" @click.stop="showRightNav = true">
           <i class="bi bi-layout-sidebar-inset"></i>
         </button>
@@ -21,25 +16,17 @@
           <span class="drawer-tab-text">更多</span>
         </div>
         <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
-        <!-- 左右Nav結束-->
+      </aside>
 
+      <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
+        @click="showRightNav && (showRightNav = false)">
         <RouterView />
-
-        <!-- 大家想測試的頁面可以放這裡喔～ -->
-        <!-- <Example /> -->
-        <!-- <Home /> -->
-        <!-- <Invoice /> -->
-        <!-- <FeeTypeAdd /> -->
-
       </div>
-
     </main>
 
+    <FooterAll />
+    <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
   </div>
-  <FooterAll />
-
-  <!-- 登入模態框 -->
-  <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
 </template>
 
 
@@ -47,119 +34,63 @@
 
 
 
+
+
+
 <script setup>
-
-// ...原本的 code
-//功能類import
-import { RouterLink, RouterView } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-import { ref, onMounted, onUnmounted } from 'vue'
-import { watch } from 'vue'
 
-
-//固定的頁首頁尾以及側邊欄位
-import FooterAll from './components/forAll/main/FooterAll.vue';
-import LoginModal from './components/forAll/main/LoginModal.vue';
-import HeaderAll from './components/forAll/main/HeaderAll.vue';
-import RightSideNav from './components/forAll/main/RightSideNav.vue';
-import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
-
-
-
-//還沒改好router但先放著的頁面 
-import Home from './views/Home.vue';
-import BeforeLogIn from './views/BeforeLogIn.vue';
-import finUser from '@/components/finance/finUser/finUser.vue';
-import Invoice from '@/components/finance/finUser/Invoice.vue';
-import FeeTypeAdd from './components/finance/finAdmin/FeeTypeAdd.vue';
-
-
+import HeaderAll from './components/forAll/main/HeaderAll.vue'
+import FooterAll from './components/forAll/main/FooterAll.vue'
+import LoginModal from './components/forAll/main/LoginModal.vue'
+import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
+import RightSideNav from './components/forAll/main/RightSideNav.vue'
 
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
+const route = useRoute()
 
-watch(showRightNav, (val) => {
-  console.log('測試點擊showRightNav:', val)
-})
-//以下放的是測試登入登出的假資料
-// 登入
+// ✅ 只判斷 meta.dark
+const isDarkMode = computed(() => route.meta?.dark === true)
+
 user.login({
   name: '王小明',
   username: 'ming123',
-  avatarUrl: 'https://i.pravatar.cc/100?img=13',
+  avatarUrl: 'https://i.pravatar.cc/100?img=13'
 })
 
-
-
-// 監聽SideNav的登入按鈕事件
-const handleShowLoginModal = () => {
-  showLogin.value = true
-}
-
-// 處理登入成功
 const handleLoginSuccess = (loginData) => {
-  // 更新用戶狀態
   user.login({
     name: loginData.username,
     username: loginData.username,
     avatarUrl: 'https://i.pravatar.cc/100?img=13'
   })
   showLogin.value = false
-
-  // 觸發全局登入成功事件，讓其他組件也能收到通知
-  window.dispatchEvent(new CustomEvent('login-success', {
-    detail: loginData
-  }))
-}
-
-// 處理登出
-const handleLogout = () => {
-  // 這裡可以添加登出時的清理邏輯
-  console.log('用戶已登出')
+  window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
 }
 
 onMounted(() => {
-  window.addEventListener('show-login-modal', handleShowLoginModal)
-  window.addEventListener('logout', handleLogout)
+  window.addEventListener('show-login-modal', () => (showLogin.value = true))
+  window.addEventListener('logout', () => console.log('用戶已登出'))
 })
-
 onUnmounted(() => {
-  window.removeEventListener('show-login-modal', handleShowLoginModal)
-  window.removeEventListener('logout', handleLogout)
+  window.removeEventListener('show-login-modal', () => (showLogin.value = true))
+  window.removeEventListener('logout', () => console.log('用戶已登出'))
 })
 </script>
 
 
 
 
-<style scoped>
+<style>
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.header {
-  width: 100vw;
-  height: 72px;
-  min-height: 72px;
-  max-height: 72px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 0 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  z-index: 2000;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
 }
 
 .main-content {
@@ -172,7 +103,34 @@ onUnmounted(() => {
   align-items: flex-start;
 }
 
-/* 固定左右 SideNav */
+
+
+/* 主要內容區 */
+.main-area {
+  flex: 1;
+  min-width: 0;
+  margin-left: 80px;
+  margin-right: 0;
+  padding-top: 72px;
+  padding-bottom: 72px;
+  min-height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #fff;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-area.with-right-nav {
+  margin-right: 0px;
+}
+
+/* 左右 SideNav */
 .left-side-nav {
   position: fixed;
   top: 72px;
@@ -197,32 +155,6 @@ onUnmounted(() => {
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-}
-
-.main-area {
-  flex: 1;
-  min-width: 0;
-  margin-left: 80px;
-  margin-right: 0;
-  padding-top: 72px;
-  padding-bottom: 72px;
-  min-height: calc(100vh - 72px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: #fff;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-
-
-  position: relative;
-  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.main-area.with-right-nav {
-  margin-right: 320px;
 }
 
 .right-nav-toggle {
@@ -327,5 +259,53 @@ onUnmounted(() => {
   z-index: 2000;
   cursor: pointer;
   border-radius: 0 0 16px 16px;
+}
+
+/* 深色模式 */
+.dark-mode {
+  background-color: #868fac;
+  color: #f1f1f1;
+}
+
+.dark-mode .table {
+  background-color: #2a2d3c;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+  border-color: #444;
+}
+
+.dark-mode .table thead {
+  background-color: #3a3d4e;
+  color: #f0f0f0;
+}
+
+.dark-mode .btn {
+  background-color: #4a4a6a;
+  color: #fff;
+  border-color: #5a5f73;
+}
+
+.dark-mode .btn:hover {
+  background-color: #5a5f73;
+}
+
+.dark-mode .section-title {
+  color: #ffc107 !important;
+}
+
+.dark-mode .modal-content {
+  background-color: #2e2f3e;
+  color: #f1f1f1;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #35394a;
+  color: #f0f0f0;
+  border: 1px solid #666;
 }
 </style>

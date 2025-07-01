@@ -1,4 +1,5 @@
 <template>
+
   <div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;">
     <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
   </div>
@@ -95,8 +96,8 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table align-middle table-hover table-borderless shadow-sm bg-white rounded">
-        <thead class="table-light text-secondary border-bottom">
+      <table class="table align-middle table-hover table-borderless shadow-sm rounded">
+        <thead class=" text-secondary border-bottom">
           <tr>
             <th scope="col">費用代碼</th>
             <th scope="col">名稱/描述</th>
@@ -126,14 +127,16 @@
 
     <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
   </div>
+
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 import BannerImage from '@/components/forAll/BannerImage.vue'
-import OO from '@/assets/images/finance/drawingChart.jpg'
+import OO from '@/assets/images/main/adminBanner.jpg'
 
 const successMsg = ref('')
 const errorMsg = ref('')
@@ -142,6 +145,8 @@ const customFrequency = ref('')
 const editItem = ref({})
 const deleteTarget = ref(null)
 
+const route = useRoute()
+const isDarkMode = computed(() => route.meta?.dark === true)
 const form = ref({
   feeCode: '',
   description: '',
@@ -204,7 +209,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 .table {
   border-radius: 0.5rem;
   overflow: hidden;

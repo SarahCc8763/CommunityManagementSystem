@@ -19,26 +19,31 @@ const router = createRouter({
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
       component: FeeTypeAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/billing-period/add',
       name: 'BillingPeriodAdd',
       component: BillingPeriodAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice/add',
       name: 'InvoiceAdd',
       component: InvoiceAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice-response/add',
       name: 'InvoiceResponseAdd',
       component: InvoiceResponseAdd,
+
     },
     {
       path: '/finance/receipt/add',
       name: 'ReceiptAdd',
       component: ReceiptAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice/history',

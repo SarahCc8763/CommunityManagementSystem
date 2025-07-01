@@ -76,7 +76,7 @@ const activeIndex = ref(null)
 // 假資料!!!!!!!!!使用者登入狀態與資料
 const user = ref({
   name: '小明',
-  avatar: 'https://randomuser.me/api/portraits/women/72.jpg',
+  avatar: 'https://randomuser.me/api/portraits/men/71.jpg',
   points: 120
 })
 
