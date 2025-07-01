@@ -1,44 +1,45 @@
 <template>
   <div id="app">
-    <BeforeLogIn />
-    <!-- <HeaderAll /> -->
-    
-    <main class="main-content"> 
-     
-      
+    <!-- <BeforeLogIn /> -->
+    <HeaderAll />
+
+    <main class="main-content">
+
+
       <!-- 這裡是左右的Nav -->
-       <!--    <LeftSideNav /> -->
-      
-        <RightSideNav :show="showRightNav" @close="showRightNav = false" />
-       <div class="main-area" :class="{ 'with-right-nav': showRightNav }" @click="showRightNav && (showRightNav = false)">
-          <button class="right-nav-toggle" @click.stop="showRightNav = true">
-            <i class="bi bi-layout-sidebar-inset"></i>
-          </button>
-          
-              <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
-                <i class="bi bi-chevron-left"></i>
-                <span class="drawer-tab-text">更多</span>
-              </div>
-              <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
-          <!-- 左右Nav結束 -->
+      <LeftSideNav />
 
-<RouterView />
+      <RightSideNav :show="showRightNav" @close="showRightNav = false" />
+      <div class="main-area" :class="{ 'with-right-nav': showRightNav }"
+        @click="showRightNav && (showRightNav = false)">
+        <button class="right-nav-toggle" @click.stop="showRightNav = true">
+          <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
 
-          <!-- 大家想測試的頁面可以放這裡喔～ -->
-          <!-- <Example /> -->
-           <!-- <Home /> -->
-            <!-- <Invoice /> -->
-<!-- <FeeTypeAdd /> -->
-
+        <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
+          <i class="bi bi-chevron-left"></i>
+          <span class="drawer-tab-text">更多</span>
         </div>
-     
-    </main>
+        <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
+        <!-- 左右Nav結束 -->
+
+        <RouterView />
+
+        <!-- 大家想測試的頁面可以放這裡喔～ -->
+        <!-- <Example /> -->
+        <!-- <Home /> -->
+        <!-- <Invoice /> -->
+        <!-- <FeeTypeAdd /> -->
 
       </div>
-    <FooterAll /> 
 
-    <!-- 登入模態框 -->
-    <LoginModal  :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
+    </main>
+
+  </div>
+  <FooterAll />
+
+  <!-- 登入模態框 -->
+  <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
 </template>
 
 
@@ -48,7 +49,7 @@
 
 <script setup>
 
-   // ...原本的 code
+// ...原本的 code
 //功能類import
 import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
@@ -70,7 +71,7 @@ import Home from './views/Home.vue';
 import BeforeLogIn from './views/BeforeLogIn.vue';
 import finUser from '@/components/finance/finUser/finUser.vue';
 import Invoice from '@/components/finance/finUser/Invoice.vue';
-import FeeTypeAdd from './components/finance/finUser/FeeTypeAdd.vue';
+import FeeTypeAdd from './components/finance/finAdmin/FeeTypeAdd.vue';
 
 
 
@@ -78,15 +79,15 @@ const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
 
-   watch(showRightNav, (val) => {
-     console.log('測試點擊showRightNav:', val)
-   })
+watch(showRightNav, (val) => {
+  console.log('測試點擊showRightNav:', val)
+})
 //以下放的是測試登入登出的假資料
 // 登入
 user.login({
   name: '王小明',
   username: 'ming123',
-  avatarUrl: 'https://i.pravatar.cc/100?img=13', 
+  avatarUrl: 'https://i.pravatar.cc/100?img=13',
 })
 
 
@@ -105,7 +106,7 @@ const handleLoginSuccess = (loginData) => {
     avatarUrl: 'https://i.pravatar.cc/100?img=13'
   })
   showLogin.value = false
-  
+
   // 觸發全局登入成功事件，讓其他組件也能收到通知
   window.dispatchEvent(new CustomEvent('login-success', {
     detail: loginData
@@ -179,8 +180,8 @@ onUnmounted(() => {
   bottom: 0;
   width: 80px;
   z-index: 2101;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
 }
@@ -192,8 +193,8 @@ onUnmounted(() => {
   bottom: 0;
   width: 320px;
   z-index: 1001;
-  background: rgba(255,255,255,0.95);
-  box-shadow: -2px 0 8px rgba(0,0,0,0.04);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
 }
@@ -204,23 +205,26 @@ onUnmounted(() => {
   margin-left: 80px;
   margin-right: 0;
   padding-top: 72px;
+  padding-bottom: 72px;
   min-height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   background: #fff;
-  max-width: 1200px;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
-  border-radius: 16px;
+
+
   position: relative;
-  transition: margin-right 0.3s cubic-bezier(0.4,0,0.2,1);
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .main-area.with-right-nav {
   margin-right: 320px;
 }
+
 .right-nav-toggle {
   position: absolute;
   top: 24px;
@@ -236,13 +240,14 @@ onUnmounted(() => {
   justify-content: center;
   font-size: 22px;
   color: #667eea;
-  box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
 }
+
 .right-nav-toggle:hover {
   background: #f0f4f8;
-  box-shadow: 0 4px 16px rgba(102,126,234,0.12);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.12);
 }
 
 @keyframes fadeIn {
@@ -250,6 +255,7 @@ onUnmounted(() => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -261,6 +267,7 @@ onUnmounted(() => {
   .right-side-nav {
     width: 220px;
   }
+
   .main-area {
     margin-right: 220px;
   }
@@ -275,7 +282,7 @@ onUnmounted(() => {
   background: #fff;
   color: #667eea;
   border-radius: 24px 0 0 24px;
-  box-shadow: 0 2px 12px rgba(102,126,234,0.10);
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.10);
   padding: 8px 14px 8px 10px;
   display: flex;
   flex-direction: row;
@@ -290,15 +297,18 @@ onUnmounted(() => {
   min-width: 44px;
   height: 48px;
 }
+
 .drawer-tab:hover {
   background: #f0f4f8;
   color: #5a67d8;
-  box-shadow: 0 4px 20px rgba(102,126,234,0.16);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.16);
 }
+
 .drawer-tab i {
   font-size: 24px;
   margin-right: 2px;
 }
+
 .drawer-tab-text {
   font-size: 15px;
   font-weight: 600;
@@ -306,13 +316,14 @@ onUnmounted(() => {
   color: #667eea;
   user-select: none;
 }
+
 .drawer-mask {
   position: fixed;
   top: 72px;
   left: 0;
   right: 320px;
   bottom: 0;
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
   z-index: 2000;
   cursor: pointer;
   border-radius: 0 0 16px 16px;

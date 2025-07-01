@@ -6,7 +6,8 @@
             <div class="hero-image-wrapper">
                 <img src="@/assets/images/forSlideShow/livingRoom.jpg" alt="Hero Image" class="img-fluid hero-image" />
                 <div class="hero-text">
-                    <h1 class="serif-title text-white fw-bold">歡迎回到 <span style="color: rgb(220, 245, 179);">RiVER BANK</span> </h1>
+                    <h1 class="serif-title text-white fw-bold">歡迎回到 <span style="color: rgb(220, 245, 179);">RiVER
+                            BANK</span> </h1>
                     <h2 class="serif-title text-white fw-bold">智慧社區管理，從此開始</h2>
                     <br><br>
                     <p class="text-white" style=""> <span style="color: rgb(228, 245, 220);">
@@ -172,8 +173,8 @@
         </div>
     </div>
 
-  
-    
+
+
 
 </template>
 
@@ -247,16 +248,20 @@ const slideshowImages = [
     margin-left: auto;
     margin-right: auto;
 }
+
 .home-container {
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
 }
-.welcome-banner, .announcements-section {
+
+.welcome-banner,
+.announcements-section {
     max-width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
+
 .card-body i {
     font-size: 3rem;
     display: inline-block;
@@ -316,8 +321,8 @@ const slideshowImages = [
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .hero-image-wrapper {
@@ -335,7 +340,7 @@ const slideshowImages = [
     object-fit: cover;
     display: block;
     filter: brightness(0.7);
-    border-radius: 24px;
+
 }
 
 .hero-text {
@@ -351,9 +356,11 @@ const slideshowImages = [
     pointer-events: none;
 }
 
-.hero-text h1, .hero-text h2, .hero-text p {
+.hero-text h1,
+.hero-text h2,
+.hero-text p {
     color: #fff;
-    text-shadow: 0 2px 16px rgba(0,0,0,0.25);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
 }
 
 @media (max-width: 900px) {
@@ -361,6 +368,7 @@ const slideshowImages = [
         max-width: 100%;
         padding: 16px 0;
     }
+
     .hero-image {
         border-radius: 16px;
     }
@@ -399,8 +407,13 @@ const slideshowImages = [
 }
 
 @keyframes shimmer {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
 }
 
 .banner-content {
@@ -580,7 +593,7 @@ const slideshowImages = [
     line-height: 1.6;
     margin-bottom: 20px;
     display: -webkit-box;
-   
+
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

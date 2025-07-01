@@ -27,15 +27,15 @@
 
 <template>
     <section class="hero-section py-5">
-        <div class="container">
-            <div class="hero-image-wrapper">
-                <img :src="imageSrc" alt="Hero Image" class="img-fluid hero-image" />
-                <div :class="['hero-text', `text-${textAlign}`]">
-                    <h2 class="text-white fw-bold">{{ heading }}</h2>
-                    <p class="text-white">{{ subtext }}</p>
-                </div>
+
+        <div class="hero-image-wrapper">
+            <img :src="imageSrc" alt="Hero Image" class="img-fluid hero-image" />
+            <div :class="['hero-text', `text-${textAlign}`]">
+                <h2 class="text-white fw-bold">{{ heading }}</h2>
+                <p class="text-white">{{ subtext }}</p>
             </div>
         </div>
+
     </section>
 </template>
 
@@ -59,9 +59,9 @@ defineProps({
     position: relative;
     overflow: hidden;
     max-height: 300px;
-    max-width: 80vw;
+    max-width: 100%;
     margin: 0 auto;
-    border-radius: 12px;
+
 }
 
 .hero-image {

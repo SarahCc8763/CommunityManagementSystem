@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import FeeTypeAdd from '../components/finance/finUser/FeeTypeAdd.vue'
+import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'

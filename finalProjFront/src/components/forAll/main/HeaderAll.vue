@@ -5,10 +5,9 @@
   <header class="header" @mouseleave="closeDropdown">
     <!-- LOGO -->
     <router-link to="/" class="logo" style="cursor:pointer;">
-      <img src="https://img.freepik.com/premium-vector/building-logo-design-vector_67715-609.jpg" alt="Logo" />
+      <img :src="Logo" alt="Logo" />
     </router-link>
 
-    <!-- 主選單列：直接展示所有大分類 -->
     <nav class="nav">
       <div v-for="(category, index) in menuList" :key="category.title" class="nav-item"
         :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index">
@@ -42,8 +41,11 @@
       </div>
       <div v-else class="avatar placeholder">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path
+            d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </div>
       <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + user.avatar + ')' }"></div>
@@ -61,6 +63,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useUserStore } from '@/stores/UserStore'
+import Logo from '@/assets/images/main/Logo.png'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -136,7 +139,7 @@ onMounted(() => {
   window.addEventListener('login-success', handleGlobalLoginSuccess)
   // 監聽全局登出事件
   window.addEventListener('logout', handleGlobalLogout)
-  
+
   // 初始化登入狀態
   isLoggedIn.value = userStore.isAuthenticated
   if (userStore.isAuthenticated) {
@@ -502,12 +505,12 @@ body {
   .nav {
     gap: 20px;
   }
-  
+
   .nav-item {
     padding: 10px 12px;
     font-size: 14px;
   }
-  
+
   .mega-grid {
     gap: 32px;
   }
@@ -517,15 +520,15 @@ body {
   .header {
     padding: 12px 20px;
   }
-  
+
   .nav {
     display: none;
   }
-  
+
   .user-info {
     gap: 12px;
   }
-  
+
   .auth-button {
     padding: 10px 20px;
     font-size: 13px;
@@ -541,24 +544,30 @@ body {
     padding: 6px 4px;
     gap: 4px;
   }
+
   .logo img {
     height: 32px;
   }
+
   .user-info {
     gap: 6px;
   }
+
   .auth-button {
     padding: 7px 12px;
     font-size: 11px;
     border-radius: 16px;
   }
+
   .avatar {
     width: 28px;
     height: 28px;
   }
+
   .welcome {
     font-size: 12px;
   }
+
   .points {
     font-size: 10px;
     padding: 1px 4px;
