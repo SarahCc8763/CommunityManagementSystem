@@ -459,7 +459,7 @@ body {
 
 /* 其他沒選中的分類：透明 */
 .mega-inactive {
-  opacity: 0.4;
+  opacity: 0.5;
   transition: opacity 0.3s;
   pointer-events: auto;
 }
@@ -486,7 +486,7 @@ body {
 .category-items .dropdown-item {
   padding: 10px 0;
   font-size: 14px;
-  color: #4a5568;
+  color: #2a3342;
   cursor: pointer;
   user-select: text;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

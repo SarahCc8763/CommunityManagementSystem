@@ -21,7 +21,7 @@
           <span class="drawer-tab-text">更多</span>
         </div>
         <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
-        <!-- 左右Nav結束 -->
+        <!-- 左右Nav結束-->
 
         <RouterView />
 

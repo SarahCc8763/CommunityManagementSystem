@@ -1,12 +1,10 @@
 <template>
+  <div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;">
+    <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
+  </div>
 
-  <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
 
 
-  <!-- 觸發按鈕 -->
-  <button class="btn btn-success my-3" data-bs-toggle="modal" data-bs-target="#feeTypeModal">
-    新增費用類別
-  </button>
 
   <!-- 新增費用類別 Modal -->
   <div class="modal fade" id="feeTypeModal" tabindex="-1" aria-labelledby="feeTypeModalLabel" aria-hidden="true">
@@ -86,7 +84,15 @@
 
   <!-- 顯示每筆資料 -->
   <div class="container mt-4">
-    <h4 class="mb-3 fw-bold text-primary">費用類別列表</h4>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="tag-style px-4 py-2">
+        <h4 class="mb-0 fw-bold text-primary section-title">費用類別列表</h4>
+      </div>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#feeTypeModal">
+        新增費用類別
+      </button>
+    </div>
 
     <div class="table-responsive">
       <table class="table align-middle table-hover table-borderless shadow-sm bg-white rounded">
@@ -111,7 +117,7 @@
             <td>{{ item.note }}</td>
             <td class="text-center">
               <button class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(item)">修改</button>
-              <button class="btn btn-sm btn-outline-danger" @click="confirmDelete(item)">刪除</button>
+              <button class="btn btn-sm btn-outline-gray" @click="confirmDelete(item)">刪除</button>
             </td>
           </tr>
         </tbody>
@@ -127,7 +133,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 import BannerImage from '@/components/forAll/BannerImage.vue'
-import OO from '@/assets/images/finance/happyFaces.jpg'
+import OO from '@/assets/images/finance/drawingChart.jpg'
 
 const successMsg = ref('')
 const errorMsg = ref('')

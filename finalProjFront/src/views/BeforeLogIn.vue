@@ -69,7 +69,8 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ project.name }}</h5>
                                     <p class="card-text">{{ project.description }}</p>
-                                    <a :href="project.link" target="_blank" class="btn btn-outline-primary btn-sm">查看更多</a>
+                                    <a :href="project.link" target="_blank"
+                                        class="btn btn-outline-primary btn-sm">查看更多</a>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +95,7 @@
                 </div>
                 <div class="ad-card">
                     <div class="ad-title">聯絡我們</div>
-                    <div class="ad-desc">客服專線：02-1234-5678<br/>Email: info@riverbank.com</div>
+                    <div class="ad-desc">客服專線：02-1234-5678<br />Email: info@riverbank.com</div>
                 </div>
             </div>
         </aside>
@@ -157,13 +158,7 @@ const projects = [
 
 function handleLogin() {
     console.log('emit login')
-    // 這裡 emit 事件給父層（App.vue）
-    // App.vue 必須用 <BeforeLogIn @show-login="showLogin = true" />
-    // 並有 <LoginModal :isVisible="showLogin" @close="showLogin = false" />
-    // 才會彈出登入視窗
-    // 這裡 emit
-    // eslint-disable-next-line vue/require-explicit-emits
-    // @ts-ignore
+
     emit('show-login')
 }
 </script>
@@ -176,18 +171,21 @@ function handleLogin() {
     right: 0;
     height: 64px;
     background: #fff;
-    box-shadow: 0 2px 12px rgba(102,126,234,0.08);
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.08);
     z-index: 3000;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .header-content {
     display: flex;
     align-items: center;
     gap: 16px;
 }
-.header-logo, .logo-img {
+
+.header-logo,
+.logo-img {
     max-width: 100px;
     max-height: 60px;
     width: auto;
@@ -196,21 +194,24 @@ function handleLogin() {
     border-radius: 8px;
     display: block;
 }
+
 .header-title {
     font-size: 1.6rem;
     font-weight: 800;
     color: #667eea;
     letter-spacing: 2px;
 }
+
 .before-login-layout {
     display: flex;
     min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
+
 .nav-card {
     background: #fff;
     border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(102,126,234,0.10);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10);
     padding: 40px 24px 32px 24px;
     width: 100%;
     display: flex;
@@ -219,6 +220,7 @@ function handleLogin() {
     gap: 24px;
     box-sizing: border-box;
 }
+
 .before-login-left-nav {
     width: 260px;
     flex-shrink: 0;
@@ -232,6 +234,7 @@ function handleLogin() {
     align-items: center;
     box-sizing: border-box;
 }
+
 .before-login-right-ad {
     width: 260px;
     flex-shrink: 0;
@@ -248,6 +251,7 @@ function handleLogin() {
     padding-top: 0;
     padding-bottom: 0;
 }
+
 .before-login-main {
     flex: 1;
     display: flex;
@@ -256,13 +260,14 @@ function handleLogin() {
     padding: 64px 0 48px 0;
     min-height: 100vh;
 }
+
 .main-content-wrapper {
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
     background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(102,126,234,0.10);
+
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10);
     padding: 48px 40px 40px 40px;
     display: flex;
     flex-direction: column;
@@ -270,35 +275,40 @@ function handleLogin() {
     margin-left: 280px;
     margin-right: 280px;
 }
+
 .hero-section {
     display: flex;
     gap: 48px;
     align-items: center;
     justify-content: center;
 }
+
 .hero-carousel {
     width: 300px;
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(102,126,234,0.10);
+    box-shadow: 0 4px 24px rgba(102, 126, 234, 0.10);
     flex-shrink: 0;
     align-self: flex-start;
 }
+
 .wide-carousel {
     width: 600px;
     height: 320px;
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(102,126,234,0.13);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.13);
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .wide-carousel :deep(img) {
     width: 100% !important;
     height: 320px !important;
     object-fit: cover !important;
     border-radius: 24px !important;
 }
+
 .hero-text {
     max-width: 420px;
     flex: 1;
@@ -307,12 +317,14 @@ function handleLogin() {
     flex-direction: column;
     align-items: flex-start;
 }
+
 .hero-text h1 {
     font-size: 2.2rem;
     font-weight: 800;
     color: #2d3748;
     margin-bottom: 8px;
 }
+
 .hero-divider {
     width: 48px;
     height: 4px;
@@ -320,17 +332,20 @@ function handleLogin() {
     border-radius: 2px;
     margin-bottom: 18px;
 }
+
 .hero-desc {
     font-size: 1.1rem;
     color: #4a5568;
     margin-bottom: 18px;
     line-height: 1.7;
 }
+
 .feature-list {
     list-style: none;
     padding: 0;
     margin: 0 0 18px 0;
 }
+
 .feature-list li {
     font-size: 1rem;
     color: #5a67d8;
@@ -339,6 +354,7 @@ function handleLogin() {
     align-items: center;
     gap: 8px;
 }
+
 .login-btn {
     width: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -352,38 +368,45 @@ function handleLogin() {
     margin-top: 32px;
     transition: background 0.2s, box-shadow 0.2s;
 }
+
 .login-btn:hover {
     background: #5a67d8;
-    box-shadow: 0 4px 16px rgba(102,126,234,0.12);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.12);
 }
+
 .main-login-btn {
     margin-top: 24px;
     font-size: 18px;
     padding: 16px 0;
 }
+
 .projects-section {
     margin-top: 0;
 }
+
 .ad-card {
     width: 100%;
     background: linear-gradient(135deg, #f8fafc 60%, #e9eafc 100%);
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(102,126,234,0.08);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
     padding: 24px 20px 18px 20px;
     margin-bottom: 12px;
     text-align: center;
 }
+
 .ad-title {
     font-size: 18px;
     font-weight: 700;
     color: #667eea;
     margin-bottom: 8px;
 }
+
 .ad-desc {
     font-size: 14px;
     color: #4a5568;
     margin-bottom: 12px;
 }
+
 .ad-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -394,31 +417,37 @@ function handleLogin() {
     cursor: pointer;
     transition: background 0.2s;
 }
+
 .ad-btn:hover {
     background: #5a67d8;
 }
+
 .logo-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 32px;
 }
+
 .logo-img {
     width: 72px;
     height: 72px;
     border-radius: 16px;
     margin-bottom: 10px;
 }
+
 .brand-title {
     font-size: 22px;
     font-weight: 800;
     color: #667eea;
     letter-spacing: 2px;
 }
+
 .nav-list {
     width: 100%;
     margin-bottom: 40px;
 }
+
 .nav-item {
     padding: 14px 0;
     font-size: 16px;
@@ -428,6 +457,7 @@ function handleLogin() {
     text-align: center;
     transition: background 0.2s, color 0.2s;
 }
+
 .nav-item:hover {
     background: #f0f4f8;
     color: #667eea;
