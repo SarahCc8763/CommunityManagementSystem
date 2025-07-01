@@ -8,6 +8,7 @@
         <SideNav />
         <div class="main-content flex-grow-1">
           <RouterView />
+          <FeedbackModal />
         </div>
         <!-- <Finance /> -->
       </div>
@@ -28,6 +29,8 @@ import Finance from './components/finance/Finance.vue';
 import FooterAll from './components/forAll/FooterAll.vue';
 import { useUserStore } from '@/stores/UserStore'
 import SideNav from './components/forAll/SideNav.vue';
+import FeedbackModal from './components/feedback/feedbackModal.vue';
+
 const user = useUserStore();
 
 //以下放的是測試登入登出的假資料

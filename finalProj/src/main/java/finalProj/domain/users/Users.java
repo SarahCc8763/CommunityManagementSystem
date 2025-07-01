@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
@@ -11,6 +12,7 @@ import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.community.Community;
 import finalProj.domain.feedback.Feedback;
+import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.poll.PollVote;
 import jakarta.persistence.Column;
@@ -25,6 +27,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({ "password", "feedbacks", "feedbackReplies", "feedbackStatusHistories", "pollVotes",
+		"bulletinComments",
+		"bulletinCommentLikes", "bulletins", "handledFeedbacks" })
 public class Users {
 
 	@Id
@@ -114,6 +119,9 @@ public class Users {
 	@OneToMany(mappedBy = "changedBy")
 	@JsonManagedReference("feedbackStatusHistory-user")
 	private List<FeedbackStatusHistory> feedbackStatusHistories;
+
+	@OneToMany(mappedBy = "user")
+	private List<FeedbackReply> feedbackReplies;
 
 	// --- Getters & Setters ---
 
@@ -334,6 +342,14 @@ public class Users {
 				+ ", states=" + states + ", loginFailTimes=" + loginFailTimes + ", lastFailedLogin=" + lastFailedLogin
 				+ ", accountLockedUntil=" + accountLockedUntil + ", community="
 				+ (community != null ? community.getCommunityId() : null) + "]";
+	}
+
+	public List<FeedbackReply> getFeedbackReplies() {
+		return feedbackReplies;
+	}
+
+	public void setFeedbackReplies(List<FeedbackReply> feedbackReplies) {
+		this.feedbackReplies = feedbackReplies;
 	}
 
 }

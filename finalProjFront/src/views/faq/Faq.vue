@@ -85,7 +85,7 @@ const loading = ref(true)
 
 const selectedCategory = ref('全部')
 const page = ref(1)
-const pageSize = 5
+const pageSize = 10
 const searchKeyword = ref('')
 
 // 計算顯示用 FAQ
@@ -145,7 +145,13 @@ const searchFaqs = async () => {
     try {
         const res = await axios.post('http://localhost:8080/api/faq/searchby', requestBody)
         if (res.data.success) {
-            faqList.value = res.data.list
+            // ✅ 重新依分類順序排序
+            const categoryOrder = categories.value
+            faqList.value = res.data.list.sort((a, b) => {
+                const aIndex = categoryOrder.indexOf(a.category)
+                const bIndex = categoryOrder.indexOf(b.category)
+                return aIndex - bIndex
+            })
             page.value = 1
         }
     } catch (error) {

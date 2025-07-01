@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.users.Users;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -76,6 +77,10 @@ public class Feedback {
     @OneToMany(mappedBy = "feedback")
     @JsonManagedReference("feedback-status-history")
     private List<FeedbackStatusHistory> statusHistories;
+
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("feedback-reply")
+    private List<FeedbackReply> replies;
 
     @Override
     public String toString() {
@@ -196,5 +201,13 @@ public class Feedback {
 
     public void setUserRating(Byte userRating) {
         this.userRating = userRating;
+    }
+
+    public List<FeedbackReply> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<FeedbackReply> replies) {
+        this.replies = replies;
     }
 }

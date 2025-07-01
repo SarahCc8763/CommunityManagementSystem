@@ -26,6 +26,7 @@
             <div class="dropdown-item" v-for="item in category.children" :key="item.label"
               @click="handleNavigate(item)">
               {{ item.label }}
+
             </div>
           </div>
         </div>
@@ -53,6 +54,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const router = useRouter()
 const isLoggedIn = ref(false)
@@ -89,18 +91,34 @@ const keepDropdown = () => {
 }
 
 // // 點擊子功能導頁與 API 日誌（可改）
+// const handleNavigate = async (item) => {
+//   try {
+//     await axios.post('/api/log', {
+//       user: user.value.name,
+//       action: 'navigate',
+//       target: item.routeName
+//     })
+//   } catch (e) {
+//     console.error('Log API 失敗', e)
+//   }
+// router.push({ name: item.routeName })
 const handleNavigate = async (item) => {
-  //   try {
-  //     await axios.post('/api/log', {
-  //       user: user.value.name,
-  //       action: 'navigate',
-  //       target: item.routeName
-  //     })
-  //   } catch (e) {
-  //     console.error('Log API 失敗', e)
-  //   }
-  router.push({ name: item.routeName })
+  if (item.routeName === 'contact-us') {
+    const modalEl = document.getElementById('feedbackModal')
+    if (modalEl) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
+      modal.show()
+    } else {
+      console.warn('找不到 #feedbackModal 元素')
+    }
+  } else {
+    router.push({ name: item.routeName })
+  }
 }
+
+
+
+
 
 
 

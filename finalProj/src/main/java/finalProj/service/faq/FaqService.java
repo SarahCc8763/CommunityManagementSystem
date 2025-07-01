@@ -283,4 +283,5 @@ public class FaqService {
     public boolean existsById(Integer id) {
         return faqRepository.existsById(id);
     }
+
 }

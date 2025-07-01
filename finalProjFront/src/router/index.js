@@ -4,6 +4,7 @@ import TicketList from '@/views/TicketList.vue'
 import TicketForm from '@/views/TicketForm.vue'
 import TicketDetailView from '@/views/TicketDetailView.vue'
 import Faq from '@/views/faq/Faq.vue'
+import MyFeedback from '@/views/feedback/MyFeedback.vue'
 
 
 
@@ -36,6 +37,13 @@ const router = createRouter({
       path: '/faq',
       name: 'faq',
       component: Faq
+
+    },
+
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: MyFeedback
 
     }
     // {

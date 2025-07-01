@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
@@ -27,6 +28,7 @@ import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.users.Users;
+import finalProj.dto.FaqResponse;
 import finalProj.dto.FeedbackResponse;
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
@@ -237,6 +239,22 @@ public class feedbackController {
     }
 
     //
+    // -- 查詢所有意見分類 --
+    //
+
+    @GetMapping("/{communityId}/category")
+    public ResponseEntity<Map<String, Object>> getAllFeedbackCategories(@PathVariable Integer communityId) {
+        Map<String, Object> response = new HashMap<>();
+        List<FeedbackCategory> categories = feedbackCategoryService.findByCommunityId(communityId);
+        Map<Integer, String> categoryStrings = categories.stream()
+                .collect(Collectors.toMap(FeedbackCategory::getId, FeedbackCategory::getName));
+
+        response.put("result", "查詢成功");
+        response.put("data", categoryStrings);
+        return ResponseEntity.ok(response);
+    }
+
+    //
     // -- 刪除意見分類 --
     //
 
@@ -311,5 +329,11 @@ public class feedbackController {
         }
         body.setId(replyId);
         return feedbackReplyService.modify(body);
+    }
+
+    // 通過使用者尋找
+    @GetMapping("/findbyuser/{id}")
+    public List<Feedback> findFaqByUser(@PathVariable Integer id) {
+        return feedbackService.findByUser_UsersId(id);
     }
 }

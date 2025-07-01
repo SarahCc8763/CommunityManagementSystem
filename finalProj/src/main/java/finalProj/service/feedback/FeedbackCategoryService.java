@@ -63,4 +63,8 @@ public class FeedbackCategoryService {
         return "刪除成功";
 
     }
+
+    public List<FeedbackCategory> findByCommunityId(Integer communityId) {
+        return feedbackCategoryRepository.findByCommunity_CommunityId(communityId);
+    }
 }

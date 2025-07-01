@@ -114,7 +114,7 @@ public class FeedbackService {
         // 確認資料完整性
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
-                || feedback.getHandler() == null || feedback.getHandler().getUsersId() == null
+
                 || feedback.getCommunity() == null || feedback.getCommunity().getCommunityId() == null) {
             return null;
         }
@@ -123,11 +123,9 @@ public class FeedbackService {
         Optional<FeedbackCategory> optionalCategory = feedbackCategoryRepository
                 .findById(feedback.getCategory().getId());
         Optional<Users> optionalUser = usersRepository.findById(feedback.getUser().getUsersId());
-        Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
         Optional<Community> optionalCommunity = communityRepository.findById(feedback.getCommunity().getCommunityId());
-
         // 任何一個沒找到就傳null
-        if (!optionalCategory.isPresent() || !optionalUser.isPresent() || !optionalHandler.isPresent()
+        if (!optionalCategory.isPresent() || !optionalUser.isPresent()
                 || !optionalCommunity.isPresent()) {
             return null;
         }
@@ -139,11 +137,17 @@ public class FeedbackService {
             log.info("傳入的反映者或社區與原資料不符，修改失敗");
             return null;
         }
+        if (feedback.getHandler() != null && feedback.getHandler().getUsersId() != null) {
+            Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
+            if (optionalHandler.isEmpty()) {
+                return null;
+            }
+            existing.setHandler(optionalHandler.get());
+        }
 
         // 如果都找到就放到要新增的feedback物件的對應屬性裡
         existing.setCategory(optionalCategory.get());
         existing.setUser(user);
-        existing.setHandler(optionalHandler.get());
         existing.setCommunity(community);
         existing.setLastUpdated(LocalDateTime.now());
         if (feedback.getUserRating() != null) {
@@ -212,6 +216,11 @@ public class FeedbackService {
 
     public Long count() {
         return feedbackRepository.count();
+    }
+
+    public List<Feedback> findByUser_UsersId(Integer id) {
+        return feedbackRepository.findByUser_UsersId(id);
+
     }
 
 }
