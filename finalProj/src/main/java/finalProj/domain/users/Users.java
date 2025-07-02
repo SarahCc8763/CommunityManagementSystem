@@ -92,7 +92,6 @@ public class Users {
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
-
 	// 這個 user 曾報修過的 tickets
 	@JsonManagedReference("reporterIdTicket")
 	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -255,8 +254,6 @@ public class Users {
 		this.community = community;
 	}
 
-	<<<<<<<HEAD=======
-
 	public List<Ticket> getReportedTickets() {
 		return reportedTickets;
 	}
@@ -278,10 +275,8 @@ public class Users {
 	}
 
 	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
-        this.unitsUsersList = unitsUsersList;
-    }
-
-	
+		this.unitsUsersList = unitsUsersList;
+	}
 
 	@Override
 	public String toString() {

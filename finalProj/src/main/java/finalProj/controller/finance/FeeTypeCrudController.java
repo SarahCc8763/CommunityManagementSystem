@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -62,10 +63,16 @@ public class FeeTypeCrudController {
         return entity;
     }
 
-    // 【功能】取得所有費用類型
+    // 【功能】取得所有費用類型（可依communityId查詢）
     @GetMapping
-    public List<FeeTypeDTO> getAll() {
-        return feeTypeService.findAll().stream().map(this::toDTO).toList();
+    public List<FeeTypeDTO> getAll(@RequestParam(required = false) Integer communityId) {
+        List<FeeType> feeTypes;
+        if (communityId != null) {
+            feeTypes = feeTypeService.findByCommunityId(communityId);
+        } else {
+            feeTypes = feeTypeService.findAll();
+        }
+        return feeTypes.stream().map(this::toDTO).toList();
     }
 
     // 【功能】依ID查詢單一費用類型

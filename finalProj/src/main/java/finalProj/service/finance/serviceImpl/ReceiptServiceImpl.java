@@ -96,6 +96,11 @@ public class ReceiptServiceImpl implements ReceiptService {
         receiptRepository.deleteById(id);
     }
 
+    @Override
+    public List<Receipt> findByCommunityId(Integer communityId) {
+        return receiptRepository.findByCommunityId(communityId);
+    }
+
     private String generateReceiptNum() {
         // 使用 UUID 字串作為收據號碼
         return UUID.randomUUID().toString();

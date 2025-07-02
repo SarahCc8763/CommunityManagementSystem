@@ -1,4 +1,3 @@
-
 package finalProj.service.finance.serviceImpl;
 
 import java.util.List;
@@ -59,5 +58,10 @@ public class BillingPeriodServiceImpl implements BillingPeriodService {
         BillingPeriod newPeriod = new BillingPeriod();
         newPeriod.setPeriodCode(periodCode);
         return billingPeriodRepository.save(newPeriod);
+    }
+
+    @Override
+    public List<BillingPeriod> findByCommunityId(Integer communityId) {
+        return billingPeriodRepository.findByCommunityId(communityId);
     }
 }

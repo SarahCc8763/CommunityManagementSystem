@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.finance.Receipt;
@@ -35,10 +36,14 @@ public class ReceiptController {
         }
     }
 
-    // 【功能】查詢所有收據
+    // 【功能】查詢所有收據（可依communityId查詢）
     @GetMapping
-    public ResponseEntity<List<Receipt>> getAllReceipts() {
-        return ResponseEntity.ok(receiptService.findAll());
+    public ResponseEntity<List<Receipt>> getAllReceipts(@RequestParam(required = false) Integer communityId) {
+        if (communityId != null) {
+            return ResponseEntity.ok(receiptService.findByCommunityId(communityId));
+        } else {
+            return ResponseEntity.ok(receiptService.findAll());
+        }
     }
 
     // 【功能】查詢單一收據明細

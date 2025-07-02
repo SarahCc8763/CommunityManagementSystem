@@ -19,4 +19,7 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
     void deleteById(Integer invoiceId);
 
     java.math.BigDecimal getUnitCountByUserAndFeeType(Integer usersId, Integer feeTypeId);
+
+    // 根據communityId查詢
+    java.util.List<Invoice> findByCommunityId(Integer communityId);
 }

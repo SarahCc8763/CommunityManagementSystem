@@ -14,10 +14,14 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    // 【功能】取得所有發票
+    // 【功能】取得所有發票（可依communityId查詢）
     @GetMapping
-    public List<Invoice> getAll() {
-        return invoiceService.findAll();
+    public List<Invoice> getAll(@RequestParam(required = false) Integer communityId) {
+        if (communityId != null) {
+            return invoiceService.findByCommunityId(communityId);
+        } else {
+            return invoiceService.findAll();
+        }
     }
 
     // 【功能】依ID查詢單一發票

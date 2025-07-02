@@ -95,10 +95,16 @@ public class BillingPeriodCurdController {
         return entity;
     }
 
-    // 【功能】取得所有繳費期別
+    // 【功能】取得所有繳費期別（可依communityId查詢）
     @GetMapping
-    public List<BillingPeriodDTO> getAll() {
-        return billingPeriodService.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    public List<BillingPeriodDTO> getAll(@RequestParam(required = false) Integer communityId) {
+        List<BillingPeriod> periods;
+        if (communityId != null) {
+            periods = billingPeriodService.findByCommunityId(communityId);
+        } else {
+            periods = billingPeriodService.findAll();
+        }
+        return periods.stream().map(this::toDTO).collect(java.util.stream.Collectors.toList());
     }
 
     // 【功能】依ID或期別代碼查詢單一繳費期別

@@ -36,4 +36,9 @@ public class FeeTypeServiceImpl implements FeeTypeService {
     public void deleteById(Integer id) {
         feeTypeRepository.deleteById(id);
     }
+
+    @Override
+    public List<FeeType> findByCommunityId(Integer communityId) {
+        return feeTypeRepository.findByCommunityId(communityId);
+    }
 }

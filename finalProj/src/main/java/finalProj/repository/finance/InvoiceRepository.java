@@ -13,4 +13,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     // 根據 invoiceId 查詢
     Optional<Invoice> findByInvoiceId(Integer invoiceId);
+
+    // 根據communityId查詢
+    List<Invoice> findByCommunityId(Integer communityId);
 }

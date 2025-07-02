@@ -78,4 +78,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         return java.math.BigDecimal.ONE;
     }
 
+    @Override
+    public List<Invoice> findByCommunityId(Integer communityId) {
+        return invoiceRepository.findByCommunityId(communityId);
+    }
+
 }
