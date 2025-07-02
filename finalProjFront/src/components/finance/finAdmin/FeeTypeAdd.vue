@@ -147,7 +147,16 @@ const customUnit = ref('')
 const customFrequency = ref('')
 const editItem = ref({})
 const deleteTarget = ref(null)
+const feeTypes = ref([])
 
+const fetchFeeTypes = async () => {
+  try {
+    const response = await axios.get('/finance/fee-types') // ← API 路徑請依實際命名修改
+    feeTypes.value = response.data
+  } catch (e) {
+    errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)
+  }
+}
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
 const form = ref({
@@ -164,50 +173,48 @@ const form = ref({
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+
   try {
     await axios.post('/finance/fee-types', form.value)
     successMsg.value = '新增成功！'
-    Object.keys(form.value).forEach(k => {
-      form.value[k] = typeof form.value[k] === 'boolean' ? true : null
-    })
+
+    // 清空表單
+    form.value = {
+      feeCode: '',
+      description: '',
+      amountPerUnit: null,
+      unit: '',
+      frequency: '',
+      note: '',
+      communityId: null,
+      status: true
+    }
+
+    // 關閉 modal
     const modalEl = document.getElementById('feeTypeModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
     modal?.hide()
+
+    // 重新載入列表
+    await fetchFeeTypes()
+
   } catch (e) {
-    errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
+    if (e.response?.status === 409) {
+      errorMsg.value = '新增失敗：費用代碼已存在，請改用其他代碼'
+    } else {
+      errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
+    }
   }
 }
 
-const feeTypes = ref([
-  {
-    feeTypeId: 1,
-    feeCode: 'MNT',
-    description: '管理費',
-    amountPerUnit: 50,
-    unit: '每坪',
-    frequency: '每月',
-    note: '依坪數計費',
-  },
-  {
-    feeTypeId: 2,
-    feeCode: 'CLN',
-    description: '清潔費',
-    amountPerUnit: 100,
-    unit: '每戶',
-    frequency: '每月',
-    note: '每戶固定收取',
-  },
-  {
-    feeTypeId: 3,
-    feeCode: 'PKG',
-    description: '車位管理費',
-    amountPerUnit: 200,
-    unit: '每住戶',
-    frequency: '每月',
-    note: '含地上與地下車位',
-  },
-])
-onMounted(() => {
-  // fetchFeeTypes()
+
+
+onMounted(async () => {
+  try {
+    await fetchFeeTypes()
+  } catch (err) {
+    console.error('載入失敗：', err)
+  }
 })
+
 </script>

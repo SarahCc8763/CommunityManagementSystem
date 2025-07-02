@@ -180,7 +180,7 @@ const menuList = ref([
       { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
       { label: '新增繳款單', routeName: 'InvoiceAdd' },
       { label: '新增收據', routeName: 'ReceiptAdd' },
-      { label: '繳款單回覆', routeName: 'InvoiceResponseAdd' },
+
     ]
   },
   {

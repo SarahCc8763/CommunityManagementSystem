@@ -97,30 +97,7 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const invoices = ref([
-  {
-    invoiceId: '3',
-    amountDue: 3200,
-    unitCount: 32,
-    unitPrice: 100,
-    users: { usersId: 5, name: '王小明' },
-    feeType: { description: '管理費' },
-    periodName: '2024年6月',
-    deadline: '2024-06-30',
-    paymentStatus: 'unpaid'
-  },
-  {
-    invoiceId: '2',
-    amountDue: 1500,
-    unitCount: 15,
-    unitPrice: 100,
-    users: { usersId: 4, name: '王小明' },
-    feeType: { description: '清潔費' },
-    periodName: '2024年6月',
-    deadline: '2024-06-30',
-    paymentStatus: 'pending' // 審核中
-  }
-])
+
 const totalAmount = computed(() =>
   invoices.value.reduce((sum, inv) => sum + Number(inv.amountDue), 0)
 )
