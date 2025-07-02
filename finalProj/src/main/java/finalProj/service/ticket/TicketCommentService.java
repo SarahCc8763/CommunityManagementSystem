@@ -12,7 +12,7 @@ import finalProj.domain.ticket.TicketComment;
 import finalProj.dto.ticket.CommentDTO;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;
-import finalProj.repository.ticket.UsersRepository;
+import finalProj.repository.users.UsersRepository;
 
 @Service
 @Transactional
