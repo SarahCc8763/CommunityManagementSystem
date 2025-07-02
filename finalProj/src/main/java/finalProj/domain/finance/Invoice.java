@@ -54,8 +54,8 @@ public class Invoice extends BaseEntity {
     @JoinColumn(name = "users_id")
     private Users users;
 
-    @Column(name = "status", length = 20)
-    private String status; // UNPAID, PENDING, PAID
+    @Column(name = "paymentStatus", length = 20)
+    private String paymentStatus;// UNPAID, PENDING, PAID
 
     public Integer getInvoiceId() {
         return invoiceId;
@@ -145,12 +145,12 @@ public class Invoice extends BaseEntity {
         this.users = users;
     }
 
-    public String getStatus() {
-        return status;
+    public String getPaymentStatus() {
+        return paymentStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     // ----------------------------------------

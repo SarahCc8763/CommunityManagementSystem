@@ -96,7 +96,8 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table align-middle table-hover table-borderless shadow-sm rounded" :class="{ 'dark-mode': isDarkMode }">
+      <table class="table align-middle table-hover table-borderless shadow-sm rounded"
+        :class="{ 'dark-mode': isDarkMode }">
         <thead class=" text-secondary border-bottom">
           <tr>
             <th scope="col">費用代碼</th>
@@ -133,7 +134,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios.js'
+
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'

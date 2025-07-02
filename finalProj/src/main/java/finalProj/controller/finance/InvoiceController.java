@@ -55,7 +55,7 @@ public class InvoiceController {
     @PutMapping("/status/{invoiceId}")
     public Invoice updateStatus(@PathVariable Integer invoiceId, @RequestParam String status) {
         Invoice invoice = invoiceService.findById(invoiceId);
-        invoice.setStatus(status);
+        invoice.setPaymentStatus(status);
         return invoiceService.save(invoice);
     }
 

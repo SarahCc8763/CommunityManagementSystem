@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-4">
-    <h3>新增發票</h3>
+    <h3>新增繳款單</h3>
     <form @submit.prevent="submitForm">
       <div class="mb-3">
         <label class="form-label">費用類型</label>
@@ -134,5 +134,7 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.container { max-width: 500px; }
-</style> 
+.container {
+  max-width: 500px;
+}
+</style>

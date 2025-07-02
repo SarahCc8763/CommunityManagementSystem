@@ -75,9 +75,8 @@ const activeIndex = ref(null)
 
 // 假資料!!!!!!!!!使用者登入狀態與資料
 const user = ref({
-  name: '小明',
-  avatar: 'https://randomuser.me/api/portraits/men/71.jpg',
-  points: 120
+  avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
+  points: 500
 })
 
 // 回首頁
@@ -179,9 +178,9 @@ const menuList = ref([
       { label: '繳費紀錄', routeName: 'InvoiceHistory' },
       { label: '新增費用類型', routeName: 'FeeTypeAdd' },
       { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
-      { label: '新增發票', routeName: 'InvoiceAdd' },
+      { label: '新增繳款單', routeName: 'InvoiceAdd' },
       { label: '新增收據', routeName: 'ReceiptAdd' },
-      { label: '發票回覆', routeName: 'InvoiceResponseAdd' },
+      { label: '繳款單回覆', routeName: 'InvoiceResponseAdd' },
     ]
   },
   {

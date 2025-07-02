@@ -4,7 +4,8 @@
   </div>
 
   <!-- 新增繳費期別 Modal -->
-  <div class="modal fade" id="billingPeriodModal" tabindex="-1" aria-labelledby="billingPeriodModalLabel" aria-hidden="true">
+  <div class="modal fade" id="billingPeriodModal" tabindex="-1" aria-labelledby="billingPeriodModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <form @submit.prevent="submitForm">
@@ -115,7 +116,8 @@
     </div>
     <div v-if="searchResult">
       <div class="alert alert-info mb-2">搜尋結果</div>
-      <table class="table align-middle table-hover table-borderless shadow-sm rounded" :class="{ 'dark-mode': isDarkMode }">
+      <table class="table align-middle table-hover table-borderless shadow-sm rounded"
+        :class="{ 'dark-mode': isDarkMode }">
         <thead class="text-secondary border-bottom">
           <tr>
             <th scope="col">期別名稱</th>
@@ -149,7 +151,8 @@
     </div>
     <div v-else>
       <div class="table-responsive">
-        <table class="table align-middle table-hover table-borderless shadow-sm rounded" :class="{ 'dark-mode': isDarkMode }">
+        <table class="table align-middle table-hover table-borderless shadow-sm rounded"
+          :class="{ 'dark-mode': isDarkMode }">
           <thead class="text-secondary border-bottom">
             <tr>
               <th scope="col">期別名稱</th>
@@ -191,6 +194,7 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import bannerImg from '@/assets/images/main/adminBanner.jpg'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const successMsg = ref('')
 const errorMsg = ref('')
@@ -218,6 +222,7 @@ const searchType = ref('M')
 const searchResult = ref(null)
 
 const fetchBillingPeriods = async () => {
+
   try {
     const res = await axios.get('/finance/billing-periods')
     billingPeriods.value = res.data || []
@@ -227,9 +232,12 @@ const fetchBillingPeriods = async () => {
 }
 
 const latestBillingPeriods = computed(() => {
-  return billingPeriods.value.slice(-10).reverse()
+  if (Array.isArray(billingPeriods.value)) {
+    return billingPeriods.value.slice(-10).reverse()
+  } else {
+    return []
+  }
 })
-
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
@@ -293,13 +301,17 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container { max-width: 900px; }
-.input-group > .form-label {
+.container {
+  max-width: 900px;
+}
+
+.input-group>.form-label {
   margin-bottom: 0;
 }
+
 @media (max-width: 991px) {
-  .row.mb-3.g-2.align-items-end.flex-wrap > div {
+  .row.mb-3.g-2.align-items-end.flex-wrap>div {
     margin-bottom: 12px;
   }
 }
-</style> 
+</style>
