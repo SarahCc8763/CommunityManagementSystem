@@ -15,7 +15,7 @@ public class InvoiceDTO {
     private BigDecimal unitCount;
     private BigDecimal unitPrice;
     private BigDecimal totalAmount;
-    private String status;
+    private String paymentStatus;
     private String note;
 
     // 巢狀物件
@@ -29,11 +29,4 @@ public class InvoiceDTO {
     private Integer createdBy;
     private Integer updatedBy;
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

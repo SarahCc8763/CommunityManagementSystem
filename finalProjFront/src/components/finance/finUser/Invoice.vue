@@ -28,7 +28,7 @@
         <div class="invoice-info-row">
           <div><span class="info-label">繳費截止日：</span>{{ formatDate(invoice.deadline) }}</div>
         </div>
-        <button v-if="invoice.paymentStatus === false || invoice.paymentStatus === 'pending'" class="pay-btn"
+        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'" class="pay-btn"
           @click="openPayModal(invoice)">去繳費</button>
       </div>
       <div class="total-row">
@@ -107,7 +107,7 @@ const invoices = ref([
     feeType: { description: '管理費' },
     periodName: '2024年6月',
     deadline: '2024-06-30',
-    status: false
+    paymentStatus: 'unpaid'
   },
   {
     invoiceId: '2',
@@ -118,7 +118,7 @@ const invoices = ref([
     feeType: { description: '清潔費' },
     periodName: '2024年6月',
     deadline: '2024-06-30',
-    status: 'pending' // 審核中
+    paymentStatus: 'pending' // 審核中
   }
 ])
 const totalAmount = computed(() =>
@@ -139,15 +139,15 @@ const formatDate = (date) => {
 }
 
 const statusText = (invoice) => {
-  if (invoice.status === false) return '未繳'
-  if (invoice.status === 'pending') return '審核中'
-  if (invoice.status === true) return '已繳'
+  if (invoice.paymentStatus === 'unpaid') return '未繳'
+  if (invoice.paymentStatus === 'pending') return '審核中'
+  if (invoice.paymentStatus === 'paid') return '已繳'
   return '—'
 }
 const statusBadgeClass = (invoice) => {
-  if (invoice.status === false) return 'badge-primary'
-  if (invoice.status === 'pending') return 'badge-warning'
-  if (invoice.status === true) return 'badge-success'
+  if (invoice.paymentStatus === 'unpaid') return 'badge-primary'
+  if (invoice.paymentStatus === 'pending') return 'badge-warning'
+  if (invoice.paymentStatus === 'paid') return 'badge-success'
   return 'badge-secondary'
 }
 

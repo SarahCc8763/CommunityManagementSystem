@@ -59,7 +59,7 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         response.setLastResponseTime(LocalDateTime.now());
         response.setVerified(false);
         // 新增：同步將 invoice 狀態設為 PENDING
-        invoice.setStatus("PENDING");
+        invoice.setPaymentStatus("PENDING");
         invoiceRepository.save(invoice);
         InvoiceResponse saved = invoiceResponseRepository.save(response);
         return toDTO(saved);
@@ -120,7 +120,7 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         // 同步將 invoice 狀態設為 PAID
         Invoice invoice = entity.getInvoice();
         if (invoice != null) {
-            invoice.setStatus("PAID");
+            invoice.setPaymentStatus("PAID");
             invoiceRepository.save(invoice);
         }
         InvoiceResponse saved = invoiceResponseRepository.save(entity);

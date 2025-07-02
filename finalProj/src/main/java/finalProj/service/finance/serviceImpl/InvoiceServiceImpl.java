@@ -57,7 +57,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         Optional<Invoice> optional = invoiceRepository.findById(invoiceId);
         if (optional.isPresent()) {
             Invoice invoice = optional.get();
-            invoice.setStatus(status);
+            invoice.setPaymentStatus(status);
             return invoiceRepository.save(invoice);
         }
         return null;
