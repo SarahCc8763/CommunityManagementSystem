@@ -18,12 +18,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // 如果你要用表單登入，建議不要關
                 .authorizeHttpRequests(auth -> auth
-                        // .requestMatchers("/finance/**").permitAll()
-                        .anyRequest().permitAll()
-                // .anyRequest().authenticated()
-                )
+                        .requestMatchers("/users/**", "/api/**", "/**", "/finance/**").permitAll()
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();

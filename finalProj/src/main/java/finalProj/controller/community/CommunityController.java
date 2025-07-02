@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.community.Community;
+import finalProj.dto.community.CommunityDTO;
 import finalProj.dto.ticket.ApiResponse;
 import finalProj.service.community.CommunityService;
 
@@ -31,7 +32,20 @@ public class CommunityController {
 		return result;
 	}
 
-	// Findall
+	// 新增CommunityAndFunction
+	@PostMapping("/create")
+	public Community createCommunityWithFunction(@RequestBody CommunityDTO dto) {
+		return communityService.createCommunityWithFunctions(dto);
+	}
+	
+	
+	//查詢社區功能
+	@GetMapping("/functions/{id}")
+	public List<String> getCommunityFunctions(@PathVariable("id") Integer id){
+		return communityService.getEnabledFunctionNames(id);
+	}
+
+	// FindAll
 	@GetMapping
 	public List<Community> findAll() {
 		// TODO: 呼叫 service.findAll()
@@ -59,10 +73,8 @@ public class CommunityController {
 
 	// Update
 	@PutMapping("/{id}")
-	public Community update(@PathVariable Integer id, @RequestBody Community community) {
-		// TODO: 呼叫 service.update(id, ticket)
-
-		Community result = communityService.update(id, community);
+	public Community update(@PathVariable("id") Integer id, @RequestBody CommunityDTO dto) {
+		Community result = communityService.update(id, dto);
 		return result;
 	}
 

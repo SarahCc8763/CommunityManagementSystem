@@ -21,22 +21,15 @@ public class TicketAttachment {
 	@Column(name = "id")
 	private Integer id;// ticket_attachment流水號
 
-	@JsonBackReference("attachments")
+	@JsonBackReference("commentsAttachment")
 	@ManyToOne
 	@JoinColumn(name = "comment_id", nullable = true)
 	private TicketComment comment;
 
-	@JsonBackReference("attachments")
+	@JsonBackReference("ticketAttachment")
 	@ManyToOne
 	@JoinColumn(name = "ticket_id", nullable = true)
 	private Ticket ticket;
-
-	@Override
-	public String toString() {
-		return "TicketAttachment [id=" + id + ", comment=" + comment + ", ticket=" + ticket + ", uploadedBy="
-				+ uploadedBy + ", fileName=" + fileName + ", file=" + Arrays.toString(file) + ", imageUrl1="
-				+ Arrays.toString(imageUrl1) + ", uploadedAt=" + uploadedAt + "]";
-	}
 
 	@Column(name = "uploaded_by")
 	private Integer uploadedBy;
@@ -47,11 +40,26 @@ public class TicketAttachment {
 	@Column(name = "[file]")
 	private byte[] file;// 檔案
 
-	@Column(name = "image_url1")
-	private byte[] imageUrl1;// 圖
+	@Column(name = "image_url")
+	private byte[] imageUrl;// 圖
 
 	@Column(name = "uploaded_at")
 	private java.util.Date uploadedAt;// 上傳時間
+
+	@Override
+	public String toString() {
+		return "TicketAttachment [id=" + id + ", comment=" + comment + ", ticket=" + ticket + ", uploadedBy="
+				+ uploadedBy + ", fileName=" + fileName + ", file=" + Arrays.toString(file) + ", imageUrl="
+				+ Arrays.toString(imageUrl) + ", uploadedAt=" + uploadedAt + "]";
+	}
+
+	public byte[] getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(byte[] imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
 	public Integer getId() {
 		return id;
@@ -99,14 +107,6 @@ public class TicketAttachment {
 
 	public void setFile(byte[] file) {
 		this.file = file;
-	}
-
-	public byte[] getImageUrl1() {
-		return imageUrl1;
-	}
-
-	public void setImageUrl1(byte[] imageUrl1) {
-		this.imageUrl1 = imageUrl1;
 	}
 
 	public java.util.Date getUploadedAt() {

@@ -1,10 +1,14 @@
 package finalProj.domain.ticket;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,6 +20,9 @@ public class IssueType {
 	private Integer Id;// 問題類別流水號
 	@Column(name = "issue_type_name")
 	private String issueTypeName;// 問題類別名稱
+
+	@OneToMany(mappedBy = "issueType", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<IssueTypeAndTicket> tickets;
 
 	@Override
 	public String toString() {

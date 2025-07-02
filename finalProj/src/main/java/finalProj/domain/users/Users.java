@@ -1,10 +1,15 @@
 package finalProj.domain.users;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
+import finalProj.domain.ticket.Ticket;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -75,11 +81,27 @@ public class Users {
 	@Column(name = "account_locked_until")
 	private LocalDateTime accountLockedUntil;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	// @JsonManagedReference("unitsUsers")
+	@JsonIgnore
+	private List<UnitsUsers> unitsUsersList;
+
+	@JsonBackReference("communityUser")
+
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
-	// --- Getters & Setters ---
+
+	// 這個 user 曾報修過的 tickets
+	@JsonManagedReference("reporterIdTicket")
+	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> reportedTickets;
+
+	// 這個 user 被指派處理的 tickets
+	@JsonManagedReference("assignerIdTicket")
+	@OneToMany(mappedBy = "assignerId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> assignedTickets;
 
 	public Integer getUsersId() {
 		return usersId;
@@ -233,16 +255,44 @@ public class Users {
 		this.community = community;
 	}
 
+	<<<<<<<HEAD=======
+
+	public List<Ticket> getReportedTickets() {
+		return reportedTickets;
+	}
+
+	public void setReportedTickets(List<Ticket> reportedTickets) {
+		this.reportedTickets = reportedTickets;
+	}
+
+	public List<Ticket> getAssignedTickets() {
+		return assignedTickets;
+	}
+
+	public void setAssignedTickets(List<Ticket> assignedTickets) {
+		this.assignedTickets = assignedTickets;
+	}
+
+	public List<UnitsUsers> getUnitsUsersList() {
+		return unitsUsersList;
+	}
+
+	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
+        this.unitsUsersList = unitsUsersList;
+    }
+
+	
+
 	@Override
 	public String toString() {
 		return "Users [usersId=" + usersId + ", name=" + name + ", gender=" + gender + ", contactInfo=" + contactInfo
 				+ ", emergencyContactName=" + emergencyContactName + ", emergencyContactPhone=" + emergencyContactPhone
 				+ ", emergencyContactRelation=" + emergencyContactRelation + ", lineId=" + lineId + ", state=" + state
 				+ ", createAt=" + createAt + ", lastAlterAt=" + lastAlterAt + ", photo=" + photo + ", email=" + email
-				+ ", states=" + states + ", loginFailTimes=" + loginFailTimes + ", lastFailedLogin=" + lastFailedLogin
-				+ ", accountLockedUntil=" + accountLockedUntil + ", community=" + (community != null ? community.getCommunityId() : null) + "]";
+				+ ", password=" + password + ", states=" + states + ", loginFailTimes=" + loginFailTimes
+				+ ", lastFailedLogin=" + lastFailedLogin + ", accountLockedUntil=" + accountLockedUntil
+				+ ", unitsUsersList=" + unitsUsersList + ", community=" + community + ", reportedTickets="
+				+ reportedTickets + ", assignedTickets=" + assignedTickets + "]";
 	}
-
-	
 
 }

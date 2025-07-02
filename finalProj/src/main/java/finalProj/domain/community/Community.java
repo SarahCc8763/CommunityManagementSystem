@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import finalProj.domain.packages.Packages;
 import finalProj.domain.ticket.Ticket;
+import finalProj.domain.users.Units;
+import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,21 +25,35 @@ public class Community {
 	@Column(name = "id")
 	private Integer communityId; // 社區流水號
 
-	@JsonManagedReference("community")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Ticket> tickets;
-
 	@Column(name = "name")
 	private String name; // 社區名稱
-
+	
 	@Column(name = "address")
 	private String address; // 地址
-
+	
 	@Column(name = "create_time", insertable = false, updatable = false)
 	private java.util.Date createTime; // 創建時間
-
+	
 	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
-	private Integer function; // 使用功能
+	private Long function; // 使用功能
+	
+	@JsonManagedReference("communityTicket")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> tickets;
+	
+	
+	@JsonManagedReference("communityUser")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Users> users;
+	
+	@JsonManagedReference("communityUnit")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Units> units;
+
+	@JsonManagedReference("communityPackage")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Packages> packagesList;
+
 
 
 
@@ -86,13 +103,23 @@ public class Community {
 		this.createTime = createTime;
 	}
 
-	public Integer getFunction() {
+	public List<Users> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<Users> users) {
+		this.users = users;
+	}
+
+	public Long getFunction() {
 		return function;
 	}
 
-	public void setFunction(Integer function) {
+	public void setFunction(Long function) {
 		this.function = function;
 	}
+
+
 
 //	facility	VARBINARY(MAX)
 //	parking_info	VARBINARY(MAX)

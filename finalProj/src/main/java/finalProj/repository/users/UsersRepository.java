@@ -10,5 +10,4 @@ import finalProj.domain.users.Users;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Integer> {
 	Optional<Users> findByEmail(String email);
-
 }

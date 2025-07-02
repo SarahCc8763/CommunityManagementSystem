@@ -12,9 +12,17 @@ public class TicketDTO {
 	private Integer actionBy;
 	private Integer communityId;
 	private String notes;
+	private List<String> issueTypeNames;
 	private List<Integer> attachmentIds;
 	private java.util.Date actionTime;
 
+	public List<String> getIssueTypeNames() {
+		return issueTypeNames;
+	}
+
+	public void setIssueTypeNames(List<String> issueTypeNames) {
+		this.issueTypeNames = issueTypeNames;
+	}
 
 	public java.util.Date getActionTime() {
 		return actionTime;

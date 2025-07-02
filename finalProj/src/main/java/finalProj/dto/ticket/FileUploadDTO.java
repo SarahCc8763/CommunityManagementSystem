@@ -6,14 +6,14 @@ public class FileUploadDTO {
 	private String base64Data;
 	private Integer uploadedBy;
 	private Integer ticketId;
-	private Integer commentID;
+	private Integer commentId;
 
-	public Integer getCommentID() {
-		return commentID;
+	public Integer getCommentId() {
+		return commentId;
 	}
 
-	public void setCommentID(Integer commentID) {
-		this.commentID = commentID;
+	public void setCommentId(Integer commentId) {
+		this.commentId = commentId;
 	}
 
 	public Integer getTicketId() {

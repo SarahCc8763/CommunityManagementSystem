@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
+import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,32 +29,40 @@ public class Ticket {
 	@Column(name = "id")
 	private Integer id; // ticket流水號
 
-	@JsonBackReference("tickets")
+	@JsonBackReference("communityTicket")
 	@ManyToOne
 	@JoinColumn(name = "community_id", nullable = false, referencedColumnName = "id")
-	private Community community;//(社區)多對一(ticket)
+	private Community community;// (社區)多對一(ticket)
 
-	@JsonManagedReference("ticket")
+	@JsonManagedReference("ticketComments")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<TicketComment> comments;//(ticket)一對多(留言)
+	private List<TicketComment> comments;// (ticket)一對多(留言)
 
-	@JsonManagedReference("ticket")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<TicketAttachment> attachments;//(ticket)一對多(附件)
-	
-	@JsonManagedReference("ticket")
+	private List<IssueTypeAndTicket> issueTypes;
+
+	@JsonManagedReference("ticketAttachment")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<TicketIssueCostAttachment> costAttachment;//(ticket)一對多(金額附件)
+	private List<TicketAttachment> attachments;// (ticket)一對多(附件)
 
+	@JsonManagedReference("ticketCostAttachment")
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TicketIssueCostAttachment> costAttachment;// (ticket)一對多(金額附件)
 
-	@Column(name = "reporter_id")
-	private Integer reporterId; // 創建者ID
+	// 報修人（使用者）
+	@JsonBackReference("reporterIdTicket")
+	@ManyToOne
+	@JoinColumn(name = "reporter_id", nullable = true, referencedColumnName = "users_id")
+	private Users reporterId;
+
+	// 被指派處理的管理員
+	@JsonBackReference("assignerIdTicket")
+	@ManyToOne
+	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
+	private Users assignerId;
 
 	@Column(name = "title")
 	private String title; // 問題標題
-
-	@Column(name = "assigner_id")
-	private Integer assignerId; // 被指定者(管理員)
 
 	@Column(name = "[status]") // 保留字加中括號
 	private String status; // 問題狀態
@@ -80,15 +89,30 @@ public class Ticket {
 
 	@Column(name = "notes")
 	private String notes; // 備註
-	
 
 	@Override
 	public String toString() {
 		return "Ticket [id=" + id + ", community=" + community + ", comments=" + comments + ", attachments="
-				+ attachments + ", reporterId=" + reporterId + ", title=" + title + ", assignerId=" + assignerId
-				+ ", status=" + status + ", issueDescription=" + issueDescription + ", cost=" + cost + ", actionTime="
-				+ actionTime + ", actionBy=" + actionBy + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", notes=" + notes + ", costAttachment=" + costAttachment + "]";
+				+ attachments + ", costAttachment=" + costAttachment + ", reporterId=" + reporterId + ", assignerId="
+				+ assignerId + ", title=" + title + ", status=" + status + ", issueDescription=" + issueDescription
+				+ ", cost=" + cost + ", actionTime=" + actionTime + ", actionBy=" + actionBy + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
+	}
+
+	public Users getAssignerId() {
+		return assignerId;
+	}
+
+	public void setAssignerId(Users assignerId) {
+		this.assignerId = assignerId;
+	}
+
+	public Users getReporterId() {
+		return reporterId;
+	}
+
+	public void setReporterId(Users reporterId) {
+		this.reporterId = reporterId;
 	}
 
 	public List<TicketAttachment> getAttachments() {
@@ -131,28 +155,12 @@ public class Ticket {
 		this.comments = comments;
 	}
 
-	public Integer getReporterId() {
-		return reporterId;
-	}
-
-	public void setReporterId(Integer reporterId) {
-		this.reporterId = reporterId;
-	}
-
 	public String getTitle() {
 		return title;
 	}
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public Integer getAssignerId() {
-		return assignerId;
-	}
-
-	public void setAssignerId(Integer assignerId) {
-		this.assignerId = assignerId;
 	}
 
 	public String getStatus() {

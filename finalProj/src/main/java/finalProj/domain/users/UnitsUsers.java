@@ -1,5 +1,7 @@
 package finalProj.domain.users;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,15 +18,17 @@ public class UnitsUsers {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "unitsUsers_id")
+    @Column(name = "unitsusers_id")
     private Integer unitsUsersId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "users_id", nullable = false)
+    @JsonBackReference("unitsUsers")
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "units_id", nullable = false)
+    @JsonBackReference("unitsUsersList")
     private Units unit;
 
     @ManyToOne

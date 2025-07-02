@@ -2,6 +2,8 @@ package finalProj.domain.packages;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import finalProj.domain.community.Community;
 import finalProj.domain.users.Units;
 import jakarta.persistence.Column;
@@ -22,6 +24,7 @@ public class Packages {
     @Column(name = "packages_id")
     private Integer packagesId;
 
+    @JsonBackReference("unitPackage")
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "units_id")
     private Units unit;
@@ -41,15 +44,16 @@ public class Packages {
     @Column(length = 30)
     private String type;
 
-    @Column(name = "sign", length = 500)  // url
-    private String sign;  
+    @Column(name = "sign", length = 500) // url
+    private String sign;
 
     @Column(length = 30)
     private String place;
 
-    @Column(name = "photo", length = 500)  // url
-    private String photo; 
+    @Column(name = "photo", length = 500) // url
+    private String photo;
 
+    @JsonBackReference("communityPackage")
     @ManyToOne
     @JoinColumn(name = "community_id", referencedColumnName = "id")
     private Community community;
@@ -143,18 +147,16 @@ public class Packages {
         this.community = community;
     }
 
-	// toString
-	@Override
-	public String toString() {
-		return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
-				+ arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
-				+ sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
-				+ getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
-				+ getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
-				+ ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
-				+ ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
-	}
-    
-    
-}
+    // toString
+    @Override
+    public String toString() {
+        return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
+                + arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
+                + sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
+                + getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
+                + getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
+                + ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
+                + ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
+    }
 
+}

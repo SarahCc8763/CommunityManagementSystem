@@ -27,15 +27,13 @@ public class UsersNotifications {
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
-    private Users users;
+    private Users user;
 
     @Column(name = "is_read")
     private Integer isRead = 0;
 
     @Column(name = "read_time")
     private LocalDateTime readTime;
-
-    // Getters and Setters
 
     public Integer getUsersNotificationsId() {
         return usersNotificationsId;
@@ -53,12 +51,12 @@ public class UsersNotifications {
         this.notifications = notifications;
     }
 
-    public Users getUsers() {
-        return users;
+    public Users getUser() {
+        return user;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setUser(Users user) {
+        this.user = user;
     }
 
     public Integer getIsRead() {
@@ -77,14 +75,10 @@ public class UsersNotifications {
         this.readTime = readTime;
     }
 
-    //  toString  
-	@Override
-	public String toString() {
-		return "UsersNotifications [usersNotificationsId=" + usersNotificationsId + ", notifications=" + notifications
-				+ ", users=" + users + ", isRead=" + isRead + ", readTime=" + readTime + ", getUsersNotificationsId()="
-				+ getUsersNotificationsId() + ", getNotifications()=" + getNotifications() + ", getUsers()="
-				+ getUsers() + ", getIsRead()=" + getIsRead() + ", getReadTime()=" + getReadTime() + "]";
-	}
-    
-    
+    @Override
+    public String toString() {
+        return "UsersNotifications [usersNotificationsId=" + usersNotificationsId + ", notifications=" + notifications
+                + ", user=" + user + ", isRead=" + isRead + ", readTime=" + readTime + "]";
+    }
+
 }

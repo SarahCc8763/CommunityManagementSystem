@@ -25,12 +25,12 @@ public class TicketComment {
 	private Integer id;// ticket_comment流水號
 	
 	
-	@JsonBackReference("comments")
+	@JsonBackReference("ticketComments")
 	@ManyToOne
 	@JoinColumn(name = "ticket_id", nullable = false)
 	private Ticket ticket;
 	
-	@JsonManagedReference("comment")
+	@JsonManagedReference("commentsAttachment")
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketAttachment> attachments;
 
