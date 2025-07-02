@@ -10,4 +10,5 @@ import finalProj.domain.bulletin.BulletinComment;
 @Repository
 public interface BulletinCommentRepository extends JpaRepository<BulletinComment, Integer> {
     public List<BulletinComment> findByParentComment_Id(Integer id);
+
 }

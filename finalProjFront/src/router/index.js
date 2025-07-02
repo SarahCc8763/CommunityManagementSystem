@@ -5,6 +5,7 @@ import TicketForm from '@/views/TicketForm.vue'
 import TicketDetailView from '@/views/TicketDetailView.vue'
 import Faq from '@/views/faq/Faq.vue'
 import MyFeedback from '@/views/feedback/MyFeedback.vue'
+import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
 
 
 
@@ -44,6 +45,13 @@ const router = createRouter({
       path: '/feedback',
       name: 'feedback',
       component: MyFeedback
+
+    },
+
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
 
     }
     // {

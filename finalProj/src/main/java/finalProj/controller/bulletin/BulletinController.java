@@ -25,12 +25,14 @@ import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
+import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
 import finalProj.dto.BulletinResponse;
 import finalProj.repository.users.UsersRepository;
 import finalProj.service.bulletin.BulletinAttachmentService;
 import finalProj.service.bulletin.BulletinCategoryService;
+import finalProj.service.bulletin.BulletinCommentLikeService;
 import finalProj.service.bulletin.BulletinCommentService;
 import finalProj.service.bulletin.BulletinService;
 import finalProj.service.community.CommunityService;
@@ -61,6 +63,9 @@ public class BulletinController {
 
     @Autowired
     private BulletinAttachmentService bulletinAttachmentService;
+
+    @Autowired
+    private BulletinCommentLikeService bulletinCommentLikeService;
 
     //
     //
@@ -389,4 +394,17 @@ public class BulletinController {
     public List<BulletinCategory> findAllBulletinCategory() {
         return bulletinCategoryService.findAll();
     }
+
+    //
+    //
+    // ------ 公告留言的案讚 ------
+    //
+    //
+
+    @PostMapping("/comment/{commentId}/like/{userId}")
+    public BulletinComment postBulletinCommentLike(@PathVariable Integer commentId, @PathVariable Integer userId) {
+        bulletinCommentLikeService.likeComment(commentId, userId);
+        return bulletinCommentService.findById(commentId).get(); // 返回最新留言資訊
+    }
+
 }

@@ -1,4 +1,5 @@
 <template>
+
     <div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -132,9 +133,11 @@ const submitFeedback = async () => {
         console.log(payload);
         // console.log(res.data);
         if (res.data.success === true) {
-            swal.fire({ icon: 'success', title: '成功', text: '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
+            swal.fire({ icon: 'success', title: '成功', text: form.id ? '意見更新成功' : '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
                 resetForm()
+                location.reload();
+
             })
         } else {
             swal.fire({ icon: 'error', title: '失敗', text: res.data.message, showConfirmButton: false, timer: 1500 })
@@ -167,6 +170,12 @@ const resetForm = () => {
 
 onMounted(fetchCategories)
 onMounted(() => {
+
+    // 當 modal 關閉時自動清空資料
+    const modalEl = document.getElementById('feedbackModal')
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        resetForm()
+    })
     window.addEventListener('load-feedback-for-edit', (e) => {
         const feedback = e.detail
         console.log(feedback);

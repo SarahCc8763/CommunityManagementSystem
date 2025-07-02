@@ -157,26 +157,33 @@ public class FeedbackService {
         if (!"已結案".equals(existing.getStatus()) && "已結案".equals(feedback.getStatus())) {
             existing.setResolvedAt(LocalDateTime.now());
         }
-
-        // 移除舊附件
-        if (existing.getAttachments() != null && !existing.getAttachments().isEmpty()) {
-            feedbackAttachmentRepository.deleteAll(existing.getAttachments());
-            existing.getAttachments().clear();
-            log.debug("已刪除舊有附件");
+        // 1. 先清空附件（不需要手動 delete）
+        if (existing.getAttachments() != null) {
+            existing.getAttachments().clear(); // Hibernate 會自動刪除 orphan 附件
+            log.debug("已清空原有附件");
         }
 
-        // 加入新附件（若有）
+        // 2. 若有新附件，建立並加到 existing
         if (feedback.getAttachments() != null && !feedback.getAttachments().isEmpty()) {
-            List<FeedbackAttachment> newAttachments = new ArrayList<>();
             for (FeedbackAttachment newAttachment : feedback.getAttachments()) {
                 newAttachment.setFeedback(existing);
-                newAttachment.setFileSize(newAttachment.getFileDataBase64().length() * 3 / 4);
-                newAttachments.add(newAttachment);
+
+                // 計算檔案大小
+                if (newAttachment.getFileDataBase64() != null) {
+                    newAttachment.setFileSize(newAttachment.getFileDataBase64().length() * 3 / 4);
+                } else if (newAttachment.getAttachment() != null) {
+                    newAttachment.setFileSize(newAttachment.getAttachment().length * 3 / 4);
+                }
+                if (newAttachment.getFileName().length() > 50) {
+                    newAttachment.setFileName(newAttachment.getFileName().substring(0, 50));
+                }
+                existing.getAttachments().add(newAttachment); // 不用 new list，直接加入現有清單
                 log.debug("加入新附件：{}", newAttachment.getFileName());
-                feedbackAttachmentRepository.save(newAttachment);
             }
-            existing.setAttachments(newAttachments);
         }
+
+        // 3. 儲存主表，子資料將自動被 persist/update/delete
+        feedbackRepository.save(existing);
 
         // 修改狀態歷史紀錄
         if (feedback.getStatus() != null && !feedback.getStatus().equals(existing.getStatus())) {

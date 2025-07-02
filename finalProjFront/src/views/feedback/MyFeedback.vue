@@ -1,4 +1,19 @@
 <template>
+
+    <section class="hero-section py-5">
+        <div class="container">
+            <div class="hero-image-wrapper">
+                <img :src="FeedbackBg" alt="Hero Image" class="img-fluid hero-image" />
+                <div :class="['hero-text', 'text-left']">
+                    <h2 class="fw-bold" style="color: #383838">回饋提交紀錄</h2>
+                    <p cstyle="color: #5e5e5e">您可以在此查看您已提交的回饋歷史紀錄</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
     <div class="container my-4">
         <div v-if="error" class="alert alert-danger" role="alert">
             {{ error }}
@@ -11,7 +26,7 @@
         </div>
 
         <div v-else class="d-flex justify-content-center">
-            <div class="accordion w-75" id="feedbackAccordion">
+            <div class="accordion" id="feedbackAccordion" style="width: 90%;">
                 <div class="accordion-item" v-for="(feedback, index) in feedbackList" :key="feedback.id">
                     <h2 class="accordion-header" :id="'heading-' + index">
                         <button class="accordion-button collapsed w-100" type="button" data-bs-toggle="collapse"
@@ -135,6 +150,8 @@ const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
 
+import BannerImage from '@/components/forAll/BannerImage.vue';
+import FeedbackBg from '@/assets/images/feedback/feedbackbg.jpg';
 
 const toggleReplies = (feedback) => {
     feedback.showReplies = !feedback.showReplies
@@ -273,5 +290,61 @@ onMounted(() => {
 <style scoped>
 ul {
     padding-left: 1.2rem;
+}
+
+.hero-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    max-height: 300px;
+    max-width: 80vw;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    text-shadow: 0 2px 4px rgba(126, 126, 126, 0.6);
+    animation: fadeInUp 0.8s ease;
+    width: 100%;
+    padding: 0 2rem;
+}
+
+.text-center {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.text-left {
+    left: 5%;
+    text-align: left;
+}
+
+.text-right {
+    right: 5%;
+    left: auto;
+    text-align: right;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(-50%);
+    }
 }
 </style>

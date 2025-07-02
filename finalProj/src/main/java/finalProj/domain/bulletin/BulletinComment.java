@@ -4,6 +4,8 @@ package finalProj.domain.bulletin;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.util.ObjectUtils;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -64,9 +66,26 @@ public class BulletinComment {
     @Transient
     private Long likeCount;
 
+    @Transient
+    private Integer parentCommentId;
+
+    @Transient
+    private List<String> userData;
+
     //
     //
     // getters and setters
+
+    public List<String> getUserData() {
+        if (user != null) {
+            return List.of(user.getName(), user.getGender());
+        }
+        return List.of(); // or Collections.emptyList()
+    }
+
+    public void setUserData(List<String> userData) {
+        this.userData = userData;
+    }
 
     public Integer getId() {
         return id;
@@ -147,12 +166,28 @@ public class BulletinComment {
     }
 
     public Long getLikeCount() {
-        if (bulletinCommentLikes == null)
+        if (bulletinCommentLikes == null) {
             return 0L;
-        return (long) bulletinCommentLikes.size();
+        }
+
+        return bulletinCommentLikes.stream()
+                .filter(like -> like.getIsValid() != null && like.getIsValid()) // 只算 isValid=true
+                .count();
     }
 
     public void setLikeCount(Long likeCount) {
         this.likeCount = likeCount;
     }
+
+    public Integer getParentCommentId() {
+        if (parentComment != null) {
+            parentCommentId = parentComment.getId();
+        }
+        return parentCommentId;
+    }
+
+    public void setParentCommentId(Integer parentCommentId) {
+        this.parentCommentId = parentCommentId;
+    }
+
 }

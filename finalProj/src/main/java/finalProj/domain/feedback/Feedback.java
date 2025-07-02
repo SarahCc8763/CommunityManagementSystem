@@ -73,7 +73,7 @@ public class Feedback {
     @JsonBackReference("community-feedback")
     private Community community;
 
-    @OneToMany(mappedBy = "feedback")
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("feedback-attachment")
     private List<FeedbackAttachment> attachments;
 

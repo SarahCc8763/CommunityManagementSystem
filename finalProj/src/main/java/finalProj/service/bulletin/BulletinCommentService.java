@@ -31,6 +31,7 @@ public class BulletinCommentService {
     }
 
     public Optional<BulletinComment> findById(Integer id) {
+
         return bulletinCommentRepository.findById(id);
     }
 

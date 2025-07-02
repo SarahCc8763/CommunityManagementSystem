@@ -14,9 +14,11 @@ import finalProj.domain.users.Users;
 import finalProj.repository.bulletin.BulletinCommentLikeRepository;
 import finalProj.repository.bulletin.BulletinCommentRepository;
 import finalProj.repository.users.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class BulletinCommentLikeService {
 
     @Autowired
@@ -36,7 +38,7 @@ public class BulletinCommentLikeService {
         return bulletinCommentLikeRepository.save(entity);
     }
 
-    public BulletinCommentLike insertCommentLike(Integer commentId, Integer userId) {
+    public BulletinCommentLike likeComment(Integer commentId, Integer userId) {
         // 檢查是否已經按過讚
         BulletinCommentLikeId likeId = new BulletinCommentLikeId(commentId, userId);
         Optional<BulletinCommentLike> optional = bulletinCommentLikeRepository.findById(likeId);
@@ -44,6 +46,7 @@ public class BulletinCommentLikeService {
         if (optional.isPresent()) { // 已經按過讚
             Boolean validStatus = Boolean.TRUE.equals(optional.get().getIsValid()); // 取得當前按讚狀態
             optional.get().setIsValid(!validStatus); // 切換按讚狀態
+            log.info("當前的讚為{}", !validStatus);
             return bulletinCommentLikeRepository.save(optional.get()); // 更新狀態
         }
 
@@ -57,7 +60,7 @@ public class BulletinCommentLikeService {
         like.setComment(comment); // 設定關聯留言
         like.setUser(user); // 設定關聯使用者
         like.setIsValid(true); // 設定有效
-
+        log.info("按讚成功");
         return bulletinCommentLikeRepository.save(like);
     }
 }
