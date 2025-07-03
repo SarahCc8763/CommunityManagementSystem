@@ -16,9 +16,19 @@ public interface FaqRepository extends JpaRepository<Faq, Integer> {
                         "LEFT JOIN f.category fc " +
                         "LEFT JOIN f.keywordLinks fk " +
                         "LEFT JOIN fk.keyword k " +
-                        "WHERE (:category IS NULL OR fc.name = :category) " +
+                        "WHERE (:category IS NULL OR fc.name like :category) " +
                         "AND (:keywords IS NULL OR k.word IN :keywords)")
         List<Faq> findByCategoryAndKeywords(@Param("category") String category,
                         @Param("keywords") List<String> keywords);
+
+        @Query("SELECT DISTINCT f FROM Faq f " +
+                        "LEFT JOIN f.category fc " +
+                        "LEFT JOIN f.keywordLinks fk " +
+                        "LEFT JOIN fk.keyword k " +
+                        "WHERE (:category IS NULL OR fc.name = :category) " +
+                        "AND (:keyword IS NULL OR k.word LIKE :keyword OR f.question LIKE :keyword)")
+        List<Faq> findByCategoryAndKeywordLike(
+                        @Param("category") String category,
+                        @Param("keyword") String keyword);
 
 }

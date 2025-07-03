@@ -160,6 +160,30 @@ public class FaqController {
         return response;
     }
 
+    @PostMapping("/searchbykeyword")
+    public FaqResponse searchFaqByKeyword(@RequestBody Faq body) {
+        FaqResponse response = new FaqResponse();
+        String category = "";
+        if (body.getCategory() == null || body.getCategory().getName() == null) {
+            category = null;
+        } else {
+            category = body.getCategory().getName();
+        }
+
+        String keyword = "%" + body.getKeywords() + "%";
+        List<FaqDto> list = faqService.findByCategoryAndKeywordLike(category, keyword);
+
+        if (list.isEmpty()) {
+            response.setMessage("查無資料");
+            response.setSuccess(false);
+        } else {
+            response.setSuccess(true);
+            response.setMessage("查詢成功");
+            response.setList(list);
+        }
+        return response;
+    }
+
     @GetMapping("/{communityId}/category")
     public String[] findAllCategory(@PathVariable Integer communityId) {
         if (communityId == null) {

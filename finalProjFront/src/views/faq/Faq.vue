@@ -3,24 +3,29 @@
         <h1 class="h4 fw-bold mb-4">常見問題 (FAQ)</h1>
 
         <!-- 分類篩選 + 查詢 -->
-        <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap">
-            <!-- 左側：分類按鈕 -->
-            <div class="d-flex flex-wrap gap-2">
+        <div class="row my-3 align-items-center">
+            <!-- 左側：分類按鈕（佔 8 欄） -->
+            <div class="col-md-8 d-flex flex-wrap gap-2">
                 <button @click="selectCategory('全部')" :class="buttonClass('全部')">全部</button>
                 <button v-for="cat in categories" :key="cat" @click="selectCategory(cat)" :class="buttonClass(cat)">
                     {{ cat }}
                 </button>
             </div>
 
-            <!-- 右側：查詢欄位 -->
-            <div class="input-group mt-2 mt-md-0 w-50">
-                <input type="text" class="form-control" placeholder="輸入關鍵字查詢" v-model="searchKeyword"
-                    @keyup.enter="searchFaqs" />
-                <button class="btn btn-outline-secondary" type="button" @click="searchFaqs">
-                    查詢
-                </button>
+            <!-- 右側：搜尋欄位（佔 4 欄） -->
+            <div class="col-md-4 mt-2 mt-md-0">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="輸入關鍵字查詢" v-model="searchKeyword"
+                        @keyup.enter="searchFaqs" />
+                    <button class="btn  btn-primary" type="button" @click="searchFaqs">
+                        查詢
+                    </button>
+                    <button class="btn  btn-primary" @click="clearSearch">清除搜尋</button>
+
+                </div>
             </div>
         </div>
+
 
 
 
@@ -30,6 +35,31 @@
         <div v-else>
             <div v-if="filteredFaqs.length === 0" class="text-muted">無符合資料</div>
 
+            <!-- FAQ Accordion 區塊 -->
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item" v-for="faq in paginatedFaqs" :key="faq.id">
+                    <h2 class="accordion-header" :id="`heading-${faq.id}`">
+                        <button class="accordion-button  collapsed" type="button" data-bs-toggle="collapse"
+                            :data-bs-target="`#collapse-${faq.id}`" aria-expanded="false"
+                            :aria-controls="`collapse-${faq.id}`"><span class="badge rounded-pill me-2"
+                                :class="getCategoryBadgeClass(faq.category)">
+                                {{ faq.category }}
+                            </span>
+                            <span class="fs-6">{{ faq.question }}</span></button>
+                    </h2>
+                    <div :id="`collapse-${faq.id}`" class="accordion-collapse collapse"
+                        :aria-labelledby="`heading-${faq.id}`" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p class="mb-2">{{ faq.answer }}</p>
+                            <p class="small text-muted">
+                                分類：{{ faq.category }} | 更新時間：{{ formatDate(faq.lastModified) }}
+                            </p>
+                            <p class="small text-muted">關鍵字：{{ faq.keywords.join(', ') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 
             <div class="accordion" id="faqAccordion">
                 <div class="accordion-item" v-for="faq in paginatedFaqs" :key="faq.id">
                     <h2 class="accordion-header" :id="`heading-${faq.id}`">
@@ -55,7 +85,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- 分頁控制 -->
             <nav class="mt-4" v-if="totalPages > 1">
@@ -79,6 +109,7 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
+const fullfaqList = ref([])
 const faqList = ref([])
 const categories = ref([])
 const loading = ref(true)
@@ -117,11 +148,12 @@ const fetchFaqs = async () => {
         categories.value = categoryOrder
 
         if (faqRes.data.success) {
-            faqList.value = faqRes.data.list.sort((a, b) => {
+            fullfaqList.value = faqRes.data.list.sort((a, b) => {
                 const aIndex = categoryOrder.indexOf(a.category)
                 const bIndex = categoryOrder.indexOf(b.category)
                 return aIndex - bIndex
             })
+            faqList.value = fullfaqList.value
         }
     } catch (error) {
         console.error('取得FAQ或分類失敗:', error)
@@ -142,8 +174,9 @@ const searchFaqs = async () => {
         requestBody.keywords = searchKeyword.value.trim()
     }
 
+
     try {
-        const res = await axios.post('http://localhost:8080/api/faq/searchby', requestBody)
+        const res = await axios.post('http://localhost:8080/api/faq/searchbykeyword', requestBody)
         if (res.data.success) {
             // ✅ 重新依分類順序排序
             const categoryOrder = categories.value
@@ -160,12 +193,26 @@ const searchFaqs = async () => {
         loading.value = false
     }
 }
+const clearSearch = () => {
+    searchKeyword.value = ''
+    selectedCategory.value = '全部'
+    faqList.value = [...fullfaqList.value]
+    page.value = 1
+}
 
 const selectCategory = (cat) => {
     selectedCategory.value = cat
     page.value = 1
-    searchFaqs()
+
+    if (cat === '全部' && searchKeyword.value.trim() === '') {
+        // ✅ 如果沒輸入關鍵字且選的是全部 → 還原初始 faqList
+        faqList.value = [...fullfaqList.value]
+    } else {
+        // ✅ 其他情況就重新查詢
+        searchFaqs()
+    }
 }
+
 
 const formatDate = (dateStr) => new Date(dateStr).toLocaleString()
 

@@ -86,6 +86,9 @@ public class Bulletin {
     @JsonManagedReference("bulletin-comment")
     private List<BulletinComment> comments;
 
+    @Transient
+    private String userName;
+
     public List<BulletinAttachment> getAttachments() {
         return attachments;
     }
@@ -215,5 +218,16 @@ public class Bulletin {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getUserName() {
+        if (user != null) {
+            userName = user.getName();
+        }
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

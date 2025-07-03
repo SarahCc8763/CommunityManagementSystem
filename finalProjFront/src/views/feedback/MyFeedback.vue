@@ -295,8 +295,8 @@ ul {
 .hero-image-wrapper {
     position: relative;
     overflow: hidden;
-    max-height: 300px;
-    max-width: 80vw;
+    max-height: 150px;
+    max-width: 100vw;
     margin: 0 auto;
     border-radius: 12px;
 }
@@ -311,7 +311,7 @@ ul {
 
 .hero-text {
     position: absolute;
-    top: 50%;
+    top: 55%;
     transform: translateY(-50%);
     text-shadow: 0 2px 4px rgba(126, 126, 126, 0.6);
     animation: fadeInUp 0.8s ease;

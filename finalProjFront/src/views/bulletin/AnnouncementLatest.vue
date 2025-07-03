@@ -1,6 +1,9 @@
 <template>
-    <div class="container py-4">
-        <h2 class="mb-4">最新公告</h2>
+
+
+    <div class="container py-4 ">
+        <BannerImage :imageSrc="OO" heading="最新公告" subtext="" textAlign="left" />
+
 
         搜尋區塊
         <div class="d-flex gap-2 mb-3">
@@ -12,34 +15,37 @@
             <button class="btn btn-primary" @click="searchBulletins">搜尋</button>
         </div>
 
-        <!-- 公告列表 -->
-        <div v-for="bulletin in bulletins" :key="bulletin.id" class="card mb-3" style="background-color: white;">
-            <h5 class="card-header fw-bold" :style="{ backgroundColor: getCategoryColor(bulletin.categoryName) }">
-                <span class="badge rounded-pill me-2"
-                    :style="{ backgroundColor: getBadgeColor(bulletin.categoryName), color: '#fff', textShadow: '1px 1px 1px grey', fontSize: '80%' }">
-                    {{ bulletin.categoryName }}
-                </span>
 
-                <a href="#" class="text-dark hover-underline" @click.prevent=" openBulletin(bulletin.id)"
-                    style="font-size: 90%;">
-                    {{ bulletin.title }}
-                </a>
-            </h5>
 
-            <div class="card-body mx-4">
-                <p class="card-text " style="white-space: pre-wrap;">
-                    {{ normalizeNewline(truncateText(bulletin.description, 50)) }}
-                    <span v-if="bulletin.description.length > 50">
-                        ...
-                        <a href="#" class="text-primary text-decoration-underline"
-                            @click.prevent="openBulletin(bulletin.id)" style="font-size: 80%;">(查看更多)</a>
-                    </span>
-                </p>
-                <a href="#" class="text-primary text-decoration-underline" @click.prevent="openBulletin(bulletin.id)"
-                    style="font-size: 80%;">查看詳細內容</a>
-                <h6 style="font-size: 80%;">發布時間：{{ formatDate(bulletin.postTime) }}</h6>
+        <div class="announcements-section">
+            <div class="announcements-grid">
+                <div v-for="bulletin in bulletins" :key="bulletin.id"
+                    :class="['announcement-card', getGridColor(bulletin.categoryName)]">
+                    <div class="announcement-header">
+                        <div class="announcement-badge">
+                            <i :class="['bi', getIcon(bulletin.categoryName)]"></i>
+                            {{ bulletin.categoryName }}
+                        </div>
+                        <div class="announcement-date">{{ formatDate(bulletin.postTime) }}</div>
+                    </div>
+                    <h3 class="announcement-title">{{ bulletin.title }}</h3>
+                    <p class="announcement-content">
+                        {{ normalizeNewline(truncateText(bulletin.description, 50)) }}
+                        <span v-if="bulletin.description.length > 50">
+                            ...
+                        </span>
+                    </p>
+                    <div class="announcement-footer">
+                        <span class="announcement-author">發布人：{{ bulletin.userName }}</span>
+                        <button class="read-more-btn" @click.prevent="openBulletin(bulletin.id)">
+                            <i class="bi bi-arrow-right"></i>
+                            閱讀更多
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
+
 
         <!-- 公告 Modal -->
         <div class="modal fade" id="bulletinModal" tabindex="-1">
@@ -48,7 +54,7 @@
                     <div class="modal-header"
                         :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
                         <h4 class="modal-title fw-bold"> <span class="badge rounded-pill me-2"
-                                :style="{ backgroundColor: getBadgeColor(selectedBulletin?.categoryName), color: '#fff', textShadow: '1px 1px 1px grey', fontSize: '80%' }">
+                                :style="{ color: '#fff', textShadow: '1px 1px 1px grey', fontSize: '80%' }">
                                 {{ selectedBulletin?.categoryName }}
                             </span>{{ selectedBulletin?.title }}</h4>
 
@@ -179,6 +185,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
+
+import BannerImage from '@/components/forAll/BannerImage.vue';
+import OO from '@/assets/images/bulletin/banner.png';
+
 const bulletins = ref([])
 const selectedBulletin = ref(null)
 const selectedOptions = ref([])
@@ -198,19 +208,26 @@ const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(
 
 const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
 const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
+const gridClass = ['important', 'event', 'service', '']
+const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
 
 function getCategoryColor(categoryName) {
     const index = categoryList.value.findIndex(c => c === categoryName) % 5
-    return bgColors[index % bgColors.length]
+    return gridClass[index % gridClass.length]
 }
 function getAvatarByGender(gender) {
     if (gender === '男') return maleIcon;
     if (gender === '女') return femaleIcon;
     return defaultIcon;
 }
-function getBadgeColor(categoryName) {
-    const index = categoryList.value.findIndex(c => c === categoryName) % 5
-    return badgeColors[index % badgeColors.length]
+function getGridColor(categoryName) {
+    const index = categoryList.value.findIndex(c => c === categoryName) % 4
+
+    return gridClass[index]
+}
+function getIcon(categoryName) {
+    const index = categoryList.value.findIndex(c => c === categoryName) % 4
+    return iconClass[index]
 }
 
 
@@ -345,5 +362,186 @@ function getFileUrl(att) {
 .modal-body {
     overflow-y: auto;
     max-height: 75vh;
+}
+
+
+:deep(.hero-image-wrapper) {
+    max-height: 150px;
+    max-width: 100%;
+}
+
+
+/* 公告區域 */
+.announcements-section {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.section-title i {
+    color: #667eea;
+}
+
+.view-all-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.announcements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.announcement-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.announcement-card.important::before {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+}
+
+.announcement-card.event::before {
+    background: linear-gradient(135deg, #ffc107 0%, #f6ad55 100%);
+}
+
+.announcement-card.service::before {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.announcement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.announcement-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.announcement-card.important .announcement-badge {
+    background: rgba(245, 101, 101, 0.1);
+    color: #f56565;
+}
+
+.announcement-card.event .announcement-badge {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.announcement-card.service .announcement-badge {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+.announcement-date {
+    font-size: 12px;
+    color: #a0aec0;
+}
+
+.announcement-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.announcement-content {
+    color: #718096;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.announcement-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.announcement-author {
+    font-size: 12px;
+    color: #a0aec0;
+}
+
+.read-more-btn {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+}
+
+.read-more-btn:hover {
+    color: #5a6fd8;
+    transform: translateX(4px);
 }
 </style>

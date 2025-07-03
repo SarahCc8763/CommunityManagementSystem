@@ -1,365 +1,465 @@
+<!-- 這個我還沒改好 先當個靜態網頁到時候截圖用 -->
+<!-- 登入前看到的頁面 -->
+
+
+
+
+
+
+
+
 <template>
-    <div>
-        <!-- 半透明遮罩 -->
-        <div v-if="isLoggingIn" class="modal-backdrop"></div>
-
-
-        <header class="header">
-            <!-- LOGO -->
-            <div class="logo" @click="goHome">
-                <img src="https://dummyimage.com/100x40/ccc/000&text=Logo" alt="Logo" />
-            </div>
-            <nav>OO建設-智慧社區管理系統</nav>
-            <!-- 主選單列（灰色、不可點） -->
-            <nav class="nav" @mouseleave="showTooltip = null">
-                <div v-for="item in fakeMenu" :key="item" class="nav-item text-gray-400 cursor-default"
-                    @mouseenter="handleTooltip(item)">
-                    {{ item }}
-                    <transition name="fade-slide">
-                        <span v-if="showTooltip === item" class="tooltip">請先登入</span>
-                    </transition>
-                </div>
-            </nav>
-
-            <!-- 使用者登入區塊 -->
-            <div class="user-info">
-                <div>
-                    <button @click="isLoggingIn = true" class="auth-button">
-                        登入
-                    </button>
-                </div>
+    <div class="before-login-layout">
+        <!-- 橫向 Header -->
+        <header class="before-login-header">
+            <div class="header-content">
+                <img src="@/assets/images/main/Logo.png" alt="建商LOGO" class="header-logo" />
+                <span class="header-title">OO建設</span>
             </div>
         </header>
-        <!-- Bootstrap Modal 登入框 -->
-        <div v-if="isLoggingIn" class="modal d-block" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title d-flex align-items-center">
-                                <i class="bi bi-person-circle me-2"></i> 登入系統
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white"
-                                @click="isLoggingIn = false"></button>
-                        </div>
+
+        <!-- 左側 Nav（fixed） -->
+        <aside class="before-login-left-nav">
+            <div class="nav-card">
+                <div class="logo-block">
+                    <img src="@/assets/images/main/Logo.png" alt="建商LOGO" class="logo-img" />
+                    <div class="brand-title">OO建設</div>
+                </div>
+                <nav class="nav-list">
+                    <div class="nav-item">關於我們</div>
+                    <div class="nav-item">建案特色</div>
+                    <div class="nav-item">聯絡資訊</div>
+                    <div class="nav-item">常見問題</div>
+                </nav>
+                <button class="login-btn" @click="handleLogin">
+                    <i class="bi bi-box-arrow-in-right"></i> 立即登入
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主內容區塊 -->
+        <main class="before-login-main">
+            <div class="main-content-wrapper">
+                <div class="hero-section">
+                    <div class="hero-carousel wide-carousel">
+                        <SlideShow :images="slideshowImages" :captions="slideshowCaptions" carousel-id="main-hero" />
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">帳號</label>
-                            <input v-model="loginForm.username" type="text" class="form-control" placeholder="請輸入帳號" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">密碼</label>
-                            <input v-model="loginForm.password" type="password" class="form-control"
-                                placeholder="請輸入密碼" />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-secondary" @click="isLoggingIn = false">取消</button>
-                        <button class="btn btn-success" @click="submitLogin">登入</button>
+                    <div class="hero-text">
+                        <h1>用心築夢・共創永續</h1>
+                        <div class="hero-divider"></div>
+                        <p class="hero-desc">OO建設秉持信念，推動人本與自然融合的建築價值，打造台灣最值得信賴的建築品牌。</p>
+                        <ul class="feature-list">
+                            <li><i class="bi bi-house-door"></i> 智慧門禁與安全管理</li>
+                            <li><i class="bi bi-lightning"></i> 綠能節能設計</li>
+                            <li><i class="bi bi-people"></i> 社區活動豐富多元</li>
+                            <li><i class="bi bi-phone"></i> 一站式住戶服務 App</li>
+                        </ul>
+                        <button class="login-btn main-login-btn" @click="handleLogin">
+                            <i class="bi bi-box-arrow-in-right"></i> 立即登入體驗
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Bootstrap Modal 登入框結束 -->
-
-        <SlideShow :images="slideshowImages" :captions="slideshowCaptions" carousel-id="main-hero" />
-
-        <!-- 關於區塊 -->
-
-
-        <section class="section about" style="margin-top: 50px">
-            <h2>用心築夢・共創永續</h2>
-            <p>建設秉持信念，推動人本與自然融合的建築價值，打造台灣最值得信賴的建築品牌。</p>
-        </section>
-
-        <!-- 綠色區塊 -->
-        <div class="intro-section">
-            <div class="intro-card">
-                <a href="https://www.farglory-land.com.tw/" target="_blank" class="intro-image-link">
-                    <img src="https://i0.wp.com/www.b-studio.com.tw/wp-content/uploads/2023/01/20230104.jpg?w=1896&ssl=1"
-                        alt="綠建築" class="intro-image" />
-                </a>
-                <div class="intro-text">
-                    <h2>綠意共生・築未來</h2>
-                    <p>
-                        我們秉持永續發展理念，融合綠建築設計、智慧節能系統與低碳建材，打造兼具環保與舒適的現代空間。從社區能源管理到雨水回收與自然採光，我們用科技實現對土地的承諾，為每一位住戶創造健康、宜居、共好的生活環境。我們融合綠建築設計、智慧節能系統與低碳建材，打造兼具環保與舒適的現代空間。從社區能源管理到雨水回收與自然採光，用科技實現對土地的承諾。
-                    </p>
-                </div>
-            </div>
-        </div>
-        <!-- 建案介紹區塊 -->
-        <section class="projects-section container py-5">
-            <h2 class="text-center mb-4">熱門建案介紹</h2>
-            <div class="row g-4">
-                <div class="col-md-4" v-for="project in projects" :key="project.name">
-                    <div class="card h-100 shadow-sm">
-                        <img :src="project.image" class="card-img-top" :alt="project.name">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ project.name }}</h5>
-                            <p class="card-text">{{ project.description }}</p>
-                            <a :href="project.link" target="_blank" class="btn btn-outline-primary btn-sm">查看更多</a>
+                <!-- 建案介紹區塊 -->
+                <section class="projects-section">
+                    <h2 class="text-center mb-4">熱門建案介紹</h2>
+                    <div class="row g-4">
+                        <div class="col-md-4" v-for="project in projects" :key="project.name">
+                            <div class="card h-100 shadow-sm">
+                                <img :src="project.image" class="card-img-top" :alt="project.name">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ project.name }}</h5>
+                                    <p class="card-text">{{ project.description }}</p>
+                                    <a :href="project.link" target="_blank"
+                                        class="btn btn-outline-primary btn-sm">查看更多</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- 右側廣告/介紹卡片（fixed） -->
+        <aside class="before-login-right-ad">
+            <div class="nav-card">
+                <div class="ad-card">
+                    <div class="ad-title">新住戶專屬優惠</div>
+                    <div class="ad-desc">立即預約賞屋，享受專屬好禮！</div>
+                    <button class="ad-btn">
+                        <i class="bi bi-arrow-right"></i> 了解更多
+                    </button>
+                </div>
+                <div class="ad-card">
+                    <div class="ad-title">建案熱銷中</div>
+                    <div class="ad-desc">智慧宅、綠建築、全齡社區，歡迎參觀！</div>
+                </div>
+                <div class="ad-card">
+                    <div class="ad-title">聯絡我們</div>
+                    <div class="ad-desc">客服專線：02-1234-5678<br />Email: info@riverbank.com</div>
                 </div>
             </div>
-        </section>
-
-
+        </aside>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import SlideShow from '@/components/forAll/SlideShow.vue'
-const router = useRouter()
-const isLoggingIn = ref(false)
-const loginForm = ref({ username: '', password: '' })
-const showTooltip = ref(null)
-const fakeMenu = ['公告與包裹', '預約系統', '繳費資訊', '會員服務']
+
 const slideshowImages = [
     new URL('@/assets/images/forSlideShow/indoorDeco.webp', import.meta.url).href,
     new URL('@/assets/images/forSlideShow/livingRoom.jpg', import.meta.url).href,
     new URL('@/assets/images/forSlideShow/nightView.jpg', import.meta.url).href,
     new URL('@/assets/images/forSlideShow/sunHouse.jpg', import.meta.url).href
 ]
-
-const slideshowCaptions = ['美麗住宅，質感生活', '夜色中點亮城市', '這裡是圖片3介紹', '這裡是圖片4介紹']
+const slideshowCaptions = [
+    '現代美學空間，品味生活新高度',
+    '溫馨居家，讓幸福每一天都在發生',
+    '夜色璀璨，守護您的每一刻安全',
+    '陽光綠意，打造永續健康社區'
+]
 const projects = [
     {
         name: '大里左岸公園',
         description: '坐擁綠意與水岸第一排，結合休閒與交通便利。',
-        image: 'https://dummyimage.com/600x400/ccc/000&text=Project+1',
+        image: 'https://www.kunyue.com.tw/upload/image/hot_mod/hot_a08_data12.jpg',
         link: 'https://www.farglory-land.com.tw/project/1'
     },
     {
         name: '晶和晴空匯',
         description: '景觀視野絕佳，規劃完善的智慧社區建築。',
-        image: 'https://dummyimage.com/600x400/bbb/000&text=Project+2',
+        image: 'https://www.abic.com.tw/upload/greenbeauty/x12.jpg.pagespeed.ic.u47Dl3HMGh.jpg',
         link: 'https://www.farglory-land.com.tw/project/2'
     },
     {
         name: 'VM智慧公寓',
         description: '智慧複合園區，兼具住宅與商辦機能。',
-        image: 'https://dummyimage.com/600x400/aaa/000&text=Project+3',
+        image: 'https://tpl.housetube.tw/img/products/popup/3/9/6/5/5/39655_01.jpg?1624952756',
         link: 'https://www.farglory-land.com.tw/project/3'
-    }, {
-        name: '大里左岸公園',
-        description: '坐擁綠意與水岸第一排，結合休閒與交通便利。',
-        image: 'https://dummyimage.com/600x400/ccc/000&text=Project+1',
+    },
+    {
+        name: '碧海園洲',
+        description: '綠意盎然，海景視野，喜愛生活的最佳選擇。',
+        image: 'https://cdn2.ettoday.net/images/buildcase/0/164_buildcase.jpg',
         link: 'https://www.farglory-land.com.tw/project/1'
     },
     {
-        name: '晶和晴空匯',
-        description: '景觀視野絕佳，規劃完善的智慧社區建築。',
-        image: 'https://dummyimage.com/600x400/bbb/000&text=Project+2',
+        name: '帝璽玉寶',
+        description: '王者之姿，尊榮建設 成就你的不凡',
+        image: 'https://housedomo.com.tw/wp-content/uploads/2024/11/v123-tw-a3cc8a53274c3480ac8e84bca9bc0a42-1536x1024-1.jpg',
         link: 'https://www.farglory-land.com.tw/project/2'
     },
     {
-        name: 'VM智慧公寓',
-        description: '智慧複合園區，兼具住宅與商辦機能。',
-        image: 'https://dummyimage.com/600x400/aaa/000&text=Project+3',
+        name: '茉荷苑',
+        description: '荷姿百態 生機盎然 讓您與家人享受悠閒時光。',
+        image: 'https://blog.housetube.tw/wp-content/uploads/2019/12/bc04a6ce97c6632ba94e799f6a866141.jpg',
         link: 'https://www.farglory-land.com.tw/project/3'
     }
 ]
-// 回到首頁
-const goHome = () => {
-    router.push('/')
-}
 
-// 登入後頁面 要記得改!!!!!!!!
-const submitLogin = () => {
-    if (loginForm.value.username && loginForm.value.password) {
-        isLoggingIn.value = false
-        router.push('/dashboard')
-    }
-}
+function handleLogin() {
+    console.log('emit login')
 
-//請先登入的提醒
-const handleTooltip = (item) => {
-    if (!showTooltip.value) {
-        showTooltip.value = item
-    }
+    emit('show-login')
 }
 </script>
 
 <style scoped>
-/* 一些標題跟內文 */
-.about {
-    text-align: center;
-    font-family: "Noto Serif TC", "PMingLiU", "Times New Roman", serif;
-    padding: 2rem 1rem;
-}
-
-.about h2 {
-    font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.about p {
-    font-size: 1.1rem;
-    color: #555;
-}
-
-/* intro的style的style 綠色那塊啦 */
-.intro-section {
-    background: linear-gradient(to right, #e4f1df, #d0e2c4);
-    padding: 60px 20px;
-    display: flex;
-    justify-content: center;
-}
-
-.intro-card {
-    display: flex;
-    gap: 40px;
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    padding: 32px;
-    max-width: 1100px;
-    width: 100%;
-    align-items: center;
-}
-
-.intro-image-link {
-    display: block;
-    flex-shrink: 0;
-    margin-left: 20px;
-    transition: transform 0.4s ease;
-    cursor: pointer;
-}
-
-.intro-image-link:hover {
-    transform: scale(1.06);
-}
-
-.intro-image {
-    width: 480px;
-    max-width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.intro-text {
-    flex: 1;
-    color: #2f4f2f;
-}
-
-.intro-text h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.intro-text p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    white-space: pre-line;
-}
-
-
-/* 介紹建案 */
-.projects-section {
-    background: #f8f9fa;
-}
-
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
-
-/* 這裡都是header的style */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 14px 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.logo img {
-    height: 40px;
-    cursor: pointer;
-}
-
-.nav {
-    display: flex;
-    gap: 24px;
-}
-
-.nav-item {
-    position: relative;
-    font-size: 16px;
-    color: #999;
-}
-
-.tooltip {
-    position: absolute;
-    top: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f0f0f0;
-    color: #333;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    white-space: nowrap;
-    z-index: 10;
-    opacity: 0;
-    animation: fadeSlideIn 0.3s ease forwards;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-@keyframes fadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-    opacity: 0;
-    transform: translateY(-4px);
-}
-
-.auth-button {
-    background-color: #007acc;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.auth-button:hover {
-    background-color: #005f99;
-}
-
-.modal-backdrop {
+.before-login-header {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1040;
+    right: 0;
+    height: 64px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.08);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* header的style結束 */
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-logo,
+.logo-img {
+    max-width: 100px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+}
+
+.header-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #667eea;
+    letter-spacing: 2px;
+}
+
+.before-login-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.nav-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10);
+    padding: 40px 24px 32px 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    box-sizing: border-box;
+}
+
+.before-login-left-nav {
+    width: 260px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.before-login-right-ad {
+    width: 260px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    gap: 24px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.before-login-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 64px 0 48px 0;
+    min-height: 100vh;
+}
+
+.main-content-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10);
+    padding: 48px 40px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    margin-left: 280px;
+    margin-right: 280px;
+}
+
+.hero-section {
+    display: flex;
+    gap: 48px;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-carousel {
+    width: 300px;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(102, 126, 234, 0.10);
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+.wide-carousel {
+    width: 600px;
+    height: 320px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.13);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wide-carousel :deep(img) {
+    width: 100% !important;
+    height: 320px !important;
+    object-fit: cover !important;
+    border-radius: 24px !important;
+}
+
+.hero-text {
+    max-width: 420px;
+    flex: 1;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.hero-text h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.hero-divider {
+    width: 48px;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+    margin-bottom: 18px;
+}
+
+.hero-desc {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 18px;
+    line-height: 1.7;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px 0;
+}
+
+.feature-list li {
+    font-size: 1rem;
+    color: #5a67d8;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px 0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 32px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.login-btn:hover {
+    background: #5a67d8;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.12);
+}
+
+.main-login-btn {
+    margin-top: 24px;
+    font-size: 18px;
+    padding: 16px 0;
+}
+
+.projects-section {
+    margin-top: 0;
+}
+
+.ad-card {
+    width: 100%;
+    background: linear-gradient(135deg, #f8fafc 60%, #e9eafc 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
+    padding: 24px 20px 18px 20px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.ad-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 8px;
+}
+
+.ad-desc {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 12px;
+}
+
+.ad-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ad-btn:hover {
+    background: #5a67d8;
+}
+
+.logo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.logo-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+}
+
+.brand-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #667eea;
+    letter-spacing: 2px;
+}
+
+.nav-list {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.nav-item {
+    padding: 14px 0;
+    font-size: 16px;
+    color: #4a5568;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-item:hover {
+    background: #f0f4f8;
+    color: #667eea;
+}
 </style>

@@ -284,4 +284,14 @@ public class FaqService {
         return faqRepository.existsById(id);
     }
 
+    public List<FaqDto> findByCategoryAndKeywordLike(String category, String keyword) {
+
+        return faqRepository.findByCategoryAndKeywordLike(category, keyword).stream().map(faq -> {
+            List<String> keywordNames = faq.getKeywordLinks().stream()
+                    .map(link -> link.getKeyword().getWord())
+                    .collect(Collectors.toList());
+
+            return new FaqDto(faq, keywordNames);
+        }).collect(Collectors.toList());
+    }
 }

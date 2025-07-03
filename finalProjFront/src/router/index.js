@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
-import TicketList from '@/views/TicketList.vue'
-import TicketForm from '@/views/TicketForm.vue'
-import TicketDetailView from '@/views/TicketDetailView.vue'
+import Home from '../views/Home.vue'
+import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
+import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
+import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
+
+import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
+import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+import Invoice from '../components/finance/finUser/Invoice.vue'
 import Faq from '@/views/faq/Faq.vue'
 import MyFeedback from '@/views/feedback/MyFeedback.vue'
 import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
-
 
 
 const router = createRouter({
@@ -18,20 +21,39 @@ const router = createRouter({
       component: Home,
     },
     {
-      path: '/TicketList',
-      name: 'TicketList',
-      component: TicketList,
+      path: '/finance/fee-type/add',
+      name: 'FeeTypeAdd',
+      component: FeeTypeAdd,
+      meta: { dark: true },
     },
     {
-      path: '/TicketForm',
-      name: 'TicketForm',
-      component: TicketForm,
+      path: '/finance/billing-period/add',
+      name: 'BillingPeriodAdd',
+      component: BillingPeriodAdd,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/invoice/add',
+      name: 'InvoiceAdd',
+      component: InvoiceAdd,
+      meta: { dark: true },
     },
 
     {
-      path: '/ticket/detail',
-      name: 'TicketDetail',
-      component: TicketDetailView
+      path: '/finance/receipt/add',
+      name: 'ReceiptAdd',
+      component: ReceiptAdd,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/invoice/history',
+      name: 'InvoiceHistory',
+      component: InvoiceHistory,
+    },
+    {
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice
     },
 
     {
@@ -69,8 +91,12 @@ const router = createRouter({
     //   name: 'home',
     //   component: Home.vue,
     // },
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   component: Home.vue,
+    // },
   ],
 })
 
-
-export default router;
+export default router
