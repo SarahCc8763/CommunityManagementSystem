@@ -7,7 +7,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import finalProj.domain.bulletin.Bulletin;
+import finalProj.domain.bulletin.BulletinComment;
+import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.community.Community;
+import finalProj.domain.feedback.Feedback;
+import finalProj.domain.feedback.FeedbackReply;
+import finalProj.domain.feedback.FeedbackStatusHistory;
+import finalProj.domain.poll.PollVote;
 import finalProj.domain.ticket.Ticket;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -80,9 +87,9 @@ public class Users {
 
 	@Column(name = "account_locked_until")
 	private LocalDateTime accountLockedUntil;
-	
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//	@JsonManagedReference("unitsUsers")
+	// @JsonManagedReference("unitsUsers")
 	@JsonIgnore
 	private List<UnitsUsers> unitsUsersList;
 
@@ -101,6 +108,40 @@ public class Users {
 	@OneToMany(mappedBy = "assignerId", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> assignedTickets;
 
+	// --- 政宇的關聯 START ---
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference("feedback-user")
+	private List<Feedback> feedbacks;
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference("bulletinComment-user")
+	private List<BulletinComment> bulletinComments;
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference("bulletinCommentLike-user")
+	private List<BulletinCommentLike> bulletinCommentLikes;
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference("pollVote-user")
+	private List<PollVote> pollVotes;
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference("bulletin-user")
+	private List<Bulletin> bulletins;
+
+	@OneToMany(mappedBy = "handler")
+	@JsonManagedReference("feedback-handler")
+	private List<Feedback> handledFeedbacks;
+
+	@OneToMany(mappedBy = "changedBy")
+	@JsonManagedReference("feedbackStatusHistory-user")
+	private List<FeedbackStatusHistory> feedbackStatusHistories;
+
+	@OneToMany(mappedBy = "user")
+	private List<FeedbackReply> feedbackReplies;
+
+	// --- 政宇的關聯 END ---
 	public Integer getUsersId() {
 		return usersId;
 	}
@@ -268,14 +309,78 @@ public class Users {
 	public void setAssignedTickets(List<Ticket> assignedTickets) {
 		this.assignedTickets = assignedTickets;
 	}
-	
-	public List<UnitsUsers> getUnitsUsersList() {
-        return unitsUsersList;
-    }
 
-    public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
-        this.unitsUsersList = unitsUsersList;
-    }
+	public List<UnitsUsers> getUnitsUsersList() {
+		return unitsUsersList;
+	}
+
+	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
+		this.unitsUsersList = unitsUsersList;
+	}
+
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public List<BulletinComment> getBulletinComments() {
+		return bulletinComments;
+	}
+
+	public void setBulletinComments(List<BulletinComment> bulletinComments) {
+		this.bulletinComments = bulletinComments;
+	}
+
+	public List<BulletinCommentLike> getBulletinCommentLikes() {
+		return bulletinCommentLikes;
+	}
+
+	public void setBulletinCommentLikes(List<BulletinCommentLike> bulletinCommentLikes) {
+		this.bulletinCommentLikes = bulletinCommentLikes;
+	}
+
+	public List<PollVote> getPollVotes() {
+		return pollVotes;
+	}
+
+	public void setPollVotes(List<PollVote> pollVotes) {
+		this.pollVotes = pollVotes;
+	}
+
+	public List<Bulletin> getBulletins() {
+		return bulletins;
+	}
+
+	public void setBulletins(List<Bulletin> bulletins) {
+		this.bulletins = bulletins;
+	}
+
+	public List<Feedback> getHandledFeedbacks() {
+		return handledFeedbacks;
+	}
+
+	public void setHandledFeedbacks(List<Feedback> handledFeedbacks) {
+		this.handledFeedbacks = handledFeedbacks;
+	}
+
+	public List<FeedbackStatusHistory> getFeedbackStatusHistories() {
+		return feedbackStatusHistories;
+	}
+
+	public void setFeedbackStatusHistories(List<FeedbackStatusHistory> feedbackStatusHistories) {
+		this.feedbackStatusHistories = feedbackStatusHistories;
+	}
+
+	public List<FeedbackReply> getFeedbackReplies() {
+		return feedbackReplies;
+	}
+
+	public void setFeedbackReplies(List<FeedbackReply> feedbackReplies) {
+		this.feedbackReplies = feedbackReplies;
+	}
 
 	@Override
 	public String toString() {
@@ -289,7 +394,4 @@ public class Users {
 				+ reportedTickets + ", assignedTickets=" + assignedTickets + "]";
 	}
 
-	
-
-	
 }

@@ -76,7 +76,7 @@ public class UsersService {
 			Optional<Users> optionalUser = usersRepository.findByEmail(email);
 			if (optionalUser.isPresent()) {
 				Users bean = optionalUser.get();
-//				if (bean.getPassword().equals(password)) {
+				// if (bean.getPassword().equals(password)) {
 				if (passwordEncoder.matches(password, bean.getPassword())) {
 					System.out.println("登入成功");
 					return bean;
@@ -87,28 +87,32 @@ public class UsersService {
 		return null;
 	}
 
+	public Users findById(Integer id) {
+		return usersRepository.findById(id).orElse(null);
+	}
+
 	// super user
-//	@Autowired
-//	private SuperUserProperties superUserProps;
-//
-//	public boolean isSuperUser(String email, String password) {
-//	    return superUserProps.getEmail().equals(email)
-//	        && superUserProps.getPassword().equals(password);
-//	}
+	// @Autowired
+	// private SuperUserProperties superUserProps;
+	//
+	// public boolean isSuperUser(String email, String password) {
+	// return superUserProps.getEmail().equals(email)
+	// && superUserProps.getPassword().equals(password);
+	// }
 
 	// tescher's
-//	public Boolean changePassword(String email, String oldPass, String newPass) {
-//		if (newPass != null && newPass.length() != 0) {
-//			Users bean = this.login(email, oldPass);
-//			if (bean != null) {
-//				bean.setPassword(newPass);
-//				Users update = usersRepository.save(bean);
-//				if (update != null) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	// public Boolean changePassword(String email, String oldPass, String newPass) {
+	// if (newPass != null && newPass.length() != 0) {
+	// Users bean = this.login(email, oldPass);
+	// if (bean != null) {
+	// bean.setPassword(newPass);
+	// Users update = usersRepository.save(bean);
+	// if (update != null) {
+	// return true;
+	// }
+	// }
+	// }
+	// return false;
+	// }
 
 }
