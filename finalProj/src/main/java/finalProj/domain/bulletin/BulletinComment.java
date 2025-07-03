@@ -68,20 +68,34 @@ public class BulletinComment {
     private Integer parentCommentId;
 
     @Transient
-    private List<String> userData;
+    private List<Object> userData;
+
+    @Transient
+    private Boolean isLikedByCurrentUser;
+
+    @Transient
+    public boolean isLikedByUser(Integer usersId) {
+        if (bulletinCommentLikes == null || usersId == null)
+            return false;
+
+        return bulletinCommentLikes.stream()
+                .anyMatch(like -> like.getUser() != null &&
+                        like.getUser().getUsersId().equals(usersId) && like.getComment() != null
+                        && like.getComment().getId().equals(id) && like.getIsValid());
+    }
 
     //
     //
     // getters and setters
 
-    public List<String> getUserData() {
+    public List<Object> getUserData() {
         if (user != null) {
-            return List.of(user.getName(), user.getGender());
+            return List.of(user.getName(), user.getGender(), user.getUsersId());
         }
         return List.of(); // or Collections.emptyList()
     }
 
-    public void setUserData(List<String> userData) {
+    public void setUserData(List<Object> userData) {
         this.userData = userData;
     }
 
@@ -186,6 +200,14 @@ public class BulletinComment {
 
     public void setParentCommentId(Integer parentCommentId) {
         this.parentCommentId = parentCommentId;
+    }
+
+    public Boolean getIsLikedByCurrentUser() {
+        return isLikedByCurrentUser;
+    }
+
+    public void setIsLikedByCurrentUser(Boolean isLikedByCurrentUser) {
+        this.isLikedByCurrentUser = isLikedByCurrentUser;
     }
 
 }

@@ -5,18 +5,19 @@
         <BannerImage :imageSrc="OO" heading="最新公告" subtext="" textAlign="left" />
 
 
-
         <div class="d-flex gap-2 mb-3">
-            <input v-model="searchTitle" class="form-control" placeholder="輸入標題關鍵字" />
-            <select v-model="searchCategory" class="form-select">
+            <select v-model="searchCategory" class="form-select w-30" @change="searchBulletins">
                 <option value="">全部分類</option>
                 <option v-for="cat in categoryList" :key="cat" :value="cat">{{ cat }}</option>
             </select>
-            <button class="btn btn-primary" @click="searchBulletins">搜尋</button>
+            <input v-model="searchTitle" class="form-control w-48" placeholder="輸入標題關鍵字" />
+            <button class="btn btn-primary w-10" @click="searchBulletins">搜尋</button>
+            <button class="btn btn-secondary w-10" @click="clearSearch">清除搜尋</button>
         </div>
 
 
 
+        <!-- 公告 card 列表 -->
         <div class="announcements-section">
             <div class="announcements-grid">
                 <div v-for="bulletin in bulletins" :key="bulletin.id"
@@ -48,26 +49,29 @@
 
 
         <!-- 公告 Modal -->
-        <div class="modal fade" id="bulletinModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal fade " id="bulletinModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable ">
                 <div class="modal-content">
                     <div class="modal-header"
                         :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
-                        <h4 class="modal-title fw-bold"> <span class="badge rounded-pill me-2"
-                                :style="{ color: '#fff', textShadow: '1px 1px 1px grey', fontSize: '80%' }">
-                                {{ selectedBulletin?.categoryName }}
-                            </span>{{ selectedBulletin?.title }}</h4>
+
+
+                        <div class="announcement-badge fs-5 mt-1">
+                            <i :class="['bi', getIcon(selectedBulletin?.categoryName)]"></i>
+                            {{ selectedBulletin?.categoryName }}
+                        </div>
+                        <h3 class="announcement-title mt-3 mx-2 fs-4">{{ selectedBulletin?.title }}</h3>
 
 
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body lh-lg mx-4">
 
-                        <p style="white-space: pre-wrap;"><br>{{
+                        <p class="fs-5" style="white-space: pre-wrap;"><br>{{
                             normalizeNewline(selectedBulletin?.description) }}</p>
 
                         <!-- 附件 -->
-                        <div v-if="selectedBulletin?.attachments?.length" style="font-size: 80%;">
+                        <div v-if="selectedBulletin?.attachments?.length" style="font-size: 100%;">
                             <hr class="mt-5">
                             <h6>附件：</h6>
                             <ul class="list-group">
@@ -90,7 +94,7 @@
                                     <input :type="selectedBulletin.poll.isMultiple ? 'checkbox' : 'radio'"
                                         class="form-check-input my-2" name="voteOption" :value="opt.id"
                                         v-model="selectedOptions" />
-                                    <label class="form-check-label my-2">{{ opt.text }}</label>
+                                    <label class="form-check-label ">{{ opt.text }}</label>
                                 </div>
                                 <button class="btn btn-primary mt-2" @click="submitVote">提交投票</button>
                             </div>
@@ -114,15 +118,12 @@
                                                 formatDate(comment.time) }}</span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <button class="btn btn-sm me-1"
-                                            :class="comment.likedByCurrentUser ? 'btn-primary' : 'btn-outline-primary'"
-                                            @click="likeComment(comment.id)">
+                                    <div style="margin-left: 5%;">
+                                        <button class="btn-comment me-1" @click="likeComment(comment.id)">
                                             🧡 {{ comment.likeCount }}
                                         </button>
-                                        <button class="btn btn-sm btn-outline-secondary me-1"
-                                            @click="toggleReply(comment.id)">回覆</button>
-                                        <button class="btn btn-sm btn-outline-danger"
+                                        <button class="btn-comment me-1" @click="toggleReply(comment.id)">回覆</button>
+                                        <button v-if="comment.userData[2] === userId" class="btn-comment me-1"
                                             @click="deleteComment(comment.id)">刪除</button>
                                     </div>
 
@@ -139,15 +140,12 @@
                                                     formatDate(reply.time) }}</span>
                                             </div>
                                         </div>
-                                        <div>
-                                            <button class="btn btn-sm me-1"
-                                                :class="reply.likedByCurrentUser ? 'btn-primary' : 'btn-outline-primary'"
-                                                @click="likeComment(reply.id)">
+                                        <div style="margin-left: 5%;">
+                                            <button class=" btn-comment me-1" @click="likeComment(reply.id)">
                                                 🧡 {{ reply.likeCount }}
                                             </button>
-                                            <button class="btn btn-sm btn-outline-secondary me-1"
-                                                @click="toggleReply(reply.id)">回覆</button>
-                                            <button class="btn btn-sm btn-outline-danger"
+                                            <button class="btn-comment me-1" @click="toggleReply(reply.id)">回覆</button>
+                                            <button v-if="reply.userData[2] === userId" class="btn-comment me-1"
                                                 @click="deleteComment(reply.id)">刪除</button>
                                         </div>
                                     </div>
@@ -198,7 +196,7 @@ const replyingToId = ref(null)
 const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
-const userId = 5 // 假設當前使用者 id
+const userId = 3 // 假設當前使用者 id
 import maleIcon from '@/assets/images/bulletin/male.png'
 import femaleIcon from '@/assets/images/bulletin/female.png'
 import defaultIcon from '@/assets/images/bulletin/default.png'
@@ -312,6 +310,7 @@ function likeComment(commentId) {
                 comment.likeCount = updated.likeCount
                 comment.likedByCurrentUser = updated.likedByCurrentUser
             }
+            console.log(comment);
         })
 }
 
@@ -418,8 +417,8 @@ function getFileUrl(att) {
 
 .announcements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 0.3333fr));
+    gap: 1rem;
 }
 
 .announcement-card {
@@ -543,5 +542,47 @@ function getFileUrl(att) {
 .read-more-btn:hover {
     color: #5a6fd8;
     transform: translateX(4px);
+}
+
+.w-30 {
+    width: 33.2% !important;
+    margin-right: 1rem;
+}
+
+.w-48 {
+    width: 47% !important;
+}
+
+.w-10 {
+    width: 10% !important;
+}
+
+.btn-comment {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    color: rgb(128, 159, 243);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    height: 35px;
+    margin-bottom: 3%;
+
+}
+
+.btn-comment:hover {
+    transform: translateY(-2px);
+    background-color: #e5efff;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+
 }
 </style>

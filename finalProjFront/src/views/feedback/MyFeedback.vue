@@ -112,10 +112,11 @@
                                                 <input type="text" class="form-control rounded-pill px-3"
                                                     v-model="feedback.newReplyText" placeholder="留言……"
                                                     @keyup.enter="submitReply(feedback)">
-                                                <button class="btn btn-sm btn-outline-light ms-2 rounded-circle"
-                                                    @click="submitReply(feedback)">
+                                                <button class=" mx-2 rounded-circle send-btn"
+                                                    @click="submitReply(feedback)"
+                                                    style="border: 0 none;background-color: #fff;">
                                                     <img src="@/assets/images/feedback/sendIcon.png" alt="➤"
-                                                        style="height: 25px;width: 25px;">
+                                                        style="height: 35px;width: 35px;">
                                                 </button>
                                             </div>
                                         </div>
@@ -346,5 +347,13 @@ ul {
         opacity: 1;
         transform: translateY(-50%);
     }
+}
+
+.send-btn:hover {
+    background-color: #e0f0ff;
+    /* 背景變淡藍 */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    /* 加陰影 */
+    transition: all 0.3s ease;
 }
 </style>
