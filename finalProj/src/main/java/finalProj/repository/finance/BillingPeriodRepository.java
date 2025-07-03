@@ -15,4 +15,6 @@ public interface BillingPeriodRepository extends JpaRepository<BillingPeriod, In
     Optional<BillingPeriod> findByPeriodName(String periodName);
 
     List<BillingPeriod> findByCommunityId(Integer communityId);
+
+    boolean existsByPeriodCode(String periodCode);
 }

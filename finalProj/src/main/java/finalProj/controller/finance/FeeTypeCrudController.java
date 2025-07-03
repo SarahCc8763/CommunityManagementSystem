@@ -39,7 +39,7 @@ public class FeeTypeCrudController {
         dto.setUnit(entity.getUnit());
         dto.setFrequency(entity.getFrequency());
         dto.setNote(entity.getNote());
-        dto.setStatus(entity.getActiveStatus());
+        dto.setStatus(entity.getStatus());
         dto.setCommunityId(entity.getCommunityId());
         dto.setCreatedBy(entity.getCreatedBy());
         dto.setUpdatedBy(entity.getUpdatedBy());
@@ -56,7 +56,7 @@ public class FeeTypeCrudController {
         entity.setUnit(dto.getUnit());
         entity.setFrequency(dto.getFrequency());
         entity.setNote(dto.getNote());
-        entity.setActiveStatus(dto.getStatus());
+        entity.setStatus(dto.getStatus());
         entity.setCommunityId(dto.getCommunityId());
         entity.setCreatedBy(dto.getCreatedBy());
         entity.setUpdatedBy(dto.getUpdatedBy());
@@ -113,7 +113,7 @@ public class FeeTypeCrudController {
         if (dto.getNote() != null)
             existing.setNote(dto.getNote());
         if (dto.getStatus() != null)
-            existing.setActiveStatus(dto.getStatus());
+            existing.setStatus(dto.getStatus());
         if (dto.getCommunityId() != null)
             existing.setCommunityId(dto.getCommunityId());
         if (dto.getUpdatedBy() != null)
