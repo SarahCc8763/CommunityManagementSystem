@@ -3,7 +3,6 @@ package finalProj.service.finance.serviceImpl;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,6 @@ import finalProj.domain.finance.Invoice;
 import finalProj.domain.users.Units;
 import finalProj.domain.users.UnitsUsers;
 import finalProj.domain.users.Users;
-import finalProj.repository.finance.BillingPeriodRepository;
-import finalProj.repository.finance.FeeTypeRepository;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.users.UnitsRepository;
 import finalProj.repository.users.UnitsUsersRepository;
@@ -35,11 +32,11 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     // @Autowired
     // private ParkingRepository parkingRepository;
 
-    @Autowired
-    private FeeTypeRepository feeTypeRepository;
+    // @Autowired
+    // private FeeTypeRepository feeTypeRepository;
 
-    @Autowired
-    private BillingPeriodRepository billingPeriodRepository;
+    // @Autowired
+    // private BillingPeriodRepository billingPeriodRepository;
 
     @Autowired
     private InvoiceRepository invoiceRepository;
