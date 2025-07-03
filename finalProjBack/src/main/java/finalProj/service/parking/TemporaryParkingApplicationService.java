@@ -55,11 +55,11 @@ public class TemporaryParkingApplicationService {
 	public TemporaryParkingApplication create(TemporaryParkingApplication application) {
 		String visitorName = application.getVisitorName();
 		String licensePlate = application.getLicensePlate();
-		Integer parkingTypeId = application.getParkingTypeId();
+		Integer parkingTypeId = application.getParkingType().getId();
 		Date startTime = application.getStartTime();
 		Date endTime = application.getEndTime();
 		String purpose = application.getPurpose();
-		Integer parkingSlotId = application.getParkingSlotId();
+		Integer parkingSlotId = application.getParkingSlot().getId();
 		application.setRequestTime(new Date());
 
 		if (visitorName == null || visitorName == "") {
@@ -99,11 +99,11 @@ public class TemporaryParkingApplicationService {
 		Integer id = application.getId();
 		String visitorName = application.getVisitorName();
 		String licensePlate = application.getLicensePlate();
-		Integer parkingTypeId = application.getParkingTypeId();
+		Integer parkingTypeId = application.getParkingType().getId();
 		Date startTime = application.getStartTime();
 		Date endTime = application.getEndTime();
 		String purpose = application.getPurpose();
-		Integer parkingSlotId = application.getParkingSlotId();
+		Integer parkingSlotId = application.getParkingSlot().getId();
 		
 		if (id == null || !repository.existsById(id)) {
 			return null;

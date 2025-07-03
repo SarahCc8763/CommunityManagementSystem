@@ -71,14 +71,17 @@ public class ParkingSlot {
 	@OneToMany(mappedBy = "parkingSlot", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ParkingRentals> parkingRentals;
 
-	// ---------------------------------------------------------------------------------------
+	// 一對多到抽籤車位
+	@JsonManagedReference("parkingSlot-lotteryEventSpace")
+	@OneToMany(mappedBy = "parkingSlot", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<LotteryEventSpace> lotteryEventSpace;
 
-	@Override
-	public String toString() {
-		return "ParkingSlot [id=" + id + ", community=" + community + ", parkingType=" + parkingType + ", users="
-				+ users + ", slotNumber=" + slotNumber + ", location=" + location + ", licensePlate=" + licensePlate
-				+ ", isRentable=" + isRentable + ", parkingRentals=" + parkingRentals + "]";
-	}
+	// 一對多到抽籤車位
+	@JsonManagedReference("parkingSlot-temporaryParking")
+	@OneToMany(mappedBy = "parkingSlot", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TemporaryParkingApplication> temporaryParking;
+
+	// ---------------------------------------------------------------------------------------
 
 	public Integer getId() {
 		return id;
@@ -150,6 +153,22 @@ public class ParkingSlot {
 
 	public void setParkingRentals(List<ParkingRentals> parkingRentals) {
 		this.parkingRentals = parkingRentals;
+	}
+
+	public List<LotteryEventSpace> getLotteryEventSpace() {
+		return lotteryEventSpace;
+	}
+
+	public void setLotteryEventSpace(List<LotteryEventSpace> lotteryEventSpace) {
+		this.lotteryEventSpace = lotteryEventSpace;
+	}
+
+	public List<TemporaryParkingApplication> getTemporaryParking() {
+		return temporaryParking;
+	}
+
+	public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
+		this.temporaryParking = temporaryParking;
 	}
 
 }

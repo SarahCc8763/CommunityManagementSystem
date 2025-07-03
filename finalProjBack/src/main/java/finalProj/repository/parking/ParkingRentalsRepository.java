@@ -17,8 +17,7 @@ public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, 
 	@Query("""
 			    SELECT ps
 			    FROM ParkingSlot ps
-			    WHERE ps.community.id = :communityId
-			      AND ps.parkingType.id = :parkingTypeId
+			    WHERE ps.parkingType.id = :parkingTypeId
 			      AND ps.isRentable = true
 			      AND ps.id NOT IN (
 			        SELECT pr.parkingSlot.id
@@ -29,7 +28,6 @@ public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, 
 			      )
 			""")
 	List<ParkingSlot> findAvailableSlotsByTypeAndPeriod(
-			@Param("communityId") Integer communityId,
 			@Param("parkingTypeId") Integer parkingTypeId, 
 			@Param("start") Date start, 
 			@Param("end") Date end);

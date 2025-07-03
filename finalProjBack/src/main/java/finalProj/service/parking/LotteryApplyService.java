@@ -1,16 +1,13 @@
 package finalProj.service.parking;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.parking.LotteryApply;
-import finalProj.domain.parking.LotteryEvents;
-import finalProj.repository.UsersRepository;
+import finalProj.dto.parking.LotteryApplyDTO;
 import finalProj.repository.parking.LotteryApplyRepository;
-import finalProj.repository.parking.LotteryEventRepository;
 import jakarta.transaction.Transactional;
 
 // 抽籤申請表 Service
@@ -20,60 +17,38 @@ public class LotteryApplyService {
 
 	@Autowired
 	private LotteryApplyRepository repository;
-
-	@Autowired
-	private UsersRepository usersRepository;
-
-	@Autowired
-	private LotteryEventRepository lotteryEventRepository;
-
-	// 查詢所有申請表
-	public List<LotteryApply> findAll() {
-		return repository.findAll();
-	}
-
-	// 新增申請表
-	public LotteryApply create(LotteryApply apply) {
-		Integer usersId = apply.getUsersId();
-		Integer lotteryEventsId = apply.getLotteryEventsId();
-
-		if (usersId == null || lotteryEventsId == null) {
-			return null;
-		}
-
-		if (!usersRepository.existsById(usersId) || !lotteryEventRepository.existsById(lotteryEventsId)) {
-			return null;
-		}
-
-		if (repository.existsByUsersIdAndLotteryEventsId(usersId, lotteryEventsId)) {
-			return null;
-		}
-
-		Date currentTime = new Date();
-
-		LotteryEvents lotteryEvent = lotteryEventRepository.findById(lotteryEventsId).get();
-		if (currentTime.before(lotteryEvent.getStartedAt()) || currentTime.after(lotteryEvent.getEndedAt())) {
-			return null;
-		}
-		apply.setAppliedAt(currentTime);
-
-		return repository.save(apply);
-	}
 	
-	// 修改申請表
-	public LotteryApply update(LotteryApply apply) {
-		Integer usersId = apply.getUsersId();
-		Integer lotteryEventsId = apply.getLotteryEventsId();
-		apply.setAppliedAt(new Date());
-		return repository.save(apply);
+    public List<LotteryApply> findByUserId(Integer userId) {
+        return repository.findByUsers_UsersId(userId);
+    }
+
+	public List<LotteryApplyDTO> findByEvent(Integer eventId) {
+		List<LotteryApply> list = repository.findByLotteryEvents_BulletinId(eventId);
+
+		return list.stream().map(apply -> {
+			LotteryApplyDTO dto = new LotteryApplyDTO();
+			dto.setId(apply.getId());
+			dto.setUsersId(apply.getUsers().getUsersId());
+			dto.setUserName(apply.getUsers().getName());
+			dto.setEmail(apply.getUsers().getEmail());
+			dto.setLotteryEventId(apply.getLotteryEvents().getBulletinId());
+			dto.setEventTitle(apply.getLotteryEvents().getTitle());
+			dto.setAppliedAt(apply.getAppliedAt());
+
+			dto.setAwardedSlot(
+					apply.getLotteryEventSpace() != null ? apply.getLotteryEventSpace().getParkingSlot().getSlotNumber()
+							: null);
+
+			return dto;
+		}).toList();
 	}
 
-	// 刪除申請表
-	public Boolean delete(Integer id) {
-		if (id != null && repository.existsById(id)) {
-			repository.deleteById(id);
-			return true;
-		}
-		return false;
+	public boolean hasAlreadyApplied(Integer eventId, Integer userId) {
+		return repository.existsByLotteryEvents_BulletinIdAndUsers_UsersId(eventId, userId);
+	}
+
+	// 新增申請
+	public LotteryApply apply(LotteryApply apply) {
+		return repository.save(apply);
 	}
 }

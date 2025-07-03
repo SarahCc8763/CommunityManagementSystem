@@ -218,14 +218,14 @@ public class ParkingSlotService {
 
 	// 查詢可抽籤車位
 	public List<ParkingSlot> findAvailableSlots(ParkingSlotQueryDTO dto) {
-		Integer limit = dto.getLimit();
 		Integer communityId = dto.getCommunityId();
-		Integer typeId = dto.getTypeId();
+		String typeName = dto.getTypeName();
 		Date eventStart = dto.getEventStart();
 		Date eventEnd = dto.getEventEnd();
+		Integer limit = dto.getLimit();
 
 		// 基本欄位驗證
-		if (limit == null || communityId == null || typeId == null || eventStart == null || eventEnd == null) {
+		if (limit == null || communityId == null || typeName == null || eventStart == null || eventEnd == null) {
 			return null;
 		}
 
@@ -233,9 +233,10 @@ public class ParkingSlotService {
 		if (!communityRepository.existsById(communityId)) {
 			return null;
 		}
-		if (!parkingTypeRepository.existsById(typeId)) {
+		if (!parkingTypeRepository.existsByTypeAndCommunity_CommunityId(typeName, communityId)) {
 			return null;
 		}
+		Integer typeId = parkingTypeRepository.findByTypeAndCommunity_CommunityId(typeName, communityId).get().getId();
 
 		Pageable pageable = PageRequest.of(0, limit);
 		return repository.findAvailableSlotsForEvent(communityId, typeId, eventStart, eventEnd, pageable);

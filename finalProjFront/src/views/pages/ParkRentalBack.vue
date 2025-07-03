@@ -98,7 +98,7 @@
                     <td>{{ record.status? '已繳費' : '未繳費' }}</td>
                     <td>{{ record.createdAt }}</td>
                     <td>{{ record.updatedAt}}</td>
-                    <td>{{ record.approved? '已審核' : '未審核'}}</td>
+                    <td>{{ record.approved? '已審核' : '待審核'}}</td>
                     <td>{{ record.approverName}}</td>
                     <td><!-- 加上 data-bs-toggle / data-bs-target -->
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#slotDetailModal"
@@ -150,10 +150,10 @@
                         <label>登記車牌：<input class="form-control" v-model="selectedRecord.licensePlate" :readonly="!isEditMode" /></label>
                     </div>
                     <div class="mb-2">
-                        <label>起始日：<input type="datetime-local" class="form-control" v-model="selectedRecord.rentBuyStart" :readonly="!isEditMode" /></label>
+                        <label>起始日：<input type="datetime" class="form-control" v-model="selectedRecord.rentBuyStart" :readonly="!isEditMode" /></label>
                     </div>
                     <div class="mb-2">
-                        <label>結束日：<input type="datetime-local" class="form-control" v-model="selectedRecord.rentEnd" :readonly="!isEditMode" /></label>
+                        <label>結束日：<input type="datetime" class="form-control" v-model="selectedRecord.rentEnd" :readonly="!isEditMode" /></label>
                     </div>
                     
                     <!-- 繳費狀態 -->
@@ -206,7 +206,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios.js'
-import useUserStore from '@/stores/user.js';
+import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore();
 const communityId = userStore.community

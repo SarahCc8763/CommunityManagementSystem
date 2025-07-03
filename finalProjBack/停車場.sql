@@ -72,7 +72,8 @@ CREATE TABLE lottery_events (
     ended_at DATETIME NOT NULL,
 	users_id INT NOT NULL,
 	created_at DATETIME NOT NULL,
---  FOREIGN KEY (id) REFERENCES bulletin(id)
+	FOREIGN KEY (users_id) REFERENCES users(id),
+    FOREIGN KEY (id) REFERENCES bulletin(id)
 );
 
 

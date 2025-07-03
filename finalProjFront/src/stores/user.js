@@ -14,13 +14,16 @@ export default defineStore('user', () => {
     function setEmail(data) {
         email.value = data
     }
+
+
+
     return {
         token,
         setToken,
         community,
         setCommunity,
         email,
-        setEmail
+        setEmail,
     }
 }, {
     persist: true,

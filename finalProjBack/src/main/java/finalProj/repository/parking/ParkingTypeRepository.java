@@ -17,4 +17,5 @@ public interface ParkingTypeRepository extends JpaRepository<ParkingType, Intege
 	Optional<ParkingType> findByTypeAndCommunity_CommunityId(String parkingType, Integer communityId);
 
 	boolean existsByIdAndCommunity(Integer parkingTypeId, Community community);
+
 }

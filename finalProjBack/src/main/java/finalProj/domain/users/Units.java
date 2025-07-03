@@ -1,8 +1,14 @@
 package finalProj.domain.users;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
+import finalProj.domain.parking.TemporaryParkingApplication;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,12 +16,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Units", uniqueConstraints = { @UniqueConstraint(columnNames = { "unit", "floor" })
-})
+@Table(name = "Units", uniqueConstraints = { @UniqueConstraint(columnNames = { "unit", "floor" }) })
 public class Units {
 
 	@Id
@@ -38,11 +44,21 @@ public class Units {
 	@Column(columnDefinition = "INT DEFAULT 0")
 	private Integer point = 0;
 
+	// 多對一到拜訪戶號
+	@JsonBackReference("units-units")
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
-	// --- Getters and Setters ---
+	// ---------------------------------------------------------------------------------------
+
+	// 一對多到車位
+	@JsonManagedReference("units-temporaryParking")
+	@OneToMany(mappedBy = "units", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TemporaryParkingApplication> temporaryParking;
+
+	// ---------------------------------------------------------------------------------------
+
 	public Integer getUnitsId() {
 		return unitsId;
 	}
@@ -99,14 +115,12 @@ public class Units {
 		this.community = community;
 	}
 
-	// Optional: toString()
-	@Override
-	public String toString() {
-		return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
-				+ ", ping=" + ping + ", point=" + point + ", community=" + community + ", getUnitsId()=" + getUnitsId()
-				+ ", getUnit()=" + getUnit() + ", getFloor()=" + getFloor() + ", getBuilding()=" + getBuilding()
-				+ ", getPing()=" + getPing() + ", getPoint()=" + getPoint() + ", getCommunity()=" + getCommunity()
-				+ "]";
+	public List<TemporaryParkingApplication> getTemporaryParking() {
+		return temporaryParking;
+	}
+
+	public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
+		this.temporaryParking = temporaryParking;
 	}
 
 }

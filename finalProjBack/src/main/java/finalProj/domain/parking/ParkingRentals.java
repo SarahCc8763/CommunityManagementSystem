@@ -52,12 +52,12 @@ public class ParkingRentals {
 	private Users approver;
 
 	// 承租起始日
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	@Column(name = "rent_buy_start", nullable = false)
 	private Date rentBuyStart;
 
 	// 承租截止日
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	@Column(name = "rent_end", nullable = false)
 	private Date rentEnd;
 

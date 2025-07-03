@@ -27,6 +27,7 @@ import finalProj.repository.CommunityRepository;
 import finalProj.repository.UsersRepository;
 import finalProj.repository.parking.ParkingRentalsRepository;
 import finalProj.repository.parking.ParkingSlotRepository;
+import finalProj.repository.parking.ParkingTypeRepository;
 import finalProj.service.parking.ParkingRentalsService;
 
 // 承租紀錄 Controller
@@ -38,13 +39,16 @@ public class ParkingRentalsController {
 	private ParkingRentalsService service;
 
 	@Autowired
+	private ParkingRentalsRepository repository;
+	
+	@Autowired
 	private ParkingSlotRepository parkingSlotRepository;
+	
+	@Autowired
+	private ParkingTypeRepository parkingTypeRepository;
 
 	@Autowired
 	private UsersRepository usersRepository;
-
-	@Autowired
-	private ParkingRentalsRepository repository;
 	
 	@Autowired
 	private CommunityRepository communityRepository;
@@ -214,6 +218,21 @@ public class ParkingRentalsController {
 		}
 	}
 
+	// 查詢可承租車位
+	@GetMapping("/available-slots")
+	public ResponseEntity<ApiResponse<List<ParkingSlot>>> findAvailableSlots(@RequestParam Integer parkingTypeId,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) {
+
+        if (parkingTypeRepository.findById(parkingTypeId) == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.failure("找不到車位種類"));
+        }
+		
+		List<ParkingSlot> availableSlots = service.findAvailableSlots(parkingTypeId, start, end);
+		
+		return ResponseEntity.ok(ApiResponse.success(availableSlots));
+	}
+
 	// 查詢某車位的承租歷史
 //	@GetMapping("/{slotId}/history")
 //    public List<RentalHistoryDTO> getRentalHistory(
@@ -256,14 +275,6 @@ public class ParkingRentalsController {
 //        return cal.getTime();
 //    }
 
-	// 查詢可承租車位
-	@GetMapping("/available-slots")
-	public List<ParkingSlot> findAvailableSlots(@RequestParam Integer communityId, @RequestParam Integer parkingTypeId,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end) {
-
-		return service.findAvailableSlots(communityId, parkingTypeId, start, end);
-	}
 
 	// 驗證時段重疊
 	@PostMapping("/overlap")

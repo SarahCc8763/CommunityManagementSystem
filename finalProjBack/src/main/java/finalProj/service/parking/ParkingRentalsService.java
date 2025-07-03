@@ -28,8 +28,8 @@ public class ParkingRentalsService {
 	private UsersRepository usersRepository;
 
 	// 查詢可承租車位
-	public List<ParkingSlot> findAvailableSlots(Integer communityId, Integer parkingTypeId, Date start, Date end) {
-	    return repository.findAvailableSlotsByTypeAndPeriod(communityId, parkingTypeId, start, end);
+	public List<ParkingSlot> findAvailableSlots(Integer parkingTypeId, Date start, Date end) {
+	    return repository.findAvailableSlotsByTypeAndPeriod(parkingTypeId, start, end);
 	}
 	
 	// 查詢所有承租資料

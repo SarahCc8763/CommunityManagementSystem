@@ -1,8 +1,14 @@
 <template>
     <h2>可承租車位</h2>
     <div>
-        <label>起始時間：<input type="datetime-local" v-model="start" /></label><br />
-        <label>結束時間：<input type="datetime-local" v-model="end" /></label><br />
+        <!-- 查詢區塊 -->
+<label class="form-label mt-2">承租起始年月：</label>
+<input type="month" class="form-control" v-model="queryStartMonth" :min="minMonth" />
+
+<label class="form-label mt-2">承租截止年月：</label>
+<input type="month" class="form-control" v-model="queryEndMonth" :min="minMonth" />
+
+
         <label>車位種類：
             <select v-model="selectedType">
                 <option v-for="type in parkingTypes" :key="type.id" :value="type.id">
@@ -54,11 +60,12 @@
                     <p><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</p>
                     <p><strong>車位區域：</strong>{{ rentalSlot.location }}</p>
 
-                    <label class="form-label mt-2">承租起始日：</label>
-                    <input type="datetime-local" class="form-control" v-model="rentStart" :min="minStartDate" />
+                    <label class="form-label mt-2">承租起始年月：</label>
+<input type="month" class="form-control" v-model="rentStartMonth" :min="minMonth" />
 
-                    <label class="form-label mt-2">承租截止日：</label>
-                    <input type="datetime-local" class="form-control" v-model="rentEnd" :min="minEndDate" />
+<label class="form-label mt-2">承租截止年月：</label>
+<input type="month" class="form-control" v-model="rentEndMonth" :min="rentStartMonth" />
+
 
                     <label class="form-label mt-2">登記車牌：</label>
                     <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" />
@@ -70,23 +77,41 @@
             </div>
         </div>
     </div>
-
-
 </template>
-
+    
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios.js'
-import useUserStore from '@/stores/user.js';
+import { useUserStore } from '@/stores/UserStore'
 
-const userStore = useUserStore();
+// 使用者資訊與社區 ID
+const userStore = useUserStore()
 const communityId = userStore.community
 
-const start = ref('')
-const end = ref('')
-const parkingTypes = ref([])
+// 查詢條件
 const selectedType = ref(1)
+const parkingTypes = ref([])
 
+const queryStartMonth = ref('')
+const queryEndMonth = ref('')
+const rentStartMonth = ref('')
+const rentEndMonth = ref('')
+const licensePlate = ref('')
+
+// 車位資料
+const availableSlots = ref([])
+const rentalSlot = ref(null)
+const userName = ref('')
+
+// 最小可選月份：本月
+const minMonth = new Date().toISOString().slice(0, 7)
+
+// 補足日期為每月 1 號
+function getFirstDayOfMonth(monthStr) {
+    return `${monthStr}-01`
+}
+
+// 載入車位種類
 const fetchType = async () => {
     const res = await axios.get(`/park/parking-types?communityId=${communityId}`)
     parkingTypes.value = res.data.data.map(t => ({
@@ -95,146 +120,147 @@ const fetchType = async () => {
     }))
 }
 
-function formatDateTime(datetimeStr) {
-    return datetimeStr.replace('T', ' ') + ':00'
-}
-
-const availableSlots = ref([])
-
+// 查詢可承租車位
 async function fetchAvailableSlots() {
-    if (!start.value || !end.value || !selectedType.value) return
-    const res = await axios.get('/park/parking-rentals/available-slots', {
+    if (!queryStartMonth.value || !queryEndMonth.value || !selectedType.value) return
+
+    const res = await axios.get(`/park/parking-rentals/available-slots?communityId=${communityId}`, {
         params: {
             parkingTypeId: selectedType.value,
-            start: formatDateTime(start.value),
-            end: formatDateTime(end.value)
+            start: getFirstDayOfMonth(queryStartMonth.value),
+            end: getFirstDayOfMonth(queryEndMonth.value)
         }
     })
-    availableSlots.value = res.data
-    console.log(availableSlots.value);
+    availableSlots.value = res.data.data
 }
 
-const selectedSlot = ref(null)
-const selectedRange = ref('1') // 初始為近一年
-const rentalHistory = ref([])
-const modalInstance = ref(null)
+// 點選「我要承租」
+const rentInitialized = ref(false)
 
-async function fetchHistory() {
-    if (!selectedSlot.value) return
-    try {
-        const res = await axios.get(`/park/parking-rentals/${selectedSlot.value.id}/history`, {
-            params: {
-                range: selectedRange.value // 可為 1, 3, 5, all
-            }
-        })
-        rentalHistory.value = res.data
-    } catch (error) {
-        console.error('載入歷史紀錄失敗', error)
-        rentalHistory.value = []
-    }
-}
 
-function viewDetails(slot) {
-    selectedSlot.value = slot
-    selectedRange.value = '1'
-    fetchHistory()
 
-    if (modalInstance.value) {
-        modalInstance.value.show()
-    }
-}
-
-const rentalSlot = ref(null)
-const userName = ref('')
-const rentStart = ref('')
-const rentEnd = ref('')
-const licensePlate = ref('')
-
-const minStartDate = new Date().toISOString().slice(0, 16)
-const minEndDate = computed(() => {
-    if (!rentStart.value) return ''
-    const d = new Date(rentStart.value)
-    d.setMonth(d.getMonth() + 1)      // 至少 +1 月
-    return d.toISOString().slice(0, 16)
-})
-
-/* -------- 點「我要承租」時呼叫 -------- */
 function prepareRental(slot) {
     rentalSlot.value = slot
-    // 取得登入者姓名（假設 localStorage 暫存 userId）
-    //   fetchUserName()
+    userName.value = userStore.email
 
-    rentStart.value = minStartDate
-    rentEnd.value = minEndDate.value
+    // 先暫停 watch
+    rentInitialized.value = false
+
+    // 設定初始值
+    rentStartMonth.value = queryStartMonth.value
+    rentEndMonth.value = queryEndMonth.value
     licensePlate.value = ''
+
+    // 下一個 tick 再啟用 watch（避免立即觸發）
+    setTimeout(() => {
+        rentInitialized.value = true
+    }, 0)
 }
 
-/* -------- 後端撈取使用者名稱 -------- */
-// async function fetchUserName () {
-//   try {
-//     const uid = JSON.parse(localStorage.getItem('user'))?.id
-//     const { data } = await axios.get(`/users/${uid}`)
-//     userName.value = data.name
-//   } catch (e) {
-//     console.error('取得使用者名稱失敗', e)
-//     userName.value = '(未知)'
-//   }
-// }
+// 日期時間格式化（含時分秒）
+function formatDateTime2(datetimeStr) {
+    return datetimeStr.replace('T', ' ').slice(0, 19)
+}
 
-/* -------- 檢查車牌 & 送出 -------- */
+function formatDateOnly(dateStr) {
+  const d = new Date(dateStr)
+  return d.toISOString().slice(0, 10) // yyyy-MM-dd
+}
+
+
+// 驗證車牌格式
 function plateOK(plate) {
-    return /^[A-Za-z0-9-]+$/.test(plate)   // 僅英數與 dash
+    return /^[A-Za-z0-9-]+$/.test(plate)
 }
 
+// 提交承租申請
 async function submitRental() {
     if (!plateOK(licensePlate.value)) {
         alert('車牌不可含中文，僅能輸入英數字與 -')
         return
     }
 
+    const payload = {
+  userName: userName.value,
+  slotNumber: rentalSlot.value.slotNumber,
+  rentBuyStart: formatDateOnly(getFirstDayOfMonth(rentStartMonth.value)), // yyyy-MM-dd
+  rentEnd: formatDateOnly(getFirstDayOfMonth(rentEndMonth.value)),       // yyyy-MM-dd
+  licensePlate: licensePlate.value,
+
+  approved: false,
+  approverName: null,
+  status: false,
+  updatedAt: formatDateTime2(new Date().toISOString()),  // yyyy-MM-dd HH:mm:ss
+  createdAt: formatDateTime2(new Date().toISOString())
+}
+
+
+    console.log(payload)
     try {
-        const payload = {
-            // usersId: JSON.parse(localStorage.getItem('user')).id,
-            usersId: 2,
-            parkingSlotId: rentalSlot.value.id,
-            rentBuyStart: rentStart.value.replace('T', ' ') + ':00',
-            rentEnd: rentEnd.value.replace('T', ' ') + ':00',
-            licensePlate: licensePlate.value,
-            status: false
-        }
-
-        const res = await axios.post('/park/parking-rentals', payload)
-
-        // 判斷回傳資料是否為空或無效
-        if (!res.data || Object.keys(res.data).length === 0) {
+        const res = await axios.post(`/park/parking-rentals?communityId=${communityId}`, payload)
+        if (!res.data.data || Object.keys(res.data.data).length === 0) {
             alert('承租失敗，請稍後再試')
-            console.warn('後端回傳為空：', res)
+            console.warn('後端回傳為空：', res.data)
             return
         }
-
         alert('承租成功！')
-        console.log('後端回傳：', res.data)
+        console.log('後端回傳：', res.data.data)
     } catch (e) {
         console.error(e)
         alert('承租失敗，請稍後再試')
     }
 }
 
-
+// 畫面載入時預設月份
 onMounted(() => {
-    const now = new Date()
-    const isoStr = now.toISOString().slice(0, 16)
-    start.value = isoStr
-    const later = new Date(now.getTime() + 60 * 60 * 1000)
-    end.value = later.toISOString().slice(0, 16)
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.getMonth() + 1
+    const isFirstDay = today.getDate() === 1
+
+    const startDate = new Date(year, isFirstDay ? month - 1 : month, 1)
+    const endDate = new Date(startDate)
+    endDate.setMonth(startDate.getMonth() + 1)
+
+    queryStartMonth.value = startDate.toISOString().slice(0, 7)
+    queryEndMonth.value = endDate.toISOString().slice(0, 7)
+
     fetchAvailableSlots()
     fetchType()
 })
 
-watch([start, end, selectedType], ([newStart, newEnd, newType]) => {
-    if (newStart && newEnd && newType) {
-        fetchAvailableSlots()
+// 搜尋區：起始月變更 → 自動修正截止月不得早於 +1 月
+watch([queryStartMonth, queryEndMonth], ([start, end]) => {
+    if (!start) return
+    const startDate = new Date(start)
+    const minEndDate = new Date(startDate)
+    minEndDate.setMonth(startDate.getMonth() + 1)
+    const minEndStr = minEndDate.toISOString().slice(0, 7)
+
+    if (!end || end < minEndStr) {
+        queryEndMonth.value = minEndStr
     }
 })
 
+
+// Modal：起始月變更 → 自動修正截止月不得早於 +1 月
+watch([rentStartMonth, rentEndMonth], ([start, end]) => {
+    if (!rentInitialized.value || !start) return
+
+    const startDate = new Date(start)
+    const minEndDate = new Date(startDate)
+    minEndDate.setMonth(startDate.getMonth() + 1)
+    const minEndStr = minEndDate.toISOString().slice(0, 7)
+
+    if (!end || end < minEndStr) {
+        rentEndMonth.value = minEndStr
+    }
+})
+
+
 </script>
+
+    
+<style>
+    
+</style>

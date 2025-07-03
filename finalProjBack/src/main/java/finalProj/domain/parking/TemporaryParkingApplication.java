@@ -2,13 +2,17 @@ package finalProj.domain.parking;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import finalProj.domain.users.Units;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 // 臨停申請紀錄
@@ -22,9 +26,11 @@ public class TemporaryParkingApplication {
 	@Column(name = "id")
 	private Integer id;
 
-	// 拜訪戶號 Id
-	@Column(name = "units_id", nullable = false)
-	private Integer unitsId;
+	// 多對一到拜訪戶號
+	@JsonBackReference("community-temporaryParking")
+	@ManyToOne
+	@JoinColumn(name = "units_id", referencedColumnName = "units_id", nullable = false)
+	private Units units;
 
 	// 訪客姓名
 	@Column(name = "visitor_name", nullable = false, length = 10)
@@ -34,9 +40,11 @@ public class TemporaryParkingApplication {
 	@Column(name = "license_plate", nullable = false, length = 10)
 	private String licensePlate;
 
-	// 種類 Id
-	@Column(name = "parking_type_id", nullable = false)
-	private Integer parkingTypeId;
+	// 多對一到種類
+	@JsonBackReference("parkingType-temporaryParking")
+	@ManyToOne
+	@JoinColumn(name = "type_id", referencedColumnName = "id", nullable = false)
+	private ParkingType parkingType;
 
 	// 申請日期
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
@@ -57,19 +65,12 @@ public class TemporaryParkingApplication {
 	@Column(name = "purpose", nullable = false, length = 50)
 	private String purpose;
 
-	// 申請車位 Id
-	@Column(name = "parking_slot_id", nullable = false)
-	private Integer parkingSlotId;
+	// 多對一到申請車位
+	@JsonBackReference("parkingSlot-temporaryParking")
+	@ManyToOne
+	@JoinColumn(name = "parking_slot_id", referencedColumnName = "id", nullable = false)
+	private ParkingSlot parkingSlot;
 
-	@Override
-	public String toString() {
-		return "TemporaryParkingApplication [id=" + id + ", unitsId=" + unitsId + ", visitorName=" + visitorName
-				+ ", licensePlate=" + licensePlate + ", parkingTypeId=" + parkingTypeId + ", requestTime=" + requestTime
-				+ ", startTime=" + startTime + ", endTime=" + endTime + ", purpose=" + purpose + ", parkingSlotId="
-				+ parkingSlotId + "]";
-	}
-
-	// Getters and Setters
 	public Integer getId() {
 		return id;
 	}
@@ -78,12 +79,12 @@ public class TemporaryParkingApplication {
 		this.id = id;
 	}
 
-	public Integer getUnitsId() {
-		return unitsId;
+	public Units getUnits() {
+		return units;
 	}
 
-	public void setUnitsId(Integer unitsId) {
-		this.unitsId = unitsId;
+	public void setUnits(Units units) {
+		this.units = units;
 	}
 
 	public String getVisitorName() {
@@ -102,12 +103,12 @@ public class TemporaryParkingApplication {
 		this.licensePlate = licensePlate;
 	}
 
-	public Integer getParkingTypeId() {
-		return parkingTypeId;
+	public ParkingType getParkingType() {
+		return parkingType;
 	}
 
-	public void setParkingTypeId(Integer parkingTypeId) {
-		this.parkingTypeId = parkingTypeId;
+	public void setParkingType(ParkingType parkingType) {
+		this.parkingType = parkingType;
 	}
 
 	public Date getRequestTime() {
@@ -142,11 +143,12 @@ public class TemporaryParkingApplication {
 		this.purpose = purpose;
 	}
 
-	public Integer getParkingSlotId() {
-		return parkingSlotId;
+	public ParkingSlot getParkingSlot() {
+		return parkingSlot;
 	}
 
-	public void setParkingSlotId(Integer parkingSlotId) {
-		this.parkingSlotId = parkingSlotId;
+	public void setParkingSlot(ParkingSlot parkingSlot) {
+		this.parkingSlot = parkingSlot;
 	}
+
 }

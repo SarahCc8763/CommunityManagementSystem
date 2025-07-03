@@ -33,7 +33,7 @@ public class TemporaryParkingApplicationController {
 	@PostMapping("/overlap")
 	public Boolean isOverlapping(@RequestBody TemporaryParkingApplication application) {
 		return service.isOverlapping(application.getStartTime(), application.getEndTime(),
-				application.getParkingSlotId(),application.getId());
+				application.getParkingSlot().getId(),application.getId());
 	}
 
 	// 新增臨停申請紀錄

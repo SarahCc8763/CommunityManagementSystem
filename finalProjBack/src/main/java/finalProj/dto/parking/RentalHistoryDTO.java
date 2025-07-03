@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class RentalHistoryDTO {
 	private Integer id;
 	private String licensePlate;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	private Date rentBuyStart;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	private Date rentEnd;
 	private Boolean status;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")

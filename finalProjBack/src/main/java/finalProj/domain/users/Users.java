@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
+import finalProj.domain.parking.LotteryApply;
+import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.parking.ParkingRentals;
 import finalProj.domain.parking.ParkingSlot;
 import jakarta.persistence.CascadeType;
@@ -95,15 +97,24 @@ public class Users {
 	private List<ParkingSlot> parkingSlots;
 
 	// 一對多到承租車位 (承租者)
-	@JsonManagedReference("users-parkingRentals")  // 與 users 對應
+	@JsonManagedReference("users-parkingRentals") // 與 users 對應
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ParkingRentals> rentalsMade;
 
 	// 一對多到承租車位 (審核者)
-	@JsonManagedReference("users-approver")  // 與 approver 對應
+	@JsonManagedReference("users-approver") // 與 approver 對應
 	@OneToMany(mappedBy = "approver", cascade = CascadeType.ALL)
 	private List<ParkingRentals> rentalsApproved;
 
+	// 一對多到車位抽籤
+	@JsonManagedReference("users-lotteryEevents")
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	private List<LotteryEvents> lotteryEvents;
+
+	// 一對多到車位抽籤申請
+	@JsonManagedReference("users-lotteryApply")
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	private List<LotteryApply> lotteryApply;
 
 	// ---------------------------------------------------------------------------------------
 
@@ -115,7 +126,7 @@ public class Users {
 				+ emergencyContactRelation + ", lineId=" + lineId + ", state=" + state + ", createAt=" + createAt
 				+ ", lastAlterAt=" + lastAlterAt + ", photo=" + photo + ", email=" + email + ", password=" + password
 				+ ", states=" + states + ", loginFailTimes=" + loginFailTimes + ", lastFailedLogin=" + lastFailedLogin
-				+ ", accountLockedUntil=" + accountLockedUntil + ", parkingSlots=" + parkingSlots + "]";
+				+ ", accountLockedUntil=" + accountLockedUntil + "]";
 	}
 
 	public Integer getUsersId() {
@@ -276,6 +287,38 @@ public class Users {
 
 	public void setParkingSlots(List<ParkingSlot> parkingSlots) {
 		this.parkingSlots = parkingSlots;
+	}
+
+	public List<ParkingRentals> getRentalsMade() {
+		return rentalsMade;
+	}
+
+	public void setRentalsMade(List<ParkingRentals> rentalsMade) {
+		this.rentalsMade = rentalsMade;
+	}
+
+	public List<ParkingRentals> getRentalsApproved() {
+		return rentalsApproved;
+	}
+
+	public void setRentalsApproved(List<ParkingRentals> rentalsApproved) {
+		this.rentalsApproved = rentalsApproved;
+	}
+
+	public List<LotteryEvents> getLotteryEvents() {
+		return lotteryEvents;
+	}
+
+	public void setLotteryEvents(List<LotteryEvents> lotteryEvents) {
+		this.lotteryEvents = lotteryEvents;
+	}
+
+	public List<LotteryApply> getLotteryApply() {
+		return lotteryApply;
+	}
+
+	public void setLotteryApply(List<LotteryApply> lotteryApply) {
+		this.lotteryApply = lotteryApply;
 	}
 
 }
