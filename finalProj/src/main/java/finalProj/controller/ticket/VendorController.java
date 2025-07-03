@@ -24,7 +24,7 @@ public class VendorController {
 	// Create
 	@PostMapping
 	public Vendor create(@RequestBody Vendor vendor) {
-		// TODO: 呼叫 service.save(ticket)
+		// 呼叫 service.save(ticket)
 		Vendor result = vendorService.save(vendor);
 		return result;
 	}
@@ -32,31 +32,31 @@ public class VendorController {
 	// Findall
 	@GetMapping
 	public List<Vendor> findAll() {
-		// TODO: 呼叫 service.findAll()
+		// 呼叫 service.findAll()
 		return vendorService.findAll(); // 空清單回傳
 	}
 
-//	// Read by id
+	// // Read by id
 	@GetMapping("/{id}")
 	public Vendor findById(@PathVariable Integer id) {
-		// TODO: 呼叫 service.findById(id)
+		// 呼叫 service.findById(id)
 		Vendor result = vendorService.findById(id);
 		return result;
 	}
 
-//	// Update
+	// // Update
 	@PutMapping("/{id}")
 	public Vendor update(@PathVariable Integer id, @RequestBody Vendor vendor) {
-		// TODO: 呼叫 service.update(id, ticket)
+		// 呼叫 service.update(id, ticket)
 
 		Vendor result = vendorService.update(id, vendor);
 		return result;
 	}
 
-//	// Delete
+	// // Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// 呼叫 service.delete(id)
 		boolean result = vendorService.remove(id);
 		return result;
 	}

@@ -44,14 +44,14 @@ public class Packages {
     @Column(length = 30)
     private String type;
 
-    @Column(name = "sign", length = 500)  // url
-    private String sign;  
+    @Column(name = "sign", length = 500) // url
+    private String sign;
 
     @Column(length = 30)
     private String place;
 
-    @Column(name = "photo", length = 500)  // url
-    private String photo; 
+    @Column(name = "photo", length = 500) // url
+    private String photo;
 
     @JsonBackReference("communityPackage")
     @ManyToOne
@@ -147,18 +147,16 @@ public class Packages {
         this.community = community;
     }
 
-	// toString
-	@Override
-	public String toString() {
-		return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
-				+ arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
-				+ sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
-				+ getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
-				+ getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
-				+ ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
-				+ ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
-	}
-    
-    
-}
+    // toString
+    @Override
+    public String toString() {
+        return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
+                + arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
+                + sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
+                + getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
+                + getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
+                + ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
+                + ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
+    }
 
+}

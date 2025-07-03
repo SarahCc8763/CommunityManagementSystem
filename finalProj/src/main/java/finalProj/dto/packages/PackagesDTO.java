@@ -5,27 +5,25 @@ import java.time.LocalDateTime;
 public class PackagesDTO {
 	private Integer packagesId;
 
-    private Integer unitId;  // 只傳 unit 的 ID
+	private Integer unitId; // 只傳 unit 的 ID
 
-    private Integer piece;
+	private Integer piece;
 
-    private LocalDateTime arrivalTime;
+	private LocalDateTime arrivalTime;
 
-    private LocalDateTime pickupTime;
+	private LocalDateTime pickupTime;
 
-    private String status;
+	private String status;
 
-    private String type;
+	private String type;
 
-    private String sign; // URL 字串
+	private String sign; // URL 字串
 
-    private String place;
+	private String place;
 
-    private String photo; // URL 字串
-    
-    private Integer communityId;
-    
-    
+	private String photo; // URL 字串
+
+	private Integer communityId;
 
 	public Integer getCommunityId() {
 		return communityId;
@@ -114,6 +112,5 @@ public class PackagesDTO {
 	public void setPhoto(String photo) {
 		this.photo = photo;
 	}
-    
-    
+
 }
