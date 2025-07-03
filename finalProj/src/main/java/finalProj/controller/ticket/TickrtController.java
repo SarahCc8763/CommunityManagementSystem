@@ -45,14 +45,14 @@ public class TickrtController {
 	// Findall
 	@GetMapping
 	public List<Ticket> findAll() {
-		// TODO: 呼叫 service.findAll()
+		// 呼叫 service.findAll()
 		return ticketService.findAll(); // 空清單回傳
 	}
 
 	// Findbyid
 	@GetMapping("/{id}")
 	public Ticket findById(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.findById(id)
+		// 呼叫 service.findById(id)
 		Ticket result = ticketService.findById(id);
 		return result;
 	}
@@ -71,7 +71,7 @@ public class TickrtController {
 	// Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// 呼叫 service.delete(id)
 		boolean result = ticketService.remove(id);
 		return result;
 	}

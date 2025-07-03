@@ -87,6 +87,10 @@ public class UsersService {
 		return null;
 	}
 
+	public Users findById(Integer id) {
+		return usersRepository.findById(id).orElse(null);
+	}
+
 	// super user
 	// @Autowired
 	// private SuperUserProperties superUserProps;
