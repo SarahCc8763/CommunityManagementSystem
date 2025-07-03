@@ -14,6 +14,11 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
+    @GetMapping("/unpaid")
+    public List<Invoice> getUnpaidInvoices() {
+        return invoiceService.findUnpaidInvoices();
+    }
+
     // 【功能】取得所有發票（可依communityId查詢）
     @GetMapping
     public List<Invoice> getAll(@RequestParam(required = false) Integer communityId) {
@@ -68,4 +73,5 @@ public class InvoiceController {
     public java.math.BigDecimal getUnitCount(@RequestParam Integer usersId, @RequestParam Integer feeTypeId) {
         return invoiceService.getUnitCountByUserAndFeeType(usersId, feeTypeId);
     }
+
 }

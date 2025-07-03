@@ -16,4 +16,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     // 根據communityId查詢
     List<Invoice> findByCommunityId(Integer communityId);
+
+    // 查未繳帳單 不管大小寫
+    List<Invoice> findByPaymentStatusNotIgnoreCase(String status);
 }

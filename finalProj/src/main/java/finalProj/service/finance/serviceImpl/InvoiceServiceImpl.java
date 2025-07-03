@@ -27,6 +27,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     private UnitsUsersRepository unitsUsersRepository;
 
     @Override
+    public List<Invoice> findUnpaidInvoices() {
+        return invoiceRepository.findByPaymentStatusNotIgnoreCase("paid");
+    }
+
+    @Override
     public Invoice save(Invoice invoice) {
         return invoiceRepository.save(invoice);
     }

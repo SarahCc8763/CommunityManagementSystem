@@ -5,6 +5,7 @@ import java.util.List;
 import finalProj.domain.finance.Invoice;
 
 public interface InvoiceService extends BaseService<Invoice, Integer> {
+    List<Invoice> findUnpaidInvoices();
 
     List<Invoice> generateInvoicesForPeriod(String periodCode);
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-4">
-    <h3>繳費紀錄/已繳發票</h3>
+    <h3>繳費紀錄</h3>
     <div v-if="receipts.length === 0" class="alert alert-info">目前沒有繳費紀錄</div>
     <table v-else class="table table-bordered">
       <thead>
@@ -80,5 +80,7 @@ const printReceipt = (r) => {
 </script>
 
 <style scoped>
-.container { max-width: 700px; }
-</style> 
+.container {
+  max-width: 700px;
+}
+</style>

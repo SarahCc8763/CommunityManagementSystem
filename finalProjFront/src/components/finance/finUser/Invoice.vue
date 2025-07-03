@@ -3,7 +3,8 @@
     <div class="tag-style px-4 py-2 mb-4">
       <h4 class="mb-0 fw-bold section-title">待繳帳單</h4>
     </div>
-    <div v-if="invoices.length === 0" class="no-invoice">
+
+    <div v-if="invoices?.length === 0" class="no-invoice">
       <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
     </div>
     <div v-else class="invoice-list">
@@ -107,6 +108,7 @@ const payMethod = ref('')
 const remitCode = ref('')
 const remitNote = ref('')
 const payMsg = ref('')
+const invoices = ref([])
 let currentInvoice = null
 
 const formatDate = (date) => {
@@ -175,7 +177,19 @@ const goCredit = () => {
     customClass: { popup: 'swal2-custom' }
   })
 }
-// onMounted(fetchInvoices)
+// onMounted(fetch 未繳的Invoices)
+
+onMounted(async () => {
+  try {
+    const res = await axios.get('/finance/invoice/unpaid')
+    invoices.value = res.data  // 正常就是一個陣列
+  } catch (err) {
+    console.error('載入帳單失敗:', err)
+  }
+})
+
+
+
 </script>
 
 <style scoped>

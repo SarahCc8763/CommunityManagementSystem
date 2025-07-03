@@ -3,7 +3,7 @@ import Home from '../views/Home.vue'
 import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
-
+import finUser from '@/components/finance/finUser/finUser.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
 import Invoice from '../components/finance/finUser/Invoice.vue'
@@ -51,26 +51,12 @@ const router = createRouter({
       name: 'Invoice',
       component: Invoice
     },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser
+    },
+
   ],
 })
 

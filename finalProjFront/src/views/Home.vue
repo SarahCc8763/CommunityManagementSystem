@@ -148,7 +148,7 @@ const features = [
         icon: 'bi-person-circle',
         title: '帳戶資訊',
         description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/account'
+        link: '/finUser'
     },
     {
         icon: 'bi-megaphone',

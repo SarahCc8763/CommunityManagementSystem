@@ -3,6 +3,7 @@ package finalProj.service.finance.serviceImpl;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,28 +44,32 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
-    @Override
-    public void generateInvoices(String feeTypeName, String billingPeriodCode, BigDecimal unitPrice) {
-        FeeType feeType = feeTypeRepository.findByDescription(feeTypeName)
-                .orElseThrow(() -> new IllegalArgumentException("無效的費用類別：" + feeTypeName));
+    // @Override
+    // public void generateInvoices(Integer feeTypeId, String billingPeriodCode,
+    // BigDecimal unitPrice) {
+    // Optional<FeeType> feeTypeOpt = feeTypeRepository.findById(feeTypeId);
+    // FeeType feeType = feeTypeOpt.orElseThrow(() -> new
+    // IllegalArgumentException("無效的費用類別 ID：" + feeTypeId));
 
-        BillingPeriod billingPeriod = billingPeriodRepository.findByPeriodCode(billingPeriodCode)
-                .orElseThrow(() -> new IllegalArgumentException("無效的期別代碼：" + billingPeriodCode));
+    // BillingPeriod billingPeriod =
+    // billingPeriodRepository.findByPeriodCode(billingPeriodCode)
+    // .orElseThrow(() -> new IllegalArgumentException("無效的期別代碼：" +
+    // billingPeriodCode));
 
-        switch (feeTypeName) {
-            case "管理費":
-                generateManagementFeeInvoices(feeType, billingPeriod);
-                break;
-            case "清潔費":
-                generateCleaningFeeInvoices(feeType, billingPeriod);
-                break;
-            // case "車位管理費":
-            // generateParkingFeeInvoices(feeType, billingPeriod, unitPrice);
-            // break;
-            default:
-                throw new IllegalArgumentException("不支援的費用類別：" + feeTypeName);
-        }
-    }
+    // switch (feeTypeName) {
+    // case "管理費":
+    // generateManagementFeeInvoices(feeType, billingPeriod);
+    // break;
+    // case "清潔費":
+    // generateCleaningFeeInvoices(feeType, billingPeriod);
+    // break;
+    // // case "車位管理費":
+    // // generateParkingFeeInvoices(feeType, billingPeriod, unitPrice);
+    // // break;
+    // default:
+    // throw new IllegalArgumentException("不支援的費用類別：" + feeTypeName);
+    // }
+    // }
 
     // 產生以坪數為單位的管理費
 
