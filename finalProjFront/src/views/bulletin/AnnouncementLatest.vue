@@ -5,7 +5,7 @@
         <BannerImage :imageSrc="OO" heading="最新公告" subtext="" textAlign="left" />
 
 
-        搜尋區塊
+
         <div class="d-flex gap-2 mb-3">
             <input v-model="searchTitle" class="form-control" placeholder="輸入標題關鍵字" />
             <select v-model="searchCategory" class="form-select">
@@ -22,7 +22,7 @@
                 <div v-for="bulletin in bulletins" :key="bulletin.id"
                     :class="['announcement-card', getGridColor(bulletin.categoryName)]">
                     <div class="announcement-header">
-                        <div class="announcement-badge">
+                        <div class="announcement-badge fs-6">
                             <i :class="['bi', getIcon(bulletin.categoryName)]"></i>
                             {{ bulletin.categoryName }}
                         </div>
