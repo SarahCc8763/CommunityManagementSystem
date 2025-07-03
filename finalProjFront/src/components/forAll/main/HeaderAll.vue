@@ -9,8 +9,14 @@
     </router-link>
 
     <nav class="nav">
-      <div v-for="(category, index) in menuList" :key="category.title" class="nav-item"
-        :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index">
+      <div
+        v-for="(category, index) in menuList"
+        :key="category.title"
+        class="nav-item"
+        :class="{ active: activeIndex === index }"
+        @mouseenter="activeIndex = index"
+        @click="handleMainNavClick(category)"
+      >
         {{ category.title }}
       </div>
     </nav>
@@ -134,6 +140,16 @@ const handleGlobalLogout = () => {
   isLoggedIn.value = false
 }
 
+// 點擊header主選單大標題時的導頁行為
+const handleMainNavClick = (category) => {
+  // 只針對「繳費資訊」大標題導向繳費總覽（FinUser）
+  if (category.title === '繳費資訊') {
+    router.push({ name: 'FinUser' })
+    activeIndex.value = null // 點擊後收起下拉選單
+  }
+  // 其他大標題維持原本展開下拉選單的行為
+}
+
 onMounted(() => {
   // 監聽全局登入成功事件
   window.addEventListener('login-success', handleGlobalLoginSuccess)
@@ -174,13 +190,14 @@ const menuList = ref([
   {
     title: '繳費資訊',
     children: [
+      { label: '繳費總覽', routeName: 'FinUser' },
       { label: '待繳帳單', routeName: 'Invoice' },
       { label: '繳費紀錄', routeName: 'InvoiceHistory' },
       { label: '新增費用類型', routeName: 'FeeTypeAdd' },
       { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
       { label: '新增繳款單', routeName: 'InvoiceAdd' },
       { label: '新增收據', routeName: 'ReceiptAdd' },
-
+      { label: '請款單審核', routeName: 'InvoiceValidate' },
     ]
   },
   {

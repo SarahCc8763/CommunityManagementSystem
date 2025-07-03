@@ -1,4 +1,3 @@
-
 package finalProj.service.finance.serviceImpl;
 
 import java.math.BigDecimal;
@@ -152,4 +151,51 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     // }
     // }
     // }
+
+    // 新版：依feeTypeId與billingPeriodId產生請款單
+    public void generateInvoices(Integer feeTypeId, Integer billingPeriodId) {
+        FeeType feeType = feeTypeRepository.findById(feeTypeId)
+                .orElseThrow(() -> new IllegalArgumentException("無效的費用類別ID: " + feeTypeId));
+        BillingPeriod billingPeriod = billingPeriodRepository.findById(billingPeriodId)
+                .orElseThrow(() -> new IllegalArgumentException("無效的期別ID: " + billingPeriodId));
+
+        // 只抓該社區的戶
+        List<Units> units = unitsRepository.findAll(); // 若有findByCommunityId可改用
+        for (Units unit : units) {
+            // 若有社區過濾
+            if (feeType.getCommunityId() != null && unit.getCommunity() != null &&
+                    !feeType.getCommunityId().equals(unit.getCommunity().getCommunityId())) {
+                continue;
+            }
+            List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
+            if (unitUsers == null || unitUsers.isEmpty())
+                continue;
+            Users user = unitUsers.get(0).getUser(); // 主用戶
+            java.math.BigDecimal unitCount;
+            if ("坪數".equals(feeType.getUnit())) {
+                unitCount = unit.getPing();
+            } else {
+                unitCount = java.math.BigDecimal.ONE;
+            }
+            java.math.BigDecimal unitPrice = feeType.getAmountPerUnit();
+            if (unitPrice == null || unitCount == null)
+                continue;
+            java.math.BigDecimal totalAmount = unitCount.multiply(unitPrice);
+
+            Invoice invoice = new Invoice();
+            invoice.setUsers(user);
+            invoice.setFeeType(feeType);
+            invoice.setBillingPeriod(billingPeriod);
+            invoice.setPeriodName(billingPeriod.getPeriodName());
+            invoice.setDeadline(billingPeriod.getDueDate());
+            invoice.setUnitCount(unitCount);
+            invoice.setUnitPrice(unitPrice);
+            invoice.setTotalAmount(totalAmount);
+            invoice.setAmountDue(totalAmount);
+            invoice.setPaymentStatus("UNPAID");
+            invoice.setCommunityId(feeType.getCommunityId());
+            invoice.setStatus(false);
+            invoiceRepository.save(invoice);
+        }
+    }
 }

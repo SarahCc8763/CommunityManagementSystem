@@ -23,4 +23,7 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     // 根據communityId查詢
     java.util.List<Invoice> findByCommunityId(Integer communityId);
+
+    // 查詢所有status為false（待審核）
+    java.util.List<Invoice> findByStatus(Boolean status);
 }

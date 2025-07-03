@@ -127,6 +127,12 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         return toDTO(saved);
     }
 
+    @Override
+    public List<InvoiceResponseDTO> findByInvoiceId(Integer invoiceId) {
+        List<InvoiceResponse> list = invoiceResponseRepository.findByInvoiceId(invoiceId);
+        return list.stream().map(this::toDTO).toList();
+    }
+
     // Entity 轉 DTO
     private InvoiceResponseDTO toDTO(InvoiceResponse entity) {
         if (entity == null)

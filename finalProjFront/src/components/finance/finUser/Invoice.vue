@@ -7,30 +7,33 @@
     <div v-if="invoices?.length === 0" class="no-invoice">
       <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
     </div>
-    <div v-else class="invoice-list">
-      <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card">
-        <div class="invoice-header">
-          <div class="header-main">
-            <span class="invoice-id">帳單編號：{{ invoice.invoiceId }}</span>
+    <div v-else class="invoice-list grid-list">
+      <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card pro-card">
+        <div class="pro-header">
+          <div>
+            <span class="pro-id">#{{ invoice.invoiceId }}</span>
             <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
           </div>
-          <div class="header-amount">
-            <span class="amount-due">NT$ {{ invoice.amountDue.toLocaleString() }}</span>
+          <div class="pro-amount">
+            <span>NT$</span>
+            <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
+            <span v-if="isOverdue(invoice)" class="overdue-label">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                <circle cx="12" cy="12" r="10" fill="#f87171"/>
+                <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="16" r="1.2" fill="#fff"/>
+              </svg>
+              <span class="overdue-text">逾期</span>
+            </span>
           </div>
         </div>
-        <div class="invoice-info-row">
-          <div><span class="info-label">費用類型：</span>{{ invoice.feeType?.description || '—' }}</div>
-          <div><span class="info-label">期別：</span>{{ invoice.periodName }}</div>
+        <div class="pro-info">
+          <div><b>{{ invoice.feeType?.description || '—' }}</b>（{{ invoice.periodName }}）</div>
+          <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
+          <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
         </div>
-        <div class="invoice-info-row">
-          <div><span class="info-label">單位數：</span>{{ invoice.unitCount }}</div>
-          <div><span class="info-label">單價：</span>NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
-        </div>
-        <div class="invoice-info-row">
-          <div><span class="info-label">繳費截止日：</span>{{ formatDate(invoice.deadline) }}</div>
-        </div>
-        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'" class="pay-btn"
-          @click="openPayModal(invoice)">去繳費</button>
+        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'" class="pay-btn pro-pay-btn"
+          @click="openPayModal(invoice)">立即繳費</button>
       </div>
       <div class="total-row">
         <span>總金額：</span>
@@ -54,24 +57,22 @@
           <div v-if="payMethod === 'remit'">
             <div class="alert alert-info mb-2">
               請匯款至：00銀行 123123123<br>
-              <span class="text-danger">提醒您於 {{ formatDate(currentInvoice.deadline) }} 前完成繳款，匯款後請於下方提供帳號末五碼，以利對帳。</span>
-            </div>
-            <div v-if="payMsg === '請輸入正確的帳號末五碼'" class="text-danger mb-1" style="font-size:0.98rem;">
-              {{ payMsg }}
+              <span class="text-danger">提醒您於 {{ formatDate(currentInvoice.deadline) }} 前完成繳款，匯款後可於下方留言。</span>
             </div>
             <div class="mb-2">
-              <label>帳號末五碼</label>
-              <input v-model="remitCode" class="form-control" maxlength="5" />
-            </div>
-            <div class="mb-2">
-              <label>備註（選填）</label>
+              <label>留言（可填匯款帳號末五碼或其他資訊）</label>
               <input v-model="remitNote" class="form-control" />
             </div>
-            <button class="btn btn-primary w-100" @click="submitRemit">送出匯款回覆</button>
+            <button class="btn btn-primary w-100" @click="submitRemit">送出回覆</button>
           </div>
           <div v-else-if="payMethod === 'credit'">
             <div class="alert alert-success">即將導向綠界線上刷卡頁面（模擬）</div>
+            <div class="mb-2">
+              <label>留言（選填）</label>
+              <input v-model="remitNote" class="form-control" />
+            </div>
             <button class="btn btn-success w-100" @click="goCredit">前往刷卡</button>
+            <button class="btn btn-primary w-100 mt-2" @click="submitRemit">送出回覆</button>
           </div>
           <div v-else-if="payMethod === 'cash'">
             <div class="alert alert-warning">
@@ -83,10 +84,12 @@
               <input v-model="remitNote" class="form-control" />
             </div>
             <button class="btn btn-secondary w-100" @click="closePayModal">我知道了</button>
+            <button class="btn btn-primary w-100 mt-2" @click="submitRemit">送出回覆</button>
           </div>
-          <!-- 這段記得要改成只收留言r -->
-          <button class="btn btn-link mt-2 w-100" @click="submitRemit">送出回覆</button>
-          <div v-if="payMsg && payMsg !== 'success'" class="alert alert-info mt-2">{{ payMsg }}</div>
+          <div v-if="payMsg && payMsg !== 'success'" class="alert alert-info mt-2 d-flex justify-content-between align-items-center">
+            <span>{{ payMsg }}</span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" @click="closePayModal">關閉</button>
+          </div>
         </div>
       </div>
     </div>
@@ -97,7 +100,9 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
 
+const userStore = useUserStore()
 
 const totalAmount = computed(() =>
   invoices.value.reduce((sum, inv) => sum + Number(inv.amountDue), 0)
@@ -143,26 +148,23 @@ const closePayModal = () => {
   payMsg.value = ''
 }
 const submitRemit = async () => {
-  if (!remitCode.value.match(/^\d{5}$/)) {
-    payMsg.value = '請輸入正確的帳號末五碼'
+  if (!remitNote.value.trim()) {
+    payMsg.value = '請輸入留言或匯款資訊'
     return
   }
   try {
-    // 模擬後端回覆
-    await axios.post(`/finance/invoice-responses?userId=${currentInvoice.users.usersId}`, {
+    const payload = {
       invoiceId: currentInvoice.invoiceId,
-      accountCode: remitCode.value,
-      lastResponse: remitNote.value
-    })
-    currentInvoice.paymentStatus = 'pending'
-    showPayModal.value = false
-    Swal.fire({
-      icon: 'success',
-      title: '管理員已收到您的回覆',
-      text: '會盡快審核，請耐心等候。',
-      confirmButtonText: '確定',
-      customClass: { popup: 'swal2-custom' }
-    })
+      userId: userStore.userId,
+      communityId: userStore.communityId,
+      createBy: userStore.displayName,
+      createAt: new Date().toISOString(),
+      payMethod: payMethod.value,
+      lastResponse: remitNote.value,
+      accountCode: remitCode.value
+    }
+    await axios.post(`/finance/invoice-responses`, payload)
+    payMsg.value = '送出成功！可繼續留言或關閉視窗'
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
   }
@@ -177,6 +179,14 @@ const goCredit = () => {
     customClass: { popup: 'swal2-custom' }
   })
 }
+
+function isOverdue(invoice) {
+  if (!invoice.deadline) return false
+  const now = new Date()
+  const deadline = new Date(invoice.deadline)
+  return invoice.paymentStatus === 'unpaid' && deadline < now
+}
+
 // onMounted(fetch 未繳的Invoices)
 
 onMounted(async () => {
@@ -187,8 +197,6 @@ onMounted(async () => {
     console.error('載入帳單失敗:', err)
   }
 })
-
-
 
 </script>
 
@@ -225,80 +233,88 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 
-.invoice-list {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
+.invoice-list.grid-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 24px;
 }
-
-.invoice-card {
-  background: linear-gradient(135deg, #f8fafc 60%, #e9eafc 100%);
+@media (max-width: 900px) {
+  .invoice-list.grid-list {
+    grid-template-columns: 1fr;
+  }
+}
+.pro-card {
+  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
-  padding: 24px 20px 18px 20px;
+  box-shadow: 0 4px 16px rgba(102,126,234,0.10);
+  border: 1.5px solid #e2e8f0;
+  padding: 28px 22px 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border: 1.5px solid #e2e8f0;
+  gap: 10px;
+  transition: box-shadow 0.2s, border 0.2s;
   position: relative;
 }
-
-.invoice-header {
+.pro-card:hover {
+  box-shadow: 0 8px 32px rgba(102,126,234,0.18);
+  border: 1.5px solid #a5b4fc;
+}
+.pro-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 8px;
-  gap: 12px;
+  margin-bottom: 6px;
 }
-
-.header-main {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-amount {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #667eea;
-  align-self: flex-end;
-}
-
-.invoice-info-row {
-  display: flex;
-  flex-direction: row;
-  gap: 32px;
-  font-size: 1rem;
-  color: #4a5568;
-  margin-bottom: 4px;
-}
-
-.info-label {
-  font-weight: 600;
-  color: #667eea;
-  margin-right: 4px;
-}
-
-.pay-btn {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 28px;
-  font-size: 1rem;
+.pro-id {
+  font-size: 1.08rem;
   font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+  color: #6366f1;
+  letter-spacing: 1px;
+}
+.pro-amount {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #d53f8c;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pro-amount-num {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #d53f8c;
+  margin: 0 2px;
+}
+.pro-info {
+  font-size: 1.08rem;
+  color: #374151;
+  line-height: 1.7;
+  margin-bottom: 2px;
+}
+.pro-info b {
+  color: #6366f1;
+  font-weight: 700;
+  font-size: 1.12rem;
+}
+.pro-deadline {
+  color: #f59e42;
+  font-weight: 700;
+}
+.pro-pay-btn {
+  margin-top: 8px;
+  font-size: 1.08rem;
+  font-weight: 800;
+  padding: 10px 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#6366f1 0%,#d53f8c 100%);
+  box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+  border: none;
+  color: #fff;
+  letter-spacing: 2px;
   transition: background 0.2s, transform 0.2s;
 }
-
-.pay-btn:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+.pro-pay-btn:hover {
+  background: linear-gradient(90deg,#4f46e5 0%,#be185d 100%);
   transform: translateY(-2px) scale(1.04);
 }
 
@@ -376,6 +392,24 @@ onMounted(async () => {
 .badge-secondary {
   background: #e5e7eb;
   color: #6b7280;
+}
+
+.overdue-label {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  font-weight: 700;
+  color: #f87171;
+  font-size: 1.05rem;
+  background: #fff0f0;
+  border-radius: 8px;
+  padding: 2px 8px 2px 4px;
+  box-shadow: 0 1px 4px rgba(248,113,113,0.08);
+}
+.overdue-text {
+  margin-left: 4px;
+  color: #f87171;
+  font-size: 1.05rem;
 }
 
 @media (max-width: 600px) {

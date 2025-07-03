@@ -14,4 +14,6 @@ public interface InvoiceResponseService extends BaseService<InvoiceResponse, Int
     InvoiceResponseDTO findDTOById(Integer id);
 
     InvoiceResponseDTO verifyResponse(Integer id, Integer adminId);
+
+    List<InvoiceResponseDTO> findByInvoiceId(Integer invoiceId);
 }

@@ -54,4 +54,11 @@ public class InvoiceResponseController {
         InvoiceResponseDTO dto = invoiceResponseService.verifyResponse(id, adminId);
         return ResponseEntity.ok(dto);
     }
+
+    // 【功能】依 invoiceId 查詢所有回覆
+    @GetMapping("/by-invoice")
+    public ResponseEntity<List<InvoiceResponseDTO>> getResponsesByInvoiceId(@RequestParam Integer invoiceId) {
+        List<InvoiceResponseDTO> list = invoiceResponseService.findByInvoiceId(invoiceId);
+        return ResponseEntity.ok(list);
+    }
 }

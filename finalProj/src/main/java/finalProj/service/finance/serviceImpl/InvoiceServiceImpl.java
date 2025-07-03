@@ -88,4 +88,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceRepository.findByCommunityId(communityId);
     }
 
+    @Override
+    public List<Invoice> findByStatus(Boolean status) {
+        return invoiceRepository.findByStatus(status);
+    }
+
 }

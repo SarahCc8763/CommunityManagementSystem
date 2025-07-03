@@ -74,4 +74,22 @@ public class InvoiceController {
         return invoiceService.getUnitCountByUserAndFeeType(usersId, feeTypeId);
     }
 
+    // 查詢所有待審核請款單
+    @GetMapping("/pending-validate")
+    public List<Invoice> getPendingValidate() {
+        return invoiceService.findByStatus(false);
+    }
+
+    // 批次審核API
+    @PostMapping("/batch-validate")
+    public void batchValidate(@RequestBody List<Integer> invoiceIds) {
+        for (Integer id : invoiceIds) {
+            Invoice invoice = invoiceService.findById(id);
+            if (invoice != null && Boolean.FALSE.equals(invoice.getStatus())) {
+                invoice.setStatus(true);
+                invoiceService.save(invoice);
+            }
+        }
+    }
+
 }
