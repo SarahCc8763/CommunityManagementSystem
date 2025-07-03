@@ -1,43 +1,45 @@
 -- 0. 社區
-INSERT INTO community (id, name, address, create_time, [function]) VALUES
-(1, '陽光花園', '台北市信義區松仁路100號', GETDATE(), 1),
-(2, '星光大廈', '新北市板橋區文化路200號', GETDATE(), 2);
+INSERT INTO community ( name, address, create_time, [function]) VALUES
+( '陽光花園', '台北市信義區松仁路100號', GETDATE(), 1),
+( '星光大廈', '新北市板橋區文化路200號', GETDATE(), 2);
 
 -- 0. 用戶
-INSERT INTO users (users_id, name, gender, contact_info, emergency_contact_name, emergency_contact_phone, emergency_contact_relation, line_id, state, create_at, last_alter_at, photo, email, password, states, login_fail_times, last_failed_login, account_locked_until, community_id)
+INSERT INTO users (name, gender, contact_info, emergency_contact_name, emergency_contact_phone, emergency_contact_relation, line_id, state, create_at, last_alter_at, photo, email, password, states, login_fail_times, last_failed_login, account_locked_until, community_id)
 VALUES
-(1, '王小明', '男', '0912345678', '王媽媽', '0911222333', '母子', 'mingline', '正常', GETDATE(), GETDATE(), NULL, 'ming@example.com', 'pw1', 0, 0, NULL, NULL, 1),
-(2, '李小華', '女', '0922333444', '李爸爸', '0922111222', '父女', 'hualine', '正常', GETDATE(), GETDATE(), NULL, 'hua@example.com', 'pw2', 0, 0, NULL, NULL, 1),
-(3, '陳大同', '男', '0933444555', '陳媽媽', '0933111222', '母子', 'tongline', '正常', GETDATE(), GETDATE(), NULL, 'tong@example.com', 'pw3', 0, 0, NULL, NULL, 2),
-(4, '林美麗', '女', '0944555666', '林爸爸', '0944111222', '父女', 'meiline', '正常', GETDATE(), GETDATE(), NULL, 'mei@example.com', 'pw4', 0, 0, NULL, NULL, 2),
-(5, '張偉', '男', '0955666777', '張媽媽', '0955111222', '母子', 'weiline', '正常', GETDATE(), GETDATE(), NULL, 'wei@example.com', 'pw5', 0, 0, NULL, NULL, 1);
+('王小明', '男', '0912345678', '王媽媽', '0911222333', '母子', 'mingline', '正常', GETDATE(), GETDATE(), NULL, 'ming@example.com', 'pw1', 0, 0, NULL, NULL, 1),
+( '李小華', '女', '0922333444', '李爸爸', '0922111222', '父女', 'hualine', '正常', GETDATE(), GETDATE(), NULL, 'hua@example.com', 'pw2', 0, 0, NULL, NULL, 1),
+( '陳大同', '男', '0933444555', '陳媽媽', '0933111222', '母子', 'tongline', '正常', GETDATE(), GETDATE(), NULL, 'tong@example.com', 'pw3', 0, 0, NULL, NULL, 2),
+( '林美麗', '女', '0944555666', '林爸爸', '0944111222', '父女', 'meiline', '正常', GETDATE(), GETDATE(), NULL, 'mei@example.com', 'pw4', 0, 0, NULL, NULL, 2),
+( '張偉', '男', '0955666777', '張媽媽', '0955111222', '母子', 'weiline', '正常', GETDATE(), GETDATE(), NULL, 'wei@example.com', 'pw5', 0, 0, NULL, NULL, 1);
 
 -- 1. 費用類別
-INSERT INTO FeeType (description, fee_code, amountPerUnit, frequency, unit, created_at, last_updated, created_by, updated_by, status, note, community_id)
+INSERT INTO Fee_Type (description, fee_code, amount_Per_Unit, frequency, unit, created_at, last_updated, created_by, updated_by, status, note, community_id)
 VALUES
-('管理費', 'MGF001', 1200.00, '1', '坪', GETDATE(), GETDATE(), 1, 1, 1, '依坪數收費', 1),
+('管理費', 'MGF001', 50.00, '1', '坪', GETDATE(), GETDATE(), 1, 1, 1, '依坪數收費', 1),
 ('清潔費', 'CLF001', 300.00, '1', '戶', GETDATE(), GETDATE(), 1, 1, 1, '每戶固定費用', 1),
 ('水費', 'WTF001', 25.00, '1', '度', GETDATE(), GETDATE(), 1, 1, 1, '依用量收費', 2),
 ('電費', 'ELF001', 3.00, '1', '度', GETDATE(), GETDATE(), 1, 1, 1, '公共用電', 2),
 ('車位管理費', 'CPF001', 500.00, '1', '車位', GETDATE(), GETDATE(), 1, 1, 1, '每車位月管理費', 1);
 
 -- 2. 期別表
-INSERT INTO BillingPeriod (period_name, period_code, start_date, end_date, due_date, created_at, last_updated, created_by, updated_by, status, note, fee_type_id, community_id)
+INSERT INTO Billing_Period (period_name, period_code, start_date, end_date, due_date, created_at, last_updated, created_by, updated_by, status, note, fee_type_id, community_id)
 VALUES
-('2025年8月管理費', '25M8', '2025-08-01', '2025-08-31', '2025-08-10', GETDATE(), GETDATE(), 1, 1, 1, '本期管理費', 1, 1),
-('2025年9月清潔費', '25M9', '2025-09-01', '2025-09-30', '2025-09-10', GETDATE(), GETDATE(), 1, 1, 1, '本期清潔費', 2, 1),
-('2025年10月水費', '25M10', '2025-10-01', '2025-10-31', '2025-10-10', GETDATE(), GETDATE(), 1, 1, 1, '本期水費', 3, 2),
-('2025年11月電費', '25M11', '2025-11-01', '2025-11-30', '2025-11-10', GETDATE(), GETDATE(), 1, 1, 1, '本期電費', 4, 2),
-('2025年12月車位費', '25M12', '2025-12-01', '2025-12-31', '2025-12-10', GETDATE(), GETDATE(), 1, 1, 1, '本期車位費', 5, 1);
+('2025年3季', '25Q3', '2025-07-01', '2025-09-30', '2025-07-01', GETDATE(), GETDATE(), 1, 1, 1, '', 1, 1),
+('2025年8月', '25M8', '2025-08-01', '2025-08-31', '2025-08-10', GETDATE(), GETDATE(), 1, 1, 1, '', 1, 1),
+('2025年9月', '25M9', '2025-09-01', '2025-09-30', '2025-09-10', GETDATE(), GETDATE(), 1, 1, 1, '', 2, 1),
+('2025年4季', '25Q4', '2025-10-01', '2025-12-31', '2025-10-01', GETDATE(), GETDATE(), 1, 1, 1, '', 1, 1),
+('2025年10月', '25M10', '2025-10-01', '2025-10-31', '2025-10-10', GETDATE(), GETDATE(), 1, 1, 1, '', 3, 2),
+('2025年11月', '25M11', '2025-11-01', '2025-11-30', '2025-11-10', GETDATE(), GETDATE(), 1, 1, 1, '', 4, 2),
+('2025年12月', '25M12', '2025-12-01', '2025-12-31', '2025-12-10', GETDATE(), GETDATE(), 1, 1, 1, '', 5, 1);
 
 -- 3. 應收帳款（請款單）
-INSERT INTO Invoice (amount_due, period_name, deadline, payment_plan, unit_count, unit_price, total_amount, paymentStatus, created_at, last_updated, created_by, updated_by, status, note, users_id, fee_type_id, billing_period_id, community_id)
+INSERT INTO Invoice (amount_due, period_name, deadline, payment_plan, unit_count, unit_price, total_amount, payment_Status, created_at, last_updated, created_by, updated_by, status, note, users_id, fee_type_id, billing_period_id, community_id)
 VALUES
-(36000, '2025年8月管理費', '2025-08-10', 'monthly', 30, 1200, 36000, 'UNPAID', GETDATE(), GETDATE(), 1, 1, 1, 'A戶管理費', 1, 1, 1, 1),
-(300, '2025年9月清潔費', '2025-09-10', 'monthly', 1, 300, 300, 'UNPAID', GETDATE(), GETDATE(), 1, 1, 1, 'A戶清潔費', 2, 2, 2, 1),
-(500, '2025年12月車位費', '2025-12-10', 'monthly', 1, 500, 500, 'PAID', GETDATE(), GETDATE(), 1, 1, 1, 'A戶車位費', 3, 5, 5, 1),
-(75, '2025年10月水費', '2025-10-10', 'monthly', 3, 25, 75, 'UNPAID', GETDATE(), GETDATE(), 1, 1, 1, 'B戶水費', 4, 3, 3, 2),
-(90, '2025年11月電費', '2025-11-10', 'monthly', 30, 3, 90, 'UNPAID', GETDATE(), GETDATE(), 1, 1, 1, 'B戶電費', 5, 4, 4, 2);
+(36000, '2025年8月', '2025-08-10', 'monthly', 30, 1200, 36000, 'unpaid', GETDATE(), GETDATE(), 1, 1, 1, 'A戶管理費', 1, 1, 1, 1),
+(300, '2025年9月', '2025-09-10', 'monthly', 1, 300, 300, 'unpaid', GETDATE(), GETDATE(), 1, 1, 1, 'A戶清潔費', 2, 2, 2, 1),
+(500, '2025年12月', '2025-12-10', 'monthly', 1, 500, 500, 'paid', GETDATE(), GETDATE(), 1, 1, 1, 'A戶車位費', 3, 5, 5, 1),
+(75, '2025年10月', '2025-10-10', 'monthly', 3, 25, 75, 'unpaid', GETDATE(), GETDATE(), 1, 1, 1, 'B戶水費', 4, 3, 3, 2),
+(90, '2025年11月', '2025-11-10', 'monthly', 30, 3, 90, 'unpaid', GETDATE(), GETDATE(), 1, 1, 1, 'B戶電費', 5, 4, 4, 2);
 
 -- 4. 財務支出
 INSERT INTO Expense (category, amount, paid_on, paid_by, receipt, vendor_id, created_at, last_updated, created_by, updated_by, status, note, community_id)
