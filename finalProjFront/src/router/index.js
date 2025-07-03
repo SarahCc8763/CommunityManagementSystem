@@ -11,6 +11,10 @@ import Faq from '@/views/faq/Faq.vue'
 import MyFeedback from '@/views/feedback/MyFeedback.vue'
 import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
 
+import finUser from '@/components/finance/finUser/finUser.vue'
+
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,27 +79,14 @@ const router = createRouter({
       name: 'announcement-latest',
       component: AnnouncementLatest
 
-    }
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
+    },
+
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser
+    },
+
   ],
 })
 

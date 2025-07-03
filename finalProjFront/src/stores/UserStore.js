@@ -22,8 +22,17 @@ export const useUserStore = defineStore('user', () => {
         avatarUrl.value = ''
     }
 
-    const displayName = computed(() => name.value || username.value)
+    const userId = ref(3)
+    function setUserId(data) {
+        communityId.value = data
+    }
 
+
+    const communityId = ref(1)
+    function setCommunity(data) {
+        communityId.value = data
+    }
+    const displayName = computed(() => name.value || username.value)
     return {
         isAuthenticated,
         name,
@@ -32,5 +41,7 @@ export const useUserStore = defineStore('user', () => {
         login,
         logout,
         displayName,
+        userId,
+        communityId
     }
 })

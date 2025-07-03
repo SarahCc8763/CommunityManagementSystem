@@ -68,13 +68,12 @@ public class UnitsUsers {
         this.community = community;
     }
 
-    //  toString
-	@Override
-	public String toString() {
-		return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
-				+ community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
-				+ getUnit() + ", getCommunity()=" + getCommunity() + "]";
-	}
-    
-    
+    // toString
+    @Override
+    public String toString() {
+        return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
+                + community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
+                + getUnit() + ", getCommunity()=" + getCommunity() + "]";
+    }
+
 }

@@ -35,54 +35,50 @@ public class UsersNotifications {
     @Column(name = "read_time")
     private LocalDateTime readTime;
 
-	public Integer getUsersNotificationsId() {
-		return usersNotificationsId;
-	}
+    public Integer getUsersNotificationsId() {
+        return usersNotificationsId;
+    }
 
-	public void setUsersNotificationsId(Integer usersNotificationsId) {
-		this.usersNotificationsId = usersNotificationsId;
-	}
+    public void setUsersNotificationsId(Integer usersNotificationsId) {
+        this.usersNotificationsId = usersNotificationsId;
+    }
 
-	public Notifications getNotifications() {
-		return notifications;
-	}
+    public Notifications getNotifications() {
+        return notifications;
+    }
 
-	public void setNotifications(Notifications notifications) {
-		this.notifications = notifications;
-	}
+    public void setNotifications(Notifications notifications) {
+        this.notifications = notifications;
+    }
 
-	public Users getUser() {
-		return user;
-	}
+    public Users getUser() {
+        return user;
+    }
 
-	public void setUser(Users user) {
-		this.user = user;
-	}
+    public void setUser(Users user) {
+        this.user = user;
+    }
 
-	public Integer getIsRead() {
-		return isRead;
-	}
+    public Integer getIsRead() {
+        return isRead;
+    }
 
-	public void setIsRead(Integer isRead) {
-		this.isRead = isRead;
-	}
+    public void setIsRead(Integer isRead) {
+        this.isRead = isRead;
+    }
 
-	public LocalDateTime getReadTime() {
-		return readTime;
-	}
+    public LocalDateTime getReadTime() {
+        return readTime;
+    }
 
-	public void setReadTime(LocalDateTime readTime) {
-		this.readTime = readTime;
-	}
+    public void setReadTime(LocalDateTime readTime) {
+        this.readTime = readTime;
+    }
 
-	@Override
-	public String toString() {
-		return "UsersNotifications [usersNotificationsId=" + usersNotificationsId + ", notifications=" + notifications
-				+ ", user=" + user + ", isRead=" + isRead + ", readTime=" + readTime + "]";
-	}
+    @Override
+    public String toString() {
+        return "UsersNotifications [usersNotificationsId=" + usersNotificationsId + ", notifications=" + notifications
+                + ", user=" + user + ", isRead=" + isRead + ", readTime=" + readTime + "]";
+    }
 
-	
-
-    
-    
 }

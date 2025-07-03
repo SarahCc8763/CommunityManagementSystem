@@ -1,3 +1,4 @@
+
 package finalProj.service.users;
 
 import java.util.Optional;
@@ -32,16 +33,17 @@ public class UsersServiceTests {
 		Optional<Users> optionalUser = usersRepository.findByEmail("daming@example.com");
 		if (optionalUser.isPresent()) {
 			Users bean = optionalUser.get();
-			System.out.println("setPasswordTest() finished. Password set. Encoded password is : " + bean.getPassword().toString() );
-			}
+			System.out.println(
+					"setPasswordTest() finished. Password set. Encoded password is : " + bean.getPassword().toString());
+		}
 	}
-	
+
 	@Test
 	public void firstTimeChangePasswordTest() {
-		System.out.println("firstTimeChangePasswordTest()測試結果1應為 false : " 
-	+ usersService.firstTimeChangePassword("fang@example.com", "1234",  "2222"));
-		System.out.println("firstTimeChangePasswordTest()測試結果2應為 true: " 
-				+ usersService.firstTimeChangePassword("fang@example.com", "P@ssw0rd",  "2222"));
+		System.out.println("firstTimeChangePasswordTest()測試結果1應為 false : "
+				+ usersService.firstTimeChangePassword("fang@example.com", "1234", "2222"));
+		System.out.println("firstTimeChangePasswordTest()測試結果2應為 true: "
+				+ usersService.firstTimeChangePassword("fang@example.com", "P@ssw0rd", "2222"));
 	}
 
 	@Test
@@ -53,13 +55,15 @@ public class UsersServiceTests {
 
 	}
 
-//	@Test
-//	public void changePasswordTest() {
-//
-//		System.out.println(
-//				"changePasswordTest()測試結果 : " + usersService.changePassword("safe@example.com", "P@ssw0rd", "0000"));
-//		System.out.println("loginTest()測試結果2應為null : " + usersService.login("xiao@example.com","P@ssw0rd"));
-//
-//	}
+	// @Test
+	// public void changePasswordTest() {
+	//
+	// System.out.println(
+	// "changePasswordTest()測試結果 : " +
+	// usersService.changePassword("safe@example.com", "P@ssw0rd", "0000"));
+	// System.out.println("loginTest()測試結果2應為null : " +
+	// usersService.login("xiao@example.com","P@ssw0rd"));
+	//
+	// }
 
 }

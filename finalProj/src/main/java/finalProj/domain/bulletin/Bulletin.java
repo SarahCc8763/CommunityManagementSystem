@@ -1,4 +1,3 @@
-
 package finalProj.domain.bulletin;
 
 import java.time.LocalDateTime;

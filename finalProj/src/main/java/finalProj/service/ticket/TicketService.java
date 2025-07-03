@@ -100,16 +100,16 @@ public class TicketService {
 			}
 		}
 		if (dto.getIssueTypeNames() != null) {
-		    for (String name : dto.getIssueTypeNames()) {
-		        IssueType issueType = issueTypeRepository.findByIssueTypeName(name)
-		                .orElseThrow(() -> new IllegalArgumentException("找不到對應的 issueType: " + name));
+			for (String name : dto.getIssueTypeNames()) {
+				IssueType issueType = issueTypeRepository.findByIssueTypeName(name)
+						.orElseThrow(() -> new IllegalArgumentException("找不到對應的 issueType: " + name));
 
-		        IssueTypeAndTicket rel = new IssueTypeAndTicket();
-		        rel.setTicket(saved);
-		        rel.setIssueType(issueType);
+				IssueTypeAndTicket rel = new IssueTypeAndTicket();
+				rel.setTicket(saved);
+				rel.setIssueType(issueType);
 
-		        issueTypeAndTicketRepository.save(rel);
-		    }
+				issueTypeAndTicketRepository.save(rel);
+			}
 		}
 
 		return saved;

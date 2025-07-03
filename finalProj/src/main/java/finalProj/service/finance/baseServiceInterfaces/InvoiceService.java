@@ -1,0 +1,26 @@
+package finalProj.service.finance.baseServiceInterfaces;
+
+import java.util.List;
+
+import finalProj.domain.finance.Invoice;
+
+public interface InvoiceService extends BaseService<Invoice, Integer> {
+    List<Invoice> findUnpaidInvoices();
+
+    List<Invoice> generateInvoicesForPeriod(String periodCode);
+
+    Invoice updateInvoiceStatus(Integer id, String status);
+
+    Invoice save(Invoice invoice);
+
+    Invoice findById(Integer invoiceId);
+
+    List<Invoice> findAll();
+
+    void deleteById(Integer invoiceId);
+
+    java.math.BigDecimal getUnitCountByUserAndFeeType(Integer usersId, Integer feeTypeId);
+
+    // 根據communityId查詢
+    java.util.List<Invoice> findByCommunityId(Integer communityId);
+}

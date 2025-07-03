@@ -31,17 +31,15 @@ public class Ticket {
 
 	@JsonBackReference("communityTicket")
 	@ManyToOne
-	@JoinColumn(name = "community_id", nullable = false ,referencedColumnName = "id")
+	@JoinColumn(name = "community_id", nullable = false, referencedColumnName = "id")
 	private Community community;// (社區)多對一(ticket)
 
 	@JsonManagedReference("ticketComments")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketComment> comments;// (ticket)一對多(留言)
-	
-	
+
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<IssueTypeAndTicket> issueTypes;
-	
 
 	@JsonManagedReference("ticketAttachment")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,7 +48,7 @@ public class Ticket {
 	@JsonManagedReference("ticketCostAttachment")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketIssueCostAttachment> costAttachment;// (ticket)一對多(金額附件)
-	
+
 	// 報修人（使用者）
 	@JsonBackReference("reporterIdTicket")
 	@ManyToOne
@@ -62,8 +60,7 @@ public class Ticket {
 	@ManyToOne
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
-	
-	
+
 	@Column(name = "title")
 	private String title; // 問題標題
 

@@ -48,9 +48,9 @@ public class Units {
 	@JsonManagedReference("unitPackage")
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Packages> packagesList;
-	
+
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("unitsUsersList")
+	@JsonManagedReference("unitsUsersList")
 	private List<UnitsUsers> unitsUsersList;
 
 	@JsonBackReference("communityUnit")
@@ -136,8 +136,5 @@ public class Units {
 				+ ", ping=" + ping + ", point=" + point + ", packagesList=" + packagesList + ", unitsUsersList="
 				+ unitsUsersList + ", community=" + community + "]";
 	}
-
-	
-	
 
 }

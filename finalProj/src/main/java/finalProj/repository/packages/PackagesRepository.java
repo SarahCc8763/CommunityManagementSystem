@@ -15,6 +15,7 @@ import finalProj.domain.users.Units;
 @Repository
 public interface PackagesRepository extends JpaRepository<Packages, Integer> {
 	List<Packages> findByUnit(Units unit);
+
 	@Query("""
 			    SELECT p FROM Packages p
 			    WHERE (:status IS NULL OR p.status = :status)
@@ -27,13 +28,12 @@ public interface PackagesRepository extends JpaRepository<Packages, Integer> {
 			@Param("type") String type,
 			@Param("arrivalTime") LocalDateTime arrivalTime,
 			@Param("unitId") Integer unitId);
-	
+
 	@Modifying
 	@Query("UPDATE Packages p SET p.status = :status, p.pickupTime = CURRENT_TIMESTAMP WHERE p.packagesId = :id")
 	void updateStatusById(
 			@Param("id") Integer id,
 			@Param("status") String status);
-
 
 }
 
