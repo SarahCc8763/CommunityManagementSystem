@@ -11,7 +11,7 @@ import finalProj.domain.bulletin.Bulletin;
 
 @Repository
 public interface BulletinRepository extends JpaRepository<Bulletin, Integer> {
-        @SuppressWarnings("null")
+
         public boolean existsById(Integer id);
 
         @Query("SELECT DISTINCT b FROM Bulletin b " +

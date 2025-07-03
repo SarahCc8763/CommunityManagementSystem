@@ -15,8 +15,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
     private JsonWebTokenUtility jwtUtility;
 
     @Override
-    public boolean preHandle(@SuppressWarnings("null") HttpServletRequest request,
-            @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") Object handler)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
         String authHeader = request.getHeader("Authorization");
@@ -38,3 +37,4 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
         return false;
     }
 }
+

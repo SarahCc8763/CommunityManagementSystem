@@ -25,7 +25,6 @@ import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
-import finalProj.domain.bulletin.BulletinCommentLike;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
 import finalProj.dto.BulletinResponse;

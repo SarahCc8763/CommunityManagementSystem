@@ -10,5 +10,5 @@ import finalProj.domain.users.Users;
 
 @Repository
 public interface RolesUsersRepository extends JpaRepository<RolesUsers, Integer> {
-	List<RolesUsers> findByUser(Users user);
+	 List<RolesUsers> findByUser(Users user);
 }

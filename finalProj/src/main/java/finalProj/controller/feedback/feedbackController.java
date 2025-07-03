@@ -28,7 +28,6 @@ import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.users.Users;
-import finalProj.dto.FaqResponse;
 import finalProj.dto.FeedbackResponse;
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;

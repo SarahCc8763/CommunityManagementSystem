@@ -10,6 +10,11 @@ import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
+import finalProj.domain.packages.Packages;
+import finalProj.domain.ticket.Ticket;
+import finalProj.domain.users.Units;
+import finalProj.domain.users.Users;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,11 +31,6 @@ public class Community {
 	@Column(name = "id")
 	private Integer communityId; // 社區流水號
 
-	// @JsonManagedReference("community")
-	// @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval =
-	// true)
-	// private List<Ticket> tickets;
-
 	@Column(name = "name")
 	private String name; // 社區名稱
 
@@ -41,8 +41,25 @@ public class Community {
 	private java.util.Date createTime; // 創建時間
 
 	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
-	private Integer function; // 使用功能
+	private Long function; // 使用功能
 
+	@JsonManagedReference("communityTicket")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> tickets;
+
+	@JsonManagedReference("communityUser")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Users> users;
+
+	@JsonManagedReference("communityUnit")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Units> units;
+
+	@JsonManagedReference("communityPackage")
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Packages> packagesList;
+
+	// --- 政宇的關聯 START ---
 	// 社區-公告
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-bulletin")
@@ -68,18 +85,28 @@ public class Community {
 	@JsonManagedReference("community-faq")
 	private List<Faq> faqs;
 
+	// --- 政宇的關聯 END ---
+
 	@Override
 	public String toString() {
-		return "community [ID=" + communityId + ", name=" + name + ", address=" + address + ", createTime=" + createTime
-				+ ", function=" + function + "]";
+		return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
+				+ address + ", createTime=" + createTime + ", function=" + function + "]";
 	}
 
 	public Integer getCommunityId() {
 		return communityId;
 	}
 
-	public void setCommunityId(Integer iD) {
-		communityId = iD;
+	public void setCommunityId(Integer communityId) {
+		this.communityId = communityId;
+	}
+
+	public List<Ticket> getTickets() {
+		return tickets;
+	}
+
+	public void setTickets(List<Ticket> tickets) {
+		this.tickets = tickets;
 	}
 
 	public String getName() {
@@ -106,60 +133,20 @@ public class Community {
 		this.createTime = createTime;
 	}
 
-	public Integer getFunction() {
+	public List<Users> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<Users> users) {
+		this.users = users;
+	}
+
+	public Long getFunction() {
 		return function;
 	}
 
-	public void setFunction(Integer function) {
+	public void setFunction(Long function) {
 		this.function = function;
-	}
-
-	// public List<Ticket> getTickets() {
-	// return tickets;
-	// }
-
-	// public void setTickets(List<Ticket> tickets) {
-	// this.tickets = tickets;
-	// }
-
-	public List<Bulletin> getBulletins() {
-		return bulletins;
-	}
-
-	public void setBulletins(List<Bulletin> bulletins) {
-		this.bulletins = bulletins;
-	}
-
-	public List<BulletinCategory> getBulletinCategories() {
-		return bulletinCategories;
-	}
-
-	public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
-		this.bulletinCategories = bulletinCategories;
-	}
-
-	public List<FaqCategory> getFaqCategories() {
-		return faqCategories;
-	}
-
-	public void setFaqCategories(List<FaqCategory> faqCategories) {
-		this.faqCategories = faqCategories;
-	}
-
-	public List<FeedbackCategory> getFeedbackCategories() {
-		return feedbackCategories;
-	}
-
-	public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
-		this.feedbackCategories = feedbackCategories;
-	}
-
-	public List<Feedback> getFeedbacks() {
-		return feedbacks;
-	}
-
-	public void setFeedbacks(List<Feedback> feedbacks) {
-		this.feedbacks = feedbacks;
 	}
 
 	// facility VARBINARY(MAX)

@@ -4,8 +4,6 @@ package finalProj.domain.bulletin;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.util.ObjectUtils;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 

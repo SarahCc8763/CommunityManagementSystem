@@ -3,8 +3,8 @@ package finalProj.domain.users;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
@@ -15,6 +15,8 @@ import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.poll.PollVote;
+import finalProj.domain.ticket.Ticket;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,9 +29,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({ "password", "feedbacks", "feedbackReplies", "feedbackStatusHistories", "pollVotes",
-		"bulletinComments",
-		"bulletinCommentLikes", "bulletins", "handledFeedbacks", "community" })
 public class Users {
 
 	@Id
@@ -89,9 +88,28 @@ public class Users {
 	@Column(name = "account_locked_until")
 	private LocalDateTime accountLockedUntil;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	// @JsonManagedReference("unitsUsers")
+	@JsonIgnore
+	private List<UnitsUsers> unitsUsersList;
+
+	@JsonBackReference("communityUser")
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
+
+	// 這個 user 曾報修過的 tickets
+	@JsonManagedReference("reporterIdTicket")
+	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> reportedTickets;
+
+	// 這個 user 被指派處理的 tickets
+	@JsonManagedReference("assignerIdTicket")
+	@OneToMany(mappedBy = "assignerId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Ticket> assignedTickets;
+
+	// --- 政宇的關聯 START ---
+
 	@OneToMany(mappedBy = "user")
 	@JsonManagedReference("feedback-user")
 	private List<Feedback> feedbacks;
@@ -123,64 +141,7 @@ public class Users {
 	@OneToMany(mappedBy = "user")
 	private List<FeedbackReply> feedbackReplies;
 
-	// --- Getters & Setters ---
-
-	public List<Feedback> getFeedbacks() {
-		return feedbacks;
-	}
-
-	public void setFeedbacks(List<Feedback> feedbacks) {
-		this.feedbacks = feedbacks;
-	}
-
-	public List<BulletinComment> getBulletinComments() {
-		return bulletinComments;
-	}
-
-	public void setBulletinComments(List<BulletinComment> bulletinComments) {
-		this.bulletinComments = bulletinComments;
-	}
-
-	public List<BulletinCommentLike> getBulletinCommentLikes() {
-		return bulletinCommentLikes;
-	}
-
-	public void setBulletinCommentLikes(List<BulletinCommentLike> bulletinCommentLikes) {
-		this.bulletinCommentLikes = bulletinCommentLikes;
-	}
-
-	public List<PollVote> getPollVotes() {
-		return pollVotes;
-	}
-
-	public void setPollVotes(List<PollVote> pollVotes) {
-		this.pollVotes = pollVotes;
-	}
-
-	public List<Bulletin> getBulletins() {
-		return bulletins;
-	}
-
-	public void setBulletins(List<Bulletin> bulletins) {
-		this.bulletins = bulletins;
-	}
-
-	public List<Feedback> getHandledFeedbacks() {
-		return handledFeedbacks;
-	}
-
-	public void setHandledFeedbacks(List<Feedback> handledFeedbacks) {
-		this.handledFeedbacks = handledFeedbacks;
-	}
-
-	public List<FeedbackStatusHistory> getFeedbackStatusHistories() {
-		return feedbackStatusHistories;
-	}
-
-	public void setFeedbackStatusHistories(List<FeedbackStatusHistory> feedbackStatusHistories) {
-		this.feedbackStatusHistories = feedbackStatusHistories;
-	}
-
+	// --- 政宇的關聯 END ---
 	public Integer getUsersId() {
 		return usersId;
 	}
@@ -333,15 +294,84 @@ public class Users {
 		this.community = community;
 	}
 
-	@Override
-	public String toString() {
-		return "Users [usersId=" + usersId + ", name=" + name + ", gender=" + gender + ", contactInfo=" + contactInfo
-				+ ", emergencyContactName=" + emergencyContactName + ", emergencyContactPhone=" + emergencyContactPhone
-				+ ", emergencyContactRelation=" + emergencyContactRelation + ", lineId=" + lineId + ", state=" + state
-				+ ", createAt=" + createAt + ", lastAlterAt=" + lastAlterAt + ", photo=" + photo + ", email=" + email
-				+ ", states=" + states + ", loginFailTimes=" + loginFailTimes + ", lastFailedLogin=" + lastFailedLogin
-				+ ", accountLockedUntil=" + accountLockedUntil + ", community="
-				+ (community != null ? community.getCommunityId() : null) + "]";
+	public List<Ticket> getReportedTickets() {
+		return reportedTickets;
+	}
+
+	public void setReportedTickets(List<Ticket> reportedTickets) {
+		this.reportedTickets = reportedTickets;
+	}
+
+	public List<Ticket> getAssignedTickets() {
+		return assignedTickets;
+	}
+
+	public void setAssignedTickets(List<Ticket> assignedTickets) {
+		this.assignedTickets = assignedTickets;
+	}
+
+	public List<UnitsUsers> getUnitsUsersList() {
+		return unitsUsersList;
+	}
+
+	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
+		this.unitsUsersList = unitsUsersList;
+	}
+
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public List<BulletinComment> getBulletinComments() {
+		return bulletinComments;
+	}
+
+	public void setBulletinComments(List<BulletinComment> bulletinComments) {
+		this.bulletinComments = bulletinComments;
+	}
+
+	public List<BulletinCommentLike> getBulletinCommentLikes() {
+		return bulletinCommentLikes;
+	}
+
+	public void setBulletinCommentLikes(List<BulletinCommentLike> bulletinCommentLikes) {
+		this.bulletinCommentLikes = bulletinCommentLikes;
+	}
+
+	public List<PollVote> getPollVotes() {
+		return pollVotes;
+	}
+
+	public void setPollVotes(List<PollVote> pollVotes) {
+		this.pollVotes = pollVotes;
+	}
+
+	public List<Bulletin> getBulletins() {
+		return bulletins;
+	}
+
+	public void setBulletins(List<Bulletin> bulletins) {
+		this.bulletins = bulletins;
+	}
+
+	public List<Feedback> getHandledFeedbacks() {
+		return handledFeedbacks;
+	}
+
+	public void setHandledFeedbacks(List<Feedback> handledFeedbacks) {
+		this.handledFeedbacks = handledFeedbacks;
+	}
+
+	public List<FeedbackStatusHistory> getFeedbackStatusHistories() {
+		return feedbackStatusHistories;
+	}
+
+	public void setFeedbackStatusHistories(List<FeedbackStatusHistory> feedbackStatusHistories) {
+		this.feedbackStatusHistories = feedbackStatusHistories;
 	}
 
 	public List<FeedbackReply> getFeedbackReplies() {
@@ -350,6 +380,18 @@ public class Users {
 
 	public void setFeedbackReplies(List<FeedbackReply> feedbackReplies) {
 		this.feedbackReplies = feedbackReplies;
+	}
+
+	@Override
+	public String toString() {
+		return "Users [usersId=" + usersId + ", name=" + name + ", gender=" + gender + ", contactInfo=" + contactInfo
+				+ ", emergencyContactName=" + emergencyContactName + ", emergencyContactPhone=" + emergencyContactPhone
+				+ ", emergencyContactRelation=" + emergencyContactRelation + ", lineId=" + lineId + ", state=" + state
+				+ ", createAt=" + createAt + ", lastAlterAt=" + lastAlterAt + ", photo=" + photo + ", email=" + email
+				+ ", password=" + password + ", states=" + states + ", loginFailTimes=" + loginFailTimes
+				+ ", lastFailedLogin=" + lastFailedLogin + ", accountLockedUntil=" + accountLockedUntil
+				+ ", unitsUsersList=" + unitsUsersList + ", community=" + community + ", reportedTickets="
+				+ reportedTickets + ", assignedTickets=" + assignedTickets + "]";
 	}
 
 }

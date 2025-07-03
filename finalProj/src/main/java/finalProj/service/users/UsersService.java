@@ -46,7 +46,7 @@ public class UsersService {
 	}
 
 	// 設定user密碼
-	public void setPassword(String email, String password) {
+	public void resetPassword(String email, String password) {
 		Optional<Users> optionalUser = usersRepository.findByEmail(email);
 		if (optionalUser.isPresent()) {
 			Users bean = optionalUser.get();
@@ -62,9 +62,9 @@ public class UsersService {
 
 	// 首次登入的密碼為未加密，設定新密碼後加密
 	public Boolean firstTimeChangePassword(String email, String oldPass, String newPass) {
-		// isValid user && oldPass == "P@ssw0rd" && valid new password
-		if (isValidUser(email) && oldPass == "P@ssw0rd" && newPass != null && newPass.length() != 0) {
-			setPassword(email, newPass);
+		// isValid user && oldPass.equals("P@ssw0rd") && valid new password
+		if (isValidUser(email) && oldPass.equals("P@ssw0rd") && newPass != null && newPass.length() != 0) {
+			resetPassword(email, newPass);
 			System.out.println("首次密碼更新成功");
 			return true;
 		}
@@ -91,6 +91,16 @@ public class UsersService {
 		return usersRepository.findById(id).orElse(null);
 	}
 
+	// super user
+	// @Autowired
+	// private SuperUserProperties superUserProps;
+	//
+	// public boolean isSuperUser(String email, String password) {
+	// return superUserProps.getEmail().equals(email)
+	// && superUserProps.getPassword().equals(password);
+	// }
+
+	// tescher's
 	// public Boolean changePassword(String email, String oldPass, String newPass) {
 	// if (newPass != null && newPass.length() != 0) {
 	// Users bean = this.login(email, oldPass);

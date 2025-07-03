@@ -1,5 +1,7 @@
 package finalProj.domain.users;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,10 +23,12 @@ public class UnitsUsers {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "users_id", nullable = false)
+    @JsonBackReference("unitsUsers")
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "units_id", nullable = false)
+    @JsonBackReference("unitsUsersList")
     private Units unit;
 
     @ManyToOne
@@ -64,12 +68,13 @@ public class UnitsUsers {
         this.community = community;
     }
 
-    // toString
-    @Override
-    public String toString() {
-        return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
-                + community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
-                + getUnit() + ", getCommunity()=" + getCommunity() + "]";
-    }
-
+    //  toString
+	@Override
+	public String toString() {
+		return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
+				+ community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
+				+ getUnit() + ", getCommunity()=" + getCommunity() + "]";
+	}
+    
+    
 }
