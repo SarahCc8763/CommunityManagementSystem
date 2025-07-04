@@ -63,7 +63,12 @@ const router = createRouter({
       component: InvoiceValidate,
       meta: { dark: true },
     },
-
+    {
+      path: '/finance/invoice-review',
+      name: 'InvoiceValidate',
+      component: InvoiceValidate,
+      meta: { dark: true },
+    },
   ],
 })
 

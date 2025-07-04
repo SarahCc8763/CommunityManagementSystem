@@ -12,7 +12,8 @@
           </option>
         </select>
         <div v-if="selectedFeeType">
-          <div class="mt-2 small text-secondary">單位：{{ selectedFeeType.unit }}　每單位費用：{{ selectedFeeType.amountPerUnit }}</div>
+          <div class="mt-2 small text-secondary">單位：{{ selectedFeeType.unit }}　每單位費用：{{ selectedFeeType.amountPerUnit }}
+          </div>
         </div>
       </div>
       <!-- 期別 -->
@@ -42,14 +43,15 @@
     </div>
     <div v-if="showConfirm" class="alert alert-info mt-3">
       <div>
-        將以每 <b>{{ confirmData.unit }}</b> 新台幣 <b>{{ confirmData.amountPerUnit }}</b> 元整產生 <b>{{ confirmData.periodName }}</b> 繳費通知<br>
+        將以每 <b>{{ confirmData.unit }}</b> 新台幣 <b>{{ confirmData.amountPerUnit }}</b> 元整產生 <b>{{ confirmData.periodName
+        }}</b> 繳費通知<br>
         期別開始日: {{ formatDate(confirmData.startDate) }}<br>
         期別結束日: {{ formatDate(confirmData.endDate) }}<br>
         繳款期限: {{ formatDateTime(confirmData.dueDate) }}
       </div>
       <div class="mt-2">
         <button class="btn btn-primary me-2" @click="confirmGenerate">確認</button>
-        <button class="btn btn-secondary" @click="showConfirm=false">取消</button>
+        <button class="btn btn-secondary" @click="showConfirm = false">取消</button>
       </div>
     </div>
   </div>
@@ -164,7 +166,7 @@ const confirmGenerate = async () => {
     showConfirm.value = false
     successMsg.value = '新增成功！將導向審核頁面...'
     setTimeout(() => {
-      router.push('/finAdmin/invoice-review')
+      router.push('/finance/invoice-review')
     }, 1200)
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)

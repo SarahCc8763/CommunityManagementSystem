@@ -9,14 +9,9 @@
     </router-link>
 
     <nav class="nav">
-      <div
-        v-for="(category, index) in menuList"
-        :key="category.title"
-        class="nav-item"
-        :class="{ active: activeIndex === index }"
-        @mouseenter="activeIndex = index"
-        @click="handleMainNavClick(category)"
-      >
+      <div v-for="(category, index) in menuList" :key="category.title" class="nav-item"
+        :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index"
+        @click="handleMainNavClick(category)">
         {{ category.title }}
       </div>
     </nav>
@@ -234,7 +229,8 @@ const menuList = ref([
     title: '公告',
     children: [
       { label: '重要通知', routeName: 'announcement-important' },
-      { label: '最新公告', routeName: 'announcement-latest' }
+      { label: '最新公告', routeName: 'announcement-latest' },
+
     ]
   }
 ])

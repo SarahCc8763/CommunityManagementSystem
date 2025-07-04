@@ -18,7 +18,7 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別名稱</label>
-                  <input v-model="form.periodName" class="form-control" required />
+                  <input v-model="form.description" class="form-control" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別代碼</label>
@@ -40,14 +40,8 @@
                   <label class="form-label">備註</label>
                   <input v-model="form.note" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">費用類型ID</label>
-                  <input v-model.number="form.feeTypeId" type="number" class="form-control" />
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">社區ID</label>
-                  <input v-model.number="form.communityId" type="number" class="form-control" />
-                </div>
+
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">狀態</label>
                   <select v-model="form.status" class="form-select">
@@ -132,7 +126,7 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ searchResult.periodName }}</td>
+            <td>{{ searchResult.description }}</td>
             <td>{{ searchResult.periodCode }}</td>
             <td>{{ searchResult.startDate }}</td>
             <td>{{ searchResult.endDate }}</td>
@@ -167,7 +161,7 @@
           </thead>
           <tbody>
             <tr v-for="item in latestBillingPeriods" :key="item.billingPeriodId" class="border-bottom">
-              <td>{{ item.periodName }}</td>
+              <td>{{ item.description }}</td>
               <td>{{ item.periodCode }}</td>
               <td>{{ item.startDate }}</td>
               <td>{{ item.endDate }}</td>
@@ -195,21 +189,24 @@ import axios from 'axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import bannerImg from '@/assets/images/main/adminBanner.jpg'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 
 const successMsg = ref('')
 const errorMsg = ref('')
 const form = ref({
-  periodName: '',
+  description: '',
   periodCode: '',
   startDate: '',
   endDate: '',
   dueDate: '',
   note: '',
-  feeTypeId: null,
-  communityId: null,
+
+  communityId: userStore.communityId,
   status: true,
-  createdBy: '',
-  updatedBy: null,
+  createdAt: new Date().toISOString(),
+  createdBy: userStore.userId,
+  updatedBy: userStore.userId,
 })
 const billingPeriods = ref([])
 const route = useRoute()
@@ -264,7 +261,7 @@ const searchBillingPeriod = async () => {
   try {
     const params = {}
     if (searchId.value) params.billingPeriodId = searchId.value
-    if (searchName.value) params.periodName = searchName.value
+    if (searchName.value) params.description = searchName.value
     if (searchMonth.value) {
       let yearShort = String(searchYear.value).slice(-2)
       let code = ''

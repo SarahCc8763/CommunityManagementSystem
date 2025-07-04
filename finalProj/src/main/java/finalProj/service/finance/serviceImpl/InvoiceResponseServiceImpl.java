@@ -129,7 +129,7 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
 
     @Override
     public List<InvoiceResponseDTO> findByInvoiceId(Integer invoiceId) {
-        List<InvoiceResponse> list = invoiceResponseRepository.findByInvoiceId(invoiceId);
+        List<InvoiceResponse> list = invoiceResponseRepository.findByInvoice_InvoiceId(invoiceId);
         return list.stream().map(this::toDTO).toList();
     }
 

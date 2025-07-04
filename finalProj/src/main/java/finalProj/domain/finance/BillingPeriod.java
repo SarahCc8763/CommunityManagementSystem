@@ -41,9 +41,6 @@ public class BillingPeriod extends BaseEntity {
     @Column(name = "due_date", length = 20)
     private LocalDateTime dueDate;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "fee_type_id")
-    private FeeType feeType;
     // ----------------------------------
 
     public Integer getBillingPeriodId() {
@@ -92,14 +89,6 @@ public class BillingPeriod extends BaseEntity {
 
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
-    }
-
-    public FeeType getFeeType() {
-        return feeType;
-    }
-
-    public void setFeeType(FeeType feeType) {
-        this.feeType = feeType;
     }
 
 }

@@ -48,21 +48,7 @@ public class BillingPeriodCurdController {
         dto.setNote(entity.getNote());
         dto.setStatus(entity.getStatus());
         dto.setCommunityId(entity.getCommunityId());
-        // 巢狀 FeeTypeDTO
-        if (entity.getFeeType() != null) {
-            FeeType feeType = entity.getFeeType();
-            FeeTypeDTO feeTypeDTO = new FeeTypeDTO();
-            feeTypeDTO.setFeeTypeId(feeType.getFeeTypeId());
-            feeTypeDTO.setDescription(feeType.getDescription());
-            feeTypeDTO.setFeeCode(feeType.getFeeCode());
-            feeTypeDTO.setAmountPerUnit(feeType.getAmountPerUnit());
-            feeTypeDTO.setFrequency(feeType.getFrequency());
-            feeTypeDTO.setUnit(feeType.getUnit());
-            feeTypeDTO.setNote(feeType.getNote());
-            feeTypeDTO.setCommunityId(feeType.getCommunityId());
-            feeTypeDTO.setStatus(feeType.getStatus());
-            dto.setFeeType(feeTypeDTO);
-        }
+
         return dto;
     }
 
@@ -79,17 +65,6 @@ public class BillingPeriodCurdController {
         entity.setNote(dto.getNote());
         entity.setStatus(dto.getStatus());
         entity.setCommunityId(dto.getCommunityId());
-
-        // FeeType 關聯
-
-        if ((dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null)
-                || dto.getFeeTypeId() != null) {
-
-            Integer id = dto.getFeeType() != null ? dto.getFeeType().getFeeTypeId() : dto.getFeeTypeId();
-            FeeType feeType = feeTypeRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID: " + id));
-            entity.setFeeType(feeType);
-        }
 
         return entity;
     }
@@ -147,19 +122,6 @@ public class BillingPeriodCurdController {
             existing.setStatus(dto.getStatus());
         if (dto.getCommunityId() != null)
             existing.setCommunityId(dto.getCommunityId());
-
-        // FeeType 關聯
-        if ((dto.getFeeType() != null && dto.getFeeType().getFeeTypeId() != null)
-                || dto.getFeeTypeId() != null) {
-
-            Integer feeTypeId = dto.getFeeType() != null
-                    ? dto.getFeeType().getFeeTypeId()
-                    : dto.getFeeTypeId();
-
-            FeeType feeType = feeTypeRepository.findById(feeTypeId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "無效的費用類別 ID: " + feeTypeId));
-            existing.setFeeType(feeType);
-        }
 
         existing.setLastUpdated(LocalDateTime.now());
 

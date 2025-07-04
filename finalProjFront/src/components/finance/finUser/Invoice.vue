@@ -19,9 +19,9 @@
             <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
             <span v-if="isOverdue(invoice)" class="overdue-label">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
-                <circle cx="12" cy="12" r="10" fill="#f87171"/>
-                <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="12" cy="16" r="1.2" fill="#fff"/>
+                <circle cx="12" cy="12" r="10" fill="#f87171" />
+                <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                <circle cx="12" cy="16" r="1.2" fill="#fff" />
               </svg>
               <span class="overdue-text">逾期</span>
             </span>
@@ -32,8 +32,8 @@
           <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
           <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
         </div>
-        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'" class="pay-btn pro-pay-btn"
-          @click="openPayModal(invoice)">立即繳費</button>
+        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'"
+          class="pay-btn pro-pay-btn" @click="openPayModal(invoice)">立即繳費</button>
       </div>
       <div class="total-row">
         <span>總金額：</span>
@@ -86,7 +86,8 @@
             <button class="btn btn-secondary w-100" @click="closePayModal">我知道了</button>
             <button class="btn btn-primary w-100 mt-2" @click="submitRemit">送出回覆</button>
           </div>
-          <div v-if="payMsg && payMsg !== 'success'" class="alert alert-info mt-2 d-flex justify-content-between align-items-center">
+          <div v-if="payMsg && payMsg !== 'success'"
+            class="alert alert-info mt-2 d-flex justify-content-between align-items-center">
             <span>{{ payMsg }}</span>
             <button class="btn btn-sm btn-outline-secondary ms-2" @click="closePayModal">關閉</button>
           </div>
@@ -157,7 +158,7 @@ const submitRemit = async () => {
       invoiceId: currentInvoice.invoiceId,
       userId: userStore.userId,
       communityId: userStore.communityId,
-      createBy: userStore.displayName,
+      createBy: userStore.name,
       createAt: new Date().toISOString(),
       payMethod: payMethod.value,
       lastResponse: remitNote.value,
@@ -238,15 +239,17 @@ onMounted(async () => {
   grid-template-columns: 1fr 1fr;
   gap: 32px 24px;
 }
+
 @media (max-width: 900px) {
   .invoice-list.grid-list {
     grid-template-columns: 1fr;
   }
 }
+
 .pro-card {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(102,126,234,0.10);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
   border: 1.5px solid #e2e8f0;
   padding: 28px 22px 18px 22px;
   display: flex;
@@ -255,22 +258,26 @@ onMounted(async () => {
   transition: box-shadow 0.2s, border 0.2s;
   position: relative;
 }
+
 .pro-card:hover {
-  box-shadow: 0 8px 32px rgba(102,126,234,0.18);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
   border: 1.5px solid #a5b4fc;
 }
+
 .pro-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 6px;
 }
+
 .pro-id {
   font-size: 1.08rem;
   font-weight: 700;
   color: #6366f1;
   letter-spacing: 1px;
 }
+
 .pro-amount {
   font-size: 1.18rem;
   font-weight: 700;
@@ -279,42 +286,48 @@ onMounted(async () => {
   align-items: center;
   gap: 4px;
 }
+
 .pro-amount-num {
   font-size: 1.45rem;
   font-weight: 900;
   color: #d53f8c;
   margin: 0 2px;
 }
+
 .pro-info {
   font-size: 1.08rem;
   color: #374151;
   line-height: 1.7;
   margin-bottom: 2px;
 }
+
 .pro-info b {
   color: #6366f1;
   font-weight: 700;
   font-size: 1.12rem;
 }
+
 .pro-deadline {
   color: #f59e42;
   font-weight: 700;
 }
+
 .pro-pay-btn {
   margin-top: 8px;
   font-size: 1.08rem;
   font-weight: 800;
   padding: 10px 0;
   border-radius: 10px;
-  background: linear-gradient(90deg,#6366f1 0%,#d53f8c 100%);
-  box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+  background: linear-gradient(90deg, #6366f1 0%, #d53f8c 100%);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
   border: none;
   color: #fff;
   letter-spacing: 2px;
   transition: background 0.2s, transform 0.2s;
 }
+
 .pro-pay-btn:hover {
-  background: linear-gradient(90deg,#4f46e5 0%,#be185d 100%);
+  background: linear-gradient(90deg, #4f46e5 0%, #be185d 100%);
   transform: translateY(-2px) scale(1.04);
 }
 
@@ -404,8 +417,9 @@ onMounted(async () => {
   background: #fff0f0;
   border-radius: 8px;
   padding: 2px 8px 2px 4px;
-  box-shadow: 0 1px 4px rgba(248,113,113,0.08);
+  box-shadow: 0 1px 4px rgba(248, 113, 113, 0.08);
 }
+
 .overdue-text {
   margin-left: 4px;
   color: #f87171;

@@ -151,7 +151,7 @@ const feeTypes = ref([])
 
 const fetchFeeTypes = async () => {
   try {
-    const response = await axios.get('/finance/fee-types') // ← API 路徑請依實際命名修改
+    const response = await axios.get('/finance/fee-types')
     feeTypes.value = response.data
   } catch (e) {
     errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)

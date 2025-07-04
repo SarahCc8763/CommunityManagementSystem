@@ -1,6 +1,7 @@
 package finalProj.service.finance.serviceImpl;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,34 +103,36 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
         }
     }
 
-    // 清潔費
-    private void generateCleaningFeeInvoices(FeeType feeType, BillingPeriod billingPeriod) {
-        List<Units> units = unitsRepository.findAll();
+    // // 清潔費
+    // private void generateCleaningFeeInvoices(FeeType feeType, BillingPeriod
+    // billingPeriod) {
+    // List<Units> units = unitsRepository.findAll();
 
-        for (Units unit : units) {
-            List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
-            if (unitUsers == null || unitUsers.isEmpty())
-                continue;
+    // for (Units unit : units) {
+    // List<UnitsUsers> unitUsers =
+    // unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
+    // if (unitUsers == null || unitUsers.isEmpty())
+    // continue;
 
-            Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
-            BigDecimal unitCount = BigDecimal.ONE;
-            BigDecimal unitPrice = feeType.getAmountPerUnit();
-            BigDecimal totalAmount = unitPrice;
+    // Users user = unitUsers.get(0).getUser(); // 使用最小的 usersId
+    // BigDecimal unitCount = BigDecimal.ONE;
+    // BigDecimal unitPrice = feeType.getAmountPerUnit();
+    // BigDecimal totalAmount = unitPrice;
 
-            Invoice invoice = new Invoice();
-            invoice.setUsers(user);
-            invoice.setFeeType(feeType);
-            invoice.setBillingPeriod(billingPeriod);
-            invoice.setPeriodName(billingPeriod.getPeriodName());
-            invoice.setDeadline(billingPeriod.getDueDate());
-            invoice.setUnitCount(unitCount);
-            invoice.setUnitPrice(unitPrice);
-            invoice.setTotalAmount(totalAmount);
-            invoice.setAmountDue(totalAmount);
+    // Invoice invoice = new Invoice();
+    // invoice.setUsers(user);
+    // invoice.setFeeType(feeType);
+    // invoice.setBillingPeriod(billingPeriod);
+    // invoice.setPeriodName(billingPeriod.getPeriodName());
+    // invoice.setDeadline(billingPeriod.getDueDate());
+    // invoice.setUnitCount(unitCount);
+    // invoice.setUnitPrice(unitPrice);
+    // invoice.setTotalAmount(totalAmount);
+    // invoice.setAmountDue(totalAmount);
 
-            invoiceRepository.save(invoice);
-        }
-    }
+    // invoiceRepository.save(invoice);
+    // }
+    // }
     // // 產生車位Invoice
 
     // private void generateParkingFeeInvoices(FeeType feeType, BillingPeriod
@@ -153,7 +156,9 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     // }
 
     // 新版：依feeTypeId與billingPeriodId產生請款單
+    @Transactional
     public void generateInvoices(Integer feeTypeId, Integer billingPeriodId) {
+        System.out.println(">>>>> 產生繳款單開始，feeTypeId: " + feeTypeId + ", billingPeriodId: " + billingPeriodId);
         FeeType feeType = feeTypeRepository.findById(feeTypeId)
                 .orElseThrow(() -> new IllegalArgumentException("無效的費用類別ID: " + feeTypeId));
         BillingPeriod billingPeriod = billingPeriodRepository.findById(billingPeriodId)
@@ -165,8 +170,12 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             // 若有社區過濾
             if (feeType.getCommunityId() != null && unit.getCommunity() != null &&
                     !feeType.getCommunityId().equals(unit.getCommunity().getCommunityId())) {
+                System.out.println(">>> 忽略單位：" + unit.getUnit() + " 社區不符");
                 continue;
+
             }
+
+            System.out.println(">>> 准備新增繳費單 for unit " + unit.getUnit());
             List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
             if (unitUsers == null || unitUsers.isEmpty())
                 continue;
@@ -192,10 +201,13 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setUnitPrice(unitPrice);
             invoice.setTotalAmount(totalAmount);
             invoice.setAmountDue(totalAmount);
-            invoice.setPaymentStatus("UNPAID");
+            invoice.setPaymentStatus("unpaid");
             invoice.setCommunityId(feeType.getCommunityId());
             invoice.setStatus(false);
+            invoice.setNote("system generated");
+            invoice.setCreatedAt(LocalDateTime.now());
             invoiceRepository.save(invoice);
+            System.out.println(">>> 儲存 invoice 給 unit: " + unit.getUnit());
         }
     }
 }

@@ -11,7 +11,7 @@
                     <h2 class="serif-title text-white fw-bold">智慧社區管理，從此開始</h2>
                     <br><br>
                     <p class="text-white" style=""> <span style="color: rgb(228, 245, 220);">
-                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 OO建設</span></p>
+                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 智匯建設</span></p>
 
                 </div>
             </div>
@@ -147,7 +147,13 @@ const features = [
     {
         icon: 'bi-person-circle',
         title: '帳戶資訊',
-        description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
+        description: '檢視與更新個人資料、聯絡方式，方便又安全。',
+        link: '/Users'
+    },
+    {
+        icon: 'bi bi-cash',
+        title: '帳務資訊',
+        description: '把你的錢錢交出來。',
         link: '/finUser'
     },
     {
