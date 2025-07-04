@@ -41,16 +41,15 @@ public class BulletinCategoryService {
         return bulletinCategoryRepository.save(entity);
     }
 
-    // 不能用，因為name是主鍵不能修改，除非要新增Id當主鍵
-    // ->所以如果新增的時候打錯，只能刪除重新新增，既有的分類且已經被外鍵依賴就沒救了
-    // public BulletinCategory modify(BulletinCategory entity) {
-    // Optional<BulletinCategory> optional =
-    // bulletinCategoryRepository.findByName(entity.getName());
-    // if (optional.isPresent()) {
-    // return bulletinCategoryRepository.save(modified);
-    // }
-    // return null;
-    // }
+    public BulletinCategory modify(BulletinCategory entity) {
+        Optional<BulletinCategory> optional = bulletinCategoryRepository.findByName(entity.getName());
+        if (optional.isPresent()) {
+            BulletinCategory modified = optional.get();
+            modified.setName(entity.getName());
+            return bulletinCategoryRepository.save(modified);
+        }
+        return null;
+    }
 
     // 刪除分類
     public String delete(Integer id) {

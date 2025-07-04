@@ -35,7 +35,7 @@ public class Poll {
     @Column(name = "poll_is_multiple")
     private Boolean isMultiple;
 
-    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "poll")
     @JsonManagedReference("poll-vote")
     private List<PollVote> votes;
 

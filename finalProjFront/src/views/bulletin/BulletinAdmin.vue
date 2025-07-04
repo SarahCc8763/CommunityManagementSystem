@@ -8,7 +8,7 @@
         <div class="d-flex gap-2 mb-3">
             <select v-model="searchCategory" class="form-select w-30" @change="searchBulletins">
                 <option value="">全部分類</option>
-                <option v-for="cat in categoryList" :key="cat" :value="cat">{{ cat }}</option>
+                <option v-for="cat in categoryList" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
             </select>
             <input v-model="searchTitle" class="form-control w-48" placeholder="輸入標題關鍵字" />
             <button class="btn btn-primary w-10" @click="searchBulletins">搜尋</button>
@@ -23,11 +23,13 @@
                 <div v-for="bulletin in bulletins" :key="bulletin.id"
                     class=" border p-3 rounded bg-light shadow-sm my-1">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="fw-bold text-dark fs-5">{{ bulletin.title }}</div>
+                        <div class="fw-bold text-dark fs-5">{{ bulletin.title }} <span v-if="bulletin.poll"
+                                class="fs-6 text-secondary fw-normal">(投票活動)</span></div>
                         <small class="text-muted">{{ formatDate(bulletin.postTime) }}</small>
                     </div>
                     <div class="mb-2">
-                        <span class="badge bg-secondary me-2" style="font-size: 80%;">{{ bulletin.categoryName }}</span>
+                        <span class="badge bg-success me-2 fw-normal" style="font-size: 80%;">{{ bulletin.categoryName
+                        }}</span>
                         <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
                     </div>
                     <p class="text-truncate text-muted small mb-3 fs-6">
@@ -52,131 +54,11 @@
         <EditBulletinModal v-model:visible="showEdit" :bulletin="selectedBulletin" :categoryList="categoryList"
             :usersId="userId" @close="showEdit = false" @update="fetchAll" :communityId="communityId" />
 
+        <ViewBulletinModal v-model:visible="showView" :bulletin="selectedBulletin" :categoryList="categoryList"
+            :usersId="userId" :normalizeFn="normalizeNewline" />
+
         <!-- 公告 Modal -->
-        <div class="modal fade " id="bulletinModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable ">
-                <div class="modal-content">
-                    <div class="modal-header"
-                        :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
 
-
-                        <div class="announcement-badge fs-5 mt-1">
-                            <i :class="['bi', getIcon(selectedBulletin?.categoryName)]"></i>
-                            {{ selectedBulletin?.categoryName }}
-                        </div>
-                        <h3 class="announcement-title mt-3 mx-2 fs-4">{{ selectedBulletin?.title }}</h3>
-
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body lh-lg mx-4">
-
-                        <p class="fs-5" style="white-space: pre-wrap;"><br>{{
-                            normalizeNewline(selectedBulletin?.description) }}</p>
-
-                        <!-- 附件 -->
-                        <div v-if="selectedBulletin?.attachments?.length" style="font-size: 100%;">
-                            <hr class="mt-5">
-                            <h6>附件：</h6>
-                            <ul class="list-group">
-                                <li v-for="att in selectedBulletin.attachments" :key="att.id"
-                                    class="list-group-item list-group-item-action m-2">
-                                    <a :href="`http://localhost:8080/api/bulletin/attachments/${att.id}`"
-                                        target="_blank">{{ att.fileName }}</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- 投票區塊 -->
-                        <div v-if="selectedBulletin?.poll" class="card my-3 w-75 mx-auto d-block ">
-                            <div class="card-header  text-grey fw-bold"
-                                :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
-                                投票：{{ selectedBulletin.poll.title }}
-                            </div>
-                            <div class="card-body">
-                                <div v-for="opt in selectedBulletin.poll.options" :key="opt.id" class="form-check">
-                                    <input :type="selectedBulletin.poll.isMultiple ? 'checkbox' : 'radio'"
-                                        class="form-check-input my-2" name="voteOption" :value="opt.id"
-                                        v-model="selectedOptions" />
-                                    <label class="form-check-label ">{{ opt.text }}</label>
-                                </div>
-                                <button class="btn btn-primary mt-2" @click="submitVote">提交投票</button>
-                            </div>
-                        </div>
-
-                        <!-- 留言區塊 -->
-                        <div class="mt-4">
-                            <h6>留言：</h6>
-
-                            <!-- 若有留言 -->
-                            <div v-if="Array.isArray(selectedBulletin?.comments)">
-                                <div v-for="comment in selectedBulletin.comments.filter(c => !c.parentCommentId)"
-                                    :key="comment.id" class="border rounded p-2 mb-2">
-                                    <div class="d-flex align-items-start mb-2">
-                                        <img :src="getAvatarByGender(comment.userData[1])" class="rounded-circle me-2"
-                                            width="40" height="40" />
-                                        <div>
-                                            <strong>{{ comment.userData[0] || '匿名用戶' }}</strong>
-                                            <p class="mb-1">{{ comment.comment }}</p>
-                                            <span class="text-muted" style="font-size: 0.85rem">{{
-                                                formatDate(comment.time) }}</span>
-                                        </div>
-                                    </div>
-                                    <div style="margin-left: 5%;">
-                                        <button class="btn-comment me-1" @click="likeComment(comment.id)">
-                                            🧡 {{ comment.likeCount }}
-                                        </button>
-                                        <button class="btn-comment me-1" @click="toggleReply(comment.id)">回覆</button>
-                                        <button v-if="comment.userData[2] === userId" class="btn-comment me-1"
-                                            @click="deleteComment(comment.id)">刪除</button>
-                                    </div>
-
-                                    <!-- 第二層留言 -->
-                                    <div v-for="reply in selectedBulletin.comments.filter(r => r.parentCommentId === comment.id)"
-                                        :key="reply.id" class="ms-4 mt-2 border-start ps-2">
-                                        <div class="d-flex align-items-start mb-2">
-                                            <img :src="getAvatarByGender(reply.userData[1])" class="rounded-circle me-2"
-                                                width="35" height="35" />
-                                            <div>
-                                                <strong>{{ reply.userData[0] || '匿名用戶' }}</strong>
-                                                <p class="mb-1">{{ reply.comment }}</p>
-                                                <span class="text-muted" style="font-size: 0.8rem">{{
-                                                    formatDate(reply.time) }}</span>
-                                            </div>
-                                        </div>
-                                        <div style="margin-left: 5%;">
-                                            <button class=" btn-comment me-1" @click="likeComment(reply.id)">
-                                                🧡 {{ reply.likeCount }}
-                                            </button>
-                                            <button class="btn-comment me-1" @click="toggleReply(reply.id)">回覆</button>
-                                            <button v-if="reply.userData[2] === userId" class="btn-comment me-1"
-                                                @click="deleteComment(reply.id)">刪除</button>
-                                        </div>
-                                    </div>
-
-                                    <!-- 回覆輸入框 -->
-                                    <div v-if="replyingToId === comment.id" class="mt-2">
-                                        <input v-model="replyContent" class="form-control" placeholder="輸入回覆內容..." />
-                                        <button class="btn btn-sm btn-primary mt-1"
-                                            @click="submitReply(comment.id)">送出回覆</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 若沒有留言資料（null） -->
-                            <div v-else class="text-muted">尚無留言</div>
-
-                            <!-- 新增留言 -->
-                            <div class="mt-3">
-                                <input v-model="newComment" class="form-control" placeholder="新增留言..." />
-                                <button class="btn btn-primary mt-2" @click="submitComment">送出留言</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -194,40 +76,34 @@ import Swal from 'sweetalert2'
 import BannerImage from '@/components/forAll/BannerImage.vue';
 import OO from '@/assets/images/main/adminBanner.jpg';
 import EditBulletinModal from '@/components/bulletin/EditBulletinModal.vue';
+import ViewBulletinModal from '@/components/bulletin/ViewBulletinModal.vue';
 
 // assets
-import maleIcon from '@/assets/images/bulletin/male.png'
-import femaleIcon from '@/assets/images/bulletin/female.png'
-import defaultIcon from '@/assets/images/bulletin/default.png'
+
 
 
 const bulletins = ref([])
 const selectedBulletin = ref(null)
-const selectedOptions = ref([])
-const newComment = ref('')
-const replyContent = ref('')
-const replyingToId = ref(null)
+
 const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
 const userId = 3 // 假設當前使用者 id
 const communityId = 1 // 假設當前社區 id
 const showEdit = ref(false)
+const showView = ref(false)
 
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
 const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
 
-const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
-const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
-const gridClass = ['important', 'event', 'service', '']
-const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
 
 
 function editBulletin(bulletin) {
     selectedBulletin.value = bulletin
     showEdit.value = true
 }
+
 
 function deleteBulletin(id) {
     Swal.fire({
@@ -261,32 +137,31 @@ function deleteBulletin(id) {
     })
 }
 
-
-
-
-function getCategoryColor(categoryName) {
-    const index = categoryList.value.findIndex(c => c === categoryName) % 5
-    return gridClass[index % gridClass.length]
+function viewBulletin(bulletin) {
+    selectedBulletin.value = bulletin
+    showView.value = true
 }
-function getAvatarByGender(gender) {
-    if (gender === '男') return maleIcon;
-    if (gender === '女') return femaleIcon;
-    return defaultIcon;
-}
-function getGridColor(categoryName) {
-    const index = categoryList.value.findIndex(c => c === categoryName) % 4
-
-    return gridClass[index]
-}
-function getIcon(categoryName) {
-    const index = categoryList.value.findIndex(c => c === categoryName) % 4
-    return iconClass[index]
-}
-
 
 function normalizeNewline(text) {
     return text?.replace(/\\n/g, '\n') || ''
 }
+
+
+function searchBulletins() {
+    axios.post('http://localhost:8080/api/bulletin/searchby', {
+        title: searchTitle.value || undefined,
+        category: searchCategory.value ? { name: searchCategory.value } : undefined
+    }).then(res => {
+        bulletins.value = res.data.list
+    })
+}
+
+function clearSearch() {
+    searchTitle.value = ''
+    searchCategory.value = ''
+    fetchAll()
+}
+
 
 onMounted(() => {
     fetchAll()
@@ -308,86 +183,8 @@ function fetchAll() {
         })
 }
 
-function openBulletin(id) {
-    axios.get(`http://localhost:8080/api/bulletin/${id}`).then(res => {
-        selectedBulletin.value = res.data.list[0]
-        selectedOptions.value = []
-        new bootstrap.Modal(document.getElementById('bulletinModal')).show()
-    })
-}
-
-function searchBulletins() {
-    axios.post('http://localhost:8080/api/bulletin/searchby', {
-        title: searchTitle.value || undefined,
-        category: searchCategory.value ? { name: searchCategory.value } : undefined
-    }).then(res => {
-        bulletins.value = res.data.list
-    })
-}
-
-function submitVote() {
-    const poll = selectedBulletin.value.poll
-    const options = poll.isMultiple ? selectedOptions.value : [selectedOptions.value]
-    Promise.all(options.map(id => {
-        return axios.post(`http://localhost:8080/api/poll/${id}/vote`, {
-            user: { usersId: userId },
-            option: { id }
-        })
-    })).then(() => alert('投票成功'))
-}
-
-function submitComment() {
-    axios.post(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}/comment`, {
-        user: { usersId: userId },
-        comment: newComment.value
-    }).then(() => {
-        openBulletin(selectedBulletin.value.id)
-        newComment.value = ''
-    })
-}
-
-function toggleReply(commentId) {
-    replyingToId.value = replyingToId.value === commentId ? null : commentId
-    replyContent.value = ''
-}
-
-function submitReply(parentId) {
-    axios.post(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}/comment`, {
-        user: { usersId: userId },
-        comment: replyContent.value,
-        parentComment: { id: parentId }
-    }).then(() => {
-        openBulletin(selectedBulletin.value.id)
-        replyContent.value = ''
-        replyingToId.value = null
-    })
-}
-function likeComment(commentId) {
-    axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}/like/${userId}`)
-        .then(res => {
-            const updated = res.data
-            const comment = selectedBulletin.value.comments.find(c => c.id === commentId)
-            if (comment) {
-                comment.likeCount = updated.likeCount
-                comment.likedByCurrentUser = updated.likedByCurrentUser
-            }
-            console.log(comment);
-        })
-}
 
 
-
-
-
-function deleteComment(commentId) {
-    axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}`)
-        .then(() => openBulletin(selectedBulletin.value.id))
-}
-
-function getFileUrl(att) {
-    // 你可以根據檔案服務 API 自行補上 URL
-    return `data:${att.mimeType};base64,${att.fileData}`
-}
 </script>
 
 <style scoped>

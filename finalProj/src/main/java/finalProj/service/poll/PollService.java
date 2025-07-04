@@ -1,5 +1,6 @@
 package finalProj.service.poll;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,32 +38,48 @@ public class PollService {
         pollRepository.deleteById(id);
     }
 
+    // public Poll updatePoll(Integer pollId, Poll updatedPoll) {
+    // Optional<Poll> optional = pollRepository.findById(pollId);
+    // if (!optional.isPresent()) {
+    // return null;
+    // }
+
+    // Poll existingPoll = optional.get();
+
+    // // 更新投票主標題與多選狀態
+    // if (updatedPoll.getTitle() != null) {
+    // existingPoll.setTitle(updatedPoll.getTitle());
+    // }
+    // existingPoll.setIsMultiple(updatedPoll.getIsMultiple());
+
+    // // 判斷要新增的選項（避免重複）
+    // if (updatedPoll.getOptions() != null && !updatedPoll.getOptions().isEmpty())
+    // {
+    // for (PollOption newOption : updatedPoll.getOptions()) {
+    // // 若新選項未提供 id，代表是新增
+    // if (newOption.getId() == null) {
+    // newOption.setPoll(existingPoll);
+    // existingPoll.getOptions().add(newOption);
+    // }
+    // }
+    // }
+
+    // return pollRepository.save(existingPoll);
+    // }
     public Poll updatePoll(Integer pollId, Poll updatedPoll) {
-        Optional<Poll> optional = pollRepository.findById(pollId);
-        if (!optional.isPresent()) {
+        Poll poll = pollRepository.findById(pollId).orElse(null);
+        if (poll == null)
             return null;
+
+        poll.setTitle(updatedPoll.getTitle());
+        poll.setIsMultiple(updatedPoll.getIsMultiple());
+
+        poll.getOptions().clear(); // 全量取代較簡單
+        for (PollOption opt : updatedPoll.getOptions()) {
+            opt.setPoll(poll);
+            poll.getOptions().add(opt);
         }
-
-        Poll existingPoll = optional.get();
-
-        // 更新投票主標題與多選狀態
-        if (updatedPoll.getTitle() != null) {
-            existingPoll.setTitle(updatedPoll.getTitle());
-        }
-        existingPoll.setIsMultiple(updatedPoll.getIsMultiple());
-
-        // 判斷要新增的選項（避免重複）
-        if (updatedPoll.getOptions() != null && !updatedPoll.getOptions().isEmpty()) {
-            for (PollOption newOption : updatedPoll.getOptions()) {
-                // 若新選項未提供 id，代表是新增
-                if (newOption.getId() == null) {
-                    newOption.setPoll(existingPoll);
-                    existingPoll.getOptions().add(newOption);
-                }
-            }
-        }
-
-        return pollRepository.save(existingPoll);
+        return pollRepository.saveAndFlush(poll);
     }
 
 }

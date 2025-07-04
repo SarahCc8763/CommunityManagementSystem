@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -184,17 +185,34 @@ public class BulletinService {
                 }
             }
 
-            // 清除舊附件
-            existing.getAttachments().clear(); // Hibernate 會自動處理資料庫刪除
+            List<BulletinAttachment> incoming = entity.getAttachments();
+            List<BulletinAttachment> toKeep = new ArrayList<>();
+            List<BulletinAttachment> toAdd = new ArrayList<>();
 
-            // 加入新附件（若有）
-            if (entity.getAttachments() != null && !entity.getAttachments().isEmpty()) {
-                for (BulletinAttachment newAttachment : entity.getAttachments()) {
-                    newAttachment.setBulletin(existing); // 記得設關聯
-                    existing.getAttachments().add(newAttachment);
-                    log.debug("加入新附件：{}", newAttachment.getFileName());
+            for (BulletinAttachment att : incoming) {
+                if (att.getFileDataBase64() == null && !att.getIsNew()) {
+                    // 是原有檔案，只保留 (用檔名比對，或補個唯一 ID 更穩)
+                    Optional<BulletinAttachment> existingAtt = existing.getAttachments()
+                            .stream()
+                            .filter(e -> e.getFileName().equals(att.getFileName()))
+                            .findFirst();
+                    existingAtt.ifPresent(toKeep::add);
+                    log.info("保留原有附件：{}");
+                } else if (att.getFileDataBase64() != null && att.getIsNew()) {
+                    // 是新檔案，加到待新增清單
+                    att.setBulletin(existing);
+                    toAdd.add(att);
+                } else {
+                    log.warn("附件處理失敗");
+                    return null;
                 }
             }
+
+            // 刪除未被保留的舊附件
+            existing.getAttachments().retainAll(toKeep);
+
+            // 加入新附件
+            existing.getAttachments().addAll(toAdd);
 
             Bulletin updated = bulletinRepository.save(existing);
             log.info("公告修改成功，ID = {}", updated.getId());
@@ -222,29 +240,35 @@ public class BulletinService {
             if (optional.isPresent()) {
                 Bulletin bulletin = optional.get();
                 Poll poll = bulletin.getPoll();
-                if (poll != null) {
 
-                    // 強制初始化（確保已加載）
+                if (poll != null) {
+                    // 初始化 LAZY 關聯，避免 Proxy 錯誤
                     poll.getVotes().size();
                     poll.getOptions().size();
 
-                    // 刪除投票紀錄
+                    // ✅ Step 1：先刪投票紀錄
                     pollVoteRepository.deleteAll(poll.getVotes());
-
-                    // 刪除選項
+                    pollVoteRepository.flush();
+                    poll.getVotes().clear();
+                    // ✅ Step 2：再刪選項
                     pollOptionRepository.deleteAll(poll.getOptions());
+                    pollOptionRepository.flush();
+                    poll.getOptions().clear();
 
-                    // 解除關聯（poll.id = bulletin.id，所以一定要處理這一步）
+                    // ✅ Step 3：解除 bulletin 與 poll 的關聯，先保存解除狀態
+                    pollRepository.saveAndFlush(poll);
                     bulletin.setPoll(null);
+                    bulletinRepository.saveAndFlush(bulletin); // ⬅ 關鍵點
 
-                    // ⭐ 更新 bulletin，否則 Hibernate 不會發現 poll 被解除
-                    bulletinRepository.save(bulletin);
+                    // ✅ Step 4：最後再刪 poll
+                    pollRepository.delete(poll);
+                    pollRepository.flush(); // optional，但安全
                 }
 
+                // ✅ Step 5：刪公告本體
                 bulletinRepository.delete(bulletin);
                 log.info("成功刪除公告，ID = {}", id);
                 return true;
-
             } else {
                 log.warn("刪除公告失敗：找不到 ID = {}", id);
             }

@@ -69,7 +69,8 @@ const form = ref({
     categoryName: '',
     removeTime: '',
     existingAttachments: [],
-    newAttachments: []
+    newAttachments: [],
+    isNew: false
 })
 
 watch(() => props.bulletin, (val) => {
@@ -91,7 +92,8 @@ function handleNewFiles(e) {
             fileName: file.name,
             mimeType: file.type,
             file: file, // 原始檔案，後續轉 base64 用
-            fileDataBase64: null
+            fileDataBase64: null,
+            isNew: true
         })
 
     })
@@ -140,7 +142,8 @@ function submitEdit() {
             attachments: form.value.existingAttachments.map(att => ({
                 fileName: att.fileName,
                 mimeType: att.mimeType,
-                fileDataBase64: att.fileDataBase64 || null
+                fileDataBase64: att.fileDataBase64 || null,
+                isNew: att.isNew || false
             }))
         }
 
@@ -153,6 +156,7 @@ function submitEdit() {
             })
     })
 }
+
 
 
 

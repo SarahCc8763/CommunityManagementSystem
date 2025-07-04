@@ -33,8 +33,10 @@ public class BulletinAttachment {
 
     @Transient // 不存入資料庫，只作為接收 JSON 時用的欄位
     private String fileDataBase64;
+    @Transient
+    private Boolean isNew;
 
-    // Getters and Setters
+    // Getters and Setterss
 
     public Integer getId() {
         return id;
@@ -104,6 +106,14 @@ public class BulletinAttachment {
 
     public void setFileDataBase64(String fileDataBase64) {
         this.fileDataBase64 = fileDataBase64;
+    }
+
+    public Boolean getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(Boolean isNew) {
+        this.isNew = isNew;
     }
 
 }

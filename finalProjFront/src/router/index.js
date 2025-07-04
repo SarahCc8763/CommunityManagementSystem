@@ -9,10 +9,11 @@ import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
 import Invoice from '../components/finance/finUser/Invoice.vue'
 import Faq from '@/views/faq/Faq.vue'
 import MyFeedback from '@/views/feedback/MyFeedback.vue'
-import BulletinLatest from '@/views/bulletin/BulletinLatest.vue'
+
 import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
 
 import finUser from '@/components/finance/finUser/finUser.vue'
+import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
 
 
 
@@ -79,7 +80,7 @@ const router = createRouter({
     {
       path: '/announcement-latest',
       name: 'announcement-latest',
-      component: BulletinLatest
+      component: AnnouncementLatest
 
     },
     {
