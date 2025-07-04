@@ -18,11 +18,22 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別名稱</label>
-                  <input v-model="form.periodName" class="form-control" required />
+                  <div class="d-flex gap-2 align-items-center">
+                    <select v-model="formYear" class="form-select" style="max-width: 100px;">
+                      <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}年</option>
+                    </select>
+                    <select v-model="formType" class="form-select" style="max-width: 80px;">
+                      <option value="M">月</option>
+                      <option value="Q">季</option>
+                    </select>
+                    <select v-model="formMonthOrQuarter" class="form-select" style="max-width: 80px;">
+                      <option v-for="n in (formType==='M'?12:4)" :key="n" :value="n">{{ formType==='M'? n+'月' : '第'+n+'季' }}</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別代碼</label>
-                  <input v-model="form.periodCode" class="form-control" required />
+                  <input v-model="form.periodCode" class="form-control" required readonly />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">開始日期</label>
@@ -92,15 +103,15 @@
       </div>
       <div class="col-lg-5 col-12">
         <label class="form-label mb-1">期別代碼</label>
-        <div class="input-group flex-nowrap">
+        <div class="input-group flex-nowrap period-code-group">
           <span class="input-group-text">年份</span>
-          <input v-model="searchYear" class="form-control" style="max-width: 80px;" disabled />
+          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px;" disabled />
           <span class="input-group-text">月份/季</span>
-          <select v-model="searchMonth" class="form-select" style="max-width: 80px;">
+          <select v-model="searchMonth" class="form-select month-select" style="max-width: 110px; min-width: 80px;">
             <option value="">--</option>
             <option v-for="n in 12" :key="n" :value="n">{{ n }}</option>
           </select>
-          <select v-model="searchType" class="form-select" style="max-width: 80px;">
+          <select v-model="searchType" class="form-select type-select" style="max-width: 110px; min-width: 80px;">
             <option value="M">月</option>
             <option value="Q">季</option>
           </select>
@@ -183,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
@@ -194,20 +205,20 @@ const userStore = useUserStore()
 
 const successMsg = ref('')
 const errorMsg = ref('')
-const form = ref({
+const getDefaultForm = () => ({
   periodName: '',
   periodCode: '',
   startDate: '',
   endDate: '',
   dueDate: '',
   note: '',
-
   communityId: userStore.communityId,
   status: true,
   createdAt: new Date().toISOString(),
   createdBy: userStore.userId,
   updatedBy: userStore.userId,
-})
+});
+const form = ref(getDefaultForm());
 const billingPeriods = ref([])
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
@@ -217,6 +228,24 @@ const searchYear = ref(new Date().getFullYear())
 const searchMonth = ref('')
 const searchType = ref('M')
 const searchResult = ref(null)
+
+const now = new Date();
+const yearOptions = Array.from({length: 5}, (_, i) => now.getFullYear() - 2 + i);
+const formYear = ref(now.getFullYear());
+const formType = ref('M');
+const formMonthOrQuarter = ref(1);
+
+watch([formYear, formType, formMonthOrQuarter], ([y, t, m]) => {
+  if (t === 'M') {
+    form.value.periodName = `${y}年${m}月`;
+    const yearShort = String(y).slice(-2);
+    form.value.periodCode = `${yearShort}M${m}`;
+  } else {
+    form.value.periodName = `${y}年第${m}季`;
+    const yearShort = String(y).slice(-2);
+    form.value.periodCode = `${yearShort}Q${m}`;
+  }
+});
 
 const fetchBillingPeriods = async () => {
 
@@ -241,7 +270,7 @@ const submitForm = async () => {
   try {
     await axios.post('/finance/billing-periods/create', form.value)
     successMsg.value = '新增成功！'
-    Object.keys(form.value).forEach(k => form.value[k] = (typeof form.value[k] === 'boolean' ? true : null))
+    form.value = getDefaultForm();
     const modalEl = document.getElementById('billingPeriodModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
     modal?.hide()
@@ -294,6 +323,16 @@ const clearSearch = () => {
 
 onMounted(() => {
   fetchBillingPeriods()
+  // 初始化 periodName/periodCode
+  if (formType.value === 'M') {
+    form.value.periodName = `${formYear.value}年${formMonthOrQuarter.value}月`;
+    const yearShort = String(formYear.value).slice(-2);
+    form.value.periodCode = `${yearShort}M${formMonthOrQuarter.value}`;
+  } else {
+    form.value.periodName = `${formYear.value}年第${formMonthOrQuarter.value}季`;
+    const yearShort = String(formYear.value).slice(-2);
+    form.value.periodCode = `${yearShort}Q${formMonthOrQuarter.value}`;
+  }
 })
 </script>
 
@@ -306,9 +345,35 @@ onMounted(() => {
   margin-bottom: 0;
 }
 
+.period-code-group > .input-group-text,
+.period-code-group > .form-control,
+.period-code-group > .form-select {
+  margin-right: 8px;
+}
+.period-code-group > .form-control,
+.period-code-group > .form-select {
+  min-width: 80px;
+  max-width: 110px;
+}
+.period-code-group > .year-input {
+  min-width: 100px;
+  max-width: 120px;
+}
+.period-code-group > .month-select,
+.period-code-group > .type-select {
+  min-width: 100px;
+  max-width: 120px;
+}
 @media (max-width: 991px) {
-  .row.mb-3.g-2.align-items-end.flex-wrap>div {
-    margin-bottom: 12px;
+  .period-code-group > .input-group-text,
+  .period-code-group > .form-control,
+  .period-code-group > .form-select {
+    margin-right: 4px;
+  }
+  .period-code-group > .form-control,
+  .period-code-group > .form-select {
+    min-width: 70px;
+    max-width: 100px;
   }
 }
 </style>

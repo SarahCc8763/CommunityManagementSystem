@@ -15,8 +15,8 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @GetMapping("/unpaid")
-    public List<Invoice> getUnpaidInvoices() {
-        return invoiceService.findUnpaidInvoices();
+    public List<Invoice> getUnpaidInvoices(@RequestParam Integer userId) {
+        return invoiceService.findUnpaidInvoicesByUserId(userId);
     }
 
     // 【功能】取得所有發票（可依communityId查詢）

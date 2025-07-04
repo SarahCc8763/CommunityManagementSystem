@@ -22,4 +22,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     // 查詢所有status為false（待審核）
     List<Invoice> findByStatus(Boolean status);
+
+    // 查詢某用戶所有未繳帳單
+    List<Invoice> findByUsers_UsersIdAndPaymentStatusNotIgnoreCase(Integer usersId, String status);
 }

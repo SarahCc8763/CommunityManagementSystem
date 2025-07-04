@@ -1,10 +1,30 @@
 <template>
   <div class="container mt-4">
     <h3 class="mb-4 fw-bold text-primary">請款單審核</h3>
+    <!-- 查詢區塊 -->
+    <div class="row mb-3 g-2 align-items-end flex-wrap">
+      <div class="col-md-4 col-12">
+        <label class="form-label mb-1">費用類型</label>
+        <select v-model="filter.feeTypeId" class="form-select">
+          <option value="">全部</option>
+          <option v-for="ft in feeTypes" :key="ft.feeTypeId" :value="ft.feeTypeId">{{ ft.description }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 col-12">
+        <label class="form-label mb-1">期別</label>
+        <select v-model="filter.billingPeriodId" class="form-select">
+          <option value="">全部</option>
+          <option v-for="bp in billingPeriods" :key="bp.billingPeriodId" :value="bp.billingPeriodId">{{ bp.periodName }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 col-12 d-flex align-items-end">
+        <button class="btn btn-outline-primary me-2" @click="clearFilter">清除</button>
+      </div>
+    </div>
     <div v-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
     <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
-    <div v-if="pendingInvoices.length === 0" class="alert alert-info">目前沒有待審核的請款單</div>
-    <form v-if="pendingInvoices.length > 0" @submit.prevent="batchValidate">
+    <div v-if="filteredInvoices.length === 0" class="alert alert-info">目前沒有待審核的請款單</div>
+    <form v-if="filteredInvoices.length > 0" @submit.prevent="batchValidate">
       <table class="table table-bordered align-middle">
         <thead>
           <tr>
@@ -19,7 +39,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="inv in pendingInvoices" :key="inv.invoiceId">
+          <tr v-for="inv in filteredInvoices" :key="inv.invoiceId">
             <td><input type="checkbox" v-model="checkedIds" :value="inv.invoiceId" /></td>
             <td>{{ inv.users?.usersId }}</td>
             <td>{{ inv.feeType?.description }}</td>
@@ -49,9 +69,34 @@ const allChecked = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
 
+const feeTypes = ref([])
+const billingPeriods = ref([])
+const filter = ref({ feeTypeId: '', billingPeriodId: '' })
+
+const filteredInvoices = computed(() => {
+  return pendingInvoices.value.filter(inv => {
+    let match = true
+    if (filter.value.feeTypeId && inv.feeType?.feeTypeId != filter.value.feeTypeId) match = false
+    if (filter.value.billingPeriodId && inv.billingPeriod?.billingPeriodId != filter.value.billingPeriodId) match = false
+    return match
+  })
+})
+
 onMounted(async () => {
   await fetchPending()
+  try {
+    const res1 = await axios.get('/finance/fee-types')
+    feeTypes.value = res1.data
+    const res2 = await axios.get('/finance/billing-periods')
+    billingPeriods.value = res2.data
+  } catch (e) {
+    errorMsg.value = '載入選單失敗：' + (e.response?.data?.message || e.message)
+  }
 })
+
+function clearFilter() {
+  filter.value = { feeTypeId: '', billingPeriodId: '' }
+}
 
 async function fetchPending() {
   try {

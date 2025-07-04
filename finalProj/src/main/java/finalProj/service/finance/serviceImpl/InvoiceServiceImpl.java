@@ -93,4 +93,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceRepository.findByStatus(status);
     }
 
+    @Override
+    public List<Invoice> findUnpaidInvoicesByUserId(Integer usersId) {
+        return invoiceRepository.findByUsers_UsersIdAndPaymentStatusNotIgnoreCase(usersId, "paid");
+    }
+
 }

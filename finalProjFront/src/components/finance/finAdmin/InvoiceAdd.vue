@@ -186,13 +186,16 @@ const submitForm = async () => {
       feeTypeId: form.value.feeTypeId,
       billingPeriodId: form.value.billingPeriodId
     })
-    successMsg.value = '新增成功！'
+    successMsg.value = '新增成功！將導向審核頁面...'
     selectedFeeTypeDesc.value = ''
     selectedFeeType.value = null
     selectedPeriodName.value = ''
     selectedPeriod.value = null
     form.value.feeTypeId = ''
     form.value.billingPeriodId = ''
+    setTimeout(() => {
+      router.push('/finance/invoice-review')
+    }, 1200)
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
   }

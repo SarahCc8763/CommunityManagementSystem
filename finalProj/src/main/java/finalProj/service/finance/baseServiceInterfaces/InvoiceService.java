@@ -26,4 +26,7 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     // 查詢所有status為false（待審核）
     java.util.List<Invoice> findByStatus(Boolean status);
+
+    // 根據 userId 查詢未繳帳單
+    List<Invoice> findUnpaidInvoicesByUserId(Integer usersId);
 }

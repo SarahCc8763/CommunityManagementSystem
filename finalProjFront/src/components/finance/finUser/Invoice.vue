@@ -8,32 +8,36 @@
       <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
     </div>
     <div v-else class="invoice-list grid-list">
-      <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card pro-card">
-        <div class="pro-header">
-          <div>
-            <span class="pro-id">#{{ invoice.invoiceId }}</span>
-            <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
+      <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card pro-card horizontal-card">
+        <div class="card-left">
+          <div class="pro-header">
+            <div>
+              <span class="pro-id">#{{ invoice.invoiceId }}</span>
+              <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
+            </div>
+            <div class="pro-amount">
+              <span>NT$</span>
+              <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
+              <span v-if="isOverdue(invoice)" class="overdue-label">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                  <circle cx="12" cy="12" r="10" fill="#f87171" />
+                  <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                  <circle cx="12" cy="16" r="1.2" fill="#fff" />
+                </svg>
+                <span class="overdue-text">逾期</span>
+              </span>
+            </div>
           </div>
-          <div class="pro-amount">
-            <span>NT$</span>
-            <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
-            <span v-if="isOverdue(invoice)" class="overdue-label">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
-                <circle cx="12" cy="12" r="10" fill="#f87171" />
-                <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                <circle cx="12" cy="16" r="1.2" fill="#fff" />
-              </svg>
-              <span class="overdue-text">逾期</span>
-            </span>
+          <div class="pro-info">
+            <div><b>{{ invoice.feeType?.description || '—' }}</b>（{{ invoice.periodName }}）</div>
+            <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
+            <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
           </div>
         </div>
-        <div class="pro-info">
-          <div><b>{{ invoice.feeType?.description || '—' }}</b>（{{ invoice.periodName }}）</div>
-          <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
-          <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
+        <div class="card-right">
+          <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'"
+            class="pay-btn pro-pay-btn" @click="openPayModal(invoice)">立即繳費</button>
         </div>
-        <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'"
-          class="pay-btn pro-pay-btn" @click="openPayModal(invoice)">立即繳費</button>
       </div>
       <div class="total-row">
         <span>總金額：</span>
@@ -192,8 +196,8 @@ function isOverdue(invoice) {
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/finance/invoice/unpaid')
-    invoices.value = res.data  // 正常就是一個陣列
+    const res = await axios.get('/finance/invoice/unpaid', { params: { userId: userStore.userId } })
+    invoices.value = res.data  // 只會拿到該用戶的帳單
   } catch (err) {
     console.error('載入帳單失敗:', err)
   }
@@ -235,14 +239,48 @@ onMounted(async () => {
 }
 
 .invoice-list.grid-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px 0;
+}
+
+.horizontal-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  max-width: 820px;
+  min-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 32px 18px 32px;
+  gap: 0 32px;
+}
+.card-left {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.card-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 120px;
 }
 
 @media (max-width: 900px) {
-  .invoice-list.grid-list {
-    grid-template-columns: 1fr;
+  .horizontal-card {
+    flex-direction: column;
+    max-width: 100vw;
+    min-width: 0;
+    padding: 18px 8px 12px 8px;
+    gap: 12px 0;
+  }
+  .card-right {
+    justify-content: flex-start;
+    min-width: 0;
   }
 }
 
