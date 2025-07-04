@@ -17,7 +17,9 @@ import finalProj.domain.poll.PollOption;
 import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.repository.bulletin.BulletinCategoryRepository;
 import finalProj.repository.bulletin.BulletinRepository;
+import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
+import finalProj.repository.poll.PollVoteRepository;
 import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,12 +42,18 @@ public class BulletinService {
     @Autowired
     private PollRepository pollRepository;
 
+    @Autowired
+    private PollVoteRepository pollVoteRepository;
+
+    @Autowired
+    private PollOptionRepository pollOptionRepository;
+
     BulletinService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
-    public List<Bulletin> findAll() {
-        return bulletinRepository.findAll();
+    public List<Bulletin> findAll(Integer communityId) {
+        return bulletinRepository.findByCommunity_communityId(communityId);
     }
 
     public Long count() {
@@ -176,22 +184,16 @@ public class BulletinService {
                 }
             }
 
-            // 移除舊附件
-            if (existing.getAttachments() != null && !existing.getAttachments().isEmpty()) {
-                bulletinAttachmentRepository.deleteAll(existing.getAttachments());
-                existing.getAttachments().clear();
-                log.debug("已刪除舊有附件");
-            }
+            // 清除舊附件
+            existing.getAttachments().clear(); // Hibernate 會自動處理資料庫刪除
 
             // 加入新附件（若有）
             if (entity.getAttachments() != null && !entity.getAttachments().isEmpty()) {
-                List<BulletinAttachment> newAttachments = new ArrayList<>();
                 for (BulletinAttachment newAttachment : entity.getAttachments()) {
-                    newAttachment.setBulletin(existing);
-                    newAttachments.add(newAttachment);
+                    newAttachment.setBulletin(existing); // 記得設關聯
+                    existing.getAttachments().add(newAttachment);
                     log.debug("加入新附件：{}", newAttachment.getFileName());
                 }
-                existing.setAttachments(newAttachments);
             }
 
             Bulletin updated = bulletinRepository.save(existing);
@@ -215,13 +217,38 @@ public class BulletinService {
         }
 
         try {
-            if (bulletinRepository.existsById(id)) {
-                bulletinRepository.deleteById(id);
+            Optional<Bulletin> optional = bulletinRepository.findById(id);
+
+            if (optional.isPresent()) {
+                Bulletin bulletin = optional.get();
+                Poll poll = bulletin.getPoll();
+                if (poll != null) {
+
+                    // 強制初始化（確保已加載）
+                    poll.getVotes().size();
+                    poll.getOptions().size();
+
+                    // 刪除投票紀錄
+                    pollVoteRepository.deleteAll(poll.getVotes());
+
+                    // 刪除選項
+                    pollOptionRepository.deleteAll(poll.getOptions());
+
+                    // 解除關聯（poll.id = bulletin.id，所以一定要處理這一步）
+                    bulletin.setPoll(null);
+
+                    // ⭐ 更新 bulletin，否則 Hibernate 不會發現 poll 被解除
+                    bulletinRepository.save(bulletin);
+                }
+
+                bulletinRepository.delete(bulletin);
                 log.info("成功刪除公告，ID = {}", id);
                 return true;
+
             } else {
                 log.warn("刪除公告失敗：找不到 ID = {}", id);
             }
+
         } catch (Exception e) {
             log.error("刪除公告時發生例外：{}", e.getMessage(), e);
         }

@@ -46,6 +46,20 @@ public class Bulletin {
     private BulletinCategory category;
 
     @Transient
+    private Integer categoryId;
+
+    public Integer getCategoryId() {
+        if (category != null) {
+            categoryId = category.getId();
+        }
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    @Transient
     private String categoryName;
 
     @ManyToOne
@@ -73,21 +87,22 @@ public class Bulletin {
     @JsonBackReference("community-bulletin")
     private Community community;
 
-    @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("bulletin-poll")
     private Poll poll;
 
-    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("bulletin-attachment")
     private List<BulletinAttachment> attachments;
 
-    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("bulletin-comment")
     private List<BulletinComment> comments;
 
     @Transient
     private String userName;
 
+    @Transient
     public List<BulletinAttachment> getAttachments() {
         return attachments;
     }

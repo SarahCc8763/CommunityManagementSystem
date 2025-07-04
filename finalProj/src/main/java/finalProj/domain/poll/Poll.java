@@ -36,12 +36,12 @@ public class Poll {
     private Boolean isMultiple;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("poll-option")
-    private List<PollOption> options;
-
-    @OneToMany(mappedBy = "poll")
     @JsonManagedReference("poll-vote")
     private List<PollVote> votes;
+
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("poll-option")
+    private List<PollOption> options;
 
     public Bulletin getBulletin() {
         return bulletin;

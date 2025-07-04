@@ -2,7 +2,7 @@
 
 
     <div class="container py-4 ">
-        <BannerImage :imageSrc="OO" heading="最新公告" subtext="" textAlign="left" />
+        <BannerImage :imageSrc="OO" heading="公告管理" subtext="" textAlign="left" />
 
 
         <div class="d-flex gap-2 mb-3">
@@ -17,36 +17,40 @@
 
 
 
-        <!-- 公告 card 列表 -->
-        <div class="announcements-section">
-            <div class="announcements-grid">
+        <!-- 公告管理 card 列表 -->
+        <div>
+            <div>
                 <div v-for="bulletin in bulletins" :key="bulletin.id"
-                    :class="['announcement-card', getGridColor(bulletin.categoryName)]">
-                    <div class="announcement-header">
-                        <div class="announcement-badge fs-6">
-                            <i :class="['bi', getIcon(bulletin.categoryName)]"></i>
-                            {{ bulletin.categoryName }}
-                        </div>
-                        <div class="announcement-date">{{ formatDate(bulletin.postTime) }}</div>
+                    class=" border p-3 rounded bg-light shadow-sm my-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold text-dark fs-5">{{ bulletin.title }}</div>
+                        <small class="text-muted">{{ formatDate(bulletin.postTime) }}</small>
                     </div>
-                    <h3 class="announcement-title">{{ bulletin.title }}</h3>
-                    <p class="announcement-content">
-                        {{ normalizeNewline(truncateText(bulletin.description, 50)) }}
-                        <span v-if="bulletin.description.length > 50">
-                            ...
-                        </span>
+                    <div class="mb-2">
+                        <span class="badge bg-secondary me-2" style="font-size: 80%;">{{ bulletin.categoryName }}</span>
+                        <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
+                    </div>
+                    <p class="text-truncate text-muted small mb-3 fs-6">
+                        {{ normalizeNewline(truncateText(bulletin.description, 80)) }}
+                        <span v-if="bulletin.description.length > 80">...</span>
                     </p>
-                    <div class="announcement-footer">
-                        <span class="announcement-author">發布人：{{ bulletin.userName }}</span>
-                        <button class="read-more-btn" @click.prevent="openBulletin(bulletin.id)">
-                            <i class="bi bi-arrow-right"></i>
-                            閱讀更多
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-sm btn-outline-primary" @click="editBulletin(bulletin)">
+                            <i class="bi bi-pencil-square"></i> 編輯
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" @click="deleteBulletin(bulletin.id)">
+                            <i class="bi bi-trash"></i> 刪除
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" @click="viewBulletin(bulletin)">
+                            <i class="bi bi-eye"></i> 查看
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <EditBulletinModal v-model:visible="showEdit" :bulletin="selectedBulletin" :categoryList="categoryList"
+            :usersId="userId" @close="showEdit = false" @update="fetchAll" :communityId="communityId" />
 
         <!-- 公告 Modal -->
         <div class="modal fade " id="bulletinModal" tabindex="-1">
@@ -178,14 +182,24 @@
 
 
 
+
 <script setup>
+// 函式庫
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import Swal from 'sweetalert2'
 
-
+// 元件
 import BannerImage from '@/components/forAll/BannerImage.vue';
-import OO from '@/assets/images/bulletin/banner.png';
+import OO from '@/assets/images/main/adminBanner.jpg';
+import EditBulletinModal from '@/components/bulletin/EditBulletinModal.vue';
+
+// assets
+import maleIcon from '@/assets/images/bulletin/male.png'
+import femaleIcon from '@/assets/images/bulletin/female.png'
+import defaultIcon from '@/assets/images/bulletin/default.png'
+
 
 const bulletins = ref([])
 const selectedBulletin = ref(null)
@@ -197,9 +211,9 @@ const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
 const userId = 3 // 假設當前使用者 id
-import maleIcon from '@/assets/images/bulletin/male.png'
-import femaleIcon from '@/assets/images/bulletin/female.png'
-import defaultIcon from '@/assets/images/bulletin/default.png'
+const communityId = 1 // 假設當前社區 id
+const showEdit = ref(false)
+
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
 const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
@@ -208,6 +222,47 @@ const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
 const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
 const gridClass = ['important', 'event', 'service', '']
 const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
+
+
+function editBulletin(bulletin) {
+    selectedBulletin.value = bulletin
+    showEdit.value = true
+}
+
+function deleteBulletin(id) {
+    Swal.fire({
+        title: '確定刪除？',
+        text: '刪除後將無法恢復',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定',
+        cancelButtonText: '取消'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`http://localhost:8080/api/bulletin/${id}`).then(res => {
+                if (res.data.success) {
+                    Swal.fire({
+                        title: '刪除成功',
+                        text: '公告已刪除',
+                        icon: 'success'
+                    })
+                    fetchAll()
+                } else {
+                    Swal.fire({
+                        title: '刪除失敗',
+                        text: '請稍後再試',
+                        icon: 'error'
+                    })
+                }
+            })
+        }
+    })
+}
+
+
+
 
 function getCategoryColor(categoryName) {
     const index = categoryList.value.findIndex(c => c === categoryName) % 5
@@ -238,11 +293,17 @@ onMounted(() => {
 })
 
 function fetchAll() {
-    axios.get('http://localhost:8080/api/bulletin')
+    axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
         .then(res => {
             console.log(res.data.list);
             bulletins.value = res.data.list
-            const cats = new Set(res.data.list.map(b => b.categoryName))
+            const cats = new Set(
+                res.data.list.map(b => ({
+                    name: b.categoryName,
+                    id: b.categoryId
+                }))
+            )
+
             categoryList.value = [...cats]
         })
 }

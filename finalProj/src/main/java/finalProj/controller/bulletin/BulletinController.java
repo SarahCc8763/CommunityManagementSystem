@@ -246,11 +246,11 @@ public class BulletinController {
     // -- 查詢公告 --
     //
 
-    // 查詢所有公告
-    @GetMapping
-    public BulletinResponse findAllBulletin() {
+    // 查詢所有該社區公告
+    @GetMapping("/community/{communityId}")
+    public BulletinResponse findAllBulletin(@PathVariable Integer communityId) {
         BulletinResponse response = new BulletinResponse();
-        if (bulletinService.findAll().isEmpty()) {
+        if (bulletinService.findAll(communityId).isEmpty()) {
             response.setMessage("查無資料");
             response.setSuccess(false);
         } else {
@@ -258,7 +258,7 @@ public class BulletinController {
             response.setCount(bulletinService.count());
             response.setSuccess(true);
             response.setMessage("查詢成功");
-            response.setList(bulletinService.findAll());
+            response.setList(bulletinService.findAll(communityId));
         }
         return response;
     }
@@ -375,15 +375,14 @@ public class BulletinController {
         }
     }
 
-    // 暫不提供修改
-    // @PutMapping("/category/{id}")
-    // public BulletinCategory modifyBulletinCategory(@RequestBody BulletinCategory
-    // body) {
-    // if (body != null) {
-    // return bulletinCategoryService.modify(body);
-    // }
-    // return null;
-    // }
+    @PutMapping("/category/{id}")
+    public BulletinCategory modifyBulletinCategory(@PathVariable Integer id, @RequestBody BulletinCategory body) {
+        if (body != null) {
+            body.setId(id);
+            return bulletinCategoryService.modify(body);
+        }
+        return null;
+    }
 
     //
     // -- 查詢全部公告分類 --

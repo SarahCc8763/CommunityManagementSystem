@@ -66,4 +66,10 @@ public class BulletinCategory {
         this.community = community;
     }
 
-}
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }

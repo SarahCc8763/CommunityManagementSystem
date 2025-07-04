@@ -8,8 +8,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.users.Users;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -48,7 +50,7 @@ public class BulletinComment {
     @Column(name = "bulletin_comment_is_alive", insertable = false)
     private Boolean isAlive;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("bulletinComment-like")
     private List<BulletinCommentLike> bulletinCommentLikes;
 
@@ -57,7 +59,7 @@ public class BulletinComment {
     @JsonBackReference("bulletinComment-parent")
     private BulletinComment parentComment;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("bulletinComment-parent")
     private List<BulletinComment> replies;
 
