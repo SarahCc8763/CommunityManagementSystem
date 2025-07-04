@@ -8,8 +8,9 @@
 
  template:
  
+ <div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;"> //這邊自己調整想要他多寬 或是選擇不加這個div
  <BannerImage :imageSrc="OO" heading="大標題" subtext="小內文" textAlign="left"/>
- 
+  </div>
  
  **圖片是必傳, 大標小標可寫可不寫
  **可以自己改style
@@ -58,10 +59,15 @@ defineProps({
 .hero-image-wrapper {
     position: relative;
     overflow: hidden;
-    max-height: 300px;
-    max-width: 100%;
+    width: 100%;
+    /* ✅ 佔滿整個父容器寬度 */
+    max-width: 100vw;
+    /* ✅ 最多等於螢幕寬度 */
+    height: 300px;
+    /* 或你原本的高度 */
     margin: 0 auto;
-
+    border-radius: 0px;
+    /* 或視需求保留圓角 */
 }
 
 .hero-image {
@@ -74,7 +80,7 @@ defineProps({
 
 .hero-text {
     position: absolute;
-    top: 50%;
+    top: 70%;
     transform: translateY(-50%);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     animation: fadeInUp 0.8s ease;

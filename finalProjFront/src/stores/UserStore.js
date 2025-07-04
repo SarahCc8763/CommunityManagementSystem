@@ -22,6 +22,11 @@ export const useUserStore = defineStore('user', () => {
         avatarUrl.value = ''
     }
 
+    const userId = ref(3)
+    function setUserId(data) {
+        userId.value = data
+    }
+
     const token = ref('')
     function setToken(data) {
         token.value = data
@@ -39,7 +44,6 @@ export const useUserStore = defineStore('user', () => {
         id.value = data
     }
     const displayName = computed(() => name.value || username.value)
-
     return {
         isAuthenticated,
         name,

@@ -1,18 +1,20 @@
+import finUser from '@/components/finance/finUser/finUser.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
+import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
-import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
+import Invoice from '../components/finance/finUser/Invoice.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
-import Park from "@/views/pages/Park.vue"
-import ParkInitialize from "@/views/pages/ParkInitialize.vue"
-import ParkSlot from "@/views/pages/ParkSlot.vue";
-import ParkRentalFront from "@/views/pages/ParkRentalFront.vue"
-import ParkRentalBack from "@/views/pages/ParkRentalBack.vue"
-import LotteryEvent from '@/views/pages/LotteryEvent.vue'
-import LotteryApply from '@/views/pages/LotteryApply.vue'
+import Home from '../views/Home.vue'
+import LotteryApply from "@/components/parking/LotteryApply.vue"
+import LotteryEvent from "@/components/parking/LotteryEvent.vue"
+import Park from "@/components/parking/Park.vue"
+import ParkInitialize from "@/components/parking/ParkInitialize.vue"
+import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
+import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
+import ParkSlot from "@/components/parking/ParkSlot.vue"
+import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,31 +28,41 @@ const router = createRouter({
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
       component: FeeTypeAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/billing-period/add',
       name: 'BillingPeriodAdd',
       component: BillingPeriodAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice/add',
       name: 'InvoiceAdd',
       component: InvoiceAdd,
+      meta: { dark: true },
     },
-    {
-      path: '/finance/invoice-response/add',
-      name: 'InvoiceResponseAdd',
-      component: InvoiceResponseAdd,
-    },
+
     {
       path: '/finance/receipt/add',
       name: 'ReceiptAdd',
       component: ReceiptAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice/history',
       name: 'InvoiceHistory',
       component: InvoiceHistory,
+    },
+    {
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice
+    },
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser
     },
     {
       path: "/pages/park",
@@ -86,6 +98,11 @@ const router = createRouter({
       path: "/pages/park/lottery-apply",
       name: "lotteryApply",
       component: LotteryApply,
+    },
+    {
+      path: "/pages/park/temporary-parking",
+      name: "temporaryParking",
+      component: TemporaryParking,
     },
   ],
 })

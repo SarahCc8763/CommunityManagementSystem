@@ -2,7 +2,7 @@
 
 
 <template>
-  <header class="header" @mouseleave="closeDropdown">
+  <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
     <router-link to="/" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
@@ -75,9 +75,8 @@ const activeIndex = ref(null)
 
 // 假資料!!!!!!!!!使用者登入狀態與資料
 const user = ref({
-  name: '小明',
-  avatar: 'https://randomuser.me/api/portraits/women/72.jpg',
-  points: 120
+  avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
+  points: 500
 })
 
 // 回首頁
@@ -122,6 +121,7 @@ const keepDropdown = () => {
 // 點擊子功能導頁
 const handleNavigate = (item) => {
   router.push({ name: item.routeName })
+  activeIndex.value = null // 跳轉後自動收起下拉選單
 }
 
 // 監聽登入成功事件
@@ -178,9 +178,9 @@ const menuList = ref([
       { label: '繳費紀錄', routeName: 'InvoiceHistory' },
       { label: '新增費用類型', routeName: 'FeeTypeAdd' },
       { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
-      { label: '新增發票', routeName: 'InvoiceAdd' },
+      { label: '新增繳款單', routeName: 'InvoiceAdd' },
       { label: '新增收據', routeName: 'ReceiptAdd' },
-      { label: '發票回覆', routeName: 'InvoiceResponseAdd' },
+
     ]
   },
   {
@@ -215,6 +215,7 @@ const menuList = ref([
       { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
       { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
       { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
+      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
     ]
   },
   {
@@ -226,9 +227,14 @@ const menuList = ref([
   }
 ])
 
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
+
 </script>
 
 <style scoped>
+/* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 .header {
   width: 100vw;
   height: 72px;
@@ -237,7 +243,6 @@ const menuList = ref([
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 0 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -246,7 +251,6 @@ const menuList = ref([
   top: 0;
   left: 0;
   right: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
 }
 
@@ -463,7 +467,7 @@ body {
 
 /* 其他沒選中的分類：透明 */
 .mega-inactive {
-  opacity: 0.4;
+  opacity: 0.5;
   transition: opacity 0.3s;
   pointer-events: auto;
 }
@@ -490,7 +494,7 @@ body {
 .category-items .dropdown-item {
   padding: 10px 0;
   font-size: 14px;
-  color: #4a5568;
+  color: #2a3342;
   cursor: pointer;
   user-select: text;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

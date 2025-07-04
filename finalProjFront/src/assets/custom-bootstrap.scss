@@ -195,6 +195,25 @@ body {
     color: white;
 }
 
+.btn-outline-gray {
+    background: white;
+    color: #6c757d;
+    /* Bootstrap gray-600 */
+    border: 2px solid #b7bec4;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-gray:hover {
+    background: #90aac4;
+    /* 淺灰藍 */
+    color: white;
+    border-color: #6788a5;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+
 /* 卡片樣式 */
 .card {
     background: rgba(255, 255, 255, 0.95);
@@ -262,6 +281,17 @@ body {
     margin-bottom: 8px;
 }
 
+// 標題樣式 
+
+.tag-style {
+    background: #f1f5f9;
+    /* 淺灰底 */
+    border-left: 5px solid #667eea;
+    /* 左邊色條像標籤 */
+    border-radius: 10px;
+    display: inline-block;
+}
+
 /* 徽章樣式 */
 .badge {
     display: inline-flex;
@@ -272,13 +302,6 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-
-.tag-style {
-    background: #f1f5f9;
-    border-left: 5px solid #667eea;
-    border-radius: 10px;
-    display: inline-block;
 }
 
 .badge-primary {
@@ -598,6 +621,14 @@ body {
 
 :root {
     --serif-title: 'Merriweather', 'Georgia', serif;
+    --color-bg-dark: #181c24;
+    --color-bg-dark-secondary: #232a36;
+    --color-text-dark: #f1f1f1;
+    --color-primary-dark: #4f8cff;
+    --color-border-dark: #2c3440;
+    --color-table-row-dark: #232a36;
+    --color-table-hover-dark: #2d3644;
+    --color-tag-dark: #2d3644;
 }
 
 .serif-title {
@@ -605,4 +636,261 @@ body {
     font-weight: 700;
     letter-spacing: 0.5px;
     color: #2d3748;
+}
+
+.dark-mode {
+    background: var(--color-bg-dark) !important;
+    color: #e0e6f0 !important;
+    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-mode .modal-content {
+    background: var(--color-bg-dark-secondary) !important;
+    color: var(--color-text-dark) !important;
+    border: 1px solid var(--color-border-dark);
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background: #232a36 !important;
+    color: #f1f1f1 !important;
+    border: 1px solid #2c3440;
+}
+
+.dark-mode .form-label {
+    color: #b0b8c1 !important;
+}
+
+.dark-mode .btn-primary {
+    background: var(--color-primary-dark) !important;
+    border: none;
+}
+
+.dark-mode .btn-secondary {
+    background: #444c5c !important;
+    color: #f1f1f1 !important;
+}
+
+.dark-mode .table {
+    background: var(--color-bg-dark-secondary) !important;
+    color: var(--color-text-dark) !important;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+    background: var(--color-table-row-dark) !important;
+    color: var(--color-text-dark) !important;
+}
+
+.dark-mode .table-hover tbody tr:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+    /* #3b82f6 藍色加強色差 */
+    color: #fff !important;
+    transition: background 0.25s, color 0.25s;
+}
+
+.dark-mode .tag-style {
+    background: var(--color-tag-dark) !important;
+    color: #5b798e !important;
+    border-left: 5px solid var(--color-primary-dark) !important;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .alert-success {
+    background: #22332a !important;
+    color: #a6e3b0 !important;
+    border-color: #2e4d3a;
+}
+
+.dark-mode .alert-danger {
+    background: #3a2323 !important;
+    color: #ffb4b4 !important;
+    border-color: #4d2e2e;
+}
+
+.dark-mode.header,
+.header.dark-mode {
+    background: linear-gradient(135deg, #3a2a5d 0%, #1e3c3a 100%) !important;
+    color: #f8fafd !important;
+    border-bottom: 1px solid #2e2a3a;
+}
+
+.left-side-nav.dark-mode,
+.dark-mode .left-side-nav {
+    background: linear-gradient(135deg, #2e3a5d 60%, #1e3c3a 100%) !important;
+    color: #f8fafd !important;
+    border-right: 1px solid #2e2a3a;
+}
+
+.dark-mode .user-profile-card,
+.dark-mode .placeholder-card {
+    background: linear-gradient(135deg, #3a2a5d 60%, #2e3a5d 100%) !important;
+    color: #f8fafd !important;
+    border: 1.5px solid #4a3a6a;
+    box-shadow: 0 4px 24px rgba(58, 42, 93, 0.18);
+}
+
+.dark-mode .placeholder-login-btn {
+    background: #4a3a6a !important;
+    color: #e0eaff !important;
+    border: 1px solid #5a4a7a;
+}
+
+.dark-mode .header .nav-item,
+.dark-mode .header .mega-menu,
+.dark-mode .header .mega-category,
+.dark-mode .header .category-title,
+.dark-mode .header .category-items,
+.dark-mode .header .user-info,
+.dark-mode .header .auth-button,
+.header.dark-mode .nav-item,
+.header.dark-mode .mega-menu,
+.header.dark-mode .mega-category,
+.header.dark-mode .category-title,
+.header.dark-mode .category-items,
+.header.dark-mode .user-info,
+.header.dark-mode .auth-button {
+    color: #f8fafd !important;
+}
+
+.dark-mode .left-side-nav .menu-title,
+.dark-mode .left-side-nav .menu-link,
+.dark-mode .left-side-nav .submenu-link,
+.left-side-nav.dark-mode .menu-title,
+.left-side-nav.dark-mode .menu-link,
+.left-side-nav.dark-mode .submenu-link {
+    color: #f8fafd !important;
+}
+
+.dark-mode .menu-header-active,
+.dark-mode .menu-link-single {
+    background: #4a3a6a !important;
+}
+
+.dark-mode .quick-action-card {
+    color: #dbeafe !important;
+}
+
+.dark-mode .logout-button {
+    background: #4a3a6a !important;
+    color: #e0eaff !important;
+    border: 1px solid #5a4a7a;
+    transition: background 0.3s, color 0.3s;
+}
+
+.dark-mode .logout-button:hover {
+    background: #5a4a7a !important;
+    color: #fff !important;
+}
+
+.dark-mode .menu-title,
+.dark-mode .menu-link,
+.dark-mode .submenu-link,
+.left-side-nav.dark-mode .menu-title,
+.left-side-nav.dark-mode .menu-link,
+.left-side-nav.dark-mode .submenu-link {
+    color: #dbeafe !important;
+}
+
+.dark-mode .header .nav-item,
+.dark-mode .header .mega-menu,
+.dark-mode .header .mega-category,
+.dark-mode .header .category-title,
+.dark-mode .header .category-items,
+.dark-mode .header .user-info,
+.dark-mode .header .auth-button,
+.header.dark-mode .nav-item,
+.header.dark-mode .mega-menu,
+.header.dark-mode .mega-category,
+.header.dark-mode .category-title,
+.header.dark-mode .category-items,
+.header.dark-mode .user-info,
+.header.dark-mode .auth-button {
+    color: #dbeafe !important;
+}
+
+.dark-mode .header .mega-menu,
+.header.dark-mode .mega-menu {
+    background: #232a36 !important;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(40, 60, 100, 0.18);
+    border: 1.5px solid #2c3440;
+}
+
+.dark-mode .header .dropdown-item,
+.header.dark-mode .dropdown-item {
+    color: #dbeafe !important;
+    background: transparent !important;
+}
+
+.dark-mode .header .dropdown-item:hover,
+.header.dark-mode .dropdown-item:hover {
+    background: #2e3a5d !important;
+    color: #fff !important;
+}
+
+/* 左側nav功能列表下服務介紹區塊深色主題 */
+.dark-mode .left-side-nav .menu-group,
+.left-side-nav.dark-mode .menu-group {
+    background: #232a36 !important;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(40, 60, 100, 0.10);
+    transition: background 0.4s;
+}
+
+.dark-mode .left-side-nav .menu-header,
+.left-side-nav.dark-mode .menu-header {
+    background: #2e3a5d !important;
+    color: #dbeafe !important;
+    border-radius: 14px 14px 0 0;
+    font-weight: 600;
+    transition: background 0.4s, color 0.4s;
+}
+
+.dark-mode .left-side-nav .submenu-list,
+.left-side-nav.dark-mode .submenu-list {
+    background: #232a36 !important;
+    border-radius: 0 0 14px 14px;
+    padding-bottom: 6px;
+}
+
+.dark-mode .left-side-nav .submenu-item,
+.left-side-nav.dark-mode .submenu-item {
+    color: #b6c6e3 !important;
+    padding-left: 18px;
+    border-radius: 8px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.dark-mode .left-side-nav .submenu-item:hover,
+.left-side-nav.dark-mode .submenu-item:hover {
+    background: #2e3a5d !important;
+    color: #fff !important;
+}
+
+.dark-mode .tag-style .section-title,
+.dark-mode .tag-style .text-primary,
+.dark-mode .tag-style h4 {
+    color: #a0c3dc !important;
+}
+
+.dark-mode .user-profile-card .user-name {
+    color: #90c7cb !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+}
+
+.dark-mode .header .welcome-block .welcome {
+    color: #90c7cb !important;
+}
+
+.left-side-nav {
+    z-index: 1000 !important;
+}
+
+.header {
+    z-index: 1000 !important;
 }
