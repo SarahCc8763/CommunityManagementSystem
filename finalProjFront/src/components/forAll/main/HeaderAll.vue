@@ -230,7 +230,9 @@ const menuList = ref([
     title: '公告',
     children: [
       { label: '重要通知', routeName: 'announcement-important' },
-      { label: '最新公告', routeName: 'announcement-latest' }
+      { label: '最新公告', routeName: 'announcement-latest' },
+      { label: '公告管理', routeName: 'bulletin-admin' },
+
     ]
   }
 ])
