@@ -82,6 +82,69 @@
       </div>
     </div>
   </div>
+  <!-- 修改用 -->
+
+
+
+
+
+  <!-- 修改費用類別 Modal -->
+  <div class="modal fade" id="editFeeTypeModal" tabindex="-1" aria-labelledby="editFeeTypeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form @submit.prevent="submitEditForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editFeeTypeModalLabel">修改費用類別</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">費用代碼</label>
+                  <input v-model="editItem.feeCode" class="form-control" required disabled />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">名稱/描述</label>
+                  <input v-model="editItem.description" class="form-control" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">單價</label>
+                  <input v-model.number="editItem.amountPerUnit" type="number" class="form-control" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">單位</label>
+                  <input v-model="editItem.unit" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">頻率</label>
+                  <input v-model="editItem.frequency" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">備註</label>
+                  <input v-model="editItem.note" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">狀態</label>
+                  <select v-model="editItem.status" class="form-select">
+                    <option :value="true">啟用</option>
+                    <option :value="false">停用</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button type="submit" class="btn btn-primary">儲存修改</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
 
   <!-- 顯示每筆資料 -->
   <div class="container mt-4" :class="{ 'dark-mode': isDarkMode }">
@@ -135,9 +198,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from '@/plugins/axios.js'
-
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
 
@@ -149,16 +210,9 @@ const editItem = ref({})
 const deleteTarget = ref(null)
 const feeTypes = ref([])
 
-const fetchFeeTypes = async () => {
-  try {
-    const response = await axios.get('/finance/fee-types')
-    feeTypes.value = response.data
-  } catch (e) {
-    errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)
-  }
-}
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
+
 const form = ref({
   feeCode: '',
   description: '',
@@ -170,6 +224,15 @@ const form = ref({
   status: true,
 })
 
+const fetchFeeTypes = async () => {
+  try {
+    const response = await axios.get('/finance/fee-types')
+    feeTypes.value = response.data
+  } catch (e) {
+    errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)
+  }
+}
+
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
@@ -177,8 +240,6 @@ const submitForm = async () => {
   try {
     await axios.post('/finance/fee-types', form.value)
     successMsg.value = '新增成功！'
-
-    // 清空表單
     form.value = {
       feeCode: '',
       description: '',
@@ -189,15 +250,10 @@ const submitForm = async () => {
       communityId: null,
       status: true
     }
-
-    // 關閉 modal
     const modalEl = document.getElementById('feeTypeModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
     modal?.hide()
-
-    // 重新載入列表
     await fetchFeeTypes()
-
   } catch (e) {
     if (e.response?.status === 409) {
       errorMsg.value = '新增失敗：費用代碼已存在，請改用其他代碼'
@@ -207,14 +263,43 @@ const submitForm = async () => {
   }
 }
 
+const openEditModal = (item) => {
+  editItem.value = { ...item }
+  const modal = new bootstrap.Modal(document.getElementById('editFeeTypeModal'))
+  modal.show()
+}
 
-
-onMounted(async () => {
+const submitEditForm = async () => {
   try {
+    await axios.put(`/finance/fee-types/${editItem.value.feeTypeId}`, editItem.value)
+    successMsg.value = '修改成功！'
+    setTimeout(() => {
+      const modalEl = document.getElementById('editFeeTypeModal')
+      const modal = bootstrap.Modal.getInstance(modalEl)
+      modal?.hide()
+      successMsg.value = ''
+    }, 2000)
     await fetchFeeTypes()
-  } catch (err) {
-    console.error('載入失敗：', err)
+  } catch (e) {
+    errorMsg.value = '修改失敗：' + (e.response?.data?.message || e.message)
   }
-})
+}
 
+const confirmDelete = (item) => {
+  if (window.confirm(`確定要刪除費用代碼「${item.feeCode}」嗎？`)) {
+    deleteFeeType(item.feeTypeId)
+  }
+}
+
+const deleteFeeType = async (id) => {
+  try {
+    await axios.delete(`/finance/fee-types/${id}`)
+    successMsg.value = '刪除成功'
+    await fetchFeeTypes()
+  } catch (e) {
+    errorMsg.value = '刪除失敗：' + (e.response?.data?.message || e.message)
+  }
+}
+
+onMounted(fetchFeeTypes)
 </script>

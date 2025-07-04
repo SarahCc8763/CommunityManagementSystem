@@ -18,7 +18,7 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別名稱</label>
-                  <input v-model="form.description" class="form-control" required />
+                  <input v-model="form.periodName" class="form-control" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別代碼</label>
@@ -119,19 +119,19 @@
             <th scope="col">開始日</th>
             <th scope="col">結束日</th>
             <th scope="col">截止日</th>
-            <th scope="col">費用類型ID</th>
+
             <th scope="col">狀態</th>
             <th scope="col">備註</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{{ searchResult.description }}</td>
+            <td>{{ searchResult.periodName }}</td>
             <td>{{ searchResult.periodCode }}</td>
             <td>{{ searchResult.startDate }}</td>
             <td>{{ searchResult.endDate }}</td>
             <td>{{ searchResult.dueDate }}</td>
-            <td>{{ searchResult.feeTypeId }}</td>
+
             <td>
               <span class="badge" :class="searchResult.status ? 'badge-success' : 'badge-secondary'">
                 {{ searchResult.status ? '啟用' : '停用' }}
@@ -154,19 +154,19 @@
               <th scope="col">開始日</th>
               <th scope="col">結束日</th>
               <th scope="col">截止日</th>
-              <th scope="col">費用類型ID</th>
+
               <th scope="col">狀態</th>
               <th scope="col">備註</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in latestBillingPeriods" :key="item.billingPeriodId" class="border-bottom">
-              <td>{{ item.description }}</td>
+              <td>{{ item.periodName }}</td>
               <td>{{ item.periodCode }}</td>
               <td>{{ item.startDate }}</td>
               <td>{{ item.endDate }}</td>
               <td>{{ item.dueDate }}</td>
-              <td>{{ item.feeTypeId }}</td>
+
               <td>
                 <span class="badge" :class="item.status ? 'badge-success' : 'badge-secondary'">
                   {{ item.status ? '啟用' : '停用' }}
@@ -195,7 +195,7 @@ const userStore = useUserStore()
 const successMsg = ref('')
 const errorMsg = ref('')
 const form = ref({
-  description: '',
+  periodName: '',
   periodCode: '',
   startDate: '',
   endDate: '',
@@ -261,7 +261,7 @@ const searchBillingPeriod = async () => {
   try {
     const params = {}
     if (searchId.value) params.billingPeriodId = searchId.value
-    if (searchName.value) params.description = searchName.value
+    if (searchName.value) params.periodName = searchName.value
     if (searchMonth.value) {
       let yearShort = String(searchYear.value).slice(-2)
       let code = ''

@@ -188,11 +188,13 @@ const menuList = ref([
       { label: '繳費總覽', routeName: 'FinUser' },
       { label: '待繳帳單', routeName: 'Invoice' },
       { label: '繳費紀錄', routeName: 'InvoiceHistory' },
-      { label: '新增費用類型', routeName: 'FeeTypeAdd' },
-      { label: '新增繳費期別', routeName: 'BillingPeriodAdd' },
-      { label: '新增繳款單', routeName: 'InvoiceAdd' },
-      { label: '新增收據', routeName: 'ReceiptAdd' },
-      { label: '請款單審核', routeName: 'InvoiceValidate' },
+      { label: 'A新增費用類型', routeName: 'FeeTypeAdd' },
+      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd' },
+      { label: 'A新增繳款單', routeName: 'InvoiceAdd' },
+      { label: 'A新增收據', routeName: 'ReceiptAdd' },
+      { label: 'A請款單審核', routeName: 'InvoiceValidate' },
+      { label: 'A查看繳款回覆', routeName: 'InvoiceWithResponse' },
+
     ]
   },
   {

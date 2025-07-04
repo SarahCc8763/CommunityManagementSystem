@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import finalProj.domain.finance.BillingPeriod;
-import finalProj.domain.finance.FeeType;
+
 import finalProj.dto.finance.BillingPeriodDTO;
-import finalProj.dto.finance.FeeTypeDTO;
-import finalProj.repository.finance.FeeTypeRepository;
+
 import finalProj.service.finance.baseServiceInterfaces.BillingPeriodService;
 
 @RestController
@@ -29,9 +28,6 @@ public class BillingPeriodCurdController {
 
     @Autowired
     private BillingPeriodService billingPeriodService;
-
-    @Autowired
-    private FeeTypeRepository feeTypeRepository;
 
     // Entity 轉 DTO
     private BillingPeriodDTO toDTO(BillingPeriod entity) {
