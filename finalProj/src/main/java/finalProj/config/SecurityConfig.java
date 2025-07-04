@@ -14,16 +14,15 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults());
+                .csrf(csrf -> csrf.disable()) // 如果你要用表單登入，建議不要關
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/**", "/api/**", "/**", "/finance/**").permitAll()
+                        .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

@@ -21,7 +21,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Units", uniqueConstraints = { @UniqueConstraint(columnNames = { "unit", "floor" }) })
+@Table(name = "Units", uniqueConstraints = { @UniqueConstraint(columnNames = { "unit", "floor" })
+})
 public class Units {
 
 	@Id
@@ -48,12 +49,15 @@ public class Units {
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Packages> packagesList;
 
-	@JsonBackReference("communityUnit")
-	@ManyToOne
-	@JoinColumn(name = "community_id", nullable = false, referencedColumnName = "id")
-	private Community community;// (社區)多對一(ticket)
+	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("unitsUsersList")
+	private List<UnitsUsers> unitsUsersList;
 
-	// --- Getters and Setters ---
+	// @JsonBackReference("communityUnit")
+	@ManyToOne
+	@JoinColumn(name = "community_id", referencedColumnName = "id")
+	private Community community;
+
 	public Integer getUnitsId() {
 		return unitsId;
 	}
@@ -102,20 +106,35 @@ public class Units {
 		this.point = point;
 	}
 
+	public List<Packages> getPackagesList() {
+		return packagesList;
+	}
+
+	public void setPackagesList(List<Packages> packagesList) {
+		this.packagesList = packagesList;
+	}
+
+	public List<UnitsUsers> getUnitsUsersList() {
+		return unitsUsersList;
+	}
+
+	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
+		this.unitsUsersList = unitsUsersList;
+	}
+
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+
 	@Override
 	public String toString() {
 		return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
-				+ ", ping=" + ping + ", point=" + point + "]";
+				+ ", ping=" + ping + ", point=" + point + ", packagesList=" + packagesList + ", unitsUsersList="
+				+ unitsUsersList + ", community=" + community + "]";
 	}
-
-//	public Community getCommunity() {
-//		return community;
-//	}
-//
-//	public void setCommunity(Community community) {
-//		this.community = community;
-//	}
-
-	// Optional: toString()
 
 }

@@ -24,7 +24,6 @@ public class Packages {
     @Column(name = "packages_id")
     private Integer packagesId;
 
-    
     @JsonBackReference("unitPackage")
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "units_id")
@@ -39,20 +38,20 @@ public class Packages {
     @Column(name = "pickup_time")
     private LocalDateTime pickupTime;
 
-    @Column(length = 30 )
+    @Column(length = 30)
     private String status;
 
     @Column(length = 30)
     private String type;
 
-    @Column(name = "sign")  // url
-    private String sign;  
+    @Column(name = "sign", length = 500) // url
+    private String sign;
 
     @Column(length = 30)
     private String place;
 
-    @Column(name = "photo")  // url
-    private byte[] photo; 
+    @Column(name = "photo", length = 500) // url
+    private String photo;
 
     @JsonBackReference("communityPackage")
     @ManyToOne
@@ -132,11 +131,11 @@ public class Packages {
         this.place = place;
     }
 
-    public byte[] getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 
@@ -148,18 +147,16 @@ public class Packages {
         this.community = community;
     }
 
-	// toString
-	@Override
-	public String toString() {
-		return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
-				+ arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
-				+ sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
-				+ getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
-				+ getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
-				+ ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
-				+ ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
-	}
-    
-    
-}
+    // toString
+    @Override
+    public String toString() {
+        return "Packages [packagesId=" + packagesId + ", unit=" + unit + ", piece=" + piece + ", arrivalTime="
+                + arrivalTime + ", pickupTime=" + pickupTime + ", status=" + status + ", type=" + type + ", sign="
+                + sign + ", place=" + place + ", photo=" + photo + ", community=" + community + ", getPackagesId()="
+                + getPackagesId() + ", getUnit()=" + getUnit() + ", getPiece()=" + getPiece() + ", getArrivalTime()="
+                + getArrivalTime() + ", getPickupTime()=" + getPickupTime() + ", getStatus()=" + getStatus()
+                + ", getType()=" + getType() + ", getSign()=" + getSign() + ", getPlace()=" + getPlace()
+                + ", getPhoto()=" + getPhoto() + ", getCommunity()=" + getCommunity() + "]";
+    }
 
+}

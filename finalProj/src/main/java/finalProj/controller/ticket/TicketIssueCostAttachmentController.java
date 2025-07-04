@@ -67,24 +67,25 @@ public class TicketIssueCostAttachmentController {
 			return new ApiResponse<>(false, "更新失敗：" + e.getMessage(), null);
 		}
 	}
-	//查詢ticket下的所有金額附件
+
+	// 查詢ticket下的所有金額附件
 	@GetMapping("/ticket/{ticketId}")
 	public List<TicketIssueCostAttachment> findByTicketId(@PathVariable("ticketId") Integer ticketId) {
 		return ticketIssueCostAttachmentService.findByTicketId(ticketId);
 	}
-	
+
 	// 刪除留言
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// 呼叫 service.delete(id)
 		boolean result = ticketIssueCostAttachmentService.remove(id);
 		return result;
 	}
-	//查詢所有金額附件
+
+	// 查詢所有金額附件
 	@GetMapping("/All")
 	public List<TicketIssueCostAttachment> findAll() {
 		return ticketIssueCostAttachmentService.findAll();
 	}
-	
 
 }

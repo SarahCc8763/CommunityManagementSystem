@@ -22,7 +22,7 @@ import finalProj.repository.ticket.IssueTypeAndTicketRepository;
 import finalProj.repository.ticket.IssueTypeRepository;
 import finalProj.repository.ticket.TicketAttachmentRepository;
 import finalProj.repository.ticket.TicketRepository;
-import finalProj.repository.ticket.UsersRepository;
+import finalProj.repository.users.UsersRepository;
 import finalProj.util.CommunityFunctionUtils;
 
 @Service
@@ -82,7 +82,7 @@ public class TicketService {
 
 		Ticket ticket = new Ticket();
 		ticket.setCommunity(community);
-		ticket.setReporterId(reporter);
+		ticket.setReporter(reporter);
 		ticket.setTitle(dto.getTitle());
 		ticket.setAssignerId(assigner);
 		ticket.setStatus(dto.getStatus());
@@ -163,7 +163,7 @@ public class TicketService {
 
 		ticket.setId(id);
 		ticket.setCommunity(community);
-		ticket.setReporterId(reporter);
+		ticket.setReporter(reporter);
 		ticket.setAssignerId(assigner);
 		ticket.setTitle(dto.getTitle());
 		ticket.setStatus(dto.getStatus());
@@ -177,15 +177,23 @@ public class TicketService {
 
 	// 找尋所有資料
 	public List<Ticket> findAll() {
+		
 		return ticketRepository.findAll();
 	}
 
 	// 找尋特定資料
 	public List<Ticket> searchTickets(TicketSearchDTO dto) {
-		List<String> keywords = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
-		int size = keywords.size();
-		return ticketRepository.searchTicketsWithOptionalIssueTypes(dto.getId(), dto.getReporterId(),
-				dto.getAssignerId(), dto.getTitle(), keywords, size);
+	    List<String> issueTypes = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
+	    int issueTypeSize = issueTypes.size();
+
+	    return ticketRepository.searchTickets(
+	        dto.getTitle(),
+	        dto.getStatus(),
+	        dto.getStartDate(),
+	        dto.getReporterId(),
+	        issueTypes,
+	        issueTypeSize
+	    );
 	}
 
 }

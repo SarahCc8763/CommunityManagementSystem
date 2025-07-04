@@ -2,8 +2,15 @@ package finalProj.domain.community;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import finalProj.domain.bulletin.Bulletin;
+import finalProj.domain.bulletin.BulletinCategory;
+import finalProj.domain.faq.Faq;
+import finalProj.domain.faq.FaqCategory;
+import finalProj.domain.feedback.Feedback;
+import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.packages.Packages;
 import finalProj.domain.ticket.Ticket;
 import finalProj.domain.users.Units;
@@ -37,7 +44,6 @@ public class Community {
 	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
 	private Long function; // 使用功能
 
-//-----------------------------------------------------------------------------------------------------------------
 	@JsonManagedReference("communityTicket")
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
@@ -46,7 +52,8 @@ public class Community {
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Users> users;
 
-	@JsonManagedReference("communityUnit")
+	// @JsonManagedReference("communityUnit")
+	@JsonIgnoreProperties
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Units> units;
 
@@ -54,7 +61,33 @@ public class Community {
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Packages> packagesList;
 
-//-----------------------------------------------------------------------------------------------------------------
+	// --- 政宇的關聯 START ---
+	// 社區-公告
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-bulletin")
+	private List<Bulletin> bulletins;
+	// 社區-公告分類
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-bulletin-category")
+	private List<BulletinCategory> bulletinCategories;
+	// 社區-關鍵字分類
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-faq-category")
+	private List<FaqCategory> faqCategories;
+	// 社區-意見分類
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-feedback-category")
+	private List<FeedbackCategory> feedbackCategories;
+	// 社區-意見
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-feedback")
+	private List<Feedback> feedbacks;
+	// 社區-FAQ
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-faq")
+	private List<Faq> faqs;
+
+	// --- 政宇的關聯 END ---
 
 	@Override
 	public String toString() {
@@ -118,8 +151,8 @@ public class Community {
 		this.function = function;
 	}
 
-//	facility	VARBINARY(MAX)
-//	parking_info	VARBINARY(MAX)
-//	Resident _info	VARBINARY(MAX)
+	// facility VARBINARY(MAX)
+	// parking_info VARBINARY(MAX)
+	// Resident _info VARBINARY(MAX)
 
 }

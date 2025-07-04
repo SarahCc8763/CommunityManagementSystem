@@ -57,7 +57,7 @@ public class TicketCommentController {
 	// 刪除留言
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable("id") Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// 呼叫 service.delete(id)
 		boolean result = ticketCommentService.remove(id);
 		return result;
 	}
@@ -65,13 +65,13 @@ public class TicketCommentController {
 	// 更新留言
 	@PutMapping("/{id}")
 	public ApiResponse<TicketComment> update(@PathVariable("id") Integer id,
-	                                         @RequestBody CommentDTO commentDTO) {
-	    try {
-	        TicketComment result = ticketCommentService.update(id, commentDTO);
-	        return new ApiResponse<>(true, "留言更新成功", result);
-	    } catch (IllegalArgumentException e) {
-	        return new ApiResponse<>(false, e.getMessage(), null);
-	    }
+			@RequestBody CommentDTO commentDTO) {
+		try {
+			TicketComment result = ticketCommentService.update(id, commentDTO);
+			return new ApiResponse<>(true, "留言更新成功", result);
+		} catch (IllegalArgumentException e) {
+			return new ApiResponse<>(false, e.getMessage(), null);
+		}
 	}
 
 }

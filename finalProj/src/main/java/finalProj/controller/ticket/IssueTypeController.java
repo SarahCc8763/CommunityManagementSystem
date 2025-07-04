@@ -24,7 +24,7 @@ public class IssueTypeController {
 	// Create
 	@PostMapping
 	public IssueType create(@RequestBody IssueType issueType) {
-		// TODO: 呼叫 service.save(ticket)
+		// 呼叫 service.save(ticket)
 		IssueType result = issueTypeService.save(issueType);
 		return result;
 	}
@@ -32,31 +32,31 @@ public class IssueTypeController {
 	// Findall
 	@GetMapping
 	public List<IssueType> findAll() {
-		// TODO: 呼叫 service.findAll()
+		// 呼叫 service.findAll()
 		return issueTypeService.findAll(); // 空清單回傳
 	}
 
 	// Read by id
 	@GetMapping("/{id}")
 	public IssueType findById(@PathVariable Integer id) {
-		// TODO: 呼叫 service.findById(id)
+		// 呼叫 service.findById(id)
 		IssueType result = issueTypeService.findById(id);
 		return result;
 	}
 
-//	// Update
+	// // Update
 	@PutMapping("/{id}")
 	public IssueType update(@PathVariable Integer id, @RequestBody IssueType issueType) {
-		// TODO: 呼叫 service.update(id, ticket)
+		// 呼叫 service.update(id, ticket)
 
 		IssueType result = issueTypeService.update(id, issueType);
 		return result;
 	}
 
-//	// Delete
+	// // Delete
 	@DeleteMapping("/{id}")
 	public boolean delete(@PathVariable Integer id) {
-		// TODO: 呼叫 service.delete(id)
+		// 呼叫 service.delete(id)
 		boolean result = issueTypeService.remove(id);
 		return result;
 	}
