@@ -2,6 +2,7 @@ package finalProj.domain.community;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
@@ -51,7 +52,8 @@ public class Community {
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Users> users;
 
-	@JsonManagedReference("communityUnit")
+	// @JsonManagedReference("communityUnit")
+	@JsonIgnoreProperties
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Units> units;
 

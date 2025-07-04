@@ -30,8 +30,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({ "feedbacks", "bulletinComments", "bulletinCommentLikes", "pollVotes", "bulletins",
-		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies" })
+@JsonIgnoreProperties({ "feedbacks", "bulletinComments", "bulletinCommentLikes", "pollVotes", "bulletins",		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies" })
 public class Users {
 
 	@Id
@@ -97,14 +96,13 @@ public class Users {
 	private List<UnitsUsers> unitsUsersList;
 
 	@JsonBackReference("communityUser")
-
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
 	// 這個 user 曾報修過的 tickets
-	@JsonManagedReference("reporterIdTicket")
-	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("reporterUser")
 	private List<Ticket> reportedTickets;
 
 	// 這個 user 被指派處理的 tickets
