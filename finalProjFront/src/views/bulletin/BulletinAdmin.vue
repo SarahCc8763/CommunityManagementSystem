@@ -4,17 +4,24 @@
     <div class="container py-4 ">
         <BannerImage :imageSrc="OO" heading="公告管理" subtext="" textAlign="left" />
 
+        <div class="d-flex flex-row gap-2 mb-2">
+        </div>
 
         <div class="d-flex gap-2 mb-3">
-            <select v-model="searchCategory" class="form-select w-30" @change="searchBulletins">
+            <button class="btn btn-primary w-10 " @click="postBulletins">新增公告</button>
+            <button class="btn btn-primary w-10" @click="CategoriesManagement" style="margin-right: 2%;">分類管理</button>
+
+            <select v-model="searchCategory" class="form-select w-20" @change="searchBulletins">
                 <option value="">全部分類</option>
                 <option v-for="cat in categoryList" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
             </select>
-            <input v-model="searchTitle" class="form-control w-48" placeholder="輸入標題關鍵字" />
-            <button class="btn btn-primary w-10" @click="searchBulletins">搜尋</button>
+            <input type="text" v-model="searchTitle" class="form-control w-38" placeholder="輸入標題關鍵字" />
+            <button class="btn btn-primary w-10 " @click="searchBulletins">搜尋</button>
             <button class="btn btn-secondary w-10" @click="clearSearch">清除搜尋</button>
         </div>
 
+        <PostBulletinModal v-model:visible="showPost" :categoryList="categoryList" :communityId="communityId"
+            :usersId="userId" @post="fetchAll" />
 
 
         <!-- 公告管理 card 列表 -->
@@ -77,6 +84,7 @@ import BannerImage from '@/components/forAll/BannerImage.vue';
 import OO from '@/assets/images/main/adminBanner.jpg';
 import EditBulletinModal from '@/components/bulletin/EditBulletinModal.vue';
 import ViewBulletinModal from '@/components/bulletin/ViewBulletinModal.vue';
+import PostBulletinModal from '@/components/bulletin/PostBulletinModal.vue';
 
 // assets
 
@@ -92,12 +100,15 @@ const userId = 3 // 假設當前使用者 id
 const communityId = 1 // 假設當前社區 id
 const showEdit = ref(false)
 const showView = ref(false)
+const showPost = ref(false)
 
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
 const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
 
-
+function postBulletins() {
+    showPost.value = true
+}
 
 function editBulletin(bulletin) {
     selectedBulletin.value = bulletin
@@ -172,14 +183,13 @@ function fetchAll() {
         .then(res => {
             console.log(res.data.list);
             bulletins.value = res.data.list
-            const cats = new Set(
-                res.data.list.map(b => ({
-                    name: b.categoryName,
-                    id: b.categoryId
-                }))
-            )
+        })
 
-            categoryList.value = [...cats]
+    axios.get('http://localhost:8080/api/bulletin/category/community/' + communityId)
+        .then(res => {
+            const cats = res.data.map(cat => ({ id: cat.id, name: cat.name }))
+            console.log(cats);
+            categoryList.value = cats
         })
 }
 
@@ -191,6 +201,12 @@ function fetchAll() {
 /* h1 {
     color: #b0cefa;
 } */
+
+input::placeholder {
+    color: #a0aec0;
+    opacity: 1;
+}
+
 
 .card-title {
     font-size: 1.2rem;
@@ -402,13 +418,13 @@ function fetchAll() {
     transform: translateX(4px);
 }
 
-.w-30 {
-    width: 33.2% !important;
-    margin-right: 1rem;
+.w-20 {
+    width: 20% !important;
+    /* margin-right: 1rem; */
 }
 
-.w-48 {
-    width: 47% !important;
+.w-38 {
+    width: 37% !important;
 }
 
 .w-10 {

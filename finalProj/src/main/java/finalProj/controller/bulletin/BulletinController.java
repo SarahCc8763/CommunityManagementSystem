@@ -339,6 +339,13 @@ public class BulletinController {
     //
     //
 
+    // -- 根據社區查詢公告分類 --
+
+    @GetMapping("/category/community/{communityId}")
+    public List<BulletinCategory> findAllBulletinCategoryByCommunity(@PathVariable Integer communityId) {
+        return bulletinCategoryService.findByCommunityId(communityId);
+    }
+
     // -- 新增公告分類 --
 
     @PostMapping("/category")

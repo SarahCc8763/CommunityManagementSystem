@@ -4,6 +4,7 @@ package finalProj.domain.bulletin;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -19,6 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "bulletin_category")
+@JsonIgnoreProperties({ "bulletins" })
 public class BulletinCategory {
     @Id
     @Column(name = "bulletin_category_id")

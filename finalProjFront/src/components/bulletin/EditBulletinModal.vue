@@ -37,7 +37,23 @@
                     </li>
                 </ul>
                 <input type="file" multiple @change="handleNewFiles" class="form-control" ref="fileInput" />
+            </div>
 
+            <!-- 投票區塊 -->
+
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <!-- 還要新增修改投票區塊的功能 -->
+            <div v-if="bulletin.poll" class="my-4 text-dark ">
+                <div class="poll-card">
+
+                    <h6 class="text-center">投票結果：{{ bulletin.poll.title }}</h6>
+                    <BarChart :labels="pollLabels" :data="pollVotes" />
+                </div>
             </div>
 
             <div class="text-end">
@@ -48,11 +64,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
+import BarChart from '@/components/bulletin/BarChart.vue'
 
 const fileInput = ref(null) // 綁定 ref
+const addPoll = ref(false)
+const pollBackup = ref(null)
+
+const pollLabels = computed(() => props.bulletin?.poll?.options?.map(opt => opt.text) || [])
+const pollVotes = computed(() => props.bulletin?.poll?.options?.map(opt => opt.votesCount || 0) || [])
+
 
 const props = defineProps({
     visible: Boolean,
@@ -70,7 +94,8 @@ const form = ref({
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
-    isNew: false
+    isNew: false,
+    poll: null
 })
 
 watch(() => props.bulletin, (val) => {
@@ -78,11 +103,36 @@ watch(() => props.bulletin, (val) => {
         form.value.title = val.title
         form.value.description = val.description
         form.value.categoryName = props.categoryList.find(c => c.name === val.categoryName)?.name || null
-        form.value.removeTime = val.removeTime?.slice(0, 16) || '' // for input[datetime-local]
+        form.value.removeTime = val.removeTime?.slice(0, 16) || ''
         form.value.existingAttachments = val.attachments || []
         form.value.newAttachments = []
+        form.value.poll = val.poll
+        pollBackup.value = val.poll ? { ...val.poll } : null  // ⬅️ 備份原始 poll
+        addPoll.value = !!val.poll
     }
 }, { immediate: true })
+
+watch(addPoll, (val) => {
+    if (val) {
+        // 使用者打開 checkbox，若有備份就還原，沒有就初始化
+        form.value.poll = pollBackup.value ?? {
+            title: '',
+            isMultiple: false,
+            start: '',
+            end: '',
+            options: [
+                { text: '' },
+                { text: '' }
+            ]
+        }
+    } else {
+        // 關閉時備份 poll，然後清除
+        pollBackup.value = form.value.poll
+        form.value.poll = null
+    }
+})
+
+
 
 function handleNewFiles(e) {
     const files = Array.from(e.target.files)
@@ -109,6 +159,9 @@ function handleNewFiles(e) {
 function removeExistingAttachment(index) {
     form.value.existingAttachments.splice(index, 1)
 }
+
+
+
 function submitEdit() {
     // 對所有有 file 的附件轉 base64
     const fileReads = form.value.existingAttachments
@@ -143,16 +196,32 @@ function submitEdit() {
                 fileName: att.fileName,
                 mimeType: att.mimeType,
                 fileDataBase64: att.fileDataBase64 || null,
-                isNew: att.isNew || false
+                isNew: att.isNew || false,
+                poll: att.poll || null
             }))
         }
 
-        console.log('送出資料', data.attachments)
+        console.log('送出資料', data)
 
         axios.put(`http://localhost:8080/api/bulletin/${props.bulletin.id}`, data)
             .then(() => {
                 emit('updated')
                 emit('update:visible', false)
+                Swal.fire({
+                    title: '成功',
+                    text: '修改成功',
+                    icon: 'success',
+                    confirmButtonText: '確定'
+                })
+            })
+            .catch(error => {
+                console.error(error)
+                Swal.fire({
+                    title: '失敗',
+                    text: '修改失敗',
+                    icon: 'error',
+                    confirmButtonText: '確定'
+                })
             })
     })
 }

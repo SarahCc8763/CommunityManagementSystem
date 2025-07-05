@@ -22,10 +22,14 @@ public class BulletinCategoryService {
     private BulletinCategoryRepository bulletinCategoryRepository;
 
     @Autowired
-    CommunityRepository communityRepository;
+    private CommunityRepository communityRepository;
 
     public List<BulletinCategory> findAll() {
         return bulletinCategoryRepository.findAll();
+    }
+
+    public List<BulletinCategory> findByCommunityId(Integer id) {
+        return bulletinCategoryRepository.findByCommunity_CommunityId(id);
     }
 
     public Optional<BulletinCategory> findByName(String name) {
