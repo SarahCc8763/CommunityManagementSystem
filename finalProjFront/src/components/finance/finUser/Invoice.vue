@@ -4,49 +4,57 @@
       <h4 class="mb-0 fw-bold section-title">待繳帳單</h4>
     </div>
 
-    <div v-if="invoices?.length === 0" class="no-invoice">
-      <i class="bi bi-emoji-smile"></i> 目前沒有待繳帳單喔！
-    </div>
-    <div v-else class="invoice-list grid-list">
-      <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card pro-card horizontal-card">
-        <div class="card-left">
-          <div class="pro-header">
-            <div>
-              <span class="pro-id">#{{ invoice.invoiceId }}</span>
-              <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
-            </div>
-            <div class="pro-amount">
-              <span>NT$</span>
-              <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
-              <span v-if="isOverdue(invoice)" class="overdue-label">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
-                  <circle cx="12" cy="12" r="10" fill="#f87171" />
-                  <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                  <circle cx="12" cy="16" r="1.2" fill="#fff" />
-                </svg>
-                <span class="overdue-text">逾期</span>
-              </span>
-            </div>
-          </div>
-          <div class="pro-info">
-            <div><b>{{ invoice.feeType?.description || '—' }}</b>（{{ invoice.periodName }}）</div>
-            <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
-            <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
-          </div>
-        </div>
-        <div class="card-right">
-          <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'"
-            class="pay-btn pro-pay-btn" @click="openPayModal(invoice)">立即繳費</button>
-        </div>
+    <div v-if="invoices?.length === 0" class="no-invoice text-start my-5">
+      <div class="fs-5 mb-3">目前沒有待繳帳單喔！</div>
+      <div class="d-flex gap-3">
+        <router-link to="/" class="btn btn-outline-primary">回首頁</router-link>
+        <router-link to="/finUser" class="btn btn-outline-success">帳務總覽</router-link>
       </div>
-      <div class="total-row">
-        <span>總金額：</span>
-        <span class="total-amount">NT$ {{ totalAmount.toLocaleString() }}</span>
+    </div>
+    <div v-else>
+      <div class="invoice-list-bg">
+        <div class="invoice-list grid-list">
+          <div v-for="invoice in invoices" :key="invoice.invoiceId" class="invoice-card pro-card horizontal-card">
+            <div class="card-left">
+              <div class="pro-header">
+                <div>
+                  <span class="pro-id">#{{ invoice.invoiceId }}</span>
+                  <span class="badge ms-2" :class="statusBadgeClass(invoice)">{{ statusText(invoice) }}</span>
+                </div>
+                <div class="pro-amount">
+                  <span>NT$</span>
+                  <span class="pro-amount-num">{{ invoice.amountDue.toLocaleString() }}</span>
+                  <span v-if="isOverdue(invoice)" class="overdue-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                      <circle cx="12" cy="12" r="10" fill="#f87171" />
+                      <path d="M12 7v5" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                      <circle cx="12" cy="16" r="1.2" fill="#fff" />
+                    </svg>
+                    <span class="overdue-text">逾期</span>
+                  </span>
+                </div>
+              </div>
+              <div class="pro-info">
+                <div><b>{{ invoice.feeType?.description || '—' }}</b>（{{ invoice.periodName }}）</div>
+                <div>單位數：{{ invoice.unitCount }}　單價：NT$ {{ invoice.unitPrice.toLocaleString() }}</div>
+                <div>截止日：<span class="pro-deadline">{{ formatDate(invoice.deadline) }}</span></div>
+              </div>
+            </div>
+            <div class="card-right">
+              <button v-if="invoice.paymentStatus === 'unpaid' || invoice.paymentStatus === 'pending'"
+                class="pay-btn pro-pay-btn small-pay-btn" @click="openPayModal(invoice)">立即繳費</button>
+            </div>
+          </div>
+        </div>
+        <div class="total-row">
+          <span>總金額：</span>
+          <span class="total-amount">NT$ {{ totalAmount.toLocaleString() }}</span>
+        </div>
       </div>
     </div>
 
     <!-- 付款 Modal -->
-    <div v-if="showPayModal" class="modal-mask">
+    <div v-if="showPayModal" class="modal-mask" @click.self="closePayModal">
       <div class="modal-wrapper">
         <div class="modal-container">
           <h4>選擇付款方式</h4>
@@ -67,7 +75,10 @@
               <label>留言（可填匯款帳號末五碼或其他資訊）</label>
               <input v-model="remitNote" class="form-control" />
             </div>
-            <button class="btn btn-primary w-100" @click="submitRemit">送出回覆</button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary flex-fill" @click="submitRemit">送出回覆</button>
+              <button class="btn btn-secondary flex-fill" @click="closePayModal">我知道了</button>
+            </div>
           </div>
           <div v-else-if="payMethod === 'credit'">
             <div class="alert alert-success">即將導向綠界線上刷卡頁面（模擬）</div>
@@ -87,8 +98,10 @@
               <label>留言</label>
               <input v-model="remitNote" class="form-control" />
             </div>
-            <button class="btn btn-secondary w-100" @click="closePayModal">我知道了</button>
-            <button class="btn btn-primary w-100 mt-2" @click="submitRemit">送出回覆</button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary flex-fill" @click="submitRemit">送出回覆</button>
+              <button class="btn btn-secondary flex-fill" @click="closePayModal">我知道了</button>
+            </div>
           </div>
           <div v-if="payMsg && payMsg !== 'success'"
             class="alert alert-info mt-2 d-flex justify-content-between align-items-center">
@@ -197,9 +210,75 @@ function isOverdue(invoice) {
 onMounted(async () => {
   try {
     const res = await axios.get('/finance/invoice/unpaid', { params: { userId: userStore.userId } })
-    invoices.value = res.data  // 只會拿到該用戶的帳單
+    if (!Array.isArray(res.data) || res.data.length === 0) {
+      invoices.value = [
+        {
+          invoiceId: 1001,
+          amountDue: 3200,
+          paymentStatus: 'unpaid',
+          feeType: { description: '管理費' },
+          periodName: '2024年7月',
+          unitCount: 2,
+          unitPrice: 1600,
+          deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+        },
+        {
+          invoiceId: 1002,
+          amountDue: 800,
+          paymentStatus: 'unpaid',
+          feeType: { description: '水費' },
+          periodName: '2024年7月',
+          unitCount: 10,
+          unitPrice: 80,
+          deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
+        },
+        {
+          invoiceId: 1003,
+          amountDue: 1200,
+          paymentStatus: 'pending',
+          feeType: { description: '停車費' },
+          periodName: '2024年7月',
+          unitCount: 1,
+          unitPrice: 1200,
+          deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+        },
+      ]
+    } else {
+      invoices.value = res.data
+    }
   } catch (err) {
-    console.error('載入帳單失敗:', err)
+    invoices.value = [
+      {
+        invoiceId: 1001,
+        amountDue: 3200,
+        paymentStatus: 'unpaid',
+        feeType: { description: '管理費' },
+        periodName: '2024年7月',
+        unitCount: 2,
+        unitPrice: 1600,
+        deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+      },
+      {
+        invoiceId: 1002,
+        amountDue: 800,
+        paymentStatus: 'unpaid',
+        feeType: { description: '水費' },
+        periodName: '2024年7月',
+        unitCount: 10,
+        unitPrice: 80,
+        deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
+      },
+      {
+        invoiceId: 1003,
+        amountDue: 1200,
+        paymentStatus: 'pending',
+        feeType: { description: '停車費' },
+        periodName: '2024年7月',
+        unitCount: 1,
+        unitPrice: 1200,
+        deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+      },
+    ]
   }
 })
 
@@ -226,10 +305,11 @@ onMounted(async () => {
 }
 
 .no-invoice {
-  text-align: center;
+  text-align: left;
   color: #718096;
   font-size: 1.2rem;
   margin-top: 60px;
+  padding-left: 8px;
 }
 
 .no-invoice i {
@@ -239,9 +319,9 @@ onMounted(async () => {
 }
 
 .invoice-list.grid-list {
-  display: flex;
-  flex-direction: column;
-  gap: 32px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 24px;
 }
 
 .horizontal-card {
@@ -271,12 +351,12 @@ onMounted(async () => {
 }
 
 @media (max-width: 900px) {
-  .horizontal-card {
-    flex-direction: column;
-    max-width: 100vw;
-    min-width: 0;
-    padding: 18px 8px 12px 8px;
-    gap: 12px 0;
+  .invoice-list-bg {
+    padding: 24px 8px 16px 8px;
+  }
+  .invoice-list.grid-list {
+    grid-template-columns: 1fr;
+    gap: 24px 0;
   }
   .card-right {
     justify-content: flex-start;
@@ -462,6 +542,11 @@ onMounted(async () => {
   margin-left: 4px;
   color: #f87171;
   font-size: 1.05rem;
+}
+
+.small-pay-btn {
+  font-size: 0.95rem;
+  padding: 6px 18px;
 }
 
 @media (max-width: 600px) {

@@ -144,27 +144,88 @@ function clearFilter() {
 </script>
 
 <style scoped>
+body, .dark-bg {
+  background: #181a1b;
+  color: #e0e0e0;
+}
 .invoice-card {
-  border: 1px solid #aaa;
+  border: 1px solid #333;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
-  background: #f9f9f9;
+  background: #23272b;
+  color: #e0e0e0;
 }
 .response-card {
-  border: 1px solid #ccc;
+  border: 1px solid #444;
   border-radius: 6px;
   padding: 12px;
   margin-bottom: 12px;
-  background: #fff;
+  background: #23272b;
+  color: #e0e0e0;
 }
 .filter-bar {
-  background: #f5f5f5;
+  background: #23272b;
   border-radius: 6px;
   padding: 10px 16px;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  color: #e0e0e0;
+}
+input.form-control, select.form-select {
+  background: #181a1b;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+input.form-control:focus, select.form-select:focus {
+  background: #23272b;
+  color: #fff;
+  border-color: #888;
+}
+.btn, .btn:focus, .btn:active {
+  color: #e0e0e0;
+  background: #23272b;
+  border: 1px solid #444;
+}
+.btn-success {
+  background: #198754;
+  border-color: #198754;
+}
+.btn-outline-primary {
+  color: #90caf9;
+  border-color: #90caf9;
+}
+.btn-outline-primary:hover {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+.alert-success {
+  background: #223a29;
+  color: #b9f6ca;
+  border-color: #388e3c;
+}
+.alert-danger {
+  background: #3a2222;
+  color: #ff8a80;
+  border-color: #d32f2f;
+}
+.badge.bg-danger {
+  background: #d32f2f;
+  color: #fff;
+}
+input[type="checkbox"].form-check-input {
+  accent-color: #90caf9;
+  background: #23272b;
+  border: 1px solid #90caf9;
+}
+input[type="checkbox"].form-check-input:checked {
+  background: #1976d2;
+  border-color: #1976d2;
+}
+label, h3, h4, span, div {
+  color: #e0e0e0;
 }
 </style> 
