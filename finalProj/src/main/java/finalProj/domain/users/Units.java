@@ -53,7 +53,7 @@ public class Units {
 	@JsonManagedReference("unitsUsersList")
 	private List<UnitsUsers> unitsUsersList;
 
-	@JsonBackReference("communityUnit")
+	// @JsonBackReference("communityUnit")
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
