@@ -14,9 +14,11 @@ import finalProj.domain.poll.Poll;
 import finalProj.domain.poll.PollVote;
 import finalProj.service.poll.PollService;
 import finalProj.service.poll.PollVoteService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/poll")
+@Slf4j
 //
 // 發布公告同時新增投票的controller方在BulletinController的新增公告方法裡面
 //
@@ -39,6 +41,7 @@ public class PollController {
         if (result != null) {
             return ResponseEntity.ok("投票更新成功");
         } else {
+            log.warn("投票更新失敗，找不到指定的投票，ID: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("找不到指定的投票");
         }
     }

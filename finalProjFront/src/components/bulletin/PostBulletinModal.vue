@@ -49,8 +49,7 @@
 
                 <div v-if="addPoll" class="my-3 card-poll">
                     <label>投票標題</label>
-                    <input type="text" name="" id="" v-model="form.poll.title" class="form-control"
-                        placeholder="投票標題">{{ form.poll.title }}
+                    <input type="text" name="" id="" v-model="form.poll.title" class="form-control" placeholder="投票標題">
                     <div class="form-check form-switch my-3">
                         <input type="checkbox" id="isMultiple" class="form-check-input " v-model="form.poll.isMultiple">
                         <label for="isMultiple" class="form-check-label text-dark ">是否為複選</label>
@@ -87,6 +86,7 @@
 
             <div class="text-end">
                 <button type="button" class="btn btn-primary" @click="submitEdit">送出修改</button>
+                <button type="button" class="btn-poll-cancel  mx-2" @click="initPost">取消</button>
 
             </div>
         </form>
@@ -120,6 +120,20 @@ const form = ref({
     isNew: false,
     poll: null
 })
+
+function initPost() {
+    emit('update:visible', false)
+    form.value = {
+        title: '',
+        description: '',
+        categoryName: '',
+        removeTime: '',
+        existingAttachments: [],
+        newAttachments: [],
+        isNew: false,
+        poll: null
+    }
+}
 
 function pollInit() {
     if (!addPoll.value) {
@@ -278,5 +292,48 @@ async function submitEdit() {
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 20px;
     padding: 8px 16px;
+}
+
+.btn-poll-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #cfd4ec 0%, #d7d7d7 100%);
+    color: rgb(127, 127, 127);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-poll-cancel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-poll-cancel:hover::before {
+    left: 100%;
+}
+
+.btn-poll-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.btn-poll-cancel:active {
+    transform: translateY(0);
 }
 </style>

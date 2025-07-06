@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.bulletin.BulletinCategory;
-
 import finalProj.repository.bulletin.BulletinCategoryRepository;
-import finalProj.repository.community.CommunityRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -21,8 +19,8 @@ public class BulletinCategoryService {
     @Autowired
     private BulletinCategoryRepository bulletinCategoryRepository;
 
-    @Autowired
-    private CommunityRepository communityRepository;
+    // @Autowired
+    // private CommunityRepository communityRepository;
 
     public List<BulletinCategory> findAll() {
         return bulletinCategoryRepository.findAll();

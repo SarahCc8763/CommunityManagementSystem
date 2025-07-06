@@ -35,8 +35,9 @@
                         <small class="text-muted">{{ formatDate(bulletin.postTime) }}</small>
                     </div>
                     <div class="mb-2">
-                        <span class="badge bg-success me-2 fw-normal" style="font-size: 80%;">{{ bulletin.categoryName
-                        }}</span>
+                        <span class="badge  me-2 fw-normal" style="font-size: 80%;background-color: #BEBEBE;">{{
+                            bulletin.categoryName
+                            }}</span>
                         <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
                     </div>
                     <p class="text-truncate text-muted small mb-3 fs-6">
@@ -53,6 +54,8 @@
                         <button class="btn btn-sm btn-outline-secondary" @click="viewBulletin(bulletin)">
                             <i class="bi bi-eye"></i> 查看
                         </button>
+                        <button type="button" class="btn btn-secondary" @click="openPollModal(bulletin)">
+                            <i class="bi bi-pencil-square"></i> 修改投票</button>
                     </div>
                 </div>
             </div>
@@ -63,6 +66,8 @@
 
         <ViewBulletinModal v-model:visible="showView" :bulletin="selectedBulletin" :categoryList="categoryList"
             :usersId="userId" :normalizeFn="normalizeNewline" />
+
+        <EditPollModal v-model:visible="showPollEdit" :poll="selectedBulletin?.poll" :pollBackup="pollBackup" />
 
         <!-- 公告 Modal -->
 
@@ -85,6 +90,7 @@ import OO from '@/assets/images/main/adminBanner.jpg';
 import EditBulletinModal from '@/components/bulletin/EditBulletinModal.vue';
 import ViewBulletinModal from '@/components/bulletin/ViewBulletinModal.vue';
 import PostBulletinModal from '@/components/bulletin/PostBulletinModal.vue';
+import EditPollModal from '@/components/bulletin/EditPollModal.vue'
 
 // assets
 
@@ -101,6 +107,8 @@ const communityId = 1 // 假設當前社區 id
 const showEdit = ref(false)
 const showView = ref(false)
 const showPost = ref(false)
+const showPollEdit = ref(false)
+const pollBackup = ref(null)
 
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
@@ -109,6 +117,14 @@ const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(
 function postBulletins() {
     showPost.value = true
 }
+
+function openPollModal(bulletin) {
+    selectedBulletin.value = bulletin
+    // 深層複製 poll 備份，不會受後續變動影響
+    pollBackup.value = JSON.parse(JSON.stringify(bulletin.poll))
+    showPollEdit.value = true
+}
+
 
 function editBulletin(bulletin) {
     selectedBulletin.value = bulletin

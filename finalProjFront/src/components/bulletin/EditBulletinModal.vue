@@ -2,7 +2,7 @@
     <ModalWrapper :visible="visible" @update:visible="val => emit('update:visible', val)" title="編輯公告">
         <form @submit.prevent="submitEdit">
             <div class="mb-3">
-                <label class="form-label">標題</label>
+                <label class="form-label ">標題</label>
                 <input v-model="form.title" class="form-control " required />
             </div>
 
@@ -30,10 +30,10 @@
                 <label class="form-label">附件</label>
                 <ul class="list-group mb-2">
                     <li v-for="(att, i) in form.existingAttachments" :key="i"
-                        class="list-group-item d-flex justify-content-between align-items-center">
+                        class="list-group-item d-flex justify-content-between align-items-center fs-6">
                         {{ att.fileName }}
-                        <button type="button" class="btn btn-sm btn-outline-danger"
-                            @click="removeExistingAttachment(i)">刪除</button>
+                        <button type="button" class="btn-remove" @click="removeExistingAttachment(i)"
+                            style="font-size: 80%;">移除</button>
                     </li>
                 </ul>
                 <input type="file" multiple @change="handleNewFiles" class="form-control" ref="fileInput" />
@@ -41,23 +41,23 @@
 
             <!-- 投票區塊 -->
 
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
-            <!-- 還要新增修改投票區塊的功能 -->
             <div v-if="bulletin.poll" class="my-4 text-dark ">
                 <div class="poll-card">
 
-                    <h6 class="text-center">投票結果：{{ bulletin.poll.title }}</h6>
+                    <h6 class="text-center">目前投票情形：{{ bulletin.poll.title }}</h6>
+                    <div class="d-flex justify-content-end mx-3">
+
+                        <!-- <button type="button" class="btn btn-secondary" @click="openPollModal">修改投票內容</button> -->
+                    </div>
+                    <!-- <EditPollModal v-model:visible="visiblePollEdit" :poll="bulletin.poll" :pollBackup="pollBackup" /> -->
+
                     <BarChart :labels="pollLabels" :data="pollVotes" />
                 </div>
             </div>
 
-            <div class="text-end">
-                <button type="submit" class="btn btn-primary">送出修改</button>
+            <div class="text-end mb-2 pb-4">
+                <button type="btn" class="btn btn-primary">送出修改</button>
+                <button type="reset" class="btn-poll  mx-2" @click="$emit('update:visible', false)">取消</button>
             </div>
         </form>
     </ModalWrapper>
@@ -69,6 +69,9 @@ import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import BarChart from '@/components/bulletin/BarChart.vue'
+// import EditPollModal from '@/components/bulletin/EditPollModal.vue'
+
+// const visiblePollEdit = ref(false)
 
 const fileInput = ref(null) // 綁定 ref
 const addPoll = ref(false)
@@ -94,7 +97,6 @@ const form = ref({
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
-    isNew: false,
     poll: null
 })
 
@@ -108,29 +110,9 @@ watch(() => props.bulletin, (val) => {
         form.value.newAttachments = []
         form.value.poll = val.poll
         pollBackup.value = val.poll ? { ...val.poll } : null  // ⬅️ 備份原始 poll
-        addPoll.value = !!val.poll
     }
 }, { immediate: true })
 
-watch(addPoll, (val) => {
-    if (val) {
-        // 使用者打開 checkbox，若有備份就還原，沒有就初始化
-        form.value.poll = pollBackup.value ?? {
-            title: '',
-            isMultiple: false,
-            start: '',
-            end: '',
-            options: [
-                { text: '' },
-                { text: '' }
-            ]
-        }
-    } else {
-        // 關閉時備份 poll，然後清除
-        pollBackup.value = form.value.poll
-        form.value.poll = null
-    }
-})
 
 
 
@@ -196,9 +178,10 @@ function submitEdit() {
                 fileName: att.fileName,
                 mimeType: att.mimeType,
                 fileDataBase64: att.fileDataBase64 || null,
-                isNew: att.isNew || false,
-                poll: att.poll || null
-            }))
+                isNew: att.isNew || false
+
+            })),
+            poll: form.value.poll || null
         }
 
         console.log('送出資料', data)
@@ -243,5 +226,59 @@ function submitEdit() {
 
 .list-group-item {
     font-size: 0.95rem;
+}
+
+.btn-poll,
+.btn-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #cfd4ec 0%, #d7d7d7 100%);
+    color: rgb(127, 127, 127);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-remove {
+    padding: 8px 16px;
+    background: #9cc8f3;
+    color: rgb(60, 60, 60);
+}
+
+.btn-poll::before,
+.btn-remove::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-poll:hover::before,
+.btn-remove:hover::before {
+    left: 100%;
+}
+
+.btn-poll:hover,
+.btn-remove:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.btn-poll:active,
+.btn-remove:active {
+    transform: translateY(0);
 }
 </style>

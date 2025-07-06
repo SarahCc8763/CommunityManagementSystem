@@ -2,7 +2,9 @@ package finalProj.service.poll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.poll.Poll;
 import finalProj.domain.poll.PollOption;
+import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
 
 @Service
@@ -19,8 +22,11 @@ public class PollService {
     @Autowired
     private PollRepository pollRepository;
 
+    @Autowired
+    private PollOptionRepository pollOptionRepository;
+
     // @Autowired
-    // private PollOptionRepository pollOptionRepository;
+    // private PollVoteRepository pollVoteRepository;
 
     public List<Poll> findAll() {
         return pollRepository.findAll();
@@ -73,12 +79,36 @@ public class PollService {
 
         poll.setTitle(updatedPoll.getTitle());
         poll.setIsMultiple(updatedPoll.getIsMultiple());
+        poll.setStart(updatedPoll.getStart());
+        poll.setEnd(updatedPoll.getEnd());
 
-        poll.getOptions().clear(); // 全量取代較簡單
-        for (PollOption opt : updatedPoll.getOptions()) {
-            opt.setPoll(poll);
-            poll.getOptions().add(opt);
+        List<PollOption> newOptions = updatedPoll.getOptions();
+        List<PollOption> toKeep = new ArrayList<>();
+        List<PollOption> toAdd = new ArrayList<>();
+
+        // 1. 保留或新增選項
+        for (PollOption newOpt : newOptions) {
+            Optional<PollOption> existingOpt = pollOptionRepository.findByPoll_IdAndText(pollId, newOpt.getText());
+            if (existingOpt.isPresent()) {
+                toKeep.add(existingOpt.get()); // 保留原選項
+            } else {
+                newOpt.setPoll(poll);
+                toAdd.add(newOpt); // 是新選項
+            }
         }
+
+        // 2. 先找出要刪除的選項，再從 poll.options 中移除（避免改變整個 List）
+        List<PollOption> toRemove = new ArrayList<>();
+        for (PollOption existing : poll.getOptions()) {
+            if (toKeep.stream().noneMatch(opt -> opt.getText().equals(existing.getText()))) {
+                // 只有當沒有被保留時才移除
+                toRemove.add(existing);
+            }
+        }
+
+        poll.getOptions().removeAll(toRemove); // ✅ 這樣不會破壞 reference
+        poll.getOptions().addAll(toAdd); // ✅ 安全新增
+
         return pollRepository.saveAndFlush(poll);
     }
 
