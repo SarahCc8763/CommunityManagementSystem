@@ -31,10 +31,9 @@ public class UnitsUsers {
     @JsonBackReference("unitsUsersList")
     private Units unit;
 
-    @ManyToOne
-    @JoinColumn(name = "community_id", referencedColumnName = "id")
-    private Community community;
-
+    // @ManyToOne
+    // @JoinColumn(name = "community_id", referencedColumnName = "id")
+    // private Community community;
     // --- Getters and Setters ---
     public Integer getUnitsUsersId() {
         return unitsUsersId;
@@ -60,20 +59,17 @@ public class UnitsUsers {
         this.unit = unit;
     }
 
-    public Community getCommunity() {
-        return community;
-    }
-
-    public void setCommunity(Community community) {
-        this.community = community;
-    }
-
-    // toString
-    @Override
-    public String toString() {
-        return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
-                + community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
-                + getUnit() + ", getCommunity()=" + getCommunity() + "]";
-    }
-
+    // public Community getCommunity() {
+    //     return community;
+    // }
+    // public void setCommunity(Community community) {
+    //     this.community = community;
+    // }
+    // // toString
+    // @Override
+    // public String toString() {
+    //     return "UnitsUsers [unitsUsersId=" + unitsUsersId + ", user=" + user + ", unit=" + unit + ", community="
+    //             + community + ", getUnitsUsersId()=" + getUnitsUsersId() + ", getUser()=" + getUser() + ", getUnit()="
+    //             + getUnit() + ", getCommunity()=" + getCommunity() + "]";
+    // }
 }

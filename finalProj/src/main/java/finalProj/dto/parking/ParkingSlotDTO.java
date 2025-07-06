@@ -1,95 +1,134 @@
 package finalProj.dto.parking;
 
 public class ParkingSlotDTO {
-	private Integer id;
-	private String slotNumber;
-	private String location;
-	private Boolean isRentable;
-	private String licensePlate;
-	private String parkingType;
-	private Integer parkingTypeId;
-	private String parkingTypeName;
-	private Integer usersId;
-	private String userName;
 
-	public Integer getId() {
-		return id;
-	}
+    private Integer id;
+    private String slotNumber;
+    private String location;
+    private Boolean isRentable;
+    private String licensePlate;
+    private String parkingType;
+    private Integer usersId;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    private String building;
+    private String floor;
+    private String unit;
+    private Integer unitsId;
 
-	public String getSlotNumber() {
-		return slotNumber;
-	}
+    private Integer parkingTypeId;
+    private String parkingTypeName;
+    private String userName;
 
-	public void setSlotNumber(String slotNumber) {
-		this.slotNumber = slotNumber;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public String getSlotNumber() {
+        return slotNumber;
+    }
 
-	public Boolean getIsRentable() {
-		return isRentable;
-	}
+    public void setSlotNumber(String slotNumber) {
+        this.slotNumber = slotNumber;
+    }
 
-	public void setIsRentable(Boolean isRentable) {
-		this.isRentable = isRentable;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public String getLicensePlate() {
-		return licensePlate;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setLicensePlate(String licensePlate) {
-		this.licensePlate = licensePlate;
-	}
+    public Boolean getIsRentable() {
+        return isRentable;
+    }
 
-	public String getParkingType() {
-		return parkingType;
-	}
+    public void setIsRentable(Boolean isRentable) {
+        this.isRentable = isRentable;
+    }
 
-	public void setParkingType(String parkingType) {
-		this.parkingType = parkingType;
-	}
+    public String getLicensePlate() {
+        return licensePlate;
+    }
 
-	public Integer getParkingTypeId() {
-		return parkingTypeId;
-	}
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
 
-	public void setParkingTypeId(Integer parkingTypeId) {
-		this.parkingTypeId = parkingTypeId;
-	}
+    public String getParkingType() {
+        return parkingType;
+    }
 
-	public String getParkingTypeName() {
-		return parkingTypeName;
-	}
+    public void setParkingType(String parkingType) {
+        this.parkingType = parkingType;
+    }
 
-	public void setParkingTypeName(String parkingTypeName) {
-		this.parkingTypeName = parkingTypeName;
-	}
+    public Integer getParkingTypeId() {
+        return parkingTypeId;
+    }
 
-	public Integer getUsersId() {
-		return usersId;
-	}
+    public void setParkingTypeId(Integer parkingTypeId) {
+        this.parkingTypeId = parkingTypeId;
+    }
 
-	public void setUsersId(Integer usersId) {
-		this.usersId = usersId;
-	}
+    public String getParkingTypeName() {
+        return parkingTypeName;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setParkingTypeName(String parkingTypeName) {
+        this.parkingTypeName = parkingTypeName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public Integer getUsersId() {
+        return usersId;
+    }
+
+    public void setUsersId(Integer usersId) {
+        this.usersId = usersId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Integer getUnitsId() {
+        return unitsId;
+    }
+
+    public void setUnitsId(Integer unitsId) {
+        this.unitsId = unitsId;
+    }
 
 }

@@ -30,239 +30,236 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "community")
 public class Community {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer communityId; // 社區流水號
 
-	@Column(name = "name")
-	private String name; // 社區名稱
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer communityId; // 社區流水號
 
-	@Column(name = "address")
-	private String address; // 地址
+    @Column(name = "name")
+    private String name; // 社區名稱
 
-	@Column(name = "create_time", insertable = false, updatable = false)
-	private java.util.Date createTime; // 創建時間
+    @Column(name = "address")
+    private String address; // 地址
 
-	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
-	private Long function; // 使用功能
+    @Column(name = "create_time", insertable = false, updatable = false)
+    private java.util.Date createTime; // 創建時間
 
-	@JsonManagedReference("communityTicket")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Ticket> tickets;
+    @Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
+    private Long function; // 使用功能
 
-	@JsonManagedReference("communityUser")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Users> users;
+    @JsonManagedReference("communityTicket")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
 
-	// @JsonManagedReference("communityUnit")
-	@JsonIgnoreProperties
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Units> units;
+    @JsonManagedReference("communityUser")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Users> users;
 
-	@JsonManagedReference("communityPackage")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Packages> packagesList;
+    @JsonManagedReference("communityUnit")
+    @JsonIgnoreProperties
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Units> units;
 
-	// --- 政宇的關聯 START ---
-	// 社區-公告
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-bulletin")
-	private List<Bulletin> bulletins;
-	// 社區-公告分類
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-bulletin-category")
-	private List<BulletinCategory> bulletinCategories;
-	// 社區-關鍵字分類
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-faq-category")
-	private List<FaqCategory> faqCategories;
-	// 社區-意見分類
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-feedback-category")
-	private List<FeedbackCategory> feedbackCategories;
-	// 社區-意見
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-feedback")
-	private List<Feedback> feedbacks;
-	// 社區-FAQ
-	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-faq")
-	private List<Faq> faqs;
+    @JsonManagedReference("communityPackage")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Packages> packagesList;
 
-	// --- 政宇的關聯 END ---
+    // --- 政宇的關聯 START ---
+    // 社區-公告
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-bulletin")
+    private List<Bulletin> bulletins;
+    // 社區-公告分類
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-bulletin-category")
+    private List<BulletinCategory> bulletinCategories;
+    // 社區-關鍵字分類
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-faq-category")
+    private List<FaqCategory> faqCategories;
+    // 社區-意見分類
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-feedback-category")
+    private List<FeedbackCategory> feedbackCategories;
+    // 社區-意見
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-feedback")
+    private List<Feedback> feedbacks;
+    // 社區-FAQ
+    @OneToMany(mappedBy = "community")
+    @JsonManagedReference("community-faq")
+    private List<Faq> faqs;
 
-	// --- Julie的關聯 START ---
+    // --- 政宇的關聯 END ---
+    // --- Julie的關聯 START ---
+    // 一對多到車位種類
+    @JsonManagedReference("community-parkingType")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParkingType> parkingType;
 
-	// 一對多到車位種類
-	@JsonManagedReference("community-parkingType")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ParkingType> parkingType;
+    // 一對多到車位
+    @JsonManagedReference("community-parkingSlot")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParkingSlot> parkingSlot;
 
-	// 一對多到車位
-	@JsonManagedReference("community-parkingSlot")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ParkingSlot> parkingSlot;
+    // 一對多到承租紀錄
+    @JsonManagedReference("community-parkingRentals")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParkingRentals> parkingRentals;
 
-	// 一對多到承租紀錄
-	@JsonManagedReference("community-parkingRentals")
-	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ParkingRentals> parkingRentals;
+    // --- Julie的關聯 END ---
+    @Override
+    public String toString() {
+        return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
+                + address + ", createTime=" + createTime + ", function=" + function + "]";
+    }
 
-	// --- Julie的關聯 END ---
+    public Integer getCommunityId() {
+        return communityId;
+    }
 
-	@Override
-	public String toString() {
-		return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
-				+ address + ", createTime=" + createTime + ", function=" + function + "]";
-	}
+    public void setCommunityId(Integer communityId) {
+        this.communityId = communityId;
+    }
 
-	public Integer getCommunityId() {
-		return communityId;
-	}
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
 
-	public void setCommunityId(Integer communityId) {
-		this.communityId = communityId;
-	}
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
 
-	public List<Ticket> getTickets() {
-		return tickets;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public java.util.Date getCreateTime() {
+        return createTime;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setCreateTime(java.util.Date createTime) {
+        this.createTime = createTime;
+    }
 
-	public java.util.Date getCreateTime() {
-		return createTime;
-	}
+    public List<Users> getUsers() {
+        return users;
+    }
 
-	public void setCreateTime(java.util.Date createTime) {
-		this.createTime = createTime;
-	}
+    public void setUsers(List<Users> users) {
+        this.users = users;
+    }
 
-	public List<Users> getUsers() {
-		return users;
-	}
+    public Long getFunction() {
+        return function;
+    }
 
-	public void setUsers(List<Users> users) {
-		this.users = users;
-	}
+    public void setFunction(Long function) {
+        this.function = function;
+    }
 
-	public Long getFunction() {
-		return function;
-	}
+    public List<Units> getUnits() {
+        return units;
+    }
 
-	public void setFunction(Long function) {
-		this.function = function;
-	}
+    public void setUnits(List<Units> units) {
+        this.units = units;
+    }
 
-	public List<Units> getUnits() {
-		return units;
-	}
+    public List<Packages> getPackagesList() {
+        return packagesList;
+    }
 
-	public void setUnits(List<Units> units) {
-		this.units = units;
-	}
+    public void setPackagesList(List<Packages> packagesList) {
+        this.packagesList = packagesList;
+    }
 
-	public List<Packages> getPackagesList() {
-		return packagesList;
-	}
+    public List<Bulletin> getBulletins() {
+        return bulletins;
+    }
 
-	public void setPackagesList(List<Packages> packagesList) {
-		this.packagesList = packagesList;
-	}
+    public void setBulletins(List<Bulletin> bulletins) {
+        this.bulletins = bulletins;
+    }
 
-	public List<Bulletin> getBulletins() {
-		return bulletins;
-	}
+    public List<BulletinCategory> getBulletinCategories() {
+        return bulletinCategories;
+    }
 
-	public void setBulletins(List<Bulletin> bulletins) {
-		this.bulletins = bulletins;
-	}
+    public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
+        this.bulletinCategories = bulletinCategories;
+    }
 
-	public List<BulletinCategory> getBulletinCategories() {
-		return bulletinCategories;
-	}
+    public List<FaqCategory> getFaqCategories() {
+        return faqCategories;
+    }
 
-	public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
-		this.bulletinCategories = bulletinCategories;
-	}
+    public void setFaqCategories(List<FaqCategory> faqCategories) {
+        this.faqCategories = faqCategories;
+    }
 
-	public List<FaqCategory> getFaqCategories() {
-		return faqCategories;
-	}
+    public List<FeedbackCategory> getFeedbackCategories() {
+        return feedbackCategories;
+    }
 
-	public void setFaqCategories(List<FaqCategory> faqCategories) {
-		this.faqCategories = faqCategories;
-	}
+    public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
+        this.feedbackCategories = feedbackCategories;
+    }
 
-	public List<FeedbackCategory> getFeedbackCategories() {
-		return feedbackCategories;
-	}
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
 
-	public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
-		this.feedbackCategories = feedbackCategories;
-	}
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
 
-	public List<Feedback> getFeedbacks() {
-		return feedbacks;
-	}
+    public List<Faq> getFaqs() {
+        return faqs;
+    }
 
-	public void setFeedbacks(List<Feedback> feedbacks) {
-		this.feedbacks = feedbacks;
-	}
+    public void setFaqs(List<Faq> faqs) {
+        this.faqs = faqs;
+    }
 
-	public List<Faq> getFaqs() {
-		return faqs;
-	}
+    public List<ParkingType> getParkingType() {
+        return parkingType;
+    }
 
-	public void setFaqs(List<Faq> faqs) {
-		this.faqs = faqs;
-	}
+    public void setParkingType(List<ParkingType> parkingType) {
+        this.parkingType = parkingType;
+    }
 
-	public List<ParkingType> getParkingType() {
-		return parkingType;
-	}
+    public List<ParkingSlot> getParkingSlot() {
+        return parkingSlot;
+    }
 
-	public void setParkingType(List<ParkingType> parkingType) {
-		this.parkingType = parkingType;
-	}
+    public void setParkingSlot(List<ParkingSlot> parkingSlot) {
+        this.parkingSlot = parkingSlot;
+    }
 
-	public List<ParkingSlot> getParkingSlot() {
-		return parkingSlot;
-	}
+    public List<ParkingRentals> getParkingRentals() {
+        return parkingRentals;
+    }
 
-	public void setParkingSlot(List<ParkingSlot> parkingSlot) {
-		this.parkingSlot = parkingSlot;
-	}
+    public void setParkingRentals(List<ParkingRentals> parkingRentals) {
+        this.parkingRentals = parkingRentals;
+    }
 
-	public List<ParkingRentals> getParkingRentals() {
-		return parkingRentals;
-	}
-
-	public void setParkingRentals(List<ParkingRentals> parkingRentals) {
-		this.parkingRentals = parkingRentals;
-	}
-
-	// facility VARBINARY(MAX)
-	// parking_info VARBINARY(MAX)
-	// Resident _info VARBINARY(MAX)
-
+    // facility VARBINARY(MAX)
+    // parking_info VARBINARY(MAX)
+    // Resident _info VARBINARY(MAX)
 }
