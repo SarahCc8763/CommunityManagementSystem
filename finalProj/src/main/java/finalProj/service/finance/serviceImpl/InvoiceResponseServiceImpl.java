@@ -47,8 +47,9 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         if (already) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "已回覆過此發票");
         }
-        // 檢查帳號末五碼格式
-        if (dto.getAccountCode() == null || !dto.getAccountCode().matches("\\d{5}")) {
+        // 檢查帳號末五碼格式（有填才驗證）
+        if (dto.getAccountCode() != null && !dto.getAccountCode().isEmpty()
+                && !dto.getAccountCode().matches("\\d{5}")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "帳號末五碼格式錯誤");
         }
         InvoiceResponse response = new InvoiceResponse();

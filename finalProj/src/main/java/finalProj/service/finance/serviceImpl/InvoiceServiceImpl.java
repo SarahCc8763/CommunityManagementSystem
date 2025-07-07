@@ -2,6 +2,7 @@ package finalProj.service.finance.serviceImpl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,7 +96,15 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public List<Invoice> findUnpaidInvoicesByUserId(Integer usersId) {
-        return invoiceRepository.findByUsers_UsersIdAndPaymentStatusNotIgnoreCase(usersId, "paid");
+        return invoiceRepository.findByUsers_UsersIdAndPaymentStatusIgnoreCase(usersId, "unpaid");
+    }
+
+    @Override
+    public List<Invoice> findUnpaidWithResponseByCommunityId(Integer communityId) {
+        List<Invoice> all = invoiceRepository.findByCommunityIdAndPaymentStatus(communityId, "unpaid");
+        return all.stream()
+                .filter(inv -> inv.getInvoiceResponses() != null && !inv.getInvoiceResponses().isEmpty())
+                .collect(Collectors.toList());
     }
 
 }

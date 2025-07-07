@@ -72,8 +72,12 @@
               <span class="text-danger">提醒您於 {{ formatDate(currentInvoice.deadline) }} 前完成繳款，匯款後可於下方留言。</span>
             </div>
             <div class="mb-2">
-              <label>留言（可填匯款帳號末五碼或其他資訊）</label>
-              <input v-model="remitNote" class="form-control" />
+              <label>匯款帳號末五碼（五位數字）</label>
+              <input v-model="remitCode" class="form-control" maxlength="5" placeholder="請輸入五位數字" />
+            </div>
+            <div class="mb-2">
+              <label>留言（可填其他資訊）</label>
+              <input v-model="remitNote" class="form-control" placeholder="可選填" />
             </div>
             <div class="d-flex gap-2">
               <button class="btn btn-primary flex-fill" @click="submitRemit">送出回覆</button>
@@ -116,7 +120,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -136,8 +140,11 @@ let currentInvoice = null
 
 const formatDate = (date) => {
   if (!date) return ''
-  if (typeof date === 'string') return date.replace('T', ' ').slice(0, 16)
-  return date.toLocaleString()
+  try {
+    return new Date(date).toLocaleString()
+  } catch {
+    return String(date)
+  }
 }
 
 const statusText = (invoice) => {
@@ -166,8 +173,12 @@ const closePayModal = () => {
   payMsg.value = ''
 }
 const submitRemit = async () => {
-  if (!remitNote.value.trim()) {
-    payMsg.value = '請輸入留言或匯款資訊'
+  if (!remitCode.value.trim() && !remitNote.value.trim()) {
+    payMsg.value = '請輸入匯款帳號末五碼或留言（至少填一項）'
+    return
+  }
+  if (remitCode.value && !/^\d{5}$/.test(remitCode.value)) {
+    payMsg.value = '匯款帳號末五碼必須為五位數字'
     return
   }
   try {
@@ -181,7 +192,7 @@ const submitRemit = async () => {
       lastResponse: remitNote.value,
       accountCode: remitCode.value
     }
-    await axios.post(`/finance/invoice-responses`, payload)
+    await axiosapi.post(`/api/finance/invoice-responses`, payload)
     payMsg.value = '送出成功！可繼續留言或關閉視窗'
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
@@ -209,77 +220,14 @@ function isOverdue(invoice) {
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/finance/invoice/unpaid', { params: { userId: userStore.userId } })
-    if (!Array.isArray(res.data) || res.data.length === 0) {
-      invoices.value = [
-        {
-          invoiceId: 1001,
-          amountDue: 3200,
-          paymentStatus: 'unpaid',
-          feeType: { description: '管理費' },
-          periodName: '2024年7月',
-          unitCount: 2,
-          unitPrice: 1600,
-          deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
-        },
-        {
-          invoiceId: 1002,
-          amountDue: 800,
-          paymentStatus: 'unpaid',
-          feeType: { description: '水費' },
-          periodName: '2024年7月',
-          unitCount: 10,
-          unitPrice: 80,
-          deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
-        },
-        {
-          invoiceId: 1003,
-          amountDue: 1200,
-          paymentStatus: 'pending',
-          feeType: { description: '停車費' },
-          periodName: '2024年7月',
-          unitCount: 1,
-          unitPrice: 1200,
-          deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-        },
-      ]
-    } else {
-      invoices.value = res.data
-    }
-  } catch (err) {
-    invoices.value = [
-      {
-        invoiceId: 1001,
-        amountDue: 3200,
-        paymentStatus: 'unpaid',
-        feeType: { description: '管理費' },
-        periodName: '2024年7月',
-        unitCount: 2,
-        unitPrice: 1600,
-        deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
-      },
-      {
-        invoiceId: 1002,
-        amountDue: 800,
-        paymentStatus: 'unpaid',
-        feeType: { description: '水費' },
-        periodName: '2024年7月',
-        unitCount: 10,
-        unitPrice: 80,
-        deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
-      },
-      {
-        invoiceId: 1003,
-        amountDue: 1200,
-        paymentStatus: 'pending',
-        feeType: { description: '停車費' },
-        periodName: '2024年7月',
-        unitCount: 1,
-        unitPrice: 1200,
-        deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-      },
-    ]
+    const res = await axiosapi.get('/api/finance/invoice/unpaid', { params: { userId: userStore.userId } })
+    console.log('API 回傳資料', res.data)
+    invoices.value = Array.isArray(res.data) ? res.data : []
+  } catch (e) {
+    invoices.value = []
   }
+  console.log('userId', userStore.userId)
+  console.log('invoices', invoices.value)
 })
 
 </script>

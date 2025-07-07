@@ -10,7 +10,7 @@ import finalProj.service.finance.baseServiceInterfaces.InvoiceResponseService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/finance/invoice-responses")
+@RequestMapping("/api/finance/invoice-responses")
 public class InvoiceResponseController {
 
     @Autowired
@@ -18,10 +18,8 @@ public class InvoiceResponseController {
 
     // 【功能】使用者回覆匯款（填寫帳號末五碼與備註）
     @PostMapping
-    public ResponseEntity<InvoiceResponseDTO> respondInvoice(
-            @RequestParam Integer userId,
-            @RequestBody InvoiceResponseDTO dto) {
-        InvoiceResponseDTO saved = invoiceResponseService.createResponse(userId, dto);
+    public ResponseEntity<InvoiceResponseDTO> respondInvoice(@RequestBody InvoiceResponseDTO dto) {
+        InvoiceResponseDTO saved = invoiceResponseService.createResponse(dto.getUserId(), dto);
         return ResponseEntity.ok(saved);
     }
 

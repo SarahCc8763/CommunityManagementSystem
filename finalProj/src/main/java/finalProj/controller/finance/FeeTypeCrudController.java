@@ -21,7 +21,7 @@ import finalProj.dto.finance.FeeTypeDTO;
 import finalProj.service.finance.baseServiceInterfaces.FeeTypeService;
 
 @RestController
-@RequestMapping("/finance/fee-types")
+@RequestMapping("/api/finance/fee-types")
 public class FeeTypeCrudController {
 
     @Autowired

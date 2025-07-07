@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/finance/invoice")
+@RequestMapping("/api/finance/invoice")
 public class InvoiceController {
 
     @Autowired
@@ -90,6 +90,12 @@ public class InvoiceController {
                 invoiceService.save(invoice);
             }
         }
+    }
+
+    // 新增API：查詢社區所有 paymentStatus='unpaid' 且有回覆的 invoice
+    @GetMapping("/unpaid-with-response")
+    public List<Invoice> getUnpaidWithResponse(@RequestParam Integer communityId) {
+        return invoiceService.findUnpaidWithResponseByCommunityId(communityId);
     }
 
 }

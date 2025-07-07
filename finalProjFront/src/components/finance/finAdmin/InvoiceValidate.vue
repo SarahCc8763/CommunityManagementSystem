@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios'
 
 const pendingInvoices = ref([])
 const checkedIds = ref([])
@@ -85,9 +85,9 @@ const filteredInvoices = computed(() => {
 onMounted(async () => {
   await fetchPending()
   try {
-    const res1 = await axios.get('/finance/fee-types')
+    const res1 = await axiosapi.get('/api/finance/fee-types')
     feeTypes.value = res1.data
-    const res2 = await axios.get('/finance/billing-periods')
+    const res2 = await axiosapi.get('/api/finance/billing-periods')
     billingPeriods.value = res2.data
   } catch (e) {
     errorMsg.value = '載入選單失敗：' + (e.response?.data?.message || e.message)
@@ -100,7 +100,7 @@ function clearFilter() {
 
 async function fetchPending() {
   try {
-    const res = await axios.get('/finance/invoice/pending-validate')
+    const res = await axiosapi.get('/api/finance/invoice/pending-validate')
     pendingInvoices.value = res.data
     checkedIds.value = []
     allChecked.value = false
@@ -120,7 +120,7 @@ function toggleAll() {
 async function batchValidate() {
   if (checkedIds.value.length === 0) return
   try {
-    await axios.post('/finance/invoice/batch-validate', checkedIds.value)
+    await axiosapi.post('/api/finance/invoice/batch-validate', checkedIds.value)
     successMsg.value = '審核成功！'
     await fetchPending()
   } catch (e) {

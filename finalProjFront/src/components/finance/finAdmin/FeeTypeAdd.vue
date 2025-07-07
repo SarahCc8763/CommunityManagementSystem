@@ -226,7 +226,7 @@ const form = ref({
 
 const fetchFeeTypes = async () => {
   try {
-    const response = await axios.get('/finance/fee-types')
+    const response = await axios.get('/api/finance/fee-types')
     feeTypes.value = response.data
   } catch (e) {
     errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)
@@ -238,7 +238,7 @@ const submitForm = async () => {
   errorMsg.value = ''
 
   try {
-    await axios.post('/finance/fee-types', form.value)
+    await axios.post('/api/finance/fee-types', form.value)
     successMsg.value = '新增成功！'
     form.value = {
       feeCode: '',
@@ -271,7 +271,7 @@ const openEditModal = (item) => {
 
 const submitEditForm = async () => {
   try {
-    await axios.put(`/finance/fee-types/${editItem.value.feeTypeId}`, editItem.value)
+    await axios.put(`/api/finance/fee-types/${editItem.value.feeTypeId}`, editItem.value)
     successMsg.value = '修改成功！'
     setTimeout(() => {
       const modalEl = document.getElementById('editFeeTypeModal')
@@ -293,7 +293,7 @@ const confirmDelete = (item) => {
 
 const deleteFeeType = async (id) => {
   try {
-    await axios.delete(`/finance/fee-types/${id}`)
+    await axios.delete(`/api/finance/fee-types/${id}`)
     successMsg.value = '刪除成功'
     await fetchFeeTypes()
   } catch (e) {

@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 import finalProj.domain.users.Users;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Table(name = "Invoice_Response")
+@Table(name = "finance_Invoice_Response")
 public class InvoiceResponse {
 
     @Id
@@ -40,6 +41,7 @@ public class InvoiceResponse {
 
     @ManyToOne
     @JoinColumn(name = "invoice_id", insertable = false, updatable = false)
+    @JsonBackReference
     private Invoice invoice;
 
     // getter setter

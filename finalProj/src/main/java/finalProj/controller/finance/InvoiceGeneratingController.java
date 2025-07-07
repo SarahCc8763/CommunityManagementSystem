@@ -11,7 +11,7 @@ import finalProj.dto.finance.FeeGenerationRequest;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
 
 @RestController
-@RequestMapping("/finance/invoice-generator")
+@RequestMapping("/api/finance/invoice-generator")
 public class InvoiceGeneratingController {
 
     @Autowired

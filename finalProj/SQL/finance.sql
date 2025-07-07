@@ -1,7 +1,7 @@
 
 
 -- 費用類別 table
-IF OBJECT_ID('FeeType', 'U') IS NULL
+IF OBJECT_ID('finance_FeeType', 'U') IS NULL
 BEGIN
 CREATE TABLE FeeType (
     fee_type_id      INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE FeeType (
 END
 
 -- 期別表 table
-IF OBJECT_ID('BillingPeriod', 'U') IS NULL
+IF OBJECT_ID('finance_BillingPeriod', 'U') IS NULL
 BEGIN
 CREATE TABLE BillingPeriod (
     billing_period_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -47,7 +47,7 @@ CREATE TABLE BillingPeriod (
 END
 
 -- 應收帳款（請款單）table
-IF OBJECT_ID('Invoice', 'U') IS NULL
+IF OBJECT_ID('finance_Invoice', 'U') IS NULL
 BEGIN
 CREATE TABLE Invoice (
     invoice_id        INT IDENTITY(1,1) PRIMARY KEY,
@@ -77,7 +77,7 @@ CREATE TABLE Invoice (
 END
 
 -- 請款單回覆 table
-IF OBJECT_ID('Invoice_Response', 'U') IS NULL
+IF OBJECT_ID('finance_Invoice_Response', 'U') IS NULL
 BEGIN
 CREATE TABLE Invoice_Response (
     invoice_response_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -98,7 +98,7 @@ CREATE TABLE Invoice_Response (
 END
 
 -- 財務支出 table
-IF OBJECT_ID('Expense', 'U') IS NULL
+IF OBJECT_ID('finance_Expense', 'U') IS NULL
 BEGIN
 CREATE TABLE Expense (
     expense_id     INT IDENTITY(1,1) PRIMARY KEY,
@@ -122,7 +122,7 @@ CREATE TABLE Expense (
 END
 
 -- 實收明細 table
-IF OBJECT_ID('Receipt', 'U') IS NULL
+IF OBJECT_ID('finance_Receipt', 'U') IS NULL
 BEGIN
 CREATE TABLE Receipt (
     receipt_id        INT IDENTITY(1,1) PRIMARY KEY,

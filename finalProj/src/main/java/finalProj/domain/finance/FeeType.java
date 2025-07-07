@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "FeeType")
+@Table(name = "finance_FeeType")
 
 public class FeeType extends BaseEntity {
 

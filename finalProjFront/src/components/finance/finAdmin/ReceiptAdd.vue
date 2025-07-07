@@ -63,7 +63,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios'
 import html2pdf from 'html2pdf.js'
 
 const route = useRoute()
@@ -94,15 +94,15 @@ const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
   try {
-    const res = await axios.post('/finance/receipts', form.value)
+    const res = await axiosapi.post('/api/finance/receipts', form.value)
     successMsg.value = '新增成功！'
     // 取得收據詳細資料
     const receiptId = res.data.receiptId || res.data.id
-    const detailRes = await axios.get(`/finance/receipts/${receiptId}`)
+    const detailRes = await axiosapi.get(`/api/finance/receipts/${receiptId}`)
     receiptDetail.value = detailRes.data
     // 查社區名稱
     if (detailRes.data.communityId) {
-      const commRes = await axios.get(`/communitys/${detailRes.data.communityId}`)
+      const commRes = await axiosapi.get(`/communitys/${detailRes.data.communityId}`)
       communityName.value = commRes.data.name
     } else {
       communityName.value = ''

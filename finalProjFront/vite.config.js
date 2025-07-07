@@ -13,18 +13,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  server: {
-    proxy: {
-      '^/finance/.*': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    },
-  },
-  preview: {
-    // 若部署於子目錄，請設base: '/子目錄/'
-    // base: '/your-base/',
-  },
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

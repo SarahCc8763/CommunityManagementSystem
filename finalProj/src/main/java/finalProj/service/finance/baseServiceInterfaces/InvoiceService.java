@@ -29,4 +29,6 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     // 根據 userId 查詢未繳帳單
     List<Invoice> findUnpaidInvoicesByUserId(Integer usersId);
+
+    List<Invoice> findUnpaidWithResponseByCommunityId(Integer communityId);
 }

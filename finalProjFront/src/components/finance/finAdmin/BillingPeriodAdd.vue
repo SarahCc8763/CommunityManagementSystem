@@ -196,7 +196,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import bannerImg from '@/assets/images/main/adminBanner.jpg'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -250,7 +250,7 @@ watch([formYear, formType, formMonthOrQuarter], ([y, t, m]) => {
 const fetchBillingPeriods = async () => {
 
   try {
-    const res = await axios.get('/finance/billing-periods')
+    const res = await axiosapi.get('/finance/billing-periods')
     billingPeriods.value = res.data || []
   } catch (e) {
     errorMsg.value = '載入失敗：' + (e.response?.data?.message || e.message)
@@ -267,10 +267,13 @@ const latestBillingPeriods = computed(() => {
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+  form.value.communityId = userStore.communityId
+  form.value.createdBy = userStore.userId
+  form.value.updatedBy = userStore.userId
+  form.value.createdAt = new Date().toISOString()
   try {
-    await axios.post('/finance/billing-periods/create', form.value)
+    await axiosapi.post('/finance/billing-periods/create', form.value)
     successMsg.value = '新增成功！'
-    form.value = getDefaultForm();
     const modalEl = document.getElementById('billingPeriodModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
     modal?.hide()
@@ -301,7 +304,7 @@ const searchBillingPeriod = async () => {
       }
       params.periodCode = code
     }
-    const res = await axios.get('/finance/billing-periods/query', { params })
+    const res = await axiosapi.get('/finance/billing-periods/query', { params })
     if (res.data) {
       searchResult.value = res.data
     } else {

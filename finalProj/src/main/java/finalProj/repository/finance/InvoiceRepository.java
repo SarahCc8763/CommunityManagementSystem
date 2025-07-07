@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import finalProj.domain.finance.Invoice;
 
@@ -25,4 +27,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     // 查詢某用戶所有未繳帳單
     List<Invoice> findByUsers_UsersIdAndPaymentStatusNotIgnoreCase(Integer usersId, String status);
+
+    // 查詢某用戶所有 paymentStatus = 'unpaid' 帳單
+    List<Invoice> findByUsers_UsersIdAndPaymentStatusIgnoreCase(Integer usersId, String status);
+
+    // 查詢某社區所有未繳帳單
+    @Query("SELECT i FROM Invoice i WHERE i.communityId = :communityId AND i.paymentStatus = :paymentStatus")
+    List<Invoice> findByCommunityIdAndPaymentStatus(@Param("communityId") Integer communityId,
+            @Param("paymentStatus") String paymentStatus);
 }

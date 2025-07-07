@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axiosapi from '@/plugins/axios'
 import { jsPDF } from 'jspdf'
 
 //這段來抓User跟Community ID
@@ -49,7 +49,7 @@ const receipts = ref([])
 
 const fetchReceipts = async () => {
   try {
-    const res = await axios.get(`/finance/receipts/user/${userId}`)
+    const res = await axiosapi.get(`/finance/receipts/user/${userId}`)
     receipts.value = res.data
   } catch (err) {
     console.error('取得收據失敗:', err)
