@@ -1,25 +1,76 @@
 <template>
   <div>
-    <div v-if="invoices.length === 0">目前沒有待審核的帳單</div>
-    <div v-else>
-      <div v-for="inv in invoices" :key="inv.invoiceId" class="invoice-card mb-4">
-        <h4>發票ID：{{ inv.invoiceId }}</h4>
-        <div>住戶：{{ inv.users?.name }}</div>
-        <div>金額：{{ inv.amountDue }}</div>
-        <div>狀態：{{ inv.paymentStatus }}</div>
-        <div>期別：{{ inv.periodName }}</div>
-        <div>截止日：{{ formatDate(inv.deadline) }}</div>
-        <div v-if="inv.invoiceResponses && inv.invoiceResponses.length > 0">
-          <h5>留言紀錄：</h5>
-          <div v-for="resp in inv.invoiceResponses" :key="resp.invoiceResponseId" class="response-card">
-            <div>用戶ID：{{ resp.userId }}</div>
-            <div>留言：{{ resp.lastResponse }}</div>
-            <div>末五碼：{{ resp.accountCode }}</div>
-            <div>回覆時間：{{ resp.lastResponseTime }}</div>
-            <div>審核狀態：<span v-if="resp.verified">已審核</span><span v-else>未審核</span></div>
+
+    <!-- 查詢區塊 -->
+    <div class="filter-bar mb-3">
+      <label class="me-2">期別：</label>
+      <input v-model="filter.periodName" class="form-control d-inline-block w-auto me-3" placeholder="請輸入期別" />
+      <label class="me-2">費用類別：</label>
+      <input v-model="filter.feeType" class="form-control d-inline-block w-auto me-3" placeholder="請輸入費用類別" />
+      <label class="me-2">逾期：</label>
+      <select v-model="filter.overdue" class="form-select d-inline-block w-auto me-3">
+        <option value="">全部</option>
+        <option value="true">僅顯示逾期</option>
+        <option value="false">僅顯示未逾期</option>
+      </select>
+      <button class="btn btn-outline-primary btn-sm" @click="clearFilter">清除</button>
+    </div>
+
+    <div v-for="inv in filteredInvoices" :key="inv.invoiceId" class="invoice-card">
+      <h3>發票資訊</h3>
+      <h4>發票 ID：{{ inv.invoiceId }}　| 狀態：{{ inv.paymentStatus }}</h4>
+
+      <div>住戶：{{ inv.user?.name }}</div>
+      <div>費用類型：{{ inv.feeType?.description }}</div>
+      <div>期別：{{ inv.billingPeriod?.periodName }}</div>
+      <div>金額：{{ inv.amountDue }}</div>
+      <div>截止日：{{ inv.deadline }}</div>
+      <div>備註：{{ inv.note }}</div>
+
+      <div class="mt-2">
+        <h5>回覆紀錄：</h5>
+        <div v-if="inv.invoiceResponses?.length > 0">
+          <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId" class="border p-2 mb-2">
+            <div>留言：{{ res.lastResponse }}</div>
+            <div>末五碼：{{ res.accountCode }}</div>
+            <div>時間：{{ res.lastResponseTime }}</div>
+            <div>是否審核：{{ res.verified ? '✅' : '❌' }}</div>
+            <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
           </div>
         </div>
-        <div v-else>尚無留言</div>
+        <div v-else>尚無回覆</div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+    <div v-if="filteredResponses.length > 0">
+      <div class="d-flex align-items-center mb-2">
+        <input type="checkbox" v-model="allChecked" @change="toggleAll" class="form-check-input me-2" />
+        <span>全選</span>
+        <button class="btn btn-success btn-sm ms-3" :disabled="checkedResponses.length === 0"
+          @click="batchCreateReceipts">一鍵產生收據</button>
+      </div>
+      <h4>回覆紀錄</h4>
+
+      <div v-for="response in filteredResponses" :key="response.invoiceResponseId"
+        class="response-card d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-2" :value="response.invoiceResponseId"
+          v-model="checkedResponses" />
+        <div class="flex-grow-1">
+          <div>用戶ID：{{ response.userId }}</div>
+          <div>留言：{{ response.lastResponse }}</div>
+          <div>末五碼：{{ response.accountCode }}</div>
+          <div>回覆時間：{{ response.lastResponseTime }}</div>
+          <div>審核狀態：<span v-if="response.verified">已審核</span><span v-else>未審核</span></div>
+          <div v-if="isOverdue(invoice.deadline)"><span class="badge bg-danger">逾期</span></div>
+        </div>
+        <button class="btn btn-outline-primary btn-sm ms-2"
+          @click="goToReceiptAdd(invoice.invoiceId, response.userId)">審核已付款</button>
       </div>
     </div>
   </div>
@@ -48,11 +99,14 @@ onMounted(async () => {
 })
 </script>
 
+
 <style scoped>
-body, .dark-bg {
+body,
+.dark-bg {
   background: #181a1b;
   color: #e0e0e0;
 }
+
 .invoice-card {
   border: 1px solid #333;
   border-radius: 8px;
@@ -61,6 +115,7 @@ body, .dark-bg {
   background: #23272b;
   color: #e0e0e0;
 }
+
 .response-card {
   border: 1px solid #444;
   border-radius: 6px;
@@ -69,6 +124,7 @@ body, .dark-bg {
   background: #23272b;
   color: #e0e0e0;
 }
+
 .filter-bar {
   background: #23272b;
   border-radius: 6px;
@@ -79,58 +135,78 @@ body, .dark-bg {
   flex-wrap: wrap;
   color: #e0e0e0;
 }
-input.form-control, select.form-select {
+
+input.form-control,
+select.form-select {
   background: #181a1b;
   color: #e0e0e0;
   border: 1px solid #444;
 }
-input.form-control:focus, select.form-select:focus {
+
+input.form-control:focus,
+select.form-select:focus {
   background: #23272b;
   color: #fff;
   border-color: #888;
 }
-.btn, .btn:focus, .btn:active {
+
+.btn,
+.btn:focus,
+.btn:active {
   color: #e0e0e0;
   background: #23272b;
   border: 1px solid #444;
 }
+
 .btn-success {
   background: #198754;
   border-color: #198754;
 }
+
 .btn-outline-primary {
   color: #90caf9;
   border-color: #90caf9;
 }
+
 .btn-outline-primary:hover {
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
 }
+
 .alert-success {
   background: #223a29;
   color: #b9f6ca;
   border-color: #388e3c;
 }
+
 .alert-danger {
   background: #3a2222;
   color: #ff8a80;
   border-color: #d32f2f;
 }
+
 .badge.bg-danger {
   background: #d32f2f;
   color: #fff;
 }
+
 input[type="checkbox"].form-check-input {
   accent-color: #90caf9;
   background: #23272b;
   border: 1px solid #90caf9;
 }
+
 input[type="checkbox"].form-check-input:checked {
   background: #1976d2;
   border-color: #1976d2;
 }
-label, h3, h4, span, div {
+
+label,
+h3,
+h4,
+span,
+div {
   color: #e0e0e0;
 }
-</style> 
+</style>

@@ -10,7 +10,8 @@ import finalProj.domain.users.UnitsUsers;
 
 @Repository
 public interface UnitsUsersRepository extends JpaRepository<UnitsUsers, Integer> {
-    List<UnitsUsers> findByUnitOrderByUser_UsersIdAsc(Units unit);
+    // 找某位使用者最早入住的單位（戶），依 createdAt 排序
+    UnitsUsers findTopByUser_UsersIdOrderByCreatedAtAsc(Integer usersId);
 
     List<UnitsUsers> findByUser_UsersId(Integer usersId);
 }

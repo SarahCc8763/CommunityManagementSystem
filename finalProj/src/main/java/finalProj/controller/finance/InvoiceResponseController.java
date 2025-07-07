@@ -1,13 +1,22 @@
 package finalProj.controller.finance;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceResponseService;
-
-import java.util.List;
+import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
 
 @RestController
 @RequestMapping("/api/finance/invoice-responses")
@@ -15,6 +24,9 @@ public class InvoiceResponseController {
 
     @Autowired
     private InvoiceResponseService invoiceResponseService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     // 【功能】使用者回覆匯款（填寫帳號末五碼與備註）
     @PostMapping
@@ -38,14 +50,14 @@ public class InvoiceResponseController {
     }
 
     // 【功能】管理員查詢單一回覆明細
-    @GetMapping("/{id}")
+    @GetMapping("/adminSearch/{id}")
     public ResponseEntity<InvoiceResponseDTO> getResponseById(@PathVariable Integer id) {
         InvoiceResponseDTO dto = invoiceResponseService.findDTOById(id);
         return ResponseEntity.ok(dto);
     }
 
     // 【功能】管理員審核用戶回覆（確認匯款）
-    @PutMapping("/{id}/verify")
+    @PutMapping("/adminRespond/{id}/verify")
     public ResponseEntity<InvoiceResponseDTO> verifyResponse(
             @PathVariable Integer id,
             @RequestParam Integer adminId) {
@@ -57,6 +69,12 @@ public class InvoiceResponseController {
     @GetMapping("/by-invoice")
     public ResponseEntity<List<InvoiceResponseDTO>> getResponsesByInvoiceId(@RequestParam Integer invoiceId) {
         List<InvoiceResponseDTO> list = invoiceResponseService.findByInvoiceId(invoiceId);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/with-response/unpaid")
+    public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesWithResponses() {
+        List<InvoiceDTO> list = invoiceService.findUnpaidInvoicesWithResponse();
         return ResponseEntity.ok(list);
     }
 }

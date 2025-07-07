@@ -2,6 +2,7 @@ package finalProj.dto.finance;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Data;
 
@@ -29,4 +30,13 @@ public class InvoiceDTO {
     private Integer createdBy;
     private Integer updatedBy;
 
+    public List<InvoiceResponseDTO> getInvoiceResponses() {
+        return invoiceResponses;
+    }
+
+    public void setInvoiceResponses(List<InvoiceResponseDTO> invoiceResponses) {
+        this.invoiceResponses = invoiceResponses;
+    }
+
+    private List<InvoiceResponseDTO> invoiceResponses;
 }

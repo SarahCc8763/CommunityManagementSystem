@@ -1,11 +1,23 @@
 package finalProj.controller.finance;
 
-import finalProj.domain.finance.Invoice;
-import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import finalProj.domain.finance.Invoice;
+import finalProj.dto.finance.InvoiceDTO;
+import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
 
 @RestController
 @RequestMapping("/api/finance/invoice")
@@ -14,23 +26,22 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @GetMapping("/unpaid")
-    public List<Invoice> getUnpaidInvoices(@RequestParam Integer userId) {
-        return invoiceService.findUnpaidInvoicesByUserId(userId);
+    // 查詢登入者未繳帳單（傳 userId）
+    @PostMapping("/unpaid/by-user")
+    public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesByUser(@RequestBody Map<String, Integer> payload) {
+        Integer userId = payload.get("userId");
+        return ResponseEntity.ok(invoiceService.findUnpaidInvoicesByUserId(userId));
     }
 
-    // 【功能】取得所有發票（可依communityId查詢）
-    @GetMapping
-    public List<Invoice> getAll(@RequestParam(required = false) Integer communityId) {
-        if (communityId != null) {
-            return invoiceService.findByCommunityId(communityId);
-        } else {
-            return invoiceService.findAll();
-        }
+    // 【功能】取得所有發票（可依communityId查詢）// 查詢社區內所有未繳帳單（傳 communityId）
+    // @PostMapping("/unpaid/by-community")
+    public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesByCommunity(@RequestBody Map<String, Integer> payload) {
+        Integer communityId = payload.get("communityId");
+        return ResponseEntity.ok(invoiceService.findUnpaidInvoicesByCommunityId(communityId));
     }
 
     // 【功能】依ID查詢單一發票
-    @GetMapping("/{invoiceId}")
+    @GetMapping("/getOne/{invoiceId}")
     public Invoice getById(@PathVariable Integer invoiceId) {
         return invoiceService.findById(invoiceId);
     }
@@ -42,7 +53,7 @@ public class InvoiceController {
     }
 
     // 【功能】更新請款內容
-    @PutMapping("/{invoiceId}")
+    @PutMapping("/updateOne/{invoiceId}")
     public Invoice update(@PathVariable Integer invoiceId, @RequestBody Invoice updated) {
         updated.setInvoiceId(invoiceId);
         return invoiceService.save(updated);
