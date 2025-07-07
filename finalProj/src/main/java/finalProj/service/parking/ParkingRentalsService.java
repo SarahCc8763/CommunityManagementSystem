@@ -81,6 +81,7 @@ public class ParkingRentalsService {
 			return null;
 		}
 
+		System.out.println(isOverlapping(rentBuyStart, rentEnd, parkingSlotId, null));
 		// 檢查時間是否重疊
 		if (isOverlapping(rentBuyStart, rentEnd, parkingSlotId, null)) {
 			return null; // 或者丟出例外、回傳錯誤訊息

@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', () => {
     function setEmail(data) {
         email.value = data
     }
-    const id = ref(3) // 登入時設定
+    const id = ref(1) // 登入時設定
     function setId(data) {
         id.value = data
     }

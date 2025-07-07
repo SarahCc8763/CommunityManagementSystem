@@ -84,10 +84,12 @@ public class ParkingRentalsController {
 
 			if (record.getUsers() != null) {
 				dto.setUserName(record.getUsers().getName());
+				dto.setUsersId(record.getUsers().getUsersId());
 			}
 
 			if (record.getApprover() != null) {
 				dto.setApproverName(record.getApprover().getName());
+				dto.setApproverId(record.getApprover().getUsersId());
 			}
 			return dto;
 		}).collect(Collectors.toList());
@@ -126,7 +128,7 @@ public class ParkingRentalsController {
 			rental.setParkingSlot(slot);
 
 			// 🔗 查找並設定承租人
-			Users user = usersRepository.findByName(rentalDTO.getUserName());
+			Users user = usersRepository.findByUsersId(rentalDTO.getUsersId());
 			if (user == null) {
 				return ResponseEntity.badRequest().body(ApiResponse.failure("找不到承租者"));
 			}
@@ -142,6 +144,9 @@ public class ParkingRentalsController {
 
 			// ✅ 儲存資料
 			ParkingRentals saved = service.create(rental);
+			if (saved == null) {
+				return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：輸入格式錯誤或時段重疊"));
+			}
 			return ResponseEntity.ok(ApiResponse.success("新增成功", saved));
 
 		} catch (Exception e) {
@@ -185,7 +190,7 @@ public class ParkingRentalsController {
 			rental.setParkingSlot(slot);
 
 			// 🔗 關聯 Users（由 userName 找）
-			Users user = usersRepository.findByName(rentalDTO.getUserName());
+			Users user = usersRepository.findByUsersId(rentalDTO.getUsersId());
 			if (user == null) {
 				return ResponseEntity.badRequest().body(ApiResponse.failure("找不到承租者"));
 			}
@@ -200,6 +205,9 @@ public class ParkingRentalsController {
 			}
 
 			ParkingRentals updated = service.update(rental);
+			if (updated == null) {
+				return ResponseEntity.badRequest().body(ApiResponse.failure("修改失敗：輸入格式錯誤或時段重疊"));
+			}
 			return ResponseEntity.ok(ApiResponse.success("更新成功", updated));
 
 		} catch (Exception e) {

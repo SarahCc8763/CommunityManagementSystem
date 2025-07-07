@@ -1,6 +1,32 @@
 <template>
-    <h2>可承租車位</h2>
-    <div>
+    <div class="container mt-4">
+        <div class="tag-style px-4 py-2 mb-4">
+            <h2 class="mb-0 fw-bold text-primary section-title">承租車位</h2>
+        </div>
+    </div>
+    <div class="container mt-4">
+    <!-- ✅ 頁籤列：寬度對齊 container -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: selectedTab === 'rent' }"
+          href="#"
+          @click.prevent="selectedTab = 'rent'"
+        >我要承租車位</a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: selectedTab === 'history' }"
+          href="#"
+          @click.prevent="selectedTab = 'history'"
+        >查看歷史紀錄</a>
+      </li>
+    </ul>
+    
+    <div v-if="selectedTab === 'rent'">
+        <div>
         <!-- 查詢區塊 -->
 <label class="form-label mt-2">承租起始年月：</label>
 <input type="month" class="form-control" v-model="queryStartMonth" :min="minMonth" />
@@ -76,6 +102,33 @@
                 </div>
             </div>
         </div>
+    </div></div>
+    <div v-if="selectedTab === 'history'">
+  <div class="container">
+    <h3 class="fw-bold mb-3">歷史承租紀錄</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>車位編號</th>
+          <th>區域</th>
+          <th>起始</th>
+          <th>結束</th>
+          <th>登記車牌</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="record in rentalHistory" :key="record.id">
+          <td>{{ record.slotNumber }}</td>
+          <td>{{ record.location }}</td>
+          <td>{{ record.rentBuyStart }}</td>
+          <td>{{ record.rentEnd }}</td>
+          <td>{{ record.licensePlate }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p v-if="!rentalHistory.length">尚無歷史紀錄。</p>
+  </div>
+</div>
     </div>
 </template>
     
@@ -87,6 +140,9 @@ import { useUserStore } from '@/stores/UserStore'
 // 使用者資訊與社區 ID
 const userStore = useUserStore()
 const communityId = userStore.community
+
+const selectedTab = ref('rent') // 'rent' or 'history'
+
 
 // 查詢條件
 const selectedType = ref(1)
@@ -255,6 +311,15 @@ watch([rentStartMonth, rentEndMonth], ([start, end]) => {
     if (!end || end < minEndStr) {
         rentEndMonth.value = minEndStr
     }
+})
+const rentalHistory = ref([])
+
+async function fetchRentalHistory() {
+  const res = await axios.get(`/park/parking-rentals/user/${userStore.email}?communityId=${communityId}`)
+  rentalHistory.value = res.data.data || []
+}
+watch(selectedTab, (tab) => {
+  if (tab === 'history') fetchRentalHistory()
 })
 
 

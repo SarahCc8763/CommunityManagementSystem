@@ -23,7 +23,25 @@ public class RentalHistoryDTO {
 	private String location;
 	private String parkingType;
 	private String userName;
+	private Integer usersId;
 	private String approverName;
+	private Integer approverId;
+
+	public Integer getUsersId() {
+		return usersId;
+	}
+
+	public void setUsersId(Integer usersId) {
+		this.usersId = usersId;
+	}
+
+	public Integer getApproverId() {
+		return approverId;
+	}
+
+	public void setApproverId(Integer approverId) {
+		this.approverId = approverId;
+	}
 
 	public Integer getId() {
 		return id;

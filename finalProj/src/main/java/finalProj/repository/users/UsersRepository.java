@@ -18,4 +18,6 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 	boolean existsByUsersIdAndCommunity(Integer usersId, Community community);
 
 	Users findByName(String userName);
+
+	Users findByUsersId(Integer usersId);
 }

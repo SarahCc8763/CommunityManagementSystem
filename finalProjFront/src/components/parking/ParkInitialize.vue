@@ -189,44 +189,35 @@ let originalTypes = ref([])
 
 // 取得初始資料（資料庫中的選擇）
 const fetchSelectedTypes = async () => {
-  try {
-    const res = await axios.get(`/park/parking-types?communityId=${communityId}`)
-    const fetchedLabels = res.data.data.map(t => t.type)
-    const matchedTypes = parkingTypes.filter(t => fetchedLabels.includes(t.label))
-    selectedTypes.value = matchedTypes
-
-    // 存下原始 id 陣列
-    originalTypes.value = matchedTypes.map(t => t.id).sort()
-    updateChangeStatus()
-  } catch (err) {
-    console.error("載入車位種類失敗", err)
-  }
-}
-
-// 比較現在是否與原始一致
-function updateChangeStatus() {
-  const currentIds = selectedTypes.value.map(t => t.id).slice().sort() // 要用 slice() 複製一份
-
-  const isSame =
-    currentIds.length === originalTypes.value.length &&
-    currentIds.every((id, i) => id === originalTypes.value[i])
-
-  hasChanged.value = !isSame
-  showTypeWarning.value = !isSame
+    try {
+        const res = await axios.get(`/park/parking-types?communityId=${communityId}`)
+        const fetchedLabels = res.data.data.map(t => t.type)
+        const matchedTypes = parkingTypes.filter(t => fetchedLabels.includes(t.label))
+        selectedTypes.value = matchedTypes
+        
+        // 存下原始 id 陣列
+        originalTypes.value = matchedTypes.map(t => t.id).sort()
+        updateChangeStatus()
+    } catch (err) {
+        console.error("載入車位種類失敗", err)
+    }
 }
 
 // 車種修改後須submit
 const hasChanged = ref(false)
 const showTypeWarning = ref(true)
 
-function markChanged() {
-    if (!hasChanged.value) {
-        hasChanged.value = true
-        showTypeWarning.value = true
-        console.log("使用者開始修改車位種類")
-    }
+// 比較現在是否與原始一致
+function updateChangeStatus() {
+    const currentIds = selectedTypes.value.map(t => t.id).slice().sort() // 要用 slice() 複製一份
+    
+    const isSame =
+    currentIds.length === originalTypes.value.length &&
+    currentIds.every((id, i) => id === originalTypes.value[i])
+    
+    hasChanged.value = !isSame
+    showTypeWarning.value = !isSame
 }
-
 
 // 車種確認update
 async function confirmAndSubmit() {
@@ -465,17 +456,17 @@ function updateSelected(field, newValue, changedIndex) {
 }
 
 function handleUserChange(index) {
-  onUserChange(index) // 更新 filteredUnits
-
-  const availableUnits = getAvailableUnits(parkingSlots.value[index].usersId)
-  const firstUnit = availableUnits[0] || {}
-
-  // 設定 slot 中的 unitsId 以避免出現空白
-  parkingSlots.value[index].unitsId = firstUnit.unitsId ?? null
-
-  // 再觸發同步更新
-  updateSelected('usersId', parkingSlots.value[index].usersId, index)
-  updateSelected('unitsId', parkingSlots.value[index].unitsId, index)
+    onUserChange(index) // 更新 filteredUnits
+    
+    const availableUnits = getAvailableUnits(parkingSlots.value[index].usersId)
+    const firstUnit = availableUnits[0] || {}
+    
+    // 設定 slot 中的 unitsId 以避免出現空白
+    parkingSlots.value[index].unitsId = firstUnit.unitsId ?? null
+    
+    // 再觸發同步更新
+    updateSelected('usersId', parkingSlots.value[index].usersId, index)
+    updateSelected('unitsId', parkingSlots.value[index].unitsId, index)
 }
 
 
