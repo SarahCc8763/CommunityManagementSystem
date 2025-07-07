@@ -1,17 +1,5 @@
 <template>
   <div>
-    <div v-if="invoice" class="invoice-card">
-      <h3>發票資訊</h3>
-      <div>發票ID：{{ invoice.invoiceId }}</div>
-      <div>住戶：{{ invoice.user?.name }}</div>
-      <div>費用類型：{{ invoice.feeType?.description }}</div>
-      <div>期別：{{ invoice.billingPeriod?.periodName }}</div>
-      <div>金額：{{ invoice.amountDue }}</div>
-      <div>截止日：{{ invoice.deadline }}</div>
-      <div>狀態：{{ invoice.paymentStatus }}</div>
-      <div>備註：{{ invoice.note }}</div>
-    </div>
-    <div v-else>載入中...</div>
 
     <!-- 查詢區塊 -->
     <div class="filter-bar mb-3">
@@ -28,15 +16,51 @@
       <button class="btn btn-outline-primary btn-sm" @click="clearFilter">清除</button>
     </div>
 
+    <div v-for="inv in filteredInvoices" :key="inv.invoiceId" class="invoice-card">
+      <h3>發票資訊</h3>
+      <h4>發票 ID：{{ inv.invoiceId }}　| 狀態：{{ inv.paymentStatus }}</h4>
+
+      <div>住戶：{{ inv.user?.name }}</div>
+      <div>費用類型：{{ inv.feeType?.description }}</div>
+      <div>期別：{{ inv.billingPeriod?.periodName }}</div>
+      <div>金額：{{ inv.amountDue }}</div>
+      <div>截止日：{{ inv.deadline }}</div>
+      <div>備註：{{ inv.note }}</div>
+
+      <div class="mt-2">
+        <h5>回覆紀錄：</h5>
+        <div v-if="inv.invoiceResponses?.length > 0">
+          <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId" class="border p-2 mb-2">
+            <div>留言：{{ res.lastResponse }}</div>
+            <div>末五碼：{{ res.accountCode }}</div>
+            <div>時間：{{ res.lastResponseTime }}</div>
+            <div>是否審核：{{ res.verified ? '✅' : '❌' }}</div>
+            <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
+          </div>
+        </div>
+        <div v-else>尚無回覆</div>
+      </div>
+    </div>
+
+
+
+
+
+
+
     <div v-if="filteredResponses.length > 0">
       <div class="d-flex align-items-center mb-2">
         <input type="checkbox" v-model="allChecked" @change="toggleAll" class="form-check-input me-2" />
         <span>全選</span>
-        <button class="btn btn-success btn-sm ms-3" :disabled="checkedResponses.length===0" @click="batchCreateReceipts">一鍵產生收據</button>
+        <button class="btn btn-success btn-sm ms-3" :disabled="checkedResponses.length === 0"
+          @click="batchCreateReceipts">一鍵產生收據</button>
       </div>
       <h4>回覆紀錄</h4>
-      <div v-for="response in filteredResponses" :key="response.invoiceResponseId" class="response-card d-flex align-items-center">
-        <input type="checkbox" class="form-check-input me-2" :value="response.invoiceResponseId" v-model="checkedResponses" />
+
+      <div v-for="response in filteredResponses" :key="response.invoiceResponseId"
+        class="response-card d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-2" :value="response.invoiceResponseId"
+          v-model="checkedResponses" />
         <div class="flex-grow-1">
           <div>用戶ID：{{ response.userId }}</div>
           <div>留言：{{ response.lastResponse }}</div>
@@ -45,7 +69,8 @@
           <div>審核狀態：<span v-if="response.verified">已審核</span><span v-else>未審核</span></div>
           <div v-if="isOverdue(invoice.deadline)"><span class="badge bg-danger">逾期</span></div>
         </div>
-        <button class="btn btn-outline-primary btn-sm ms-2" @click="goToReceiptAdd(invoice.invoiceId, response.userId)">審核已付款</button>
+        <button class="btn btn-outline-primary btn-sm ms-2"
+          @click="goToReceiptAdd(invoice.invoiceId, response.userId)">審核已付款</button>
       </div>
     </div>
     <div v-else>尚無回覆紀錄</div>
@@ -55,18 +80,17 @@
 </template>
 
 <script setup>
-// 管理員查看單一發票及所有回覆元件
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-const route = useRoute()
-const router = useRouter()
-const invoice = ref(null)
-const responses = ref([])
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const invoices = ref([])
 const checkedResponses = ref([])
 const successMsg = ref('')
 const errorMsg = ref('')
 const filter = ref({ periodName: '', feeType: '', overdue: '' })
+
+const router = useRouter()
 
 const allChecked = computed({
   get: () => checkedResponses.value.length === filteredResponses.value.length && filteredResponses.value.length > 0,
@@ -75,29 +99,34 @@ const allChecked = computed({
   }
 })
 
-onMounted(async () => {
-  const invoiceId = route.params.invoiceId
-  // 取得發票詳細資料
-  invoice.value = await fetch(`/finance/invoice/${invoiceId}`).then(r => r.json())
-  // 取得該發票所有回覆
-  responses.value = await fetch(`/finance/invoice-responses/by-invoice?invoiceId=${invoiceId}`).then(r => r.json())
-})
-
-const filteredResponses = computed(() => {
-  return responses.value.filter(r => {
+const filteredInvoices = computed(() => {
+  return invoices.value.filter(inv => {
     let match = true
-    if (filter.value.periodName && invoice.value?.billingPeriod?.periodName) {
-      match = match && invoice.value.billingPeriod.periodName.includes(filter.value.periodName)
+    if (filter.value.periodName && inv.billingPeriod?.periodName) {
+      match = match && inv.billingPeriod.periodName.includes(filter.value.periodName)
     }
-    if (filter.value.feeType && invoice.value?.feeType?.description) {
-      match = match && invoice.value.feeType.description.includes(filter.value.feeType)
+    if (filter.value.feeType && inv.feeType?.description) {
+      match = match && inv.feeType.description.includes(filter.value.feeType)
     }
     if (filter.value.overdue !== '') {
-      const overdue = isOverdue(invoice.value.deadline)
-      match = match && ((filter.value.overdue === 'true' && overdue) || (filter.value.overdue === 'false' && !overdue))
+      const overdue = isOverdue(inv.deadline)
+      match = match && (
+        (filter.value.overdue === 'true' && overdue) ||
+        (filter.value.overdue === 'false' && !overdue)
+      )
     }
     return match
   })
+})
+
+const filteredResponses = computed(() => {
+  const responses = []
+  for (const inv of filteredInvoices.value) {
+    if (Array.isArray(inv.invoiceResponses)) {
+      responses.push(...inv.invoiceResponses)
+    }
+  }
+  return responses
 })
 
 function isOverdue(deadline) {
@@ -106,7 +135,6 @@ function isOverdue(deadline) {
 }
 
 function goToReceiptAdd(invoiceId, userId) {
-  // 跳轉到ReceiptAdd，帶入invoiceId與userId
   router.push({ name: 'ReceiptAdd', query: { invoiceId, userId } })
 }
 
@@ -119,11 +147,12 @@ async function batchCreateReceipts() {
   errorMsg.value = ''
   const selected = filteredResponses.value.filter(r => checkedResponses.value.includes(r.invoiceResponseId))
   if (selected.length === 0) return
+
   try {
     await Promise.all(selected.map(r =>
       axios.post('/finance/receipts', {
         invoiceId: r.invoiceId,
-        amountPay: invoice.value.amountDue,
+        amountPay: r.amountPay || 0,
         paymentMethod: '匯款',
         paidAt: new Date().toISOString(),
         debitAt: new Date().toISOString(),
@@ -141,13 +170,25 @@ async function batchCreateReceipts() {
 function clearFilter() {
   filter.value = { periodName: '', feeType: '', overdue: '' }
 }
+
+onMounted(async () => {
+  try {
+    const res = await axios.get('/finance/invoice-responses/with-response/unpaid')
+    invoices.value = res.data
+  } catch (err) {
+    console.error('載入發票資料失敗:', err)
+  }
+})
 </script>
 
+
 <style scoped>
-body, .dark-bg {
+body,
+.dark-bg {
   background: #181a1b;
   color: #e0e0e0;
 }
+
 .invoice-card {
   border: 1px solid #333;
   border-radius: 8px;
@@ -156,6 +197,7 @@ body, .dark-bg {
   background: #23272b;
   color: #e0e0e0;
 }
+
 .response-card {
   border: 1px solid #444;
   border-radius: 6px;
@@ -164,6 +206,7 @@ body, .dark-bg {
   background: #23272b;
   color: #e0e0e0;
 }
+
 .filter-bar {
   background: #23272b;
   border-radius: 6px;
@@ -174,58 +217,78 @@ body, .dark-bg {
   flex-wrap: wrap;
   color: #e0e0e0;
 }
-input.form-control, select.form-select {
+
+input.form-control,
+select.form-select {
   background: #181a1b;
   color: #e0e0e0;
   border: 1px solid #444;
 }
-input.form-control:focus, select.form-select:focus {
+
+input.form-control:focus,
+select.form-select:focus {
   background: #23272b;
   color: #fff;
   border-color: #888;
 }
-.btn, .btn:focus, .btn:active {
+
+.btn,
+.btn:focus,
+.btn:active {
   color: #e0e0e0;
   background: #23272b;
   border: 1px solid #444;
 }
+
 .btn-success {
   background: #198754;
   border-color: #198754;
 }
+
 .btn-outline-primary {
   color: #90caf9;
   border-color: #90caf9;
 }
+
 .btn-outline-primary:hover {
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
 }
+
 .alert-success {
   background: #223a29;
   color: #b9f6ca;
   border-color: #388e3c;
 }
+
 .alert-danger {
   background: #3a2222;
   color: #ff8a80;
   border-color: #d32f2f;
 }
+
 .badge.bg-danger {
   background: #d32f2f;
   color: #fff;
 }
+
 input[type="checkbox"].form-check-input {
   accent-color: #90caf9;
   background: #23272b;
   border: 1px solid #90caf9;
 }
+
 input[type="checkbox"].form-check-input:checked {
   background: #1976d2;
   border-color: #1976d2;
 }
-label, h3, h4, span, div {
+
+label,
+h3,
+h4,
+span,
+div {
   color: #e0e0e0;
 }
-</style> 
+</style>

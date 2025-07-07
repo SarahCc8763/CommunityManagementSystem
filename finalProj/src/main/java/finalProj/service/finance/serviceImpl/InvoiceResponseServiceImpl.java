@@ -9,10 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import finalProj.domain.finance.BillingPeriod;
+import finalProj.domain.finance.FeeType;
 import finalProj.domain.finance.Invoice;
 import finalProj.domain.finance.InvoiceResponse;
 import finalProj.domain.users.Users;
+import finalProj.dto.finance.BillingPeriodDTO;
+import finalProj.dto.finance.FeeTypeDTO;
+import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
+import finalProj.dto.finance.UserSimpleDTO;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.finance.InvoiceResponseRepository;
 import finalProj.repository.users.UsersRepository;
@@ -36,18 +42,9 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "查無該發票 ID"));
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "查無該用戶 ID"));
-        // 檢查是否本人
         if (!invoice.getUsers().getUsersId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能回覆自己的發票");
         }
-        // 檢查是否已回覆
-        boolean already = invoiceResponseRepository.findAll().stream()
-                .anyMatch(r -> r.getInvoice() != null && r.getInvoice().getInvoiceId().equals(dto.getInvoiceId())
-                        && r.getUser() != null && r.getUser().getUsersId().equals(userId));
-        if (already) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已回覆過此發票");
-        }
-        // 檢查帳號末五碼格式
         if (dto.getAccountCode() == null || !dto.getAccountCode().matches("\\d{5}")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "帳號末五碼格式錯誤");
         }
@@ -58,7 +55,6 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         response.setLastResponse(dto.getLastResponse());
         response.setLastResponseTime(LocalDateTime.now());
         response.setVerified(false);
-        // 新增：同步將 invoice 狀態設為 PENDING
         invoice.setPaymentStatus("PENDING");
         invoiceRepository.save(invoice);
         InvoiceResponse saved = invoiceResponseRepository.save(response);
@@ -83,7 +79,6 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
 
     @Override
     public InvoiceResponse save(InvoiceResponse entity) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -117,10 +112,9 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         entity.setVerified(true);
         entity.setVerifiedTime(LocalDateTime.now());
         entity.setVerifiedBy(adminId);
-        // 同步將 invoice 狀態設為 PAID
         Invoice invoice = entity.getInvoice();
         if (invoice != null) {
-            invoice.setPaymentStatus("PAID");
+            invoice.setPaymentStatus("paid");
             invoiceRepository.save(invoice);
         }
         InvoiceResponse saved = invoiceResponseRepository.save(entity);
@@ -133,20 +127,76 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         return list.stream().map(this::toDTO).toList();
     }
 
-    // Entity 轉 DTO
+    @Override
+    public List<InvoiceDTO> findUnpaidInvoicesWithResponse() {
+        List<Invoice> invoices = invoiceRepository
+                .findByPaymentStatusAndInvoiceResponsesIsNotEmpty("unpaid");
+        return invoices.stream().map(this::toInvoiceDTO).collect(Collectors.toList());
+    }
+
+    private BillingPeriodDTO toBillingPeriodDTO(BillingPeriod entity) {
+        if (entity == null)
+            return null;
+        BillingPeriodDTO dto = new BillingPeriodDTO();
+        dto.setBillingPeriodId(entity.getBillingPeriodId());
+        dto.setPeriodCode(entity.getPeriodCode());
+        dto.setPeriodName(entity.getPeriodName());
+        return dto;
+    }
+
     private InvoiceResponseDTO toDTO(InvoiceResponse entity) {
         if (entity == null)
             return null;
         InvoiceResponseDTO dto = new InvoiceResponseDTO();
         dto.setInvoiceResponseId(entity.getInvoiceResponseId());
         dto.setInvoiceId(entity.getInvoice() != null ? entity.getInvoice().getInvoiceId() : null);
-        dto.setUserId(entity.getUser() != null ? entity.getUser().getUsersId() : null);
         dto.setAccountCode(entity.getAccountCode());
         dto.setLastResponse(entity.getLastResponse());
         dto.setLastResponseTime(entity.getLastResponseTime());
         dto.setVerified(entity.getVerified());
         dto.setVerifiedTime(entity.getVerifiedTime());
         dto.setVerifiedBy(entity.getVerifiedBy());
+        return dto;
+    }
+
+    private FeeTypeDTO toFeeTypeDTO(FeeType feeType) {
+        if (feeType == null)
+            return null;
+        FeeTypeDTO dto = new FeeTypeDTO();
+        dto.setFeeTypeId(feeType.getFeeTypeId());
+        dto.setDescription(feeType.getDescription());
+        return dto;
+    }
+
+    private InvoiceDTO toInvoiceDTO(Invoice invoice) {
+        if (invoice == null)
+            return null;
+
+        InvoiceDTO dto = new InvoiceDTO();
+        dto.setInvoiceId(invoice.getInvoiceId());
+        dto.setAmountDue(invoice.getAmountDue());
+        dto.setPaymentStatus(invoice.getPaymentStatus());
+        dto.setDeadline(invoice.getDeadline());
+        dto.setNote(invoice.getNote());
+
+        if (invoice.getUsers() != null) {
+            UserSimpleDTO userDto = new UserSimpleDTO();
+            userDto.setUsersId(invoice.getUsers().getUsersId());
+            userDto.setName(invoice.getUsers().getName());
+            dto.setUser(userDto);
+        }
+
+        dto.setFeeType(toFeeTypeDTO(invoice.getFeeType()));
+
+        dto.setBillingPeriod(toBillingPeriodDTO(invoice.getBillingPeriod()));
+
+        if (invoice.getInvoiceResponses() != null && !invoice.getInvoiceResponses().isEmpty()) {
+            List<InvoiceResponseDTO> responseDTOs = invoice.getInvoiceResponses().stream()
+                    .map(this::toDTO)
+                    .collect(Collectors.toList());
+            dto.setInvoiceResponses(responseDTOs);
+        }
+
         return dto;
     }
 

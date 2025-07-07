@@ -67,7 +67,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
                 continue;
             Users user = unitUsers.get(0).getUser(); // 主用戶
             java.math.BigDecimal unitCount;
-            if ("坪數".equals(feeType.getUnit())) {
+            if ("每坪".equals(feeType.getUnit())) {
                 unitCount = unit.getPing();
             } else {
                 unitCount = java.math.BigDecimal.ONE;

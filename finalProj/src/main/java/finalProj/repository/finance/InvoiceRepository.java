@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import finalProj.domain.finance.Invoice;
 
@@ -23,6 +25,13 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     // 查詢所有status為false（待審核）
     List<Invoice> findByStatus(Boolean status);
 
-    // 查詢某用戶所有未繳帳單
-    List<Invoice> findByUsers_UsersIdAndPaymentStatusNotIgnoreCase(Integer usersId, String status);
+    List<Invoice> findByPaymentStatusAndInvoiceResponsesIsNotEmpty(String paymentStatus);
+
+    List<Invoice> findByUserUserIdAndPaymentStatus(Integer userId, String paymentStatus);
+
+    List<Invoice> findByUserCommunityCommunityIdAndPaymentStatus(Integer communityId, String paymentStatus);
+
+    @Query("SELECT i FROM Invoice i WHERE i.paymentStatus = :status AND SIZE(i.invoiceResponses) > 0")
+    List<Invoice> findUnpaidInvoicesWithResponses(@Param("status") String status);
+
 }

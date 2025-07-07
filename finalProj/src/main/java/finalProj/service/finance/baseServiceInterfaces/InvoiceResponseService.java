@@ -1,6 +1,7 @@
 package finalProj.service.finance.baseServiceInterfaces;
 
 import finalProj.domain.finance.InvoiceResponse;
+import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
 import java.util.List;
 
@@ -16,4 +17,7 @@ public interface InvoiceResponseService extends BaseService<InvoiceResponse, Int
     InvoiceResponseDTO verifyResponse(Integer id, Integer adminId);
 
     List<InvoiceResponseDTO> findByInvoiceId(Integer invoiceId);
+
+    List<InvoiceDTO> findUnpaidInvoicesWithResponse();
+
 }

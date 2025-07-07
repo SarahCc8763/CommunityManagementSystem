@@ -15,10 +15,10 @@ VALUES
 -- 1. 費用類別
 INSERT INTO Fee_Type (description, fee_code, amount_Per_Unit, frequency, unit, created_at, last_updated, created_by, updated_by, status, note, community_id)
 VALUES
-('管理費', 'MGF001', 50.00, '1', '坪', GETDATE(), GETDATE(), 1, 1, 1, '依坪數收費', 1),
-('清潔費', 'CLF001', 300.00, '1', '戶', GETDATE(), GETDATE(), 1, 1, 1, '每戶固定費用', 1),
-('水費', 'WTF001', 25.00, '1', '度', GETDATE(), GETDATE(), 1, 1, 1, '依用量收費', 2),
-('電費', 'ELF001', 3.00, '1', '度', GETDATE(), GETDATE(), 1, 1, 1, '公共用電', 2),
+('管理費', 'MGF001', 50.00, '1', '每坪', GETDATE(), GETDATE(), 1, 1, 1, '依坪數收費', 1),
+('清潔費', 'CLF001', 300.00, '1', '每戶', GETDATE(), GETDATE(), 1, 1, 1, '每戶固定費用', 1),
+('水費', 'WTF001', 25.00, '1', '每度', GETDATE(), GETDATE(), 1, 1, 1, '依用量收費', 2),
+('電費', 'ELF001', 3.00, '1', '每度', GETDATE(), GETDATE(), 1, 1, 1, '公共用電', 2),
 ('車位管理費', 'CPF001', 500.00, '1', '車位', GETDATE(), GETDATE(), 1, 1, 1, '每車位月管理費', 1);
 
 -- 2. 期別表

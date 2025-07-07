@@ -170,10 +170,11 @@ const submitRemit = async () => {
     payMsg.value = '請輸入留言或匯款資訊'
     return
   }
+
   try {
     const payload = {
       invoiceId: currentInvoice.invoiceId,
-      userId: userStore.userId,
+      // userId: userStore.userId,
       communityId: userStore.communityId,
       createBy: userStore.name,
       createAt: new Date().toISOString(),
@@ -181,7 +182,8 @@ const submitRemit = async () => {
       lastResponse: remitNote.value,
       accountCode: remitCode.value
     }
-    await axios.post(`/finance/invoice-responses`, payload)
+    console.log(payload)
+    await axios.post(`/finance/invoice-responses?userId=${userStore.userId}`, payload, params)
     payMsg.value = '送出成功！可繼續留言或關閉視窗'
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
@@ -208,79 +210,10 @@ function isOverdue(invoice) {
 // onMounted(fetch 未繳的Invoices)
 
 onMounted(async () => {
-  try {
-    const res = await axios.get('/finance/invoice/unpaid', { params: { userId: userStore.userId } })
-    if (!Array.isArray(res.data) || res.data.length === 0) {
-      invoices.value = [
-        {
-          invoiceId: 1001,
-          amountDue: 3200,
-          paymentStatus: 'unpaid',
-          feeType: { description: '管理費' },
-          periodName: '2024年7月',
-          unitCount: 2,
-          unitPrice: 1600,
-          deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
-        },
-        {
-          invoiceId: 1002,
-          amountDue: 800,
-          paymentStatus: 'unpaid',
-          feeType: { description: '水費' },
-          periodName: '2024年7月',
-          unitCount: 10,
-          unitPrice: 80,
-          deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
-        },
-        {
-          invoiceId: 1003,
-          amountDue: 1200,
-          paymentStatus: 'pending',
-          feeType: { description: '停車費' },
-          periodName: '2024年7月',
-          unitCount: 1,
-          unitPrice: 1200,
-          deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-        },
-      ]
-    } else {
-      invoices.value = res.data
-    }
-  } catch (err) {
-    invoices.value = [
-      {
-        invoiceId: 1001,
-        amountDue: 3200,
-        paymentStatus: 'unpaid',
-        feeType: { description: '管理費' },
-        periodName: '2024年7月',
-        unitCount: 2,
-        unitPrice: 1600,
-        deadline: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
-      },
-      {
-        invoiceId: 1002,
-        amountDue: 800,
-        paymentStatus: 'unpaid',
-        feeType: { description: '水費' },
-        periodName: '2024年7月',
-        unitCount: 10,
-        unitPrice: 80,
-        deadline: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
-      },
-      {
-        invoiceId: 1003,
-        amountDue: 1200,
-        paymentStatus: 'pending',
-        feeType: { description: '停車費' },
-        periodName: '2024年7月',
-        unitCount: 1,
-        unitPrice: 1200,
-        deadline: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-      },
-    ]
-  }
-})
+
+  const res = await axios.post('/finance/invoice/unpaid/user', { userId: userStore.userId })
+}
+)
 
 </script>
 
@@ -335,6 +268,7 @@ onMounted(async () => {
   padding: 28px 32px 18px 32px;
   gap: 0 32px;
 }
+
 .card-left {
   flex: 2;
   display: flex;
@@ -342,6 +276,7 @@ onMounted(async () => {
   justify-content: center;
   gap: 10px;
 }
+
 .card-right {
   flex: 1;
   display: flex;
@@ -354,10 +289,12 @@ onMounted(async () => {
   .invoice-list-bg {
     padding: 24px 8px 16px 8px;
   }
+
   .invoice-list.grid-list {
     grid-template-columns: 1fr;
     gap: 24px 0;
   }
+
   .card-right {
     justify-content: flex-start;
     min-width: 0;

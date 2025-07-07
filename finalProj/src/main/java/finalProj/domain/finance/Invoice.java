@@ -1,11 +1,22 @@
 package finalProj.domain.finance;
 
-import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.CascadeType;
 
 import finalProj.domain.users.Users;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Invoice")
@@ -40,22 +51,24 @@ public class Invoice extends BaseEntity {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
+    @Column(name = "paymentStatus", length = 20)
+    private String paymentStatus;// unpaid, pending, paid
     // ---------------------------------------
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users users;
+
+    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
+    private List<InvoiceResponse> invoiceResponses;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fee_type_id")
     private FeeType feeType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billing_period_id")
     private BillingPeriod billingPeriod;
-
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private Users users;
-
-    @Column(name = "paymentStatus", length = 20)
-    private String paymentStatus;// UNPAID, PENDING, PAID
 
     public Integer getInvoiceId() {
         return invoiceId;
@@ -151,6 +164,14 @@ public class Invoice extends BaseEntity {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public List<InvoiceResponse> getInvoiceResponses() {
+        return invoiceResponses;
+    }
+
+    public void setInvoiceResponses(List<InvoiceResponse> invoiceResponses) {
+        this.invoiceResponses = invoiceResponses;
     }
 
     // ----------------------------------------
