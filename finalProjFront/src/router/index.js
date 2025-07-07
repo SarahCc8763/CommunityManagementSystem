@@ -14,6 +14,8 @@ import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
 
 import finUser from '@/components/finance/finUser/finUser.vue'
 import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
+import FaqAdmin from '../views/faq/FaqAdmin.vue'
+import FeedbackAdmin from '../views/feedback/FeedbackAdmin.vue'
 
 
 
@@ -97,6 +99,19 @@ const router = createRouter({
       component: finUser
     },
 
+
+    {
+      path: '/feebackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
   ],
 })
 

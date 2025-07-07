@@ -9,7 +9,7 @@
 
         <div class="d-flex gap-2 mb-3">
             <button class="btn btn-primary w-10 " @click="postBulletins">新增公告</button>
-            <button class="btn btn-primary w-10" @click="CategoriesManagement" style="margin-right: 2%;">分類管理</button>
+            <button class="btn btn-primary w-10" @click="categoriesManagement" style="margin-right: 2%;">分類管理</button>
 
             <select v-model="searchCategory" class="form-select w-20" @change="searchBulletins">
                 <option value="">全部分類</option>
@@ -27,17 +27,22 @@
         <!-- 公告管理 card 列表 -->
         <div>
             <div>
-                <div v-for="bulletin in bulletins" :key="bulletin.id"
+                <div v-for="bulletin, index in bulletins" :key="bulletin.id"
                     class=" border p-3 rounded bg-light shadow-sm my-1">
+                    <span class="fs-6 text-secondary fw-normal">{{ bulletin.postStatus ? '（已發佈）' :
+                        "（草稿）"
+                        }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="fw-bold text-dark fs-5">{{ bulletin.title }} <span v-if="bulletin.poll"
-                                class="fs-6 text-secondary fw-normal">(投票活動)</span></div>
+                        <div class="fw-bold text-dark fs-5">
+                            {{ bulletin.title }} <span v-if="bulletin.poll"
+                                class="fs-6 text-secondary fw-normal">(投票活動)</span>
+                        </div>
                         <small class="text-muted">{{ formatDate(bulletin.postTime) }}</small>
                     </div>
                     <div class="mb-2">
                         <span class="badge  me-2 fw-normal" style="font-size: 80%;background-color: #BEBEBE;">{{
                             bulletin.categoryName
-                            }}</span>
+                        }}</span>
                         <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
                     </div>
                     <p class="text-truncate text-muted small mb-3 fs-6">
@@ -46,28 +51,37 @@
                     </p>
                     <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-sm btn-outline-primary" @click="editBulletin(bulletin)">
-                            <i class="bi bi-pencil-square"></i> 編輯
+                            <i class="bi bi-pencil-square"></i> 　編輯
                         </button>
                         <button class="btn btn-sm btn-outline-danger" @click="deleteBulletin(bulletin.id)">
-                            <i class="bi bi-trash"></i> 刪除
+                            <i class="bi bi-trash"></i> 　刪除
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" @click="viewBulletin(bulletin)">
-                            <i class="bi bi-eye"></i> 查看
+                            <i class="bi bi-eye"></i> 　查看
                         </button>
-                        <button type="button" class="btn btn-secondary" @click="openPollModal(bulletin)">
-                            <i class="bi bi-pencil-square"></i> 修改投票</button>
+                        <button v-if="bulletin.poll" type="button" class="btn btn-secondary"
+                            @click="openPollModal(index, bulletin)">
+                            <i class="bi bi-pencil-square"></i> 　修改投票</button>
+
+                        <button v-if="!bulletin.poll" type="button" class="btn btn-sm btn-outline-secondary"
+                            @click="openPollModal(index, bulletin)">
+                            <i class="bi bi-pencil-square"></i> 　新增投票</button>
                     </div>
                 </div>
             </div>
         </div>
 
+
+        <CategoryModal v-model:visible="showCategoryModal" @updated="fetchAll" :communityId="communityId" />
+
         <EditBulletinModal v-model:visible="showEdit" :bulletin="selectedBulletin" :categoryList="categoryList"
-            :usersId="userId" @close="showEdit = false" @update="fetchAll" :communityId="communityId" />
+            :usersId="userId" @close="showEdit = false" @updated="fetchAll" :communityId="communityId" />
 
         <ViewBulletinModal v-model:visible="showView" :bulletin="selectedBulletin" :categoryList="categoryList"
             :usersId="userId" :normalizeFn="normalizeNewline" />
 
-        <EditPollModal v-model:visible="showPollEdit" :poll="selectedBulletin?.poll" :pollBackup="pollBackup" />
+        <EditPollModal v-model:visible="showPollEdit" :poll="selectedBulletin?.poll" :pollBackup="pollToSend"
+            @updated="fetchAll" :bulletinId="selectedBulletin?.id" />
 
         <!-- 公告 Modal -->
 
@@ -91,6 +105,7 @@ import EditBulletinModal from '@/components/bulletin/EditBulletinModal.vue';
 import ViewBulletinModal from '@/components/bulletin/ViewBulletinModal.vue';
 import PostBulletinModal from '@/components/bulletin/PostBulletinModal.vue';
 import EditPollModal from '@/components/bulletin/EditPollModal.vue'
+import CategoryModal from '@/components/bulletin/CategoryModal.vue';
 
 // assets
 
@@ -104,11 +119,15 @@ const searchCategory = ref('')
 const categoryList = ref([])
 const userId = 3 // 假設當前使用者 id
 const communityId = 1 // 假設當前社區 id
+
+const showCategoryModal = ref(false)
 const showEdit = ref(false)
 const showView = ref(false)
 const showPost = ref(false)
 const showPollEdit = ref(false)
-const pollBackup = ref(null)
+
+let pollBackup = null
+const pollToSend = ref(null)
 
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
@@ -118,12 +137,19 @@ function postBulletins() {
     showPost.value = true
 }
 
-function openPollModal(bulletin) {
+function categoriesManagement() {
+    showCategoryModal.value = true
+
+}
+
+function openPollModal(index, bulletin) {
     selectedBulletin.value = bulletin
-    // 深層複製 poll 備份，不會受後續變動影響
-    pollBackup.value = JSON.parse(JSON.stringify(bulletin.poll))
+    pollToSend.value = pollBackup[bulletin.id] || null
+    console.log('選到的公告的投票' + searchBulletins?.poll);
+    console.log('要傳送的備份' + pollToSend.value);
     showPollEdit.value = true
 }
+
 
 
 function editBulletin(bulletin) {
@@ -149,7 +175,8 @@ function deleteBulletin(id) {
                     Swal.fire({
                         title: '刪除成功',
                         text: '公告已刪除',
-                        icon: 'success'
+                        icon: 'success',
+                        timer: 1500
                     })
                     fetchAll()
                 } else {
@@ -197,17 +224,26 @@ onMounted(() => {
 function fetchAll() {
     axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
         .then(res => {
-            console.log(res.data.list);
-            bulletins.value = res.data.list
+            // 根據 postTime 由新到舊排序
+            const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
+            // 儲存排序後的 bulletins
+            bulletins.value = sortedList
+            // 據排序後的 bulletin 建立 poll 的深拷貝備份
+            pollBackup = {}
+            sortedList.forEach(bulletin => {
+                pollBackup[bulletin.id] = JSON.parse(JSON.stringify(bulletin.poll))
+            })
+
+            console.log('觸發了!!!');
         })
 
     axios.get('http://localhost:8080/api/bulletin/category/community/' + communityId)
         .then(res => {
             const cats = res.data.map(cat => ({ id: cat.id, name: cat.name }))
-            console.log(cats);
             categoryList.value = cats
         })
 }
+
 
 
 

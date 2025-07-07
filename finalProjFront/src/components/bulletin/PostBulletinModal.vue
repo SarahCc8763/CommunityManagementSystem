@@ -240,7 +240,8 @@ async function submitEdit() {
         await Swal.fire({
             icon: 'success',
             title: '成功',
-            text: '發佈成功'
+            text: '發佈成功',
+            timer: 1500
         })
 
     } catch (err) {

@@ -325,12 +325,17 @@ public class BulletinController {
     //
 
     @PutMapping("/comment/{id}")
-    public BulletinComment updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
+    public ResponseEntity<?> updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
         if (body != null) {
             body.setId(id);
-            return bulletinCommentService.modify(body);
+            BulletinComment updated = bulletinCommentService.modify(body);
+            if (updated != null) {
+                return ResponseEntity.ok(updated); // 200 OK，回傳更新後的資料
+            } else {
+                return ResponseEntity.badRequest().body("修改失敗");
+            }
         }
-        throw new RuntimeException("修改失敗");
+        return ResponseEntity.badRequest().body("請求資料無效");
     }
 
     //

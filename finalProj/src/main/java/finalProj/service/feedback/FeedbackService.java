@@ -114,91 +114,103 @@ public class FeedbackService {
         // 確認資料完整性
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
-
                 || feedback.getCommunity() == null || feedback.getCommunity().getCommunityId() == null) {
             return null;
         }
 
-        // 從傳入的類別id尋找完整類別、反映人、處理者、社區物件
+        // 查找相關實體
         Optional<FeedbackCategory> optionalCategory = feedbackCategoryRepository
                 .findById(feedback.getCategory().getId());
         Optional<Users> optionalUser = usersRepository.findById(feedback.getUser().getUsersId());
         Optional<Community> optionalCommunity = communityRepository.findById(feedback.getCommunity().getCommunityId());
-        // 任何一個沒找到就傳null
-        if (!optionalCategory.isPresent() || !optionalUser.isPresent()
-                || !optionalCommunity.isPresent()) {
+
+        if (optionalCategory.isEmpty() || optionalUser.isEmpty() || optionalCommunity.isEmpty()) {
             return null;
         }
-        Users user = (optionalUser.get());
-        Community community = optionalCommunity.get();
 
         Feedback existing = optionalFeedback.get();
+        Users user = optionalUser.get();
+        Community community = optionalCommunity.get();
+
         if (!user.equals(existing.getUser()) || !community.equals(existing.getCommunity())) {
             log.info("傳入的反映者或社區與原資料不符，修改失敗");
             return null;
         }
-        if (feedback.getHandler() != null && feedback.getHandler().getUsersId() != null) {
-            Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
-            if (optionalHandler.isEmpty()) {
-                return null;
-            }
-            existing.setHandler(optionalHandler.get());
-        }
 
-        // 如果都找到就放到要新增的feedback物件的對應屬性裡
+        // 儲存原狀態（給後續判斷歷史記錄）
+        String originalStatus = existing.getStatus();
+
+        // 更新基本欄位
+        existing.setTitle(feedback.getTitle());
+        existing.setDescription(feedback.getDescription());
         existing.setCategory(optionalCategory.get());
         existing.setUser(user);
         existing.setCommunity(community);
         existing.setLastUpdated(LocalDateTime.now());
+
+        // 滿意度
         if (feedback.getUserRating() != null) {
             existing.setUserRating(feedback.getUserRating());
         }
-        if (!"已結案".equals(existing.getStatus()) && "已結案".equals(feedback.getStatus())) {
-            existing.setResolvedAt(LocalDateTime.now());
+
+        // 狀態更新與結案時間
+        if (feedback.getStatus() != null && !feedback.getStatus().isBlank()) {
+            if (!"已結案".equals(originalStatus) && "已結案".equals(feedback.getStatus())) {
+                existing.setResolvedAt(LocalDateTime.now());
+            }
+            existing.setStatus(feedback.getStatus());
         }
-        // 1. 先清空附件（不需要手動 delete）
+
+        // ✅ 承辦人處理（不允許清空）
+        if (feedback.getHandler() != null && feedback.getHandler().getUsersId() != null) {
+            Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
+            if (optionalHandler.isEmpty()) {
+                log.warn("承辦人 ID 無效，找不到使用者");
+                return null;
+            }
+            existing.setHandler(optionalHandler.get());
+        } else {
+            log.info("未更新承辦人，保留原有設定");
+        }
+
+        // 處理附件（清除 + 加入新）
         if (existing.getAttachments() != null) {
-            existing.getAttachments().clear(); // Hibernate 會自動刪除 orphan 附件
+            existing.getAttachments().clear();
             log.debug("已清空原有附件");
         }
 
-        // 2. 若有新附件，建立並加到 existing
         if (feedback.getAttachments() != null && !feedback.getAttachments().isEmpty()) {
             for (FeedbackAttachment newAttachment : feedback.getAttachments()) {
                 newAttachment.setFeedback(existing);
 
-                // 計算檔案大小
                 if (newAttachment.getFileDataBase64() != null) {
                     newAttachment.setFileSize(newAttachment.getFileDataBase64().length() * 3 / 4);
                 } else if (newAttachment.getAttachment() != null) {
                     newAttachment.setFileSize(newAttachment.getAttachment().length * 3 / 4);
                 }
+
                 if (newAttachment.getFileName().length() > 50) {
                     newAttachment.setFileName(newAttachment.getFileName().substring(0, 50));
                 }
-                existing.getAttachments().add(newAttachment); // 不用 new list，直接加入現有清單
+
+                existing.getAttachments().add(newAttachment);
                 log.debug("加入新附件：{}", newAttachment.getFileName());
             }
         }
 
-        // 3. 儲存主表，子資料將自動被 persist/update/delete
-        feedbackRepository.save(existing);
-
-        // 修改狀態歷史紀錄
-        if (feedback.getStatus() != null && !feedback.getStatus().equals(existing.getStatus())) {
-            log.info("狀態有變更，修改意見狀態，並新增狀態歷史紀錄");
-            FeedbackStatusHistory feedbackStatusHistory = new FeedbackStatusHistory();
-            feedbackStatusHistory.setFeedback(existing);
-            feedbackStatusHistory.setOldStatus(existing.getStatus());
-            feedbackStatusHistory.setNewStatus(feedback.getStatus());
-            existing.setStatus(feedback.getStatus());
-            feedbackStatusHistory.setChangedAt(LocalDateTime.now());
-            feedbackStatusHistory.setChangedBy(user);
-            feedbackStatusHistoryRepository.save(feedbackStatusHistory);
+        // 若狀態變更則建立歷史紀錄
+        if (feedback.getStatus() != null && !feedback.getStatus().equals(originalStatus)) {
+            FeedbackStatusHistory history = new FeedbackStatusHistory();
+            history.setFeedback(existing);
+            history.setOldStatus(originalStatus);
+            history.setNewStatus(feedback.getStatus());
+            history.setChangedAt(LocalDateTime.now());
+            history.setChangedBy(user);
+            feedbackStatusHistoryRepository.save(history);
+            log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
         }
 
         return feedbackRepository.save(existing);
-
     }
 
     public boolean deleteFeedback(Integer id) {
@@ -219,8 +231,8 @@ public class FeedbackService {
         return feedbackRepository.existsById(id);
     }
 
-    public List<Feedback> findAll() {
-        return feedbackRepository.findAll();
+    public List<Feedback> findAll(Integer communityId) {
+        return feedbackRepository.findByCommunity_CommunityId(communityId);
     }
 
     public Long count() {

@@ -44,7 +44,7 @@ public class BulletinCategoryService {
     }
 
     public BulletinCategory modify(BulletinCategory entity) {
-        Optional<BulletinCategory> optional = bulletinCategoryRepository.findByName(entity.getName());
+        Optional<BulletinCategory> optional = bulletinCategoryRepository.findById(entity.getId());
         if (optional.isPresent()) {
             BulletinCategory modified = optional.get();
             modified.setName(entity.getName());
@@ -66,7 +66,7 @@ public class BulletinCategoryService {
         var categoryOpt = bulletinCategoryRepository.findById(id);
         if (categoryOpt.isPresent() && !categoryOpt.get().getBulletins().isEmpty()) {
             log.warn("分類刪除失敗：存在關聯公告，無法刪除");
-            return "有外鍵約束，刪除失敗";
+            return "分類下還存在公告，無法刪除";
         }
 
         bulletinCategoryRepository.deleteById(id);

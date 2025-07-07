@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,6 +166,7 @@ public class BulletinService {
             existing.setCommunity(entity.getCommunity() != null ? entity.getCommunity() : existing.getCommunity());
             existing.setUser(entity.getUser() != null ? usersRepository.findById(entity.getUser().getUsersId()).get()
                     : existing.getUser());
+            existing.setPostStatus(entity.getPostStatus() != null ? entity.getPostStatus() : existing.getPostStatus());
 
             existing.setModifyTime(LocalDateTime.now());
             log.debug("公告基本資訊已更新");

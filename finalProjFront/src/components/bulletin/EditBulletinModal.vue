@@ -1,6 +1,10 @@
 <template>
     <ModalWrapper :visible="visible" @update:visible="val => emit('update:visible', val)" title="編輯公告">
         <form @submit.prevent="submitEdit">
+            <div class="form-check form-switch my-3">
+                <input type="checkbox" id="postStatus" class="form-check-input " v-model="form.postStatus">
+                <label for="postStatus" class="form-check-label text-dark ">對外發布</label>
+            </div>
             <div class="mb-3">
                 <label class="form-label ">標題</label>
                 <input v-model="form.title" class="form-control " required />
@@ -45,6 +49,7 @@
                 <div class="poll-card">
 
                     <h6 class="text-center">目前投票情形：{{ bulletin.poll.title }}</h6>
+                    <p class="text-center " style="font-size: 80%;color: #828282;">( 僅供查看，需修改請於公告列表點選「修改投票」)</p>
                     <div class="d-flex justify-content-end mx-3">
 
                         <!-- <button type="button" class="btn btn-secondary" @click="openPollModal">修改投票內容</button> -->
@@ -97,6 +102,7 @@ const form = ref({
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
+    postStatus: false,
     poll: null
 })
 
@@ -108,8 +114,8 @@ watch(() => props.bulletin, (val) => {
         form.value.removeTime = val.removeTime?.slice(0, 16) || ''
         form.value.existingAttachments = val.attachments || []
         form.value.newAttachments = []
+        form.value.postStatus = val.postStatus
         form.value.poll = val.poll
-        pollBackup.value = val.poll ? { ...val.poll } : null  // ⬅️ 備份原始 poll
     }
 }, { immediate: true })
 
@@ -181,7 +187,8 @@ function submitEdit() {
                 isNew: att.isNew || false
 
             })),
-            poll: form.value.poll || null
+            poll: form.value.poll || null,
+            postStatus: form.value.postStatus
         }
 
         console.log('送出資料', data)
@@ -194,7 +201,8 @@ function submitEdit() {
                     title: '成功',
                     text: '修改成功',
                     icon: 'success',
-                    confirmButtonText: '確定'
+                    confirmButtonText: '確定',
+                    timer: 1500
                 })
             })
             .catch(error => {

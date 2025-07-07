@@ -155,10 +155,10 @@ public class feedbackController {
     //
 
     // 查詢所有意見
-    @GetMapping
-    public FeedbackResponse getAllFeedbacks() {
+    @GetMapping("/community/{communityId}")
+    public FeedbackResponse getAllFeedbacks(@PathVariable Integer communityId) {
         FeedbackResponse response = new FeedbackResponse();
-        List<Feedback> feedbacks = feedbackService.findAll();
+        List<Feedback> feedbacks = feedbackService.findAll(communityId);
         if (feedbacks.isEmpty()) {
             response.setSuccess(false);
             response.setMessage("查無資料");

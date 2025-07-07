@@ -37,8 +37,13 @@
                     <input type="datetime-local" name="" id="" v-model="pollForm.end" class="form-control"
                         placeholder="投票截止時間">
                 </div>
-                <div class="text-end m-2 pb-4">
-                    <button type="button" class="btn btn-primary">送出修改</button>
+                <div v-if="pollBackup" class="text-end m-2 pb-4">
+                    <button type="button" class="btn btn-primary" @click="submitEdit">送出修改</button>
+                    <button type="button" class="btn btn-danger " @click="deletePoll">刪除投票</button>
+                </div>
+
+                <div v-if="!pollBackup" class="text-end m-2 pb-4">
+                    <button type="button" class="btn btn-primary" @click="submitPost">送出新增</button>
                 </div>
 
             </div>
@@ -66,7 +71,8 @@ const props = defineProps({
     poll: Object,
     pollBackup: Object,
     communityId: Number,
-    usersId: Number
+    usersId: Number,
+    bulletinId: Number
 })
 const emit = defineEmits(['update:visible', 'updated'])
 
@@ -81,18 +87,36 @@ const pollForm = ref({
         { text: "" }
     ]
 })
+watch(() => props.pollBackup, (val) => {
+    console.log(val);
+
+})
 
 watch(() => props.poll, (val) => {
     if (val) {
+        // 有 poll：是「修改投票」
         pollForm.value.id = val.id
         pollForm.value.title = val.title
         pollForm.value.isMultiple = val.isMultiple
         pollForm.value.start = val.start
         pollForm.value.end = val.end
-        pollForm.value.options = val.options
-
+        pollForm.value.options = JSON.parse(JSON.stringify(val.options || []))
+    } else {
+        // 沒有 poll：是「新增投票」
+        pollForm.value = {
+            id: '',
+            title: '',
+            isMultiple: false,
+            start: '',
+            end: '',
+            options: [
+                { text: '' },
+                { text: '' }
+            ]
+        }
     }
 }, { immediate: true })
+
 
 
 function addOption() {
@@ -104,11 +128,52 @@ function removeOption(index) {
 }
 
 function recoverPoll() {
-    console.log(props.pollBackup);
-    pollForm.value = props.pollBackup
+    // ✅ 用 JSON 方式深拷貝 props.pollBackup
+    if (props.pollBackup) {
+        pollForm.value = JSON.parse(JSON.stringify(props.pollBackup))
+    }
+
+}
+
+async function deletePoll() {
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '刪除後將無法恢復',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定刪除',
+        cancelButtonText: '取消'
+    });
+
+    if (result.isConfirmed) {
+        axios.delete(`http://localhost:8080/api/poll/delete/${props.poll.id}`)
+            .then(() => {
+                emit('updated')
+                emit('update:visible', false)
+                Swal.fire({
+                    title: '成功',
+                    text: '刪除成功',
+                    icon: 'success',
+                    confirmButtonText: '確定',
+                    timer: 1500
+                })
+            })
+            .catch(error => {
+                console.error(error)
+                Swal.fire({
+                    title: '失敗',
+                    text: '刪除失敗',
+                    icon: 'error',
+                    confirmButtonText: '確定'
+                })
+            })
+    }
 }
 
 
+// 修改投票
 function submitEdit() {
 
     const data = {
@@ -119,6 +184,8 @@ function submitEdit() {
         end: pollForm.value.end,
         options: pollForm.value.options
     }
+    // console.log(data);
+    // console.log(props.poll.id);
 
     axios.put(`http://localhost:8080/api/poll/${props.poll.id}`, data)
         .then(() => {
@@ -128,7 +195,47 @@ function submitEdit() {
                 title: '成功',
                 text: '修改成功',
                 icon: 'success',
+                confirmButtonText: '確定',
+                timer: 1500
+
+            })
+        })
+        .catch(error => {
+            console.error(error)
+            Swal.fire({
+                title: '失敗',
+                text: '修改失敗',
+                icon: 'error',
                 confirmButtonText: '確定'
+            })
+        })
+}
+
+
+// 現有公告新增投票
+function submitPost() {
+
+    const data = {
+        title: pollForm.value.title,
+        isMultiple: pollForm.value.isMultiple,
+        start: pollForm.value.start,
+        end: pollForm.value.end,
+        options: pollForm.value.options
+    }
+    // console.log(data);
+    // console.log(props.poll.id);
+
+    axios.post(`http://localhost:8080/api/bulletin/${props.bulletinId}/poll`, data)
+        .then(() => {
+            emit('updated')
+            emit('update:visible', false)
+            Swal.fire({
+                title: '成功',
+                text: '修改成功',
+                icon: 'success',
+                confirmButtonText: '確定',
+                timer: 1500
+
             })
         })
         .catch(error => {

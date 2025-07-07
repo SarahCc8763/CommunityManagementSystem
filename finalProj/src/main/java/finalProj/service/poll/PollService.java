@@ -2,21 +2,23 @@ package finalProj.service.poll;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.poll.PollOption;
 import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
+import finalProj.repository.poll.PollVoteRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class PollService {
 
     @Autowired
@@ -25,8 +27,8 @@ public class PollService {
     @Autowired
     private PollOptionRepository pollOptionRepository;
 
-    // @Autowired
-    // private PollVoteRepository pollVoteRepository;
+    @Autowired
+    private PollVoteRepository pollVoteRepository;
 
     public List<Poll> findAll() {
         return pollRepository.findAll();
@@ -40,8 +42,44 @@ public class PollService {
         return pollRepository.save(entity);
     }
 
-    public void deleteById(Integer id) {
-        pollRepository.deleteById(id);
+    public Boolean deleteById(Integer id) {
+        log.info("準備刪除投票{}", id);
+
+        Optional<Poll> option = pollRepository.findById(id);
+        if (option.isPresent()) {
+            Poll poll = option.get();
+
+            // 強制初始化關聯
+            poll.getOptions().size();
+            poll.getVotes().size();
+
+            // 先刪除投票紀錄
+            pollVoteRepository.deleteAll(poll.getVotes());
+            poll.getVotes().clear();
+
+            // 先刪除 option
+            pollOptionRepository.deleteAll(poll.getOptions());
+            poll.getOptions().clear();
+
+            // 解除 Bulletin 端關聯
+            Bulletin bulletin = poll.getBulletin();
+            if (bulletin != null) {
+                bulletin.setPoll(null); // 你需要在 Bulletin entity 加 setter
+            }
+
+            poll.setBulletin(null); // 雙向解除
+
+            // 再進行刪除
+
+            // 再刪除 poll 本體
+            pollRepository.delete(poll);
+
+            log.info("投票{}已刪除", id);
+            return true;
+        }
+
+        log.warn("投票{}不存在，無法刪除", id);
+        return false;
     }
 
     // public Poll updatePoll(Integer pollId, Poll updatedPoll) {

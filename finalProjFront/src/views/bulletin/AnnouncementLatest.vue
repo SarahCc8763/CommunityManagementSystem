@@ -106,7 +106,7 @@
 
                             <!-- 若有留言 -->
                             <div v-if="Array.isArray(selectedBulletin?.comments)">
-                                <div v-for="comment in selectedBulletin.comments.filter(c => !c.parentCommentId)"
+                                <div v-for="comment in selectedBulletin.comments.filter(c => !c.parentCommentId && c.isAlive === true)"
                                     :key="comment.id" class="border rounded p-2 mb-2">
                                     <div class="d-flex align-items-start mb-2">
                                         <img :src="getAvatarByGender(comment.userData[1])" class="rounded-circle me-2"
@@ -124,11 +124,11 @@
                                         </button>
                                         <button class="btn-comment me-1" @click="toggleReply(comment.id)">回覆</button>
                                         <button v-if="comment.userData[2] === userId" class="btn-comment me-1"
-                                            @click="deleteComment(comment.id)">刪除</button>
+                                            @click="deleteComment(selectedBulletin.id, comment)">刪除</button>
                                     </div>
 
                                     <!-- 第二層留言 -->
-                                    <div v-for="reply in selectedBulletin.comments.filter(r => r.parentCommentId === comment.id)"
+                                    <div v-for="reply in selectedBulletin.comments.filter(r => r.parentCommentId === comment.id && r.isAlive === true)"
                                         :key="reply.id" class="ms-4 mt-2 border-start ps-2">
                                         <div class="d-flex align-items-start mb-2">
                                             <img :src="getAvatarByGender(reply.userData[1])" class="rounded-circle me-2"
@@ -144,9 +144,10 @@
                                             <button class=" btn-comment me-1" @click="likeComment(reply.id)">
                                                 🧡 {{ reply.likeCount }}
                                             </button>
-                                            <button class="btn-comment me-1" @click="toggleReply(reply.id)">回覆</button>
+                                            <button class="btn-comment me-1"
+                                                @click="toggleReply(reply.parentCommentId)">回覆</button>
                                             <button v-if="reply.userData[2] === userId" class="btn-comment me-1"
-                                                @click="deleteComment(reply.id)">刪除</button>
+                                                @click="deleteComment(selectedBulletin.id, reply)">刪除</button>
                                         </div>
                                     </div>
 
@@ -244,8 +245,9 @@ function fetchAll() {
     console.log(communityId);
     axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
         .then(res => {
-            console.log(res.data.list);
-            bulletins.value = res.data.list
+            // console.log(res.data.list);
+            const postedList = res.data.list.filter(val => val.postStatus === true)
+            bulletins.value = postedList.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
             const cats = new Set(res.data.list.map(b => b.categoryName))
             categoryList.value = [...cats]
         })
@@ -264,7 +266,9 @@ function searchBulletins() {
         title: searchTitle.value || undefined,
         category: searchCategory.value ? { name: searchCategory.value } : undefined
     }).then(res => {
-        bulletins.value = res.data.list
+        const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
+        bulletins.value = sortedList
+        console.log(sortedList);
     })
 }
 
@@ -284,10 +288,15 @@ function submitComment() {
         user: { usersId: userId },
         comment: newComment.value
     }).then(() => {
-        openBulletin(selectedBulletin.value.id)
-        newComment.value = ''
+        // ✅ 只更新留言部分
+        axios.get(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}`)
+            .then(res => {
+                selectedBulletin.value.comments = res.data.list[0].comments
+                newComment.value = ''
+            })
     })
 }
+
 
 function toggleReply(commentId) {
     replyingToId.value = replyingToId.value === commentId ? null : commentId
@@ -300,11 +309,16 @@ function submitReply(parentId) {
         comment: replyContent.value,
         parentComment: { id: parentId }
     }).then(() => {
-        openBulletin(selectedBulletin.value.id)
+        axios.get(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}`).then(res => {
+            selectedBulletin.value.comments = res.data.list[0].comments
+        })
+
+        // ✅ Step 3：清除輸入欄位
         replyContent.value = ''
         replyingToId.value = null
     })
 }
+
 function likeComment(commentId) {
     axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}/like/${userId}`)
         .then(res => {
@@ -321,9 +335,15 @@ function likeComment(commentId) {
 
 
 
+async function deleteComment(bulletinId, comment) {
+    const data = {
+        bulletin: { id: bulletinId },
+        comment: comment.comment,
+        user: { usersId: userId },
+        isAlive: false
+    }
 
-function deleteComment(commentId) {
-    Swal.fire({
+    const result = await Swal.fire({
         title: '確定要刪除嗎？',
         icon: 'warning',
         showCancelButton: true,
@@ -331,11 +351,39 @@ function deleteComment(commentId) {
         cancelButtonColor: '#d33',
         confirmButtonText: '確定',
         cancelButtonText: '取消'
-    }).then((result) => {
-        axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}`)
-            .then(() => openBulletin(selectedBulletin.value.id))
     })
+
+    if (result.isConfirmed) {
+        try {
+            await axios.put(`http://localhost:8080/api/bulletin/comment/${comment.id}`, data)
+
+            // ✅ 關閉 Modal
+            const modalEl = document.getElementById('bulletinModal')
+            const modalInstance = bootstrap.Modal.getInstance(modalEl)
+            if (modalInstance) {
+                modalInstance.hide()
+            }
+
+            await Swal.fire({
+                title: '已刪除',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            })
+
+            // ✅ 等動畫結束後重新開啟
+            setTimeout(() => {
+                openBulletin(bulletinId)
+            }, 200) // 建議等 200ms 讓 backdrop 正常清除
+
+        } catch (err) {
+            console.error(err)
+            Swal.fire('錯誤', '刪除失敗，請稍後再試', 'error')
+        }
+    }
 }
+
+
 
 function getFileUrl(att) {
     // 你可以根據檔案服務 API 自行補上 URL

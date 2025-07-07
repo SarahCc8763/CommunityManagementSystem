@@ -3,6 +3,7 @@ package finalProj.controller.poll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,6 +40,7 @@ public class PollController {
         Poll result = pollService.updatePoll(id, updatedPoll);
 
         if (result != null) {
+            log.info("投票更新成功，ID: {}", id);
             return ResponseEntity.ok("投票更新成功");
         } else {
             log.warn("投票更新失敗，找不到指定的投票，ID: {}", id);
@@ -57,4 +59,9 @@ public class PollController {
         }
     }
 
+    @DeleteMapping("/delete/{pollId}")
+    public ResponseEntity<?> deletePoll(@PathVariable Integer pollId) {
+        pollService.deleteById(pollId);
+        return ResponseEntity.ok("投票刪除成功");
+    }
 }
