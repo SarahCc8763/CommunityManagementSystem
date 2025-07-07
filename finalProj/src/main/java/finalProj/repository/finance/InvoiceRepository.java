@@ -25,11 +25,13 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     // 查詢所有status為false（待審核）
     List<Invoice> findByStatus(Boolean status);
 
-    List<Invoice> findByPaymentStatusAndInvoiceResponsesIsNotEmpty(String paymentStatus);
+    List<Invoice> findByPaymentStatusAndInvoiceResponsesIsNotEmptyIgnoreCase(String paymentStatus);
 
-    List<Invoice> findByUserUserIdAndPaymentStatus(Integer userId, String paymentStatus);
+    // 用戶查看自己的未繳帳單
+    List<Invoice> findByUsers_UsersIdAndPaymentStatusIgnoreCase(Integer usersId, String paymentStatus);
 
-    List<Invoice> findByUserCommunityCommunityIdAndPaymentStatus(Integer communityId, String paymentStatus);
+    // 管理員看該社區所有人的未繳帳單
+    List<Invoice> findByCommunityIdAndPaymentStatusIgnoreCase(Integer communityId, String paymentStatus);
 
     @Query("SELECT i FROM Invoice i WHERE i.paymentStatus = :status AND SIZE(i.invoiceResponses) > 0")
     List<Invoice> findUnpaidInvoicesWithResponses(@Param("status") String status);

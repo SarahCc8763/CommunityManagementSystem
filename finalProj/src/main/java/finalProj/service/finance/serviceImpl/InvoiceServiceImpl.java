@@ -1,5 +1,6 @@
 package finalProj.service.finance.serviceImpl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,17 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.finance.Invoice;
+import finalProj.domain.users.UnitsUsers;
 import finalProj.dto.finance.FeeTypeDTO;
 import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
 import finalProj.dto.finance.ReceiptDTO;
 import finalProj.dto.finance.UserSimpleDTO;
 import finalProj.repository.finance.InvoiceRepository;
+import finalProj.repository.users.UnitsUsersRepository;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
 
+    @Autowired
+    private UnitsUsersRepository unitsUsersRepository;
     @Autowired
     private InvoiceRepository invoiceRepository;
 
@@ -33,7 +38,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    Invoice findByStatus(Boolean status) {
+    public List<Invoice> findByStatus(Boolean status) {
         return invoiceRepository.findByStatus(status);
     }
 
@@ -64,8 +69,22 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    public BigDecimal getUnitCountByUserAndFeeType(Integer userId, Integer feeTypeId) {
+        // 你可能需要透過 User → UnitsUsers → Units 來取得這個人的戶別資訊
+        // 如果以「坪數」為例，通常只有一戶，或取最早入住那一戶的坪數
+
+        // 以下是假設你有 UnitsUsersRepository 可以查
+        UnitsUsers uu = unitsUsersRepository.findTopByUsers_UsersIdOrderByCreatedAtAsc(userId);
+        if (uu != null && uu.getUnits() != null) {
+            return uu.getUnits().getPing(); // ping 是代表坪數的欄位
+        } else {
+            return BigDecimal.ZERO; // 或拋出錯誤
+        }
+    }
+
+    @Override
     public List<InvoiceDTO> findUnpaidInvoicesByUserId(Integer userId) {
-        return invoiceRepository.findByUserUserIdAndPaymentStatus(userId, "unpaid")
+        return invoiceRepository.findByUsers_UsersIdAndPaymentStatusIgnoreCase(userId, "unpaid")
                 .stream()
                 .map(this::toInvoiceDTO)
                 .collect(Collectors.toList());
@@ -73,7 +92,15 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public List<InvoiceDTO> findUnpaidInvoicesByCommunityId(Integer communityId) {
-        return invoiceRepository.findByUserCommunityCommunityIdAndPaymentStatus(communityId, "unpaid")
+        return invoiceRepository.findByCommunityIdAndPaymentStatusIgnoreCase(communityId, "unpaid")
+                .stream()
+                .map(this::toInvoiceDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InvoiceDTO> findUnpaidInvoicesWithResponse() {
+        return invoiceRepository.findByPaymentStatusAndInvoiceResponsesIsNotEmptyIgnoreCase("unpaid")
                 .stream()
                 .map(this::toInvoiceDTO)
                 .collect(Collectors.toList());
@@ -97,10 +124,10 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setUpdatedBy(invoice.getUpdatedBy());
 
         // 巢狀：User（簡易）
-        if (invoice.getUser() != null) {
+        if (invoice.getUsers() != null) {
             UserSimpleDTO userDTO = new UserSimpleDTO();
-            userDTO.setUserId(invoice.getUser().getUsersId());
-            userDTO.setName(invoice.getUser().getName());
+            userDTO.setUsersId(invoice.getUsers().getUsersId());
+            userDTO.setName(invoice.getUsers().getName());
             dto.setUser(userDTO);
         }
 
@@ -109,7 +136,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             FeeTypeDTO feeTypeDTO = new FeeTypeDTO();
             feeTypeDTO.setFeeTypeId(invoice.getFeeType().getFeeTypeId());
             feeTypeDTO.setDescription(invoice.getFeeType().getDescription());
-            feeTypeDTO.setAmountPerUnit(invoice.getFeeType().getAmount());
+            feeTypeDTO.setAmountPerUnit(invoice.getFeeType().getAmountPerUnit()); // ←這裡已對應命名
             feeTypeDTO.setFrequency(invoice.getFeeType().getFrequency());
             feeTypeDTO.setUnit(invoice.getFeeType().getUnit());
             feeTypeDTO.setFeeCode(invoice.getFeeType().getFeeCode());
@@ -121,27 +148,15 @@ public class InvoiceServiceImpl implements InvoiceService {
             dto.setFeeType(feeTypeDTO);
         }
 
-        // 巢狀：Receipt
-        if (invoice.getReceipt() != null) {
-            ReceiptDTO receiptDTO = new ReceiptDTO();
-            receiptDTO.setReceiptId(invoice.getReceipt().getReceiptId());
-            receiptDTO.setInvoiceId(invoice.getInvoiceId());
-            receiptDTO.setPaymentMethod(invoice.getReceipt().getPaymentMethod());
-            receiptDTO.setPaidAt(invoice.getReceipt().getPaidAt());
-            receiptDTO.setDebitAt(invoice.getReceipt().getDebitAt());
-            receiptDTO.setAmountPay(invoice.getReceipt().getAmountPay());
-            receiptDTO.setInstallments(invoice.getReceipt().getInstallments());
-            receiptDTO.setNote(invoice.getReceipt().getNote());
-            dto.setReceipt(receiptDTO);
-        }
-
         // 巢狀：InvoiceResponses
-        if (invoice.getResponses() != null && !invoice.getResponses().isEmpty()) {
-            List<InvoiceResponseDTO> responses = invoice.getResponses().stream().map(res -> {
+        if (invoice.getInvoiceResponses() != null && !invoice.getInvoiceResponses().isEmpty()) {
+            List<InvoiceResponseDTO> responses = invoice.getInvoiceResponses().stream().map(res -> {
                 InvoiceResponseDTO resDto = new InvoiceResponseDTO();
                 resDto.setInvoiceResponseId(res.getInvoiceResponseId());
                 resDto.setInvoiceId(invoice.getInvoiceId());
-                resDto.setUserId(res.getUser().getUsersId());
+                if (res.getUser() != null) {
+                    resDto.setUserId(res.getUser().getUsersId());
+                }
                 resDto.setAccountCode(res.getAccountCode());
                 resDto.setLastResponse(res.getLastResponse());
                 resDto.setLastResponseTime(res.getLastResponseTime());

@@ -27,14 +27,14 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     // 查詢登入者未繳帳單（傳 userId）
-    @PostMapping("/unpaid/user")
+    @PostMapping("/unpaid/by-user")
     public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesByUser(@RequestBody Map<String, Integer> payload) {
         Integer userId = payload.get("userId");
         return ResponseEntity.ok(invoiceService.findUnpaidInvoicesByUserId(userId));
     }
 
     // 【功能】取得所有發票（可依communityId查詢）// 查詢社區內所有未繳帳單（傳 communityId）
-    @PostMapping("/unpaid/by-community")
+    // @PostMapping("/unpaid/by-community")
     public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesByCommunity(@RequestBody Map<String, Integer> payload) {
         Integer communityId = payload.get("communityId");
         return ResponseEntity.ok(invoiceService.findUnpaidInvoicesByCommunityId(communityId));

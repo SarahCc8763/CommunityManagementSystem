@@ -174,7 +174,7 @@ const submitRemit = async () => {
   try {
     const payload = {
       invoiceId: currentInvoice.invoiceId,
-      // userId: userStore.userId,
+      userId: userStore.userId,
       communityId: userStore.communityId,
       createBy: userStore.name,
       createAt: new Date().toISOString(),

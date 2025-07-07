@@ -15,7 +15,7 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     Invoice findById(Integer invoiceId);
 
-    Invoice findByStatus(Boolean status);
+    List<Invoice> findByStatus(Boolean status);
 
     List<Invoice> findAll();
 
