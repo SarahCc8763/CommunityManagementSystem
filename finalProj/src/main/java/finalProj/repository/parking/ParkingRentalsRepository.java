@@ -28,8 +28,8 @@ public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, 
 			      )
 			""")
 	List<ParkingSlot> findAvailableSlotsByTypeAndPeriod(
-			@Param("parkingTypeId") Integer parkingTypeId, 
-			@Param("start") Date start, 
+			@Param("parkingTypeId") Integer parkingTypeId,
+			@Param("start") Date start,
 			@Param("end") Date end);
 
 	@Query("""
@@ -40,9 +40,11 @@ public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, 
 			""")
 	List<ParkingRentals> findHistoryBySlotIdAndStartDate(
 			@Param("communityId") Integer communityId,
-		    @Param("slotId") Integer slotId,
+			@Param("slotId") Integer slotId,
 			@Param("startDate") Date startDate);
 
 	List<ParkingRentals> findByCommunity_CommunityId(Integer communityId);
+
+	List<ParkingRentals> findByUsers_UsersId(Integer usersId);
 
 }

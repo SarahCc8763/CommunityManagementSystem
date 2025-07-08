@@ -67,6 +67,39 @@ public class ParkingSlotController {
         return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
     }
 
+    // 查詢某使用者所有車位資料
+    @GetMapping("/user")
+    public ResponseEntity<ApiResponse<List<ParkingSlotDTO>>> getSlotByUser(@RequestParam("usersId") Integer usersId) {
+        List<ParkingSlot> slots = repository.findByUsers_UsersId(usersId);
+
+        if (slots == null || slots.isEmpty()) {
+            return ResponseEntity.ok(ApiResponse.success("無車位資料", List.of())); // 回傳空 List，而不是 entity
+        }
+
+        List<ParkingSlotDTO> dtoList = slots.stream().map(slot -> {
+            ParkingSlotDTO dto = new ParkingSlotDTO();
+            dto.setId(slot.getId());
+            dto.setSlotNumber(slot.getSlotNumber());
+            dto.setLocation(slot.getLocation());
+            dto.setIsRentable(slot.getIsRentable());
+            dto.setLicensePlate(slot.getLicensePlate());
+
+            if (slot.getParkingType() != null) {
+                dto.setParkingTypeId(slot.getParkingType().getId());
+                dto.setParkingTypeName(slot.getParkingType().getType());
+            }
+
+            if (slot.getUsers() != null) {
+                dto.setUsersId(slot.getUsers().getUsersId());
+                dto.setUserName(slot.getUsers().getName());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
+    }
+
     // 新增車位資料 (多筆)
     @PostMapping("/batch")
     public ResponseEntity<ApiResponse<List<ParkingSlot>>> createAll(@RequestBody List<ParkingSlotDTO> dtos,

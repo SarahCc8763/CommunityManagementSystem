@@ -216,6 +216,8 @@ const menuList = ref([
       { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
       { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
       { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
+      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
+      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
     ]
   },
   {

@@ -1,5 +1,6 @@
 package finalProj.controller.parking;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import finalProj.domain.parking.ParkingSlot;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.ApiResponse;
 import finalProj.dto.parking.RentalHistoryDTO;
+import finalProj.dto.parking.UserSlotDTO;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.parking.ParkingRentalsRepository;
 import finalProj.repository.parking.ParkingSlotRepository;
@@ -95,6 +97,89 @@ public class ParkingRentalsController {
 		}).collect(Collectors.toList());
 
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
+	}
+
+	// 查詢某user所有承租紀錄
+	@GetMapping("/user")
+	public ResponseEntity<ApiResponse<List<RentalHistoryDTO>>> getRentalByUser(
+			@RequestParam("usersId") Integer usersId) {
+		List<ParkingRentals> records = repository.findByUsers_UsersId(usersId);
+
+		if (records == null || records.isEmpty()) {
+			return ResponseEntity.ok(ApiResponse.success("無承租紀錄", List.of())); // 回傳空 List，而不是 entity
+		}
+
+		List<RentalHistoryDTO> dtoList = records.stream().map(record -> {
+			RentalHistoryDTO dto = new RentalHistoryDTO();
+			dto.setId(record.getId());
+			dto.setLicensePlate(record.getLicensePlate());
+			dto.setRentBuyStart(record.getRentBuyStart());
+			dto.setRentEnd(record.getRentEnd());
+			dto.setStatus(record.getStatus());
+			dto.setCreatedAt(record.getCreatedAt());
+			dto.setUpdatedAt(record.getUpdatedAt());
+			dto.setApproved(record.getApproved());
+
+			// 關聯的部分
+			ParkingSlot parkingSlot = record.getParkingSlot();
+			if (parkingSlot != null) {
+				dto.setSlotNumber(parkingSlot.getSlotNumber());
+				dto.setLocation(parkingSlot.getLocation());
+				dto.setParkingType(parkingSlot.getParkingType().getType());
+			}
+
+			if (record.getUsers() != null) {
+				dto.setUserName(record.getUsers().getName());
+				dto.setUsersId(record.getUsers().getUsersId());
+			}
+
+			if (record.getApprover() != null) {
+				dto.setApproverName(record.getApprover().getName());
+				dto.setApproverId(record.getApprover().getUsersId());
+			}
+			return dto;
+		}).collect(Collectors.toList());
+
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
+	}
+
+	@GetMapping("/user/slots-and-rentals")
+	public ResponseEntity<ApiResponse<List<UserSlotDTO>>> getAllSlotsByUser(@RequestParam("usersId") Integer usersId) {
+		List<UserSlotDTO> results = new ArrayList<>();
+
+		// 擁有的車位
+		List<ParkingSlot> ownedSlots = parkingSlotRepository.findByUsers_UsersId(usersId);
+		for (ParkingSlot slot : ownedSlots) {
+			UserSlotDTO dto = new UserSlotDTO();
+			dto.setSlotNumber(slot.getSlotNumber());
+			dto.setLocation(slot.getLocation());
+			dto.setParkingType(slot.getParkingType().getType());
+			dto.setLicensePlate(slot.getLicensePlate());
+			dto.setIsRented(false); // 擁有的不算承租
+			results.add(dto);
+		}
+
+		// 承租的車位
+		List<ParkingRentals> rentals = repository.findByUsers_UsersId(usersId);
+		for (ParkingRentals record : rentals) {
+			ParkingSlot slot = record.getParkingSlot();
+			UserSlotDTO dto = new UserSlotDTO();
+			dto.setSlotNumber(slot.getSlotNumber());
+			dto.setLocation(slot.getLocation());
+			dto.setParkingType(slot.getParkingType().getType());
+			dto.setLicensePlate(record.getLicensePlate()); // 使用租借登記的車牌
+			dto.setIsRented(true);
+			dto.setRentBuyStart(record.getRentBuyStart());
+			dto.setRentEnd(record.getRentEnd());
+			dto.setStatus(record.getStatus());
+			dto.setApproved(record.getApproved());
+			if (record.getApprover() != null) {
+				dto.setApproverName(record.getApprover().getName());
+			}
+			results.add(dto);
+		}
+
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", results));
 	}
 
 	// 新增承租紀錄

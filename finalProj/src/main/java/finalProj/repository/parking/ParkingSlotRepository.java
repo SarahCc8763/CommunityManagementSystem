@@ -17,25 +17,24 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 	boolean existsBySlotNumber(String slotNumber);
 
 	@Query("""
-		    SELECT ps FROM ParkingSlot ps
-		    WHERE ps.community.id = :communityId
-			  AND ps.parkingType.id = :typeId
-		      AND ps.users.name = 'sa'
-		      AND ps.isRentable = true
-		      AND NOT EXISTS (
-		        SELECT 1 FROM ParkingRentals pr
-		        WHERE pr.parkingSlot.id = ps.id
-		          AND pr.rentBuyStart <= :eventEnd
-		          AND pr.rentEnd >= :eventStart
-		      )
-		""")
-		List<ParkingSlot> findAvailableSlotsForEvent(
+			    SELECT ps FROM ParkingSlot ps
+			    WHERE ps.community.id = :communityId
+				  AND ps.parkingType.id = :typeId
+			      AND ps.users.name = 'sa'
+			      AND ps.isRentable = true
+			      AND NOT EXISTS (
+			        SELECT 1 FROM ParkingRentals pr
+			        WHERE pr.parkingSlot.id = ps.id
+			          AND pr.rentBuyStart <= :eventEnd
+			          AND pr.rentEnd >= :eventStart
+			      )
+			""")
+	List<ParkingSlot> findAvailableSlotsForEvent(
 			@Param("communityId") Integer communityId,
-		    @Param("typeId") Integer typeId,
-		    @Param("eventStart") Date eventStart,
-		    @Param("eventEnd") Date eventEnd,
-		    Pageable pageable
-		);
+			@Param("typeId") Integer typeId,
+			@Param("eventStart") Date eventStart,
+			@Param("eventEnd") Date eventEnd,
+			Pageable pageable);
 
 	@Query("""
 			  SELECT s FROM ParkingSlot s
@@ -50,20 +49,11 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 			        )
 			    )
 			""")
-			List<ParkingSlot> findAvailableTempSlots(
-			  @Param("communityId") Integer communityId,
-			  @Param("typeId") Integer typeId,
-			  @Param("startTime") Date start,
-			  @Param("endTime") Date end
-			);
-
-
-
-
-
-
-
-
+	List<ParkingSlot> findAvailableTempSlots(
+			@Param("communityId") Integer communityId,
+			@Param("typeId") Integer typeId,
+			@Param("startTime") Date start,
+			@Param("endTime") Date end);
 
 	List<ParkingSlot> findByCommunity_CommunityId(Integer communityId);
 
@@ -72,5 +62,7 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 	Collection<ParkingSlot> findByCommunity(Community community);
 
 	ParkingSlot findBySlotNumberAndCommunity_CommunityId(String slotNumber, Integer communityId);
+
+	List<ParkingSlot> findByUsers_UsersId(Integer usersId);
 
 }

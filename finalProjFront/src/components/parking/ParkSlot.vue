@@ -504,5 +504,14 @@ function cleanInvalidChars(slot, field) {
 .btn-primary:hover {
   background: #6d56e6;
 }
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: #cbd5e1; /* 比 #888 更亮，更適合深色背景 */
+  opacity: 0.9;
+}
+.form-control::placeholder {
+  color: #cbd5e1;
+}
 
 </style>
