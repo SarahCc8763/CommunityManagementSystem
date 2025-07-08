@@ -215,7 +215,7 @@ const menuList = ref([
     children: [
       { label: 'FAQ 問答集', routeName: 'faq' },
       { label: '聯絡客服', routeName: 'contact-us' }, //這是那個提出問題的頁面 上傳嫌警衛滑手機那個
-      { label: '回饋與抱怨？', routeName: 'feedback' }, //問題的進度跟進
+      { label: '我的回饋紀錄', routeName: 'feedback' }, //問題的進度跟進
       { label: '後臺 - FAQ 管理', routeName: 'faqAdmin' }, //FAQ後台
       { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin' }, //回饋後台
     ]

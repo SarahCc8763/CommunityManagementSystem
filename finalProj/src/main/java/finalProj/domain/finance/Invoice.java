@@ -9,6 +9,7 @@ import finalProj.domain.users.Users;
 
 @Entity
 @Table(name = "Invoice")
+
 public class Invoice extends BaseEntity {
 
     @Id

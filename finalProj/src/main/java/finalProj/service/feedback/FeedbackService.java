@@ -20,12 +20,15 @@ import finalProj.repository.feedback.FeedbackCategoryRepository;
 import finalProj.repository.feedback.FeedbackRepository;
 import finalProj.repository.feedback.FeedbackStatusHistoryRepository;
 import finalProj.repository.users.UsersRepository;
+import finalProj.service.users.UsersService;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
 @Slf4j
 public class FeedbackService {
+
+    private final UsersService usersService;
     @Autowired
     private FeedbackRepository feedbackRepository;
     @Autowired
@@ -38,6 +41,10 @@ public class FeedbackService {
     private CommunityRepository communityRepository;
     @Autowired
     private FeedbackStatusHistoryRepository feedbackStatusHistoryRepository;
+
+    FeedbackService(UsersService usersService) {
+        this.usersService = usersService;
+    }
     //
     // 新增
     //
@@ -206,6 +213,58 @@ public class FeedbackService {
             history.setNewStatus(feedback.getStatus());
             history.setChangedAt(LocalDateTime.now());
             history.setChangedBy(user);
+            feedbackStatusHistoryRepository.save(history);
+            log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
+        }
+
+        return feedbackRepository.save(existing);
+    }
+
+    public Feedback updateStatus(Feedback feedback) {
+        Optional<Feedback> optionalFeedback = feedbackRepository.findById(feedback.getId());
+        if (optionalFeedback.isEmpty()) {
+            log.info("找不到對應的Feedback");
+            return null;
+        }
+
+        Feedback existing = optionalFeedback.get();
+
+        // 儲存原狀態（給後續判斷歷史記錄）
+        String originalStatus = existing.getStatus();
+
+        // 滿意度
+        // if (feedback.getUserRating() != null) {
+        // existing.setUserRating(feedback.getUserRating());
+        // }
+
+        // 狀態更新與結案時間
+        if (feedback.getStatus() != null && feedback.getStatus().isEmpty()) {
+            if (!"已結案".equals(originalStatus) && "已結案".equals(feedback.getStatus())) {
+                existing.setResolvedAt(LocalDateTime.now());
+            }
+            existing.setStatus(feedback.getStatus());
+        }
+
+        // ✅ 承辦人處理（不允許清空）
+        if (feedback.getHandler() != null && feedback.getHandler().getUsersId() != null) {
+            Optional<Users> optionalHandler = usersRepository.findById(feedback.getHandler().getUsersId());
+            if (optionalHandler.isEmpty()) {
+                log.warn("承辦人 ID 無效，找不到使用者");
+                return null;
+            }
+            existing.setHandler(optionalHandler.get());
+        } else {
+            log.info("未更新承辦人，保留原有設定");
+        }
+
+        // 若狀態變更則建立歷史紀錄
+        if (feedback.getStatus() != null && !feedback.getStatus().equals(originalStatus)) {
+            FeedbackStatusHistory history = new FeedbackStatusHistory();
+            history.setFeedback(existing);
+            history.setOldStatus(originalStatus);
+            history.setNewStatus(feedback.getStatus());
+            history.setChangedAt(LocalDateTime.now());
+            history.setChangedBy(usersService.findById(feedback.getHandler().getUsersId()));
             feedbackStatusHistoryRepository.save(history);
             log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
         }
