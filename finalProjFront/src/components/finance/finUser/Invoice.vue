@@ -177,25 +177,55 @@ const submitRemit = async () => {
     payMsg.value = '請輸入匯款帳號末五碼或留言（至少填一項）'
     return
   }
+
   if (remitCode.value && !/^\d{5}$/.test(remitCode.value)) {
     payMsg.value = '匯款帳號末五碼必須為五位數字'
     return
   }
+
   try {
     const payload = {
-      invoiceId: currentInvoice.invoiceId,
-      userId: userStore.userId,
+      invoice: {
+        invoiceId: currentInvoice.invoiceId,
+      },
+      user: {
+        usersId: userStore.userId,
+      },
       communityId: userStore.communityId,
-      createBy: userStore.name,
-      createAt: new Date().toISOString(),
-      payMethod: payMethod.value,
+      createdBy: userStore.name,
+      createdAt: new Date().toISOString(),
+      paymentMethod: payMethod.value,
       lastResponse: remitNote.value,
       accountCode: remitCode.value
     }
-    await axiosapi.post(`/api/finance/invoice-responses`, payload)
-    payMsg.value = '送出成功！可繼續留言或關閉視窗'
+
+    console.log(payload)
+    await axiosapi.post(`/finance/invoice-responses`, payload)
+
+    // ✅ SweetAlert 成功提示
+    await Swal.fire({
+      icon: 'success',
+      title: '管理員已收到您的回覆',
+      text: '會盡快審核，請耐心等候。',
+      confirmButtonText: '關閉',
+      customClass: {
+        popup: 'swal-on-top'
+      }
+    })
+
+    payMsg.value = '' // 清除訊息
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
+
+    // ❌ SweetAlert 錯誤提示
+    Swal.fire({
+      icon: 'error',
+      title: '發送失敗',
+      text: payMsg.value,
+      customClass: {
+        popup: 'swal-on-top'
+      }
+    })
   }
 }
 const goCredit = () => {
@@ -220,9 +250,11 @@ function isOverdue(invoice) {
 
 onMounted(async () => {
   try {
-    const res = await axiosapi.get('/api/finance/invoice/unpaid', { params: { userId: userStore.userId } })
+    const res = await axiosapi.post('/finance/invoice/unpaid/by-user', { userId: userStore.userId })
     console.log('API 回傳資料', res.data)
     invoices.value = Array.isArray(res.data) ? res.data : []
+    console.log(invoices.value);
+
   } catch (e) {
     invoices.value = []
   }
@@ -233,6 +265,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 把SweetAlert放上面 */
+.swal-on-top {
+  z-index: 99999 !important;
+}
+
 .invoice-container {
   max-width: 520px;
   margin: 48px auto 0 auto;
@@ -283,6 +320,7 @@ onMounted(async () => {
   padding: 28px 32px 18px 32px;
   gap: 0 32px;
 }
+
 .card-left {
   flex: 2;
   display: flex;
@@ -290,6 +328,7 @@ onMounted(async () => {
   justify-content: center;
   gap: 10px;
 }
+
 .card-right {
   flex: 1;
   display: flex;
@@ -302,10 +341,12 @@ onMounted(async () => {
   .invoice-list-bg {
     padding: 24px 8px 16px 8px;
   }
+
   .invoice-list.grid-list {
     grid-template-columns: 1fr;
     gap: 24px 0;
   }
+
   .card-right {
     justify-content: flex-start;
     min-width: 0;

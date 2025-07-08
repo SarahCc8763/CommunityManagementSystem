@@ -30,6 +30,36 @@ public class InvoiceDTO {
     private Integer createdBy;
     private Integer updatedBy;
 
+    // 建構子：可接受 Invoice Entity 自動轉換
+    public InvoiceDTO(finalProj.domain.finance.Invoice i) {
+        this.invoiceId = i.getInvoiceId();
+        this.amountDue = i.getAmountDue();
+        this.periodName = i.getPeriodName();
+        this.deadline = i.getDeadline();
+        this.paymentPlan = i.getPaymentPlan();
+        this.unitCount = i.getUnitCount();
+        this.unitPrice = i.getUnitPrice();
+        this.totalAmount = i.getTotalAmount();
+        this.paymentStatus = i.getPaymentStatus();
+        this.note = i.getNote();
+        this.communityId = i.getCommunityId();
+        this.createdBy = i.getCreatedBy();
+        this.updatedBy = i.getUpdatedBy();
+
+        if (i.getUsers() != null) {
+            this.user = new UserSimpleDTO(i.getUsers());
+        }
+        if (i.getFeeType() != null) {
+            this.feeType = new FeeTypeDTO(i.getFeeType());
+        }
+        if (i.getBillingPeriod() != null) {
+            this.billingPeriod = new BillingPeriodDTO(i.getBillingPeriod());
+        }
+    }
+
+    public InvoiceDTO() {
+    }
+
     public List<InvoiceResponseDTO> getInvoiceResponses() {
         return invoiceResponses;
     }

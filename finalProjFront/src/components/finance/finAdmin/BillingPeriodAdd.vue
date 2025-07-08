@@ -22,13 +22,19 @@
                     <select v-model="formYear" class="form-select" style="max-width: 100px;">
                       <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}年</option>
                     </select>
+
+                    <select v-model="formMonthOrQuarter" class="form-select" style="max-width: 80px;">
+                      <option v-for="n in (formType === 'M' ? 12 : 4)" :key="n" :value="n">{{ formType === 'M' ? n + '月'
+                        :
+                        '第'+n+'季' }}</option>
+                    </select>
+
                     <select v-model="formType" class="form-select" style="max-width: 80px;">
                       <option value="M">月</option>
                       <option value="Q">季</option>
                     </select>
-                    <select v-model="formMonthOrQuarter" class="form-select" style="max-width: 80px;">
-                      <option v-for="n in (formType==='M'?12:4)" :key="n" :value="n">{{ formType==='M'? n+'月' : '第'+n+'季' }}</option>
-                    </select>
+
+
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -105,7 +111,8 @@
         <label class="form-label mb-1">期別代碼</label>
         <div class="input-group flex-nowrap period-code-group">
           <span class="input-group-text">年份</span>
-          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px;" disabled />
+          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px;"
+            disabled />
           <span class="input-group-text">月份/季</span>
           <select v-model="searchMonth" class="form-select month-select" style="max-width: 110px; min-width: 80px;">
             <option value="">--</option>
@@ -230,7 +237,7 @@ const searchType = ref('M')
 const searchResult = ref(null)
 
 const now = new Date();
-const yearOptions = Array.from({length: 5}, (_, i) => now.getFullYear() - 2 + i);
+const yearOptions = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 const formYear = ref(now.getFullYear());
 const formType = ref('M');
 const formMonthOrQuarter = ref(1);
@@ -348,33 +355,39 @@ onMounted(() => {
   margin-bottom: 0;
 }
 
-.period-code-group > .input-group-text,
-.period-code-group > .form-control,
-.period-code-group > .form-select {
+.period-code-group>.input-group-text,
+.period-code-group>.form-control,
+.period-code-group>.form-select {
   margin-right: 8px;
 }
-.period-code-group > .form-control,
-.period-code-group > .form-select {
+
+.period-code-group>.form-control,
+.period-code-group>.form-select {
   min-width: 80px;
   max-width: 110px;
 }
-.period-code-group > .year-input {
+
+.period-code-group>.year-input {
   min-width: 100px;
   max-width: 120px;
 }
-.period-code-group > .month-select,
-.period-code-group > .type-select {
+
+.period-code-group>.month-select,
+.period-code-group>.type-select {
   min-width: 100px;
   max-width: 120px;
 }
+
 @media (max-width: 991px) {
-  .period-code-group > .input-group-text,
-  .period-code-group > .form-control,
-  .period-code-group > .form-select {
+
+  .period-code-group>.input-group-text,
+  .period-code-group>.form-control,
+  .period-code-group>.form-select {
     margin-right: 4px;
   }
-  .period-code-group > .form-control,
-  .period-code-group > .form-select {
+
+  .period-code-group>.form-control,
+  .period-code-group>.form-select {
     min-width: 70px;
     max-width: 100px;
   }

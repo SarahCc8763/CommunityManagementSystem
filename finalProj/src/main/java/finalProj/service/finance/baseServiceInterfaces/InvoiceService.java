@@ -3,6 +3,7 @@ package finalProj.service.finance.baseServiceInterfaces;
 import java.util.List;
 
 import finalProj.domain.finance.Invoice;
+import finalProj.dto.finance.InvoiceDTO;
 
 public interface InvoiceService extends BaseService<Invoice, Integer> {
     List<Invoice> findUnpaidInvoices();
@@ -28,7 +29,9 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
     java.util.List<Invoice> findByStatus(Boolean status);
 
     // 根據 userId 查詢未繳帳單
-    List<Invoice> findUnpaidInvoicesByUserId(Integer usersId);
 
-    List<Invoice> findUnpaidWithResponseByCommunityId(Integer communityId);
+    List<InvoiceDTO> findUnpaidInvoicesByUserId(Integer userId);
+
+    List<InvoiceDTO> findUnpaidInvoicesByCommunityId(Integer communityId);
+
 }

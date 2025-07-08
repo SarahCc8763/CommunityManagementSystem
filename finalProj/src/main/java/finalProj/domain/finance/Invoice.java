@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import finalProj.domain.users.Users;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -61,6 +63,8 @@ public class Invoice extends BaseEntity {
 
     @OneToMany(mappedBy = "invoice")
     @JsonManagedReference
+    @JsonIgnoreProperties({ "users" })
+
     private List<InvoiceResponse> invoiceResponses;
 
     public Integer getInvoiceId() {

@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import finalProj.domain.finance.Invoice;
 import finalProj.domain.finance.InvoiceResponse;
 import finalProj.domain.users.Users;
+import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.finance.InvoiceResponseRepository;
@@ -31,21 +32,19 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
     private UsersRepository usersRepository;
 
     @Override
-    public InvoiceResponseDTO createResponse(Integer userId, InvoiceResponseDTO dto) {
-        Invoice invoice = invoiceRepository.findById(dto.getInvoiceId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "查無該發票 ID"));
+    public InvoiceResponseDTO createResponse(Integer userId, InvoiceResponse dto) {
+        Invoice invoice = invoiceRepository.findById(dto.getInvoice().getInvoiceId()).orElse(null);
+        if (invoice == null) {
+            System.out.println("查無發票");
+            return null;
+        }
+        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "查無該發票
+        // ID"));
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "查無該用戶 ID"));
         // 檢查是否本人
         if (!invoice.getUsers().getUsersId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能回覆自己的發票");
-        }
-        // 檢查是否已回覆
-        boolean already = invoiceResponseRepository.findAll().stream()
-                .anyMatch(r -> r.getInvoice() != null && r.getInvoice().getInvoiceId().equals(dto.getInvoiceId())
-                        && r.getUser() != null && r.getUser().getUsersId().equals(userId));
-        if (already) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已回覆過此發票");
         }
         // 檢查帳號末五碼格式（有填才驗證）
         if (dto.getAccountCode() != null && !dto.getAccountCode().isEmpty()
@@ -60,7 +59,7 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         response.setLastResponseTime(LocalDateTime.now());
         response.setVerified(false);
         // 新增：同步將 invoice 狀態設為 PENDING
-        invoice.setPaymentStatus("PENDING");
+        invoice.setPaymentStatus("pending");
         invoiceRepository.save(invoice);
         InvoiceResponse saved = invoiceResponseRepository.save(response);
         return toDTO(saved);
@@ -84,8 +83,10 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
 
     @Override
     public InvoiceResponse save(InvoiceResponse entity) {
-        // TODO Auto-generated method stub
-        return null;
+        if (entity == null) {
+            throw new IllegalArgumentException("不可儲存 null 的回應資料");
+        }
+        return invoiceResponseRepository.save(entity);
     }
 
     @Override
@@ -126,6 +127,28 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
         }
         InvoiceResponse saved = invoiceResponseRepository.save(entity);
         return toDTO(saved);
+    }
+
+    @Override
+    public List<InvoiceResponseDTO> findUnpaidInvoiceResponse() {
+        return invoiceResponseRepository.findAll().stream()
+                .filter(r -> {
+                    Invoice invoice = r.getInvoice();
+                    return invoice != null
+                            && "unpaid".equalsIgnoreCase(invoice.getPaymentStatus());
+                })
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InvoiceDTO> findUnpaidInvoiceWithResponse() {
+        return invoiceResponseRepository.findUnpaidInvoiceWithResponse();
+    }
+
+    @Override
+    public List<InvoiceDTO> findUnpaidInvoiceWithResponseByCommunityId(Integer communityId) {
+        return invoiceResponseRepository.findUnpaidInvoiceWithResponseByCommunityId(communityId);
     }
 
     @Override

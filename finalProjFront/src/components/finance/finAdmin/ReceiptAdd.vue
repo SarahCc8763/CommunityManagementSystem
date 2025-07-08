@@ -44,7 +44,8 @@
       <div class="receipt-row"><span>發票ID：</span>{{ receiptDetail.invoiceId }}</div>
       <div class="receipt-row"><span>費用類型：</span>{{ receiptDetail.feeType }}</div>
       <div class="receipt-row"><span>期別：</span>{{ receiptDetail.periodName }}</div>
-      <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{ receiptDetail.amountPay?.toLocaleString() }}</b></div>
+      <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{ receiptDetail.amountPay?.toLocaleString()
+          }}</b></div>
       <div class="receipt-row"><span>付款方式：</span>{{ receiptDetail.paymentMethod }}</div>
       <div class="receipt-row"><span>付款時間：</span>{{ formatDate(receiptDetail.paidAt) }}</div>
       <div class="receipt-row"><span>扣款時間：</span>{{ formatDate(receiptDetail.debitAt) }}</div>
@@ -94,11 +95,11 @@ const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
   try {
-    const res = await axiosapi.post('/api/finance/receipts', form.value)
+    const res = await axiosapi.post('/finance/receipts', form.value)
     successMsg.value = '新增成功！'
     // 取得收據詳細資料
     const receiptId = res.data.receiptId || res.data.id
-    const detailRes = await axiosapi.get(`/api/finance/receipts/${receiptId}`)
+    const detailRes = await axiosapi.get(`/finance/receipts/${receiptId}`)
     receiptDetail.value = detailRes.data
     // 查社區名稱
     if (detailRes.data.communityId) {
@@ -128,7 +129,7 @@ function printReceipt() {
   win.document.write('</body></html>')
   win.document.close()
   win.focus()
-  setTimeout(()=>{win.print();win.close()}, 500)
+  setTimeout(() => { win.print(); win.close() }, 500)
 }
 
 function downloadPDF() {
@@ -143,7 +144,10 @@ function downloadPDF() {
 </script>
 
 <style scoped>
-.container { max-width: 500px; }
+.container {
+  max-width: 500px;
+}
+
 .receipt-preview {
   max-width: 420px;
   margin: 0 auto;
@@ -151,9 +155,10 @@ function downloadPDF() {
   border: 1.5px solid #aaa;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 4px 16px rgba(102,126,234,0.08);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
   font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
 }
+
 .receipt-title {
   text-align: center;
   font-size: 1.5rem;
@@ -161,19 +166,36 @@ function downloadPDF() {
   margin-bottom: 18px;
   letter-spacing: 2px;
 }
+
 .receipt-row {
   margin-bottom: 8px;
   font-size: 1.1rem;
   letter-spacing: 1px;
 }
+
 .receipt-footer {
   margin-top: 24px;
   text-align: right;
   font-size: 1.1rem;
 }
+
 @media print {
-  body * { visibility: hidden; }
-  .receipt-preview, .receipt-preview * { visibility: visible !important; }
-  .receipt-preview { position: absolute; left: 0; top: 0; width: 100vw; background: #fff; box-shadow: none; }
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-preview,
+  .receipt-preview * {
+    visibility: visible !important;
+  }
+
+  .receipt-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    background: #fff;
+    box-shadow: none;
+  }
 }
-</style> 
+</style>

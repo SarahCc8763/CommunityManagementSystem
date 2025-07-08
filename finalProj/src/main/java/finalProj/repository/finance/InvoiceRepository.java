@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import finalProj.domain.finance.Invoice;
+import finalProj.dto.finance.InvoiceDTO;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     // 根據 periodCode 查詢該期所有請款單
@@ -35,4 +36,5 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     @Query("SELECT i FROM Invoice i WHERE i.communityId = :communityId AND i.paymentStatus = :paymentStatus")
     List<Invoice> findByCommunityIdAndPaymentStatus(@Param("communityId") Integer communityId,
             @Param("paymentStatus") String paymentStatus);
+
 }

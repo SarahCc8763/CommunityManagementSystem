@@ -13,25 +13,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import finalProj.domain.finance.InvoiceResponse;
 import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.InvoiceResponseDTO;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceResponseService;
-import finalProj.service.finance.baseServiceInterfaces.InvoiceService;
 
 @RestController
-@RequestMapping("/api/finance/invoice-responses")
+@RequestMapping("/finance/invoice-responses")
 public class InvoiceResponseController {
 
     @Autowired
     private InvoiceResponseService invoiceResponseService;
 
-    @Autowired
-    private InvoiceService invoiceService;
-
     // 【功能】使用者回覆匯款（填寫帳號末五碼與備註）
     @PostMapping
-    public ResponseEntity<InvoiceResponseDTO> respondInvoice(@RequestBody InvoiceResponseDTO dto) {
-        InvoiceResponseDTO saved = invoiceResponseService.createResponse(dto.getUserId(), dto);
+    public ResponseEntity<InvoiceResponseDTO> respondInvoice(@RequestBody InvoiceResponse dto) {
+        // System.out.println("有呼叫");
+        // return ResponseEntity.ok(null);
+        InvoiceResponseDTO saved = invoiceResponseService.createResponse(dto.getUser().getUsersId(), dto);
+        if (saved == null) {
+            System.out.println("有錯誤");
+        }
         return ResponseEntity.ok(saved);
     }
 
@@ -39,6 +41,7 @@ public class InvoiceResponseController {
     @GetMapping("/my")
     public ResponseEntity<List<InvoiceResponseDTO>> getMyResponses(@RequestParam Integer userId) {
         List<InvoiceResponseDTO> list = invoiceResponseService.findByUserId(userId);
+
         return ResponseEntity.ok(list);
     }
 
@@ -72,9 +75,11 @@ public class InvoiceResponseController {
         return ResponseEntity.ok(list);
     }
 
+    // 查詢社區內所有未繳且有回覆的請款單
     @GetMapping("/with-response/unpaid")
-    public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesWithResponses() {
-        List<InvoiceDTO> list = invoiceService.findUnpaidInvoicesWithResponse();
+    public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesWithResponses(@RequestParam Integer communityId) {
+        List<InvoiceDTO> list = invoiceResponseService.findUnpaidInvoiceWithResponseByCommunityId(communityId);
         return ResponseEntity.ok(list);
     }
+
 }

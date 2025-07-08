@@ -94,7 +94,7 @@ const formatDate = (date) => {
 
 onMounted(async () => {
   // 查詢所有 paymentStatus='unpaid' 且有回覆的 invoice
-  const res = await axiosapi.get('/api/finance/invoice/unpaid-with-response', { params: { communityId: userStore.communityId } })
+  const res = await axiosapi.get('/finance/invoice/unpaid-with-response', { params: { communityId: userStore.communityId } })
   invoices.value = res.data
 })
 </script>

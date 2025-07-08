@@ -38,16 +38,17 @@
 
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 
-import HeaderAll from './components/forAll/main/HeaderAll.vue'
 import FooterAll from './components/forAll/main/FooterAll.vue'
-import LoginModal from './components/forAll/main/LoginModal.vue'
+import HeaderAll from './components/forAll/main/HeaderAll.vue'
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
+import LoginModal from './components/forAll/main/LoginModal.vue'
 import RightSideNav from './components/forAll/main/RightSideNav.vue'
 
+import Swal from 'sweetalert2'
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
@@ -79,6 +80,13 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('show-login-modal', () => (showLogin.value = true))
   window.removeEventListener('logout', () => console.log('用戶已登出'))
+})
+
+//把sweetAlert放最上面用
+Swal.mixin({
+  customClass: {
+    popup: 'swal-on-top'
+  }
 })
 </script>
 
@@ -307,5 +315,10 @@ onUnmounted(() => {
   background-color: #35394a;
   color: #f0f0f0;
   border: 1px solid #666;
+}
+
+/* 把swtteAlert放上面 */
+.swal-on-top {
+  z-index: 99999 !important;
 }
 </style>

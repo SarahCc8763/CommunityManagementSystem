@@ -14,7 +14,8 @@
         <label class="form-label mb-1">期別</label>
         <select v-model="filter.billingPeriodId" class="form-select">
           <option value="">全部</option>
-          <option v-for="bp in billingPeriods" :key="bp.billingPeriodId" :value="bp.billingPeriodId">{{ bp.periodName }}</option>
+          <option v-for="bp in billingPeriods" :key="bp.billingPeriodId" :value="bp.billingPeriodId">{{ bp.periodName }}
+          </option>
         </select>
       </div>
       <div class="col-md-4 col-12 d-flex align-items-end">
@@ -53,7 +54,7 @@
       </table>
       <div class="mb-3">
         <button type="submit" class="btn btn-success" :disabled="checkedIds.length === 0">審核通過</button>
-        <button type="button" class="btn btn-secondary ms-2" @click="checkedIds=[]">取消全選</button>
+        <button type="button" class="btn btn-secondary ms-2" @click="checkedIds = []">取消全選</button>
       </div>
     </form>
   </div>
@@ -85,9 +86,9 @@ const filteredInvoices = computed(() => {
 onMounted(async () => {
   await fetchPending()
   try {
-    const res1 = await axiosapi.get('/api/finance/fee-types')
+    const res1 = await axiosapi.get('/finance/fee-types')
     feeTypes.value = res1.data
-    const res2 = await axiosapi.get('/api/finance/billing-periods')
+    const res2 = await axiosapi.get('/finance/billing-periods')
     billingPeriods.value = res2.data
   } catch (e) {
     errorMsg.value = '載入選單失敗：' + (e.response?.data?.message || e.message)
@@ -100,7 +101,7 @@ function clearFilter() {
 
 async function fetchPending() {
   try {
-    const res = await axiosapi.get('/api/finance/invoice/pending-validate')
+    const res = await axiosapi.get('/finance/invoice/pending-validate')
     pendingInvoices.value = res.data
     checkedIds.value = []
     allChecked.value = false
@@ -120,7 +121,7 @@ function toggleAll() {
 async function batchValidate() {
   if (checkedIds.value.length === 0) return
   try {
-    await axiosapi.post('/api/finance/invoice/batch-validate', checkedIds.value)
+    await axiosapi.post('/finance/invoice/batch-validate', checkedIds.value)
     successMsg.value = '審核成功！'
     await fetchPending()
   } catch (e) {
@@ -136,5 +137,8 @@ function formatDate(dateStr) {
 </script>
 
 <style scoped>
-.table th, .table td { text-align: center; }
-</style> 
+.table th,
+.table td {
+  text-align: center;
+}
+</style>

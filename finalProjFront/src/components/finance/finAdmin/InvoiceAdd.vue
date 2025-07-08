@@ -80,9 +80,9 @@ const router = useRouter()
 
 onMounted(async () => {
   try {
-    const res1 = await axiosapi.get('/api/finance/fee-types')
+    const res1 = await axiosapi.get('/finance/fee-types')
     feeTypes.value = res1.data
-    const res2 = await axiosapi.get('/api/finance/billing-periods')
+    const res2 = await axiosapi.get('/finance/billing-periods')
     billingPeriods.value = res2.data
   } catch (e) {
     errorMsg.value = '載入資料失敗：' + (e.response?.data?.message || e.message)
@@ -159,7 +159,7 @@ const prepareNextMonthManagementFee = () => {
 
 const confirmGenerate = async () => {
   try {
-    await axiosapi.post('/api/finance/invoice-generator/generate', {
+    await axiosapi.post('/finance/invoice-generator/generate', {
       feeTypeId: confirmData.value.feeTypeId,
       billingPeriodId: confirmData.value.billingPeriodId
     })
@@ -182,7 +182,7 @@ const submitForm = async () => {
     return
   }
   try {
-    await axiosapi.post('/api/finance/invoice-generator/generate', {
+    await axiosapi.post('/finance/invoice-generator/generate', {
       feeTypeId: form.value.feeTypeId,
       billingPeriodId: form.value.billingPeriodId
     })
