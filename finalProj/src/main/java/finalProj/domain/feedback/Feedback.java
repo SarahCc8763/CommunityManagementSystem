@@ -2,7 +2,9 @@
 package finalProj.domain.feedback;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -19,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "feedback")
@@ -83,6 +86,9 @@ public class Feedback {
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("feedback-reply")
     private List<FeedbackReply> replies;
+
+    @Transient
+    private Map<String, Object> frontEndData;
 
     @Override
     public String toString() {
@@ -211,5 +217,19 @@ public class Feedback {
 
     public void setReplies(List<FeedbackReply> replies) {
         this.replies = replies;
+    }
+
+    public Map<String, Object> getFrontEndData() {
+        Map<String, Object> frontEndData = new HashMap<>();
+        if (user != null) {
+            frontEndData.put("usersId", user.getUsersId());
+            frontEndData.put("userName", user.getName());
+            frontEndData.put("userEmail", user.getEmail());
+        }
+        return frontEndData;
+    }
+
+    public void setFrontEndData(Map<String, Object> frontEndData) {
+        this.frontEndData = frontEndData;
     }
 }

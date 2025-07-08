@@ -4,6 +4,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import axios from 'axios'
 
+
 // 引入自定義全局樣式
 import './assets/custom-bootstrap.scss'
 

@@ -1,8 +1,26 @@
 <template>
     <div class="container py-4 ">
         <BannerImage :imageSrc="OO" heading="回饋管理" subtext="在此回應或處理用戶的回饋意見" textAlign="left" />
+        <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+            <div class="d-flex align-items-center">
+                <span class="me-2">分類篩選：</span>
+                <select v-model="selectedCategory" class="form-select w-auto">
+                    <option value="">全部類別</option>
+                    <option v-for="(cat, key) in categoryList" :key="key" :value="cat">{{ cat }}</option>
+                </select>
+            </div>
 
-
+            <div class="d-flex align-items-center">
+                <span class="me-2">處理狀態：</span>
+                <select v-model="selectedStatus" class="form-select w-auto">
+                    <option value="">全部</option>
+                    <option value="待處理">待處理</option>
+                    <option value="處理中">處理中</option>
+                    <option value="確認中">確認中</option>
+                    <option value="已結案">已結案</option>
+                </select>
+            </div>
+        </div>
 
         <div class="container my-4">
             <div v-if="error" class="alert alert-danger" role="alert">
@@ -16,51 +34,85 @@
             </div>
 
             <div v-else class="d-flex justify-content-center">
-                <div class="accordion" id="feedbackAccordion" style="width: 90%;">
-                    <div class="accordion-item" v-for="(feedback, index) in feedbackList" :key="feedback.id">
+                <div class="accordion bg-darkx" id="feedbackAccordion" style="width: 90%;">
+                    <div class="accordion-item bg-darkx" v-for="(feedback, index) in filteredFeedbackList"
+                        :key="feedback.id">
                         <h2 class="accordion-header" :id="'heading-' + index">
-                            <button class="accordion-button collapsed w-100" type="button" data-bs-toggle="collapse"
-                                :data-bs-target="'#collapse-' + index" aria-expanded="false"
+                            <button class="accordion-button collapsed w-100 bg-darkx text-light" type="button"
+                                data-bs-toggle="collapse" :data-bs-target="'#collapse-' + index" aria-expanded="false"
                                 :aria-controls="'collapse-' + index">
 
                                 <div class="d-flex justify-content-between align-items-center w-100">
-                                    <!-- 左側：狀態 + 標題 -->
+
+                                    <!-- 左側：分類 + 標題 -->
                                     <div class="d-flex align-items-center">
-                                        <span class="me-2 badge" :class="'bg-' + getStatusVariant(feedback.status)">
-                                            {{ feedback.status }}
-                                        </span>
-                                        <strong class="fs-5">{{ feedback.title }}</strong>
+                                        <div class="badge fw-normal"
+                                            :class="getCategoryBadgeClass(feedback.category?.id)"
+                                            style="font-size: 95%;">
+                                            {{ feedback.category?.name }}
+                                        </div>
+
+                                        <div class=" mx-2">
+                                            <span class="fs-5"> {{ feedback.title }}</span>
+                                        </div>
                                     </div>
 
-                                    <!-- 右側：日期靠右 -->
-                                    <small class="text-muted text-end">用戶提交時間：{{ formatDate(feedback.submittedAt)
-                                    }}</small>
+                                    <!-- 右側：狀態 + 使用者/時間（左右排列） -->
+                                    <div class="d-flex align-items-center ms-auto gap-3">
+                                        <!-- 狀態 Badge -->
+                                        <span class="badge" :class="'bg-' + getStatusVariant(feedback.status)"
+                                            style="font-size: 90%;">
+                                            {{ feedback.status }}
+                                        </span>
+
+                                        <!-- 使用者與時間（上下排列） -->
+                                        <div class="text-start small " style="color: lightgray;">
+                                            <div>反映人：{{ feedback.frontEndData.userName }}</div>
+                                            <div>提交時間：{{ formatDate(feedback.submittedAt) }}</div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </button>
 
 
+
+
                         </h2>
-                        <div :id="'collapse-' + index" class="accordion-collapse collapse"
+                        <div :id="'collapse-' + index" class="accordion-collapse collapse bg-darkx"
                             :aria-labelledby="'heading-' + index" data-bs-parent="#feedbackAccordion">
-                            <div class="accordion-body">
-                                <div class="card h-100 flex-row">
+                            <div class="accordion-body bg-darky">
+                                <div class="card h-100 flex-row bg-darkx">
                                     <img :src="getFirstImage(feedback)" class="img-fluid rounded-start"
                                         alt="Feedback Image" style="width: 20%; height: auto; object-fit: contain" />
                                     <div class="card-body d-flex flex-column">
-                                        <h5 class="fw-bold">主旨：{{ feedback.title }}</h5>
-                                        <p class="card-text">內容：{{ feedback.description }}</p>
+                                        <h5 class="fw-normal">主旨：span{{ feedback.title }}</h5>
+                                        <p class="card-text mx-2">內容：{{ feedback.description }}</p>
 
                                         <div>
-                                            <strong>最新進度：</strong>
-                                            <div v-if="feedback.replies && feedback.replies.length > 0">
+                                            <h6>最新進度：</h6>
+                                            <div v-if="feedback.replies && feedback.replies.length > 0" class="mx-2">
                                                 {{ feedback.replies[feedback.replies.length - 1].reply }}
                                                 <div class="lh-lg" style="font-size: 70%;">{{
                                                     formatDateTime(feedback.replies[feedback.replies.length -
                                                         1].repliedAt) }}</div>
                                             </div>
-                                            <div v-else class="text-muted">尚無回覆</div>
+                                            <div v-else>尚無回覆</div>
                                         </div>
+                                        <!-- 附件 -->
+                                        <div v-if="feedback.attachments?.length" class="mt-4">
+                                            <strong>附件：</strong>
+                                            <ul>
+                                                <li v-for="file in feedback.attachments" :key="file.id">
+                                                    <a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
+                                                        :download="file.fileName"
+                                                        class="text-info text-decoration-underline" target="_blank">
+                                                        {{ file.fileName }}
+                                                    </a>
+                                                </li>
+                                            </ul>
 
+                                        </div>
                                         <div class="d-flex gap-2 mt-2">
                                             <button class="btn btn-outline-primary btn-sm"
                                                 @click="toggleReplies(feedback)">
@@ -82,10 +134,12 @@
                                                 </div>
                                                 <div>
                                                     <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}</div>
-                                                    <div class="bg-light rounded p-2">{{ reply.reply }}</div>
-                                                    <div class="text-muted small">{{ formatDateTime(reply.repliedAt) }}
+                                                    <div class="bg-darky rounded p-2">{{ reply.reply }}</div>
+                                                    <div class="text-light small">{{ formatDateTime(reply.repliedAt) }}
                                                     </div>
                                                 </div>
+                                                <button type="button" class="btn btn-outline-danger btn-sm ms-auto"
+                                                    @click="deleteReply(reply.id)">刪除</button>
                                             </li>
                                         </ul>
                                         <!-- 回覆輸入區塊 -->
@@ -124,30 +178,46 @@
 
 
             <!-- 引入編輯 Modal 元件 -->
-            <FeedbackManageModal @updated="fetchData" />
+            <FeedbackManageModal @updated="fetchData" :selectedFeedback="selectedFeedback" />
 
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
+import Swal from 'sweetalert2'
+
 
 const defaultImage = noImage
 const feedbackList = ref([])
+const categoryList = ref([])
 const loading = ref(false)
 const error = ref(null)
 const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
 const communityId = localStorage.getItem('communityId') || 1
+const selectedStatus = ref('')
+const selectedCategory = ref('')
+const selectedFeedback = ref(null)
+
 
 import BannerImage from '@/components/forAll/BannerImage.vue';
 import OO from '@/assets/images/main/adminBanner.jpg';
+
+
+const filteredFeedbackList = computed(() => {
+    return feedbackList.value.filter(fb => {
+        const matchStatus = !selectedStatus.value || fb.status == selectedStatus.value
+        const matchCategory = !selectedCategory.value || fb.category?.name == selectedCategory.value
+        return matchStatus && matchCategory
+    })
+})
 
 const toggleReplies = (feedback) => {
     feedback.showReplies = !feedback.showReplies
@@ -199,6 +269,18 @@ const getImageAttachments = (feedback) => {
     return feedback.attachments?.filter(a => a.mimeType?.startsWith('image/')) || []
 }
 
+const badgeColors = [
+    'bg-primary',
+    'bg-success',
+    'bg-danger',
+    'bg-secondary',
+]
+
+const getCategoryBadgeClass = (categoryId) => {
+    if (!categoryId) return 'bg-secondary'
+    const index = categoryId % badgeColors.length
+    return badgeColors[index]
+}
 
 const getStatusVariant = (status) => {
     switch (status) {
@@ -244,14 +326,65 @@ const openEditModal = async (feedbackId) => {
         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)
         modalInstance.show()
 
-        window.dispatchEvent(new CustomEvent('load-feedback-for-edit', { detail: feedback }))
+        selectedFeedback.value = feedback.list[0]
+        console.log(selectedFeedback.value);
 
     } catch (err) {
         console.error('載入意見資料失敗', err)
     }
 }
 
-const fetchData = () => {
+// ✅ 刪除留言
+const deleteReply = async (replyId) => {
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '刪除後將無法恢復',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定刪除',
+        cancelButtonText: '取消'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        const res = await axios.delete(`http://localhost:8080/api/feedback/reply/${replyId}`);
+
+        if (res.data?.result !== '刪除成功') {
+            throw new Error('伺服器回應非預期');
+        }
+
+        // ✅ 找到有這筆回覆的 feedback 並移除 reply
+        const parentFeedback = feedbackList.value.find(fb =>
+            fb.replies?.some(reply => reply.id === replyId)
+        );
+        if (parentFeedback) {
+            parentFeedback.replies = parentFeedback.replies.filter(reply => reply.id !== replyId);
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: '刪除成功',
+            showConfirmButton: false,
+            timer: 1500
+        });
+
+    } catch (e) {
+        console.error('刪除發生錯誤', e);
+        Swal.fire({
+            icon: 'error',
+            title: '刪除失敗',
+            text: '請稍後再試'
+        });
+    }
+};
+
+
+
+
+const fetchData = async () => {
     const userId = 1 // localStorage.getItem('userId')
     if (!userId) {
         error.value = '找不到使用者資訊，請重新登入。'
@@ -259,7 +392,7 @@ const fetchData = () => {
     }
 
     loading.value = true
-    axios
+    await axios
         .get(`http://localhost:8080/api/feedback/community/${communityId}`)
         .then((res) => {
             feedbackList.value = res.data.list.map((f) => ({
@@ -275,6 +408,13 @@ const fetchData = () => {
         })
         .finally(() => {
             loading.value = false
+        })
+
+    axios.get(`http://localhost:8080/api/feedback/${communityId}/category`)
+        .then((res) => {
+            categoryList.value = res.data.data
+            console.log(res);
+            console.log(categoryList.value);
         })
 }
 
@@ -350,5 +490,15 @@ ul {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     /* 加陰影 */
     transition: all 0.3s ease;
+}
+
+.bg-darkx {
+    background-color: #2A3A56;
+    color: #ffffff;
+}
+
+.bg-darky {
+    background-color: #4a638d;
+    color: #ffffff;
 }
 </style>

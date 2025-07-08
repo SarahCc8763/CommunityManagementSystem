@@ -330,6 +330,29 @@ public class feedbackController {
         return feedbackReplyService.modify(body);
     }
 
+    @DeleteMapping("/reply/{replyId}")
+    public ResponseEntity<Map<String, Object>> deleteFeedbackReply(@PathVariable Integer replyId) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (replyId == null) {
+            response.put("result", "未提供刪除意見回應所需資料");
+            log.warn("未提供刪除意見回應所需資料");
+            return ResponseEntity.badRequest().body(response); // HTTP 400
+        }
+
+        boolean deleted = feedbackReplyService.deleteById(replyId);
+
+        if (deleted) {
+            response.put("result", "刪除成功");
+            log.info("刪除意見回應成功");
+            return ResponseEntity.ok(response); // HTTP 200
+        } else {
+            response.put("result", "找不到此留言，無法刪除");
+            log.warn("找不到此留言，無法刪除");
+            return ResponseEntity.status(404).body(response); // ❗HTTP 404 錯誤
+        }
+    }
+
     // 通過使用者尋找
     @GetMapping("/findbyuser/{id}")
     public List<Feedback> findFaqByUser(@PathVariable Integer id) {
