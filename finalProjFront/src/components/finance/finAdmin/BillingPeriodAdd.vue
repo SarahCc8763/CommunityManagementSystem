@@ -18,28 +18,32 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別名稱</label>
-                  <div class="d-flex gap-2 align-items-center">
-                    <select v-model="formYear" class="form-select" style="max-width: 100px;">
-                      <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}年</option>
-                    </select>
-
-                    <select v-model="formMonthOrQuarter" class="form-select" style="max-width: 80px;">
-                      <option v-for="n in (formType === 'M' ? 12 : 4)" :key="n" :value="n">{{ formType === 'M' ? n + '月'
-                        :
-                        '第'+n+'季' }}</option>
-                    </select>
-
-                    <select v-model="formType" class="form-select" style="max-width: 80px;">
-                      <option value="M">月</option>
-                      <option value="Q">季</option>
-                    </select>
-
-
+                  <div class="row g-2">
+                    <div class="col-4">
+                      <select v-model="formYear" class="form-select w-100">
+                        <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}年</option>
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <select v-model="formMonthOrQuarter" class="form-select w-100">
+                        <option v-for="n in (formType === 'M' ? 12 : 4)" :key="n" :value="n">{{ n }}</option>
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <select v-model="formType" class="form-select w-100">
+                        <option value="M">月</option>
+                        <option value="Q">季</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
+                  <label class="form-label">自訂期別名稱</label>
+                  <input v-model="form.customPeriodName" class="form-control" placeholder="可自行輸入期別名稱" />
+                </div>
+                <div class="col-md-6 mb-3">
                   <label class="form-label">期別代碼</label>
-                  <input v-model="form.periodCode" class="form-control" required readonly />
+                  <input v-model="form.periodCode" class="form-control" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">開始日期</label>
@@ -70,10 +74,7 @@
                   <label class="form-label">建立者</label>
                   <input v-model="form.createdBy" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">更新者ID</label>
-                  <input v-model.number="form.updatedBy" type="number" class="form-control" />
-                </div>
+          
               </div>
               <div v-if="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
               <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
@@ -99,30 +100,30 @@
       </button>
     </div>
     <div class="row mb-3 g-2 align-items-end flex-wrap">
-      <div class="col-lg-3 col-md-6 col-12">
+      <div class="col-lg-2 col-md-6 col-12">
         <label class="form-label mb-1">期別ID</label>
         <input v-model="searchId" type="number" class="form-control" placeholder="請輸入期別ID" />
       </div>
-      <div class="col-lg-4 col-md-6 col-12">
+      <div class="col-lg-3 col-md-6 col-12">
         <label class="form-label mb-1">期別名稱</label>
-        <input v-model="searchName" class="form-control" placeholder="請輸入期別名稱（如2024年6月）" />
+        <input v-model="searchName" class="form-control" placeholder="ex:2024年6月" />
       </div>
-      <div class="col-lg-5 col-12">
+      <div class="col-lg-7 col-12">
         <label class="form-label mb-1">期別代碼</label>
-        <div class="input-group flex-nowrap period-code-group">
-          <span class="input-group-text">年份</span>
-          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px;"
-            disabled />
-          <span class="input-group-text">月份/季</span>
-          <select v-model="searchMonth" class="form-select month-select" style="max-width: 110px; min-width: 80px;">
+        <div class="input-group flex-nowrap period-code-group align-items-stretch">
+          <span class="input-group-text align-items-center" style="height:38px;">年份</span>
+          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px; height:38px;" disabled />
+          <span class="input-group-text align-items-center" style="height:38px;">期數</span>
+          <select v-model="searchMonth" class="form-select month-select" style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="">--</option>
             <option v-for="n in 12" :key="n" :value="n">{{ n }}</option>
           </select>
-          <select v-model="searchType" class="form-select type-select" style="max-width: 110px; min-width: 80px;">
+          <span class="input-group-text align-items-center" style="height:38px;">月份／季</span>
+          <select v-model="searchType" class="form-select type-select" style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="M">月</option>
             <option value="Q">季</option>
           </select>
-          <button class="btn btn-primary" @click="searchBillingPeriod" type="button">搜尋</button>
+          <button class="btn btn-primary d-flex align-items-center" style="height:38px;" @click="searchBillingPeriod" type="button">搜尋</button>
         </div>
       </div>
     </div>
@@ -242,15 +243,30 @@ const formYear = ref(now.getFullYear());
 const formType = ref('M');
 const formMonthOrQuarter = ref(1);
 
+// 當自訂期別名稱有輸入時，自動清空原本的期別名稱選擇欄，並清空 periodCode
+watch(() => form.value.customPeriodName, (val) => {
+  if (val && val.trim() !== '') {
+    formYear.value = ''
+    formMonthOrQuarter.value = ''
+    formType.value = ''
+    form.value.periodCode = ''
+  }
+});
+
+// 僅當沒有自訂期別名稱時，才自動產生 periodCode
 watch([formYear, formType, formMonthOrQuarter], ([y, t, m]) => {
-  if (t === 'M') {
-    form.value.periodName = `${y}年${m}月`;
-    const yearShort = String(y).slice(-2);
-    form.value.periodCode = `${yearShort}M${m}`;
-  } else {
-    form.value.periodName = `${y}年第${m}季`;
-    const yearShort = String(y).slice(-2);
-    form.value.periodCode = `${yearShort}Q${m}`;
+  if (!form.value.customPeriodName || form.value.customPeriodName.trim() === '') {
+    if (t === 'M') {
+      form.value.periodName = `${y}年${m}月`;
+      const yearShort = String(y).slice(-2);
+      form.value.periodCode = `${yearShort}M${m}`;
+    } else if (t === 'Q') {
+      form.value.periodName = `${y}年第${m}季`;
+      const yearShort = String(y).slice(-2);
+      form.value.periodCode = `${yearShort}Q${m}`;
+    } else {
+      form.value.periodCode = '';
+    }
   }
 });
 
@@ -274,6 +290,10 @@ const latestBillingPeriods = computed(() => {
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+  // 若有自訂期別名稱，送出前覆蓋periodName
+  if (form.value.customPeriodName && form.value.customPeriodName.trim() !== '') {
+    form.value.periodName = form.value.customPeriodName.trim();
+  }
   form.value.communityId = userStore.communityId
   form.value.createdBy = userStore.userId
   form.value.updatedBy = userStore.userId
@@ -391,5 +411,11 @@ onMounted(() => {
     min-width: 70px;
     max-width: 100px;
   }
+}
+
+/* 讓期別ID與期別名稱input的placeholder顏色更淺的深灰色 */
+input::placeholder {
+  color: #5d5d5d !important;
+  opacity: 1;
 }
 </style>

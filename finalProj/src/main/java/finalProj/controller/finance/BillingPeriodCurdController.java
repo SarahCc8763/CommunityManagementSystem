@@ -23,7 +23,7 @@ import finalProj.dto.finance.BillingPeriodDTO;
 import finalProj.service.finance.baseServiceInterfaces.BillingPeriodService;
 
 @RestController
-@RequestMapping("/api/finance/billing-periods")
+@RequestMapping("/finance/billing-periods")
 public class BillingPeriodCurdController {
 
     @Autowired

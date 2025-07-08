@@ -5,7 +5,7 @@ import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vu
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import finUser from '@/components/finance/finUser/finUser.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
-import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+import Receipt from '@/components/finance/finUser/Reciept.vue'
 import Invoice from '../components/finance/finUser/Invoice.vue'
 import InvoiceValidate from '../components/finance/finAdmin/InvoiceValidate.vue'
 import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponses.vue'
@@ -44,9 +44,9 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice/history',
-      name: 'InvoiceHistory',
-      component: InvoiceHistory,
+      path: '/finance/invoice/Receipt',
+      name: 'ReceiptHistory',
+      component: Receipt,
     },
     {
       path: '/finance/invoice',

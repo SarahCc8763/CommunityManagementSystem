@@ -169,6 +169,7 @@
             <th scope="col">單位</th>
             <th scope="col">頻率</th>
             <th scope="col">備註</th>
+            <th scope="col" class="text-center">狀態</th>
             <th scope="col" class="text-center">操作</th>
           </tr>
         </thead>
@@ -180,6 +181,11 @@
             <td>{{ item.unit }}</td>
             <td>{{ item.frequency }}</td>
             <td>{{ item.note }}</td>
+            <td class="text-center">
+              <span class="badge" :class="item.status ? 'badge-success' : 'badge-secondary'">
+                {{ item.status ? '啟用' : '停用' }}
+              </span>
+            </td>
             <td class="text-center">
               <button class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(item)">修改</button>
               <button class="btn btn-sm btn-outline-gray" @click="confirmDelete(item)">刪除</button>

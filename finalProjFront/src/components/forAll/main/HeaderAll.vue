@@ -187,7 +187,7 @@ const menuList = ref([
     children: [
       { label: '繳費總覽', routeName: 'FinUser' },
       { label: '待繳帳單', routeName: 'Invoice' },
-      { label: '繳費紀錄', routeName: 'InvoiceHistory' },
+      { label: '繳費紀錄', routeName: 'ReceiptHistory' },
       { label: 'A新增費用類型', routeName: 'FeeTypeAdd' },
       { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd' },
       { label: 'A新增繳款單', routeName: 'InvoiceAdd' },

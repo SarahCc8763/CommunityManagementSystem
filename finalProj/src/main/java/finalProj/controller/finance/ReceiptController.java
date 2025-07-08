@@ -19,7 +19,7 @@ import finalProj.dto.finance.ReceiptDTO;
 import finalProj.service.finance.baseServiceInterfaces.ReceiptService;
 
 @RestController
-@RequestMapping("/api/finance/receipts")
+@RequestMapping("/finance/receipts")
 public class ReceiptController {
 
     @Autowired
