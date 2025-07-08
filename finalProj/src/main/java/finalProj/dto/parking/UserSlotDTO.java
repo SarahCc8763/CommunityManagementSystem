@@ -3,6 +3,8 @@ package finalProj.dto.parking;
 import java.util.Date;
 
 public class UserSlotDTO {
+    private Integer id;
+
     private String slotNumber;
     private String location;
     private String parkingType;
@@ -15,6 +17,23 @@ public class UserSlotDTO {
     private Boolean status; // 是否有效
     private Boolean approved; // 是否審核
     private String approverName;
+    private Integer usersId;
+
+    public Integer getUsersId() {
+        return usersId;
+    }
+
+    public void setUsersId(Integer usersId) {
+        this.usersId = usersId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getSlotNumber() {
         return slotNumber;

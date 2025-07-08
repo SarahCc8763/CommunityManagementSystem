@@ -73,52 +73,34 @@
                                     </label>
                                 </td>
                                 <td class="slot-code">
-                                    <input
-                                    class="form-control"
-                                    v-model="slot.slotNumber"
-                                    @input="updateSelected('slotNumber', slot.slotNumber, index)"
-                                    @blur="cleanInvalidChars(slot, 'slotNumber')"
-                                    maxlength="10"
-                                    />
+                                    <input class="form-control dark-input" v-model="slot.slotNumber" @input="updateSelected('slotNumber', slot.slotNumber, index)" @blur="cleanInvalidChars(slot, 'slotNumber')" maxlength="10" />
                                 </td>
                                 <td class="location">
-                                    <input class="form-control" v-model="slot.location" @input="updateSelected('location', slot.location, index)" maxlength="10" />
+                                    <input class="form-control dark-input" v-model="slot.location" @input="updateSelected('location', slot.location, index)" maxlength="10" />
                                 </td>
                                 <td class="type">
-                                    <select class="form-select" v-model="slot.parkingTypeId" @change="updateSelected('parkingTypeId', slot.parkingTypeId, index)">
+                                    <select class="form-select dark-select" v-model="slot.parkingTypeId" @change="updateSelected('parkingTypeId', slot.parkingTypeId, index)">
                                         <option v-for="type in selectedTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
                                     </select>
                                 </td>
                                 <td class="owner">
-                                    <select v-model="slot.usersId" @change="() => handleUserChange(index)">
-                                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">
-                                            {{ user.name }}
-                                        </option>
+                                    <select class="form-select dark-select" v-model="slot.usersId" @change="() => handleUserChange(index)">
+                                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
                                     </select>
                                 </td>
                                 <td class="unit">
-                                    <select class="form-select"
-                                    v-model="slot.unitsId"
-                                    :disabled="getAvailableUnits(slot.usersId).length === 0"
-                                    @change="() => { onUnitChange(index); updateSelected('unitsId', slot.unitsId, index)}">
-                                    <option v-if="getAvailableUnits(slot.usersId).length === 0" disabled>無對應戶號</option>
-                                    <option v-for="unit in getAvailableUnits(slot.usersId)" :key="unit.unitsId" :value="unit.unitsId">
-                                        {{ unit.building + '-' + unit.floor + '-' + unit.unit }}
-                                    </option>
-                                </select>
-                            </td>
-                            
-                            <td class="plate">
-                                <input
-                                class="form-control"
-                                v-model="slot.licensePlate"
-                                @input="updateSelected('licensePlate', slot.licensePlate, index)"
-                                @blur="cleanInvalidChars(slot, 'licensePlate')"
-                                maxlength="10"
-                                />
+                                    <select class="form-select dark-select" v-model="slot.unitsId" :disabled="getAvailableUnits(slot.usersId).length === 0" @change="() => { onUnitChange(index); updateSelected('unitsId', slot.unitsId, index)}">
+                                        <option v-if="getAvailableUnits(slot.usersId).length === 0" disabled>無對應戶號</option>
+                                        <option v-for="unit in getAvailableUnits(slot.usersId)" :key="unit.unitsId" :value="unit.unitsId">
+                                            {{ unit.building + '-' + unit.floor + '-' + unit.unit }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td class="plate">
+                                    <input class="form-control dark-input" v-model="slot.licensePlate" @input="updateSelected('licensePlate', slot.licensePlate, index)" @blur="cleanInvalidChars(slot, 'licensePlate')" maxlength="10" />
                                 </td>
                                 <td class="rentable">
-                                    <select class="form-select" v-model="slot.isRentable" @change="updateSelected('isRentable', slot.isRentable, index)">
+                                    <select class="form-select dark-select" v-model="slot.isRentable" @change="updateSelected('isRentable', slot.isRentable, index)">
                                         <option :value="true">可承租</option>
                                         <option :value="false">不可承租</option>
                                     </select>
@@ -132,9 +114,9 @@
                 </div>
                 <!-- 操作按鈕 -->
                 <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-outline-danger" @click="removeSelected">刪除所選</button>
-                    <button class="btn btn-outline-success" @click="addRow">新增一列</button>
-                    <button class="btn btn-primary ms-auto" @click="submitData">提交資料</button>
+                    <button class="btn btn-gradient btn-danger" @click="removeSelected">刪除所選</button>
+                    <button class="btn btn-gradient btn-success" @click="addRow">新增一列</button>
+                    <button class="btn btn-gradient btn-primary ms-auto" @click="submitData">提交資料</button>
                 </div>
             </div>
         </div>
@@ -594,12 +576,12 @@ onMounted(async ()=>{
     await fetchUsers()
     await fetchUnits()
     await fetchSelectedTypes()
-
+    
     parkingSlots.value.forEach((slot, index) => {
         filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
         filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)
     })
-
+    
     window.addEventListener('mouseup', stopDrag)
     console.log(selectedTypes.value)
     console.log("hasChanged: " + hasChanged.value)
@@ -618,66 +600,125 @@ function cleanInvalidChars(slot, field) {
 
 
 </script>
-    
+
 <style scoped>
-/* 用來disabled下方區域 */
 .disabled-area {
     opacity: 0.6;
     pointer-events: none;
     user-select: none;
-}
-/* 所有表格內容垂直置中 */
-table td,
-table th {
-    vertical-align: middle !important;
+    filter: grayscale(20%);
+    transition: all 0.2s ease;
 }
 
-/* 讓刪除按鈕固定大小不換行 */
-table td .btn {
-    white-space: nowrap;
-    padding: 0.3rem 0.75rem;
-    font-size: 0.875rem;
-    min-width: 64px; /* 可依需求調整 */
-}
-
-/* 讓欄位整齊 */
-input.form-control,
-select.form-select {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.9rem;
-    height: auto;
-}
-
+/* 基本表格設定 */
 table {
     table-layout: fixed;
     width: 100%;
 }
-
-/* 每一欄固定比例 */
-th, td {
-    vertical-align: middle;
+table td,
+table th {
+    vertical-align: middle !important;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    border-color: #444;
+    color: #f0f0f0;
 }
 
-th.slot-code, td.slot-code { width: 10%; }       /* 車位代碼 */
-th.location, td.location     { width: 10%; }       /* 位置 */
-th.type, td.type             { width: 10%; }       /* 種類 */
-th.owner, td.owner           { width: 15%; }       /* 擁有人 */
-th.unit, td.unit             { width: 15%; }       /* 擁有人戶號 */
-th.plate, td.plate           { width: 15%; }       /* 車牌號碼 */
-th.rentable, td.rentable     { width: 10%; }       /* 是否可承租 */
-th.actions, td.actions       { width: 10%; }       /* 操作按鈕 */
+/* 欄寬比例設定 */
+th.slot-code, td.slot-code { width: 10%; }
+th.location, td.location { width: 10%; }
+th.type, td.type { width: 10%; }
+th.owner, td.owner { width: 15%; }
+th.unit, td.unit { width: 15%; }
+th.plate, td.plate { width: 15%; }
+th.rentable, td.rentable { width: 10%; }
+th.actions, td.actions { width: 10%; }
 
+/* 表單欄位統一樣式 */
+.dark-input,
+.dark-select,
+input.form-control,
+select.form-select {
+    background-color: #2e2e3e !important;
+    color: #f8f9fa !important;
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    height: auto;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+}
+.dark-input::placeholder {
+    color: #aaa;
+}
 
-/* 取消瀏覽器預設選取整列 */
+.dark-select option,
+select option {
+    background-color: #2e2e3e;
+    color: #f8f9fa;
+}
+
+/* focus 狀態強調 */
+.dark-select:focus {
+    border-color: #6a11cb;
+    box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.3);
+    outline: none;
+}
+
+/* 取消預設選取 */
 .no-select {
     user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none;    /* Firefox */
-    -ms-user-select: none;     /* IE/Edge */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* 按鈕大小一致 */
+table td .btn {
+    white-space: nowrap;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.875rem;
+    min-width: 64px;
+}
+
+/* 深色背景卡片區塊 */
+.bg-white, .bg-light, .disabled-area {
+    background-color: #1e1e2f !important;
+    color: #f8f9fa !important;
+    border: 1px solid #444;
+}
+
+/* 表頭樣式 */
+.table-light {
+    background-color: #2b2b3c !important;
+    color: #f8f9fa;
+}
+
+/* Tag 樣式 */
+.tag-style {
+    background-color: #2b2b3c;
+    border-left: 6px solid #6a11cb;
+    border-radius: 0.5rem;
+    color: #f8f9fa;
+}
+
+/* 漸層按鈕樣式 */
+.btn-gradient {
+    background-image: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white !important;
+    border: none;
+    transition: background 0.3s;
+}
+.btn-gradient:hover {
+    background-image: linear-gradient(to right, #2575fc, #6a11cb);
+}
+/* 深色背景下調整 .text-muted 顏色 */
+.text-muted {
+  color: #ccc !important; /* 或你要的亮灰色，可調亮一點 */
 }
 
 </style>

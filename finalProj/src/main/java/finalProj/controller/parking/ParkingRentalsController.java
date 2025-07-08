@@ -151,11 +151,13 @@ public class ParkingRentalsController {
 		List<ParkingSlot> ownedSlots = parkingSlotRepository.findByUsers_UsersId(usersId);
 		for (ParkingSlot slot : ownedSlots) {
 			UserSlotDTO dto = new UserSlotDTO();
+			dto.setId(slot.getId());
 			dto.setSlotNumber(slot.getSlotNumber());
 			dto.setLocation(slot.getLocation());
 			dto.setParkingType(slot.getParkingType().getType());
 			dto.setLicensePlate(slot.getLicensePlate());
 			dto.setIsRented(false); // 擁有的不算承租
+			dto.setUsersId(usersId);
 			results.add(dto);
 		}
 
@@ -164,6 +166,7 @@ public class ParkingRentalsController {
 		for (ParkingRentals record : rentals) {
 			ParkingSlot slot = record.getParkingSlot();
 			UserSlotDTO dto = new UserSlotDTO();
+			dto.setId(record.getId());
 			dto.setSlotNumber(slot.getSlotNumber());
 			dto.setLocation(slot.getLocation());
 			dto.setParkingType(slot.getParkingType().getType());
@@ -173,6 +176,7 @@ public class ParkingRentalsController {
 			dto.setRentEnd(record.getRentEnd());
 			dto.setStatus(record.getStatus());
 			dto.setApproved(record.getApproved());
+			dto.setUsersId(usersId);
 			if (record.getApprover() != null) {
 				dto.setApproverName(record.getApprover().getName());
 			}
