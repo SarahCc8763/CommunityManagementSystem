@@ -49,9 +49,23 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + user.avatar + ')' }"></div>
-      <button @click.stop="isLoggedIn ? logout() : triggerLogin()" class="auth-button">
-        {{ isLoggedIn ? '登出' : '登入' }}
+      <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
+
+
+
+
+
+      <div v-if="isAdmin">
+        <button class="admin-button" @click="router.push('/AdminDashboard')">
+          管理後台
+        </button>
+      </div>
+
+
+
+
+      <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
+        {{ userStore.isAuthenticated ? '登出' : '登入' }}
       </button>
     </div>
   </header>
@@ -60,24 +74,88 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useUserStore } from '@/stores/UserStore'
 import Logo from '@/assets/images/main/Logo.png'
 
+const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()
 const userStore = useUserStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
 
+//存放社區功能
+const communityFunctions = ref([])
+const finalMenuList = ref([])
+
 // 控制目前滑鼠停留的分類 index
 const activeIndex = ref(null)
 
-// 假資料!!!!!!!!!使用者登入狀態與資料
-const user = ref({
-  avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-  points: 500
+
+const isNotificationCenterOpen = ref(false)
+const notificationCenterRef = ref(null)
+// 模擬通知資料
+// const notifications = ref([
+//   '您有一個新包裹到達',
+//   '社區公告更新',
+//   '新的停車位預約提醒'
+// ])
+
+// watch(
+//   () => userStore.communityId,
+//   async (newVal) => {
+//     if (!newVal) {
+//       console.warn('❗ 尚未取得登入者社區 ID')
+//       return
+//     }
+
+//     try {
+//       const res = await axios.get(`http://localhost:8080/communitys/functions/${newVal}`)
+//       communityFunctions.value = res.data
+//       console.log('✅ 社區功能載入成功')
+//     } catch (err) {
+//       console.error('❌ 載入社區功能失敗', err)
+//     }
+//   },
+//   { immediate: true }
+// )
+
+watch(
+  () => userStore.communityId,
+  (newVal) => {
+    if (newVal) {
+      loadCommunityFunctions()
+    } else {
+      console.warn('❗️ 尚未取得社區 ID，跳過功能載入')
+    }
+  },
+  { immediate: true }
+)
+
+function toggleNotificationCenter() {
+  isNotificationCenterOpen.value = !isNotificationCenterOpen.value
+  if (isNotificationCenterOpen.value) {
+    fetchNotifications()
+  }
+}
+function handleClickOutside(event) {
+  if (
+    notificationCenterRef.value &&
+    !notificationCenterRef.value.contains(event.target) &&
+    !event.target.closest('.avatar')
+  ) {
+    isNotificationCenterOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // 回首頁
@@ -89,6 +167,7 @@ const goHome = () => {
 const triggerLogin = () => {
   // 觸發自定義事件，讓 App.vue 顯示登入模態框
   window.dispatchEvent(new CustomEvent('show-login-modal'))
+  // console.log(userStore.communityId)
 }
 
 // 處理登入成功
@@ -102,12 +181,30 @@ const login = () => {
   isLoggedIn.value = true
 }
 
+// const logout = () => {
+//   isLoggedIn.value = false
+//   // 觸發全局登出事件
+//   window.dispatchEvent(new CustomEvent('logout'))
+//   // 同時更新 UserStore
+//   userStore.logout()
+//   // router.push('/')
+// }
+
 const logout = () => {
   isLoggedIn.value = false
-  // 觸發全局登出事件
-  window.dispatchEvent(new CustomEvent('logout'))
-  // 同時更新 UserStore
   userStore.logout()
+
+  // 清空功能選單
+  communityFunctions.value = []
+  finalMenuList.value = []
+
+
+  router.push('/')
+  // 觸發全局登出事件（可有可無）
+  window.dispatchEvent(new CustomEvent('logout'))
+
+  // 可選：導回首頁
+  // router.push('/')
 }
 
 // 滑鼠移出 header，下拉收起
@@ -153,9 +250,9 @@ onMounted(() => {
 
   // 初始化登入狀態
   isLoggedIn.value = userStore.isAuthenticated
-  if (userStore.isAuthenticated) {
-    user.value.name = userStore.name
-  }
+  // if (userStore.isAuthenticated) {
+  //   user.value.name = userStore.name
+  // }
 })
 
 onUnmounted(() => {
@@ -164,87 +261,133 @@ onUnmounted(() => {
   window.removeEventListener('logout', handleGlobalLogout)
 })
 
+
+//const communityFunctions = ['PACKAGE','BOOKING','INVOICE','MANBERSERVICE','FQA','PARKING','NOTICE','TICKET']//這邊之後會加上API
 //分類功能清單
 const menuList = ref([
-
   {
     title: '包裹管理',
+    key: 'PACKAGE',
     children: [
-      { label: '待領包裹', routeName: 'parcel-pending' },
-      { label: '領取紀錄', routeName: 'parcel-history' }
+      { label: '待領包裹', routeName: 'parcel-pending', key: 'PACKAGEPENDING' },
+      { label: '領取紀錄', routeName: 'parcel-history', key: 'PACKAGEHISTORY' }
     ]
   },
   {
     title: '預約系統',
+    key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym' },
-      { label: '游泳池預約', routeName: 'reservation-pool' },
-      { label: '停車預約', routeName: 'reservation-parking' }
+      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
+      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
+      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
     ]
   },
   {
     title: '繳費資訊',
     children: [
       { label: '繳費總覽', routeName: 'FinUser' },
-      { label: '待繳帳單', routeName: 'Invoice' },
-      { label: '繳費紀錄', routeName: 'ReceiptHistory' },
-      { label: 'A新增費用類型', routeName: 'FeeTypeAdd' },
-      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd' },
-      { label: 'A新增繳款單', routeName: 'InvoiceAdd' },
-      { label: 'A新增收據', routeName: 'ReceiptAdd' },
-      { label: 'A請款單審核', routeName: 'InvoiceValidate' },
-      { label: 'A查看繳款回覆', routeName: 'InvoiceWithResponse' },
+      { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
+      { label: '繳費紀錄', routeName: 'ReceiptHistory', key: 'RECEIPTHISTORY' },
+      { label: 'A新增費用類型', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
+      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
+      { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
+      { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
+      { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
+      { label: 'A查看繳款回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
 
     ]
   },
   {
     title: '會員服務',
+    key: 'MANBERSERVICE',
     children: [
-      { label: '會員資訊修改', routeName: 'member-profile-edit' },
-      { label: '點數轉贈', routeName: 'points-transfer' }
+      { label: '會員資訊修改', routeName: 'member-profile-edit', key: 'MANBERSERVICEEDIT' },
+      { label: '點數轉贈', routeName: 'points-transfer', key: 'MANBERSERVICETRANSFER' }
     ]
   },
   {
     title: '報修服務',
+    key: 'TICKET',
     children: [
-      { label: '提交報修', routeName: 'repair-request' },
-      { label: '維修進度查詢', routeName: 'repair-status' }
+      { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
+      { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
+      { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
+      { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
+      { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
     title: '常見問題',
+    key: 'FQA',
     children: [
-      { label: 'FAQ 問答集', routeName: 'faq' },
-      { label: '聯絡客服', routeName: 'contact-us' }, //這是那個提出問題的頁面 上傳嫌警衛滑手機那個
-      { label: '回饋與抱怨？', routeName: 'feedback' } //問題的進度跟進
+      { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
+      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
+      { label: '回饋與抱怨？', routeName: 'feedback', key: 'FQAFEEDBACK' }
     ]
   },
   {
     title: '車位管理',
+    key: 'PARKING',
     children: [
-      { label: '車位資訊維護', routeName: 'parking-info-edit' },
-      { label: '停車預約', routeName: 'reservation-parking' },  // 共用同個路徑去韋韋那頁
-      { label: '承租車位管理', routeName: 'parking-rent' }
+      { label: '車位資訊維護', routeName: 'parking-info-edit', key: 'PARKINGINFO' },
+      { label: '停車預約', routeName: 'reservation-parking', key: 'PARKINGRESERVE' },
+      { label: '承租車位管理', routeName: 'parking-rent', key: 'PARKINGRENT' }
     ]
   },
   {
     title: '公告',
+    key: 'NOTICE',
     children: [
-      { label: '重要通知', routeName: 'announcement-important' },
-      { label: '最新公告', routeName: 'announcement-latest' },
-
+      { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
+      { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' }
     ]
   }
 ])
+
 
 const props = defineProps({
   isDarkMode: { type: Boolean, default: false }
 })
 
+import { onUnmounted } from 'vue'
+import axios from 'axios'
+
+onUnmounted(() => {
+  window.removeEventListener('refresh-community-functions', loadCommunityFunctions)
+})
+
+async function loadCommunityFunctions() {
+  try {
+    console.log(userStore.rawData.communityId)
+
+    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.rawData.communityId}`)
+
+    console.log('✅ API 回傳內容：', res.data)
+
+    if (Array.isArray(res.data)) {
+      communityFunctions.value = res.data
+
+      finalMenuList.value = menuList.value
+        .filter(module => communityFunctions.value.includes(module.key))
+        .map(module => ({
+          ...module,
+          children: module.children.filter(child =>
+            communityFunctions.value.includes(child.key)
+          )
+        }))
+    }
+  } catch (err) {
+    console.error('載入社區功能失敗', err)
+  }
+}
+
 </script>
 
+
+
+
+
 <style scoped>
-/* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 .header {
   width: 100vw;
   height: 72px;
@@ -253,6 +396,7 @@ const props = defineProps({
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 0 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -261,7 +405,8 @@ const props = defineProps({
   top: 0;
   left: 0;
   right: 0;
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
 }
 
 body {

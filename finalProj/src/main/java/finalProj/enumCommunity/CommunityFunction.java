@@ -2,26 +2,59 @@ package finalProj.enumCommunity;
 
 public enum CommunityFunction {
 
+    PACKAGE(1L), // 2^0
+    BOOKING(2L), // 2^1
+    INVOICE(4L), // 2^2
+    MANBERSERVICE(8L), // 2^3
+    FQA(16L), // 2^4
+    PARKING(32L), // 2^5
+    NOTICE(64L), // 2^6
+    TICKET(128L), // 2^7
 
-	PACKAGE(1L),            // 2^0  =   1    => 0000 0000 0001
-	BOOKING(2L),      		// 2^1  =   2    => 0000 0000 0010
-	INVOICE(4L),           // 2^2  =   4    => 0000 0000 0100
-	MANBERSERVICE(8L),     // 2^3  =   8    => 0000 0000 1000
-	FQA(16L),              // 2^4  =  16    => 0000 0001 0000
-    PARKING(32L),          // 2^5  =  32    => 0000 0010 0000
-    NOTICE(64L),          // 2^6  =  64    => 0000 0100 0000
-    TICKET(128L),          // 2^7  = 128    => 0000 1000 0000
-    RESERVATION(256L),     // 2^8  = 256    => 0001 0000 0000
-    MESSAGE_BOARD(512L);   // 2^9  = 512    => 0010 0000 0000
+    // 子功能（從 2^8 起）
+    PACKAGEPENDING(256L), // 2^8
+    PACKAGEHISTORY(512L), // 2^9
 
-	private final Long value;
+    BOOKINGGYM(1024L), // 2^10
+    BOOKINGPOOL(2048L), // 2^11
+    BOOKINGPARKING(4096L), // 2^12
 
-	CommunityFunction(Long value) {
-		this.value = value;
-	}
+    INVOICEBILL(8192L), // 2^13
+    INVOICEHISTORY(16384L), // 2^14
+    INVOICETYPEADD(32768L), // 2^15
+    INVOICEPERIODADD(65536L), // 2^16
+    INVOICEINVOICEADD(131072L), // 2^17
+    INVOICERECEIPTADD(262144L), // 2^18
+    INVOICEREPLY(524288L), // 2^19
 
-	public Long getValue() {
-		return value;
-	}
+    MANBERSERVICEEDIT(1048576L), // 2^20
+    MANBERSERVICETRANSFER(2097152L), // 2^21
+
+    FAQQANDA(4194304L), // 2^22
+    FQACONTACT(8388608L), // 2^23
+    FQAFEEDBACK(16777216L), // 2^24
+
+    PARKINGINFO(33554432L), // 2^25
+    PARKINGRESERVE(67108864L), // 2^26
+    PARKINGRENT(134217728L), // 2^27
+
+    NOTICEIMPORTANT(268435456L), // 2^28
+    NOTICELATEST(536870912L), // 2^29
+
+    TICKETFORM(1073741824L), // 2^30
+    TICKETLIST(2147483648L), // 2^31
+    TICKETDETAIL(4294967296L), // 2^32
+    TICKETASSIGN(8589934592L), // 2^33
+    TICKETCOMMUNITY(17179869184L); // 2^34
+
+    private final Long value;
+
+    CommunityFunction(Long value) {
+        this.value = value;
+    }
+
+    public Long getValue() {
+        return value;
+    }
 
 }

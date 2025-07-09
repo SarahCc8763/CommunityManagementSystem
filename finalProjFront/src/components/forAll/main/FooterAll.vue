@@ -72,7 +72,6 @@
   </footer>
 </template>
 
-
 <script setup>
 // 無邏輯需要處理
 </script>

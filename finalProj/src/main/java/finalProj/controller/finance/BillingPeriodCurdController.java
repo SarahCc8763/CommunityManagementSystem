@@ -44,7 +44,6 @@ public class BillingPeriodCurdController {
         dto.setNote(entity.getNote());
         dto.setStatus(entity.getStatus());
         dto.setCommunityId(entity.getCommunityId());
-
         return dto;
     }
 

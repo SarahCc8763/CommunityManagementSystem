@@ -41,7 +41,6 @@ public class InvoiceResponseController {
     @GetMapping("/my")
     public ResponseEntity<List<InvoiceResponseDTO>> getMyResponses(@RequestParam Integer userId) {
         List<InvoiceResponseDTO> list = invoiceResponseService.findByUserId(userId);
-
         return ResponseEntity.ok(list);
     }
 

@@ -1,5 +1,6 @@
 package finalProj.controller.users;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,36 @@ public class UsersController {
 		// 登入成功
 		if (user != null) {
 			String token = jwtUtility.createToken(user.getEmail()); // 你現在的 JWT 只用 email
-			return ResponseEntity
-					.ok(Map.of("success", "true", "message", "登入成功", "token", token, "email", user.getEmail(), "id",
-							user.getUsersId(), "name", user.getName(), "communityId",
-							user.getCommunity().getCommunityId(), "photo",
-							user.getPhoto(), "logFaildTimes", user.getLoginFailTimes()// 你可以加上更多資料
-					));
+			Map<String, Object> response = new HashMap<>();
+			response.put("success", "true");
+			response.put("message", "登入成功");
+			response.put("token", token);
+			response.put("email", user.getEmail());
+			response.put("id", user.getUsersId());
+			response.put("name", user.getName());
+			response.put("communityId", user.getCommunity().getCommunityId());
+			response.put("photo", user.getPhoto());
+			response.put("logFaildTimes", user.getLoginFailTimes());
+			response.put("points", user.getUnitsUsersList().getFirst().getUnit().getPoint());
+			response.put("unitId", user.getUnitsUsersList().getFirst().getUnit().getUnitsId());
+			response.put("unit", user.getUnitsUsersList().getFirst().getUnit().getUnit());
+			response.put("floor", user.getUnitsUsersList().getFirst().getUnit().getFloor());
+			return ResponseEntity.ok(response);
+
+			// ResponseEntity.ok(Map.of(
+			// "success","true",
+			// "message", "登入成功",
+			// "token", token,
+			// "email", user.getEmail(),
+			// "id",
+			// user.getUsersId(),
+			// "name", user.getName(),
+			// "communityId", user.getCommunity().getCommunityId(),
+			// "photo", user.getPhoto(),
+			// "logFaildTimes", user.getLoginFailTimes(),
+			// "points", user.getUnitsUsersList().get(0).getUnit().getPoint(),
+			// "unit",user.getUnitsUsersList().get(0).getUnit().getUnit()// 你可以加上更多資料
+			// ));
 			// 登入失敗
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "登入失敗"));

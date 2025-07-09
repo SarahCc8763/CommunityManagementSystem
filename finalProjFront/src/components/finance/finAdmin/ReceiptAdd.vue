@@ -45,7 +45,7 @@
       <div class="receipt-row"><span>費用類型：</span>{{ receiptDetail.feeType }}</div>
       <div class="receipt-row"><span>期別：</span>{{ receiptDetail.periodName }}</div>
       <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{ receiptDetail.amountPay?.toLocaleString()
-          }}</b></div>
+      }}</b></div>
       <div class="receipt-row"><span>付款方式：</span>{{ receiptDetail.paymentMethod }}</div>
       <div class="receipt-row"><span>付款時間：</span>{{ formatDate(receiptDetail.paidAt) }}</div>
       <div class="receipt-row"><span>扣款時間：</span>{{ formatDate(receiptDetail.debitAt) }}</div>

@@ -1,0 +1,363 @@
+
+<template>
+
+    <div class="ticket-list-view container mt-4">
+<!-- 上方：標題 + 放大鏡 + 我要報修 -->
+<div class="d-flex align-items-center mb-3">
+  <!-- 左側：標題 + 放大鏡 -->
+  <div class="d-flex align-items-center me-auto">
+    <h2 class="serif-title text-primary mb-0 me-2">報修單列表</h2>
+
+    <!-- 放大鏡圖示 -->
+    <img
+      src="@/assets/images/ticket/2989907.png"
+      alt="搜尋"
+      style="width: 20px; height: 20px; cursor: pointer;"
+      @click="toggleSearch"
+    />
+  </div>
+
+  <!-- 我要報修 -->
+  <button class="btn btn-primary ms-2" @click="ticketModal.showModal()">我要報修</button>
+</div>
+
+<!-- 搜尋列 -->
+<div v-if="showSearch" class="mb-3 d-flex align-items-center">
+  <input
+    v-model="searchText"
+    type="text"
+    class="form-control me-2"
+    placeholder="輸入關鍵字搜尋..."
+    @keyup.enter="applySearch"
+  />
+
+  <!-- 篩選按鈕 -->
+  <img
+  src="@/assets/images/ticket/setting.png"
+  alt="篩選"
+  style="width: 24px; height: 24px; cursor: pointer;"
+  @click="toggleFilter"
+/>
+</div>
+
+<!-- 篩選條件區塊 -->
+<div v-if="showFilter" class="mb-3 card p-3 shadow-sm">
+  <div class="row">
+    <!-- 問題種類 -->
+    <div class="col-md-3 mb-2">
+  <label class="form-label">問題種類</label>
+<select class="form-select" v-model="filter.issueTypeNames" multiple @change="handleIssueTypeChange">
+  <option value="">全部</option>
+  <option v-for="type in issueTypes" :key="type.id" :value="type.issueTypeName">
+    {{ type.issueTypeName }}
+  </option>
+</select>
+</div>
+    <!-- 狀態 -->
+    <div class="col-md-3 mb-2">
+      <label class="form-label">狀態</label>
+      <select class="form-select" v-model="filter.status">
+        <option value="">全部</option>
+        <option value="todo">待處理</option>
+        <option value="doing">處理中</option>
+        <option value="done">已完成</option>
+      </select>
+    </div>
+
+    <!-- 通報人 -->
+    <div class="col-md-3 mb-2">
+      <label class="form-label">通報人</label>
+      <input type="text" class="form-control" v-model="filter.reporter" />
+    </div>
+
+    <!-- 建立時間 -->
+    <div class="col-md-3 mb-2">
+      <label class="form-label">建立時間</label>
+      <input type="date" class="form-control" v-model="filter.date" />
+    </div>
+  </div>
+</div>
+
+
+      <!-- Modal -->
+      <TicketPage ref="ticketModal" @created="fetchTickets" />
+  
+      <div class="card p-3 mt-3">
+        <table class="table table-hover align-middle">
+          <thead class="bg-light text-secondary">
+            <tr>
+              <th></th>
+              <th><input type="checkbox" /></th>
+              <th>ID</th>
+              <th>標題</th>
+              <th>狀態</th>
+              <th>指派人</th>
+              <th>通報人</th>
+              <th>描述摘要</th>
+              <th>建立時間</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="(ticket, index) in tickets" :key="ticket.id">
+              <tr @click="goToDetail(ticket.id)" class="clickable-row">
+                <td @click.stop="toggleExpanded(index)" class="text-center text-primary">▶</td>
+                <td><input type="checkbox" /></td>
+                <td>T-{{ ticket.id }}</td>
+                <td class="text-primary font-semibold">{{ ticket.title }}</td>
+                <td>
+                  <span class="badge" :class="statusClass(ticket.status)">
+                    {{ ticket.status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="avatar">{{ getInitials(ticket.assigner) }}</div> {{ ticket.assigner ??'未指派'}}
+                </td>
+                  <td>
+                  <div class="avatar">{{ getInitials(ticket.name) }}</div>
+                  {{ ticket.name ?? '無資料' }}
+                </td>
+                <td class="text-secondary small">
+                  {{ ticket.issueDescription.slice(0, 25) }}...
+                </td>
+                <td class="text-secondary small">{{ formatDate(ticket.startDate) }}</td>
+              </tr>
+  
+              <!-- 展開區塊 -->
+                <tr v-if="expandedIndexes.includes(index)">
+                  <td colspan="9" class="p-0 border-0">
+                    <transition name="slide-fade">
+                      <div class="expand-wrapper" v-show="expandedIndexes.includes(index)">
+                        <div class="p-3">
+                          <strong>問題種類：</strong>
+                          <span
+                            v-for="(type, i) in ticket.issueTypes ?? []"
+                            :key="i"
+                            class="badge bg-info me-2"
+                          >
+                            {{ type.issueType?.issueTypeName ?? '未知' }}
+                          </span>
+                        </div>
+                      </div>
+                    </transition>
+                  </td>
+                </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import axios from 'axios'
+  import TicketPage from './TicketPage.vue'
+  import { watch } from 'vue'
+  import { useUserStore } from '@/stores/UserStore'
+
+  const user = useUserStore()
+  const showSearch = ref(false)
+  const showFilter = ref(false)
+  const searchText = ref('')
+  const filter = ref({
+          issueTypeNames: [],
+          reporter: user.name,
+          date: '',
+        })
+watch(searchText, () => {
+  applySearch()
+})
+
+watch(filter, () => {
+  applySearch()
+}, { deep: true })
+
+  const router = useRouter()
+  const ticketModal = ref(null)
+  const tickets = ref([])
+  const expandedIndexes = ref([])
+  const issueTypes = ref([])
+  onMounted(() => {
+  fetchIssueTypes()
+  callTicketSearch()
+})
+
+const fetchIssueTypes = async () => {
+  try {
+    const res = await axios.get('http://localhost:8080/IssueTypes')
+    issueTypes.value = res.data
+  } catch (err) {
+    console.error('❌ 載入問題種類失敗', err)
+  }
+}
+
+  const toggleSearch = () => {
+  showSearch.value = !showSearch.value
+  // 如果關閉搜尋，也順便關掉篩選
+  if (!showSearch.value) {
+    showFilter.value = false
+  }
+}
+
+
+const toggleFilter = () => {
+  showFilter.value = !showFilter.value
+}
+
+const applySearch = async () => {
+  const payload = {
+    title: searchText.value || null,
+    status: filter.value.status || null,
+    startDate: filter.value.date || null,
+    reporterId: filter.value.reporter || null,
+    issueTypeNames: filter.value.issueTypeNames || []
+  }
+
+  const isEmpty =
+    !payload.title &&
+    !payload.status &&
+    !payload.startDate &&
+    !payload.reporterId &&
+    (payload.issueTypeNames.length === 0)
+
+  if (isEmpty) {
+    callTicketSearch()
+    return
+  }
+
+  try {
+    const ticketRes = await axios.post('http://localhost:8080/ticket/search', payload)
+    tickets.value = ticketRes.data
+  } catch (err) {
+    console.error('搜尋失敗 ❌', err)
+  }
+}
+const handleIssueTypeChange = () => {
+  if (filter.value.issueTypeNames.includes("")) {
+    filter.value.issueTypeNames = []
+  }
+}
+
+
+  
+  function goToDetail(id) {
+    router.push({ name: 'TicketDetail', params: { id } })
+  }
+  
+  function toggleExpanded(index) {
+    if (expandedIndexes.value.includes(index)) {
+      expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
+    } else {
+      expandedIndexes.value.push(index)
+    }
+  }
+  
+  function formatDate(datetime) {
+    if (!datetime) return ''
+    const date = new Date(datetime)
+    return date.toLocaleString('zh-TW', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+  
+  function getInitials(name) {
+  return name?.[0]?.toUpperCase() ?? '?'
+}
+
+  
+function statusClass(status) {
+  return {
+    'bg-warning text-dark': status.toLowerCase() === 'to do',
+    'bg-danger': status.toLowerCase() === 'in progress',
+    'bg-secondary': status.toLowerCase() === 'done',
+  }
+}
+  
+  function fetchTickets() {
+    callTicketSearch()
+  }
+  async function callTicketSearch() {
+    try {
+      const [ticketRes, relationRes] = await Promise.all([
+        axios.get('http://localhost:8080/ticket'),              // ✅ 改這裡
+        axios.get('http://localhost:8080/ticket-issue'),
+      ])
+      // console.log(ticketRes.data)
+      const issueMap = {}
+      for (const item of relationRes.data) {
+        const ticketId = item.ticket?.id
+        const typeName = item.issueType?.issueTypeName
+        console.log(typeName)//拿的到東西
+
+
+        if (!ticketId || !typeName) continue // 跳過資料不完整的情況
+        
+        if (!issueMap[ticketId]) issueMap[ticketId] = []
+        issueMap[ticketId].push(typeName)
+      }
+     tickets.value = ticketRes.data
+  } catch (err) {
+    console.error('❌ 資料載入失敗', err)
+  }
+}
+
+
+</script>
+
+<style scoped>
+  .ticket-list-view {
+    padding-bottom: 60px;
+  }
+  
+  .avatar {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: #6c757d;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+    color: #fff;
+    margin-right: 4px;
+  }
+  
+  .clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .clickable-row:hover {
+    background-color: #f1f5f9;
+  }
+  
+  /* 展開動畫：上下滑動效果 */
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    max-height: 0;
+    opacity: 0;
+  }
+  
+  .slide-fade-enter-to,
+  .slide-fade-leave-from {
+    max-height: 300px; /* 預估最大高度 */
+    opacity: 1;
+  }
+  
+  .expand-wrapper {
+    overflow: hidden;
+    background-color: #f9fcff;
+  }
+  </style>
+  
