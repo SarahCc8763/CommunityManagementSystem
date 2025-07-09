@@ -58,7 +58,7 @@ watch(() => props.visible, (val) => {
 async function fetchCategories() {
     const res = await axios.get(`http://localhost:8080/api/bulletin/category/community/${props.communityId}`)
     categoryList.value = res.data
-    console.log(categoryList);
+    //console.log(categoryList);
 }
 
 async function addCategory() {
@@ -73,7 +73,7 @@ async function addCategory() {
 }
 
 async function updateCategory(cat) {
-    console.log(cat);
+    //console.log(cat);
     await axios.put(`http://localhost:8080/api/bulletin/category/${cat.id}`, {
         name: cat.name,
         community: { communityId: props.communityId },
@@ -106,7 +106,7 @@ async function deleteCategory(id) {
                 })
             })
             .catch((err) => {
-                console.log(err);
+                //console.log(err);
                 Swal.fire({
                     title: '刪除失敗',
                     text: err.response?.data?.result || '伺服器錯誤',

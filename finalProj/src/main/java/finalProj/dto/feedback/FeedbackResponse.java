@@ -1,12 +1,14 @@
-package finalProj.dto;
+package finalProj.dto.feedback;
 
 import java.util.List;
 
-public class FaqResponse {
+import finalProj.domain.feedback.Feedback;
+
+public class FeedbackResponse {
     private Boolean success;
     private String message;
     private Long count;
-    private List<FaqDto> list;
+    private List<Feedback> list;
 
     public Boolean getSuccess() {
         return success;
@@ -32,11 +34,11 @@ public class FaqResponse {
         this.count = count;
     }
 
-    public List<FaqDto> getList() {
+    public List<Feedback> getList() {
         return list;
     }
 
-    public void setList(List<FaqDto> list) {
+    public void setList(List<Feedback> list) {
         this.list = list;
     }
 

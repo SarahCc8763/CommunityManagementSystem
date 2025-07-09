@@ -12,19 +12,9 @@
             <!-- Issue Type -->
             <div class="form-group">
                 <label>問題種類</label>
-                <Multiselect
-  v-model="formIssue.issueType"
-  :options="issueOptions"
-  :multiple="true"
-  :taggable="true"
-  :close-on-select="false"
-  :hide-selected="true"
-  placeholder="請選擇或輸入問題種類"
-  tag-placeholder="新增項目"
-  track-by="name"
-  label="name"
-  @tag="addNewTag"
-/>
+                <Multiselect v-model="formIssue.issueType" :options="issueOptions" :multiple="true" :taggable="true"
+                    :close-on-select="false" :hide-selected="true" placeholder="請選擇或輸入問題種類" tag-placeholder="新增項目"
+                    track-by="name" label="name" @tag="addNewTag" />
             </div>
             <!-- Summary -->
             <div class="form-group">
@@ -107,28 +97,28 @@ const form = ref({
 
 
 const issueOptions = ref([
-  { name: '水電問題' },
-  { name: '公共設施' },
-  { name: '電梯異常' },
-  { name: '其他' }
+    { name: '水電問題' },
+    { name: '公共設施' },
+    { name: '電梯異常' },
+    { name: '其他' }
 ])
 
 const formIssue = ref({
-  issueType: []
+    issueType: []
 })
 
 function addNewTag(newTag) {
-  const newOption = { name: newTag }
+    const newOption = { name: newTag }
 
-  // 新增到選項中
-  issueOptions.value.push(newOption)
+    // 新增到選項中
+    issueOptions.value.push(newOption)
 
-  // 新增到選取中
-  if (!Array.isArray(formIssue.value.issueType)) {
-    formIssue.value.issueType = []
-  }
+    // 新增到選取中
+    if (!Array.isArray(formIssue.value.issueType)) {
+        formIssue.value.issueType = []
+    }
 
-  formIssue.value.issueType.push(newOption)
+    formIssue.value.issueType.push(newOption)
 }
 
 // 附件處理
@@ -165,8 +155,8 @@ function removeFile(index) {
 // 處理提交
 function handleSubmit() {
     // 模擬提交
-    console.log('📝 表單內容：', form.value)
-    console.log('📎 附件檔案：', files.value)
+    //console.log('📝 表單內容：', form.value)
+    //console.log('📎 附件檔案：', files.value)
 
     alert('資料準備送出（這裡尚未串後端）')
 }

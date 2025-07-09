@@ -56,10 +56,11 @@
                         :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
 
 
-                        <div class="announcement-badge fs-5 mt-1">
+                        <div :class="['announcement-badge fs-5 mt-1', getGridColor(selectedBulletin?.categoryName)]">
                             <i :class="['bi', getIcon(selectedBulletin?.categoryName)]"></i>
                             {{ selectedBulletin?.categoryName }}
                         </div>
+
                         <h3 class="announcement-title mt-3 mx-2 fs-4">{{ selectedBulletin?.title }}</h3>
 
 
@@ -84,19 +85,32 @@
                         </div>
 
                         <!-- 投票區塊 -->
-                        <div v-if="selectedBulletin?.poll" class="card my-3 w-75 mx-auto d-block ">
+                        <div v-if="selectedBulletin?.poll" class="card my-3 w-75 mx-auto d-block bg-poll poll-card">
                             <div class="card-header  text-grey fw-bold"
                                 :style="{ backgroundColor: getCategoryColor(selectedBulletin?.categoryName) }">
-                                投票：{{ selectedBulletin.poll.title }}
+                                投票：{{ selectedBulletin.poll.title
+                                }}
                             </div>
-                            <div class="card-body">
+                            <span class="text-secondary" v-if="hasSubmittedVote && !isPollEnded">（提示：您已投過票囉！）</span>
+                            <div v-if="hasSubmittedVote || isPollEnded" class="my-4 text-dark ">
+                                <div class="d-flex flex-column align-items-center">
+                                    <h6 class="text-center"> <span v-if="!isPollEnded">目前投票情形：</span> <span
+                                            v-else>(投票已截止) 投票結果：</span> </h6>
+                                    <BarChart :labels="pollLabels" :data="pollVotes" />
+                                </div>
+                            </div>
+                            <div v-if="!isPollEnded" class="card-body">
                                 <div v-for="opt in selectedBulletin.poll.options" :key="opt.id" class="form-check">
                                     <input :type="selectedBulletin.poll.isMultiple ? 'checkbox' : 'radio'"
                                         class="form-check-input my-2" name="voteOption" :value="opt.id"
                                         v-model="selectedOptions" />
+
                                     <label class="form-check-label ">{{ opt.text }}</label>
                                 </div>
-                                <button class="btn btn-primary mt-2" @click="submitVote">提交投票</button>
+                                <button class="btn btn-primary mt-2" @click="submitVote">
+                                    {{ hasSubmittedVote ? '更新投票' : '提交投票' }}
+                                </button>
+
                             </div>
                         </div>
 
@@ -180,13 +194,17 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Swal from 'sweetalert2'
+import BarChart from '@/components/bulletin/BarChart.vue'
 
 
 import BannerImage from '@/components/forAll/BannerImage.vue';
+import maleIcon from '@/assets/images/bulletin/male.png'
+import femaleIcon from '@/assets/images/bulletin/female.png'
+import defaultIcon from '@/assets/images/bulletin/default.png'
 import OO from '@/assets/images/bulletin/banner.png';
 
 const bulletins = ref([])
@@ -200,12 +218,31 @@ const searchCategory = ref('')
 const categoryList = ref([])
 const userId = 3 // 假設當前使用者 id
 const communityId = 1 // 假設當前社區 ID
-import maleIcon from '@/assets/images/bulletin/male.png'
-import femaleIcon from '@/assets/images/bulletin/female.png'
-import defaultIcon from '@/assets/images/bulletin/default.png'
+
+const pollLabels = ref([])
+const pollVotes = ref([])
+const hasSubmittedVote = ref(false)
+
+const isPollEnded = computed(() => {
+    const end = selectedBulletin.value?.poll?.end
+    if (!end) return false
+    return new Date(end) < new Date()
+})
+
+
+
 
 const formatDate = (dt) => new Date(dt).toLocaleString()
 const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
+const hasVoted = computed(() => {
+    if (!selectedBulletin.value?.poll) return false
+    if (selectedBulletin.value.poll.isMultiple) {
+        return Array.isArray(selectedOptions.value) && selectedOptions.value.length > 0
+    } else {
+        return selectedOptions.value !== null && selectedOptions.value !== undefined
+    }
+})
+
 
 const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
 const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
@@ -242,10 +279,10 @@ onMounted(() => {
 })
 
 function fetchAll() {
-    console.log(communityId);
+    //console.log(communityId);
     axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
         .then(res => {
-            // console.log(res.data.list);
+            // //console.log(res.data.list);
             const postedList = res.data.list.filter(val => val.postStatus === true)
             bulletins.value = postedList.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
             const cats = new Set(res.data.list.map(b => b.categoryName))
@@ -254,12 +291,45 @@ function fetchAll() {
 }
 
 function openBulletin(id) {
-    axios.get(`http://localhost:8080/api/bulletin/${id}`).then(res => {
+    axios.get(`http://localhost:8080/api/bulletin/${id}`).then(async res => {
         selectedBulletin.value = res.data.list[0]
         selectedOptions.value = []
+
+        // 投票結果
+        const poll = selectedBulletin.value.poll
+        if (poll && poll.options) {
+            pollLabels.value = poll.options.map(opt => opt.text)
+            pollVotes.value = poll.options.map(opt => opt.votesCount || 0)
+        } else {
+            pollLabels.value = []
+            pollVotes.value = []
+        }
+        hasSubmittedVote.value = false // 先重設
+
+        if (poll) {
+            try {
+                const voteRes = await axios.get(`http://localhost:8080/api/poll/byUserPoll/${userId}/${poll.id}`)
+                const votes = voteRes.data
+
+                const checkedVotes = votes.filter(v => v.isChecked)
+
+                hasSubmittedVote.value = checkedVotes.length > 0 // ✅ 判斷是否真的送出過
+
+                if (poll.isMultiple) {
+                    selectedOptions.value = checkedVotes.map(v => v.option.id)
+                } else {
+                    const selected = checkedVotes[0]
+                    selectedOptions.value = selected ? selected.option.id : null
+                }
+            } catch (e) {
+                //console.log('目前尚無投票紀錄')
+            }
+        }
+
         new bootstrap.Modal(document.getElementById('bulletinModal')).show()
     })
 }
+
 
 function searchBulletins() {
     axios.post('http://localhost:8080/api/bulletin/searchby', {
@@ -268,20 +338,50 @@ function searchBulletins() {
     }).then(res => {
         const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
         bulletins.value = sortedList
-        console.log(sortedList);
+        //console.log(sortedList);
     })
 }
 
-function submitVote() {
-    const poll = selectedBulletin.value.poll
-    const options = poll.isMultiple ? selectedOptions.value : [selectedOptions.value]
-    Promise.all(options.map(id => {
-        return axios.post(`http://localhost:8080/api/poll/${id}/vote`, {
-            user: { usersId: userId },
-            option: { id }
+async function submitVote() {
+    const confirmed = await Swal.fire({
+        title: '確定要投票嗎？',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+    })
+    if (!confirmed.isConfirmed) return
+
+    try {
+        const poll = selectedBulletin.value.poll
+        const selectedIds = poll.isMultiple ? selectedOptions.value : [selectedOptions.value]
+
+        await axios.post(`http://localhost:8080/api/poll/${poll.id}/vote`, {
+            userId,
+            selectedOptionIds: selectedIds
         })
-    })).then(() => alert('投票成功'))
+
+        await Swal.fire({
+            title: '投票成功！',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        })
+
+        hasSubmittedVote.value = true
+
+    } catch (error) {
+        Swal.fire({
+            title: '投票失敗！',
+            icon: 'error',
+            confirmButtonText: '確定',
+            timer: 1500
+        })
+    }
 }
+
 
 function submitComment() {
     axios.post(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}/comment`, {
@@ -328,7 +428,7 @@ function likeComment(commentId) {
                 comment.likeCount = updated.likeCount
                 comment.likedByCurrentUser = updated.likedByCurrentUser
             }
-            console.log(comment);
+            //console.log(comment);
         })
 }
 
@@ -389,6 +489,13 @@ function getFileUrl(att) {
     // 你可以根據檔案服務 API 自行補上 URL
     return `data:${att.mimeType};base64,${att.fileData}`
 }
+
+function clearSearch() {
+    searchTitle.value = ''
+    searchCategory.value = ''
+    fetchAll() // 或改成 searchBulletins()，看你想顯示全部 or 篩選
+}
+
 </script>
 
 <style scoped>
@@ -555,6 +662,23 @@ function getFileUrl(att) {
     color: #48bb78;
 }
 
+/* 給 Modal 內獨立 badge 用的樣式 */
+.important.announcement-badge {
+    background: rgba(245, 101, 101, 0.1);
+    color: #f56565;
+}
+
+.event.announcement-badge {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.service.announcement-badge {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+
 .announcement-date {
     font-size: 12px;
     color: #a0aec0;
@@ -645,6 +769,19 @@ function getFileUrl(att) {
     transform: translateY(-2px);
     background-color: #e5efff;
     box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+
+}
+
+.poll-card {
+    background: rgba(247, 247, 247, 0.927) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.6s ease-out;
+
 
 }
 </style>

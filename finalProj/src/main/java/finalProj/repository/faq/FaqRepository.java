@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import finalProj.domain.faq.Faq;
-import finalProj.domain.community.Community;
 
 @Repository
 public interface FaqRepository extends JpaRepository<Faq, Integer> {

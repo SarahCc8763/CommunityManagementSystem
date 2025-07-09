@@ -88,7 +88,7 @@ const pollForm = ref({
     ]
 })
 watch(() => props.pollBackup, (val) => {
-    console.log(val);
+    //console.log(val);
 
 })
 
@@ -184,8 +184,8 @@ function submitEdit() {
         end: pollForm.value.end,
         options: pollForm.value.options
     }
-    // console.log(data);
-    // console.log(props.poll.id);
+    // //console.log(data);
+    // //console.log(props.poll.id);
 
     axios.put(`http://localhost:8080/api/poll/${props.poll.id}`, data)
         .then(() => {
@@ -222,8 +222,8 @@ function submitPost() {
         end: pollForm.value.end,
         options: pollForm.value.options
     }
-    // console.log(data);
-    // console.log(props.poll.id);
+    // //console.log(data);
+    // //console.log(props.poll.id);
 
     axios.post(`http://localhost:8080/api/bulletin/${props.bulletinId}/poll`, data)
         .then(() => {

@@ -124,7 +124,7 @@ watch(() => props.bulletin, (val) => {
 
 function handleNewFiles(e) {
     const files = Array.from(e.target.files)
-    console.log(files);
+    //console.log(files);
     files.forEach(file => {
         form.value.existingAttachments.push({
             fileName: file.name,
@@ -191,7 +191,7 @@ function submitEdit() {
             postStatus: form.value.postStatus
         }
 
-        console.log('送出資料', data)
+        //console.log('送出資料', data)
 
         axios.put(`http://localhost:8080/api/bulletin/${props.bulletin.id}`, data)
             .then(() => {

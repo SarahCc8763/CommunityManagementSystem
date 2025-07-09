@@ -357,13 +357,13 @@ const openEditModal = async (feedbackId) => {
     try {
         const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
         const feedback = res.data
-        console.log(feedback);
+        //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)
         modalInstance.show()
 
         selectedFeedback.value = feedback.list[0]
-        console.log(selectedFeedback.value);
+        //console.log(selectedFeedback.value);
 
     } catch (err) {
         console.error('載入意見資料失敗', err)
@@ -436,7 +436,7 @@ const fetchData = async () => {
                 showReplies: false,
                 newReplyText: ''
             }))
-            console.log(feedbackList.value);
+            //console.log(feedbackList.value);
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'
@@ -449,8 +449,8 @@ const fetchData = async () => {
     axios.get(`http://localhost:8080/api/feedback/${communityId}/category`)
         .then((res) => {
             categoryList.value = res.data.data
-            console.log(res);
-            console.log(categoryList.value);
+            //console.log(res);
+            //console.log(categoryList.value);
         })
 }
 

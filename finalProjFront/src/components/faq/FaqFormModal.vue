@@ -76,7 +76,7 @@ watch(() => props.visible, (val) => {
             keywords: keywords.join(','),
             community: { communityId: props.communityId || 1 }
         }
-        console.log(form.value);
+        //console.log(form.value);
     } else if (val) {
         // 清空表單（新增）
         form.value = {
@@ -87,7 +87,7 @@ watch(() => props.visible, (val) => {
             keywords: '',
             community: { communityId: props.communityId || 1 }
         }
-        console.log(form.value);
+        //console.log(form.value);
     }
 })
 

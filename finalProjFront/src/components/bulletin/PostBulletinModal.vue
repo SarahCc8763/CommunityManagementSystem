@@ -170,7 +170,7 @@ function removeOption(index) {
 
 function handleNewFiles(e) {
     const files = Array.from(e.target.files)
-    console.log(files);
+    //console.log(files);
     files.forEach(file => {
         form.value.existingAttachments.push({
             fileName: file.name,
@@ -231,7 +231,7 @@ async function submitEdit() {
         poll: form.value.poll || null
     }
 
-    console.log('送出資料', data)
+    //console.log('送出資料', data)
 
     try {
         await axios.post(`http://localhost:8080/api/bulletin`, data)

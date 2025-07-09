@@ -268,7 +268,7 @@ const openEditModal = async (feedbackId) => {
     try {
         const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
         const feedback = res.data
-        console.log(feedback);
+        //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)
         modalInstance.show()
@@ -357,7 +357,7 @@ const fetchData = () => {
                 newReplyText: '',
                 tempRating: null
             }))
-            console.log(feedbackList.value);
+            //console.log(feedbackList.value);
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'

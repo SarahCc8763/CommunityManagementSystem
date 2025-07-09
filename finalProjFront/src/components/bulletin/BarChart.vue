@@ -85,7 +85,7 @@ watch(() => [props.labels, props.data], renderChart, { deep: true })
 
 canvas {
     display: block;
-    width: 100% !important;
-    height: auto !important;
+    width: 80% !important;
+    /* height: auto !important; */
 }
 </style>

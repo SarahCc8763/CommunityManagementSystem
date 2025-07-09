@@ -133,8 +133,8 @@ const submitFeedback = async () => {
         const method = form.id ? 'put' : 'post'
 
         const res = await axios[method](url, payload)
-        console.log(payload);
-        // console.log(res.data);
+        //console.log(payload);
+        // //console.log(res.data);
         if (res.data.success === true) {
             swal.fire({ icon: 'success', title: '成功', text: form.id ? '意見更新成功' : '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
@@ -181,7 +181,7 @@ onMounted(() => {
     })
     window.addEventListener('load-feedback-for-edit', (e) => {
         const feedback = e.detail
-        console.log(feedback);
+        //console.log(feedback);
         form.id = feedback.list[0].id
         form.title = feedback.list[0].title
         form.description = feedback.list[0].description

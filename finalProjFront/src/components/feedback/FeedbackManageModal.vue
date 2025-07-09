@@ -106,7 +106,7 @@ watch(
     (val) => {
         if (val) {
             status.value = val.status
-            console.log(status.value);
+            //console.log(status.value);
         }
     },
     { immediate: true } // ✅ 加這行讓它在初始化時也會跑一次
@@ -125,7 +125,7 @@ const submitReply = async () => {
             }
         });
 
-        console.log(res.data);
+        //console.log(res.data);
         if (res.data?.list[0]?.id) {
             // 可以在這裡加入成功提示或更新本地狀態
             emit('updated'); // 通知父元件重新 fetch 資料

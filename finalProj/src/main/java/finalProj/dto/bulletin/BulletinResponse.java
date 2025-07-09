@@ -1,4 +1,4 @@
-package finalProj.dto;
+package finalProj.dto.bulletin;
 
 import java.util.List;
 

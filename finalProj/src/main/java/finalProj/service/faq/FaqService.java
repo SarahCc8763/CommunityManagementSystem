@@ -15,7 +15,7 @@ import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.faq.FaqFaqKeyword;
 import finalProj.domain.faq.FaqKeyword;
-import finalProj.dto.FaqDto;
+import finalProj.dto.faq.FaqDto;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.faq.FaqCategoryRepository;
 import finalProj.repository.faq.FaqFaqKeywordRepository;

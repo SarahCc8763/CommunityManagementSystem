@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
-import finalProj.dto.FaqDto;
-import finalProj.dto.FaqResponse;
+import finalProj.dto.faq.FaqDto;
+import finalProj.dto.faq.FaqResponse;
 import finalProj.service.faq.FaqCategoryService;
 import finalProj.service.faq.FaqService;
 

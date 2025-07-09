@@ -1,4 +1,4 @@
-package finalProj.dto;
+package finalProj.dto.faq;
 
 import java.time.LocalDateTime;
 import java.util.List;
