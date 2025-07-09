@@ -5,44 +5,34 @@
     <main class="main-content">
 
       <!-- 這裡是左右的Nav -->
+      <aside>
       <LeftSideNav />
       <RightSideNav :show="showRightNav" @close="showRightNav = false" />
-      <div class="main-area" :class="{ 'with-right-nav': showRightNav }"
-        @click="showRightNav && (showRightNav = false)">
-        <button class="right-nav-toggle" @click="showRightNav = true">
+
+      <button class="right-nav-toggle" @click="showRightNav = true">
           <i class="bi bi-layout-sidebar-inset"></i>
         </button>
 
-        <div v-if="!showRightNav" class="drawer-tab" @click="showRightNav = true">
+
+        <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
           <i class="bi bi-chevron-left"></i>
           <span class="drawer-tab-text">更多</span>
         </div>
-        <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false">
-        </div>
-        <!-- 左右Nav結束 -->
 
+        <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
+      </aside>
 
-
-        <!-- 大家想測試的頁面可以放這裡喔～ -->
-        <!-- <div class="main flex-grow-1"> -->
-
-        <div class="main flex-grow-1">
+      <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
+        @click="showRightNav && (showRightNav = false)">
           <RouterView />
-        </div>
-        <!-- <Example /> -->
-        <!-- <Home /> -->
-        <!-- <packages /> -->
-        <!-- <Invoice /> -->
-
-
       </div>
     </main>
-
-  </div>
+  
   <FooterAll />
 
   <!-- 登入模態框 -->
   <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
+</div>
 </template>
 
 
@@ -71,6 +61,7 @@ import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
+
 // ✅ 只判斷 meta.dark
 // const isDarkMode = computed(() => route.meta?.dark === true)
 
