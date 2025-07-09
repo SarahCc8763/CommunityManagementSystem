@@ -71,6 +71,18 @@ public class FaqService {
         return list;
     }
 
+    // 社區查詢
+    public List<FaqDto> findByCommunity_CommunityId(Integer communityId) {
+        return faqRepository.findByCommunity_CommunityId(communityId).stream().map(faq -> {
+            List<String> keywordNames = faq.getKeywordLinks().stream()
+                    .map(link -> link.getKeyword().getWord())
+                    .collect(Collectors.toList());
+
+            return new FaqDto(faq, keywordNames);
+        }).collect(Collectors.toList());
+
+    }
+
     // 分類或關鍵字查詢
     public List<FaqDto> findByCategoryAndKeyword(String category, List<String> keywords) {
 
@@ -133,6 +145,8 @@ public class FaqService {
                     log.info("關鍵字不存在，建立新關鍵字物件: " + word);
                     FaqKeyword faqKeyword = new FaqKeyword(); // 建立關鍵字物件
                     faqKeyword.setWord(word); // 設定關鍵字
+                    faqKeyword.setCommunity(
+                            communityRepository.findById(entity.getCommunity().getCommunityId()).orElse(null));
                     faqKeywordRepository.save(faqKeyword); // 新增關鍵字物件(未連結)
 
                     FaqFaqKeywordId faqFaqKeywordId = new FaqFaqKeywordId(faq.getId(), faqKeyword.getId()); // 建立複合主鍵ID物件
@@ -241,6 +255,12 @@ public class FaqService {
                 if (entity.getPostStatus() != null && !entity.getPostStatus().equals(faq.getPostStatus())) {
                     faq.setPostStatus(entity.getPostStatus());
                 }
+                if (entity.getCategory() != null && entity.getCategory().getName() != null &&
+                        !entity.getCategory().getName().equals(faq.getCategory().getName())) {
+                    faq.setCategory(faqCategoryRepository.findByCommunity_CommunityIdAndName(
+                            entity.getCommunity().getCommunityId(), entity.getCategory().getName()).get(0));
+                }
+
                 if (entity.getCommunity() != null && entity.getCommunity().getCommunityId() != null) {
 
                     if (!communityRepository.findById(entity.getCommunity().getCommunityId()).get()

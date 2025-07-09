@@ -150,6 +150,10 @@ public class feedbackController {
         return response;
     }
 
+    //
+    // -- 修改意見處理狀態 --
+    //
+
     @PutMapping("/status/{id}")
     public FeedbackResponse updateStatus(@PathVariable Integer id, @RequestBody Feedback feedback) {
         FeedbackResponse response = new FeedbackResponse();
@@ -184,6 +188,46 @@ public class feedbackController {
             return response;
         }
     }
+
+    //
+    // -- 結案後使用者評分 --
+    //
+    @PutMapping("/rating/{id}")
+    public FeedbackResponse rating(@PathVariable Integer id, @RequestBody Feedback feedback) {
+        FeedbackResponse response = new FeedbackResponse();
+        if (feedback == null || id == null) {
+            response.setSuccess(false);
+            response.setMessage("缺少必要欄位資料");
+            return response;
+        }
+        feedback.setId(id);
+        if (!feedbackService.existsById(id)) {
+            response.setSuccess(false);
+            response.setMessage("欲修改資料不存在");
+            return response;
+        }
+        try {
+            Feedback updatedFeedback = feedbackService.rating(feedback);
+            if (updatedFeedback == null) {
+                response.setSuccess(false);
+                response.setMessage("修改失敗");
+            } else {
+                response.setSuccess(true);
+                response.setMessage("修改成功");
+                List<Feedback> data = new ArrayList<>();
+                data.add(updatedFeedback);
+                response.setList(data);
+            }
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            response.setMessage("處理失敗：" + e.getMessage());
+            return response;
+        }
+
+    }
+
     //
     // --查詢意見主表 --
     //

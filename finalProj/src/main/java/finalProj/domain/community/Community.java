@@ -8,6 +8,7 @@ import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
+import finalProj.domain.faq.FaqKeyword;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.packages.Packages;
@@ -68,7 +69,7 @@ public class Community {
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-bulletin-category")
 	private List<BulletinCategory> bulletinCategories;
-	// 社區-關鍵字分類
+	// 社區-FAQ分類
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-faq-category")
 	private List<FaqCategory> faqCategories;
@@ -84,8 +85,84 @@ public class Community {
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-faq")
 	private List<Faq> faqs;
+	// 社區-FAQ關鍵字
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-faq-keyword")
+	private List<FaqKeyword> faqKeywords;
 
 	// --- 政宇的關聯 END ---
+
+	public List<Units> getUnits() {
+		return units;
+	}
+
+	public void setUnits(List<Units> units) {
+		this.units = units;
+	}
+
+	public List<Packages> getPackagesList() {
+		return packagesList;
+	}
+
+	public void setPackagesList(List<Packages> packagesList) {
+		this.packagesList = packagesList;
+	}
+
+	public List<Bulletin> getBulletins() {
+		return bulletins;
+	}
+
+	public void setBulletins(List<Bulletin> bulletins) {
+		this.bulletins = bulletins;
+	}
+
+	public List<BulletinCategory> getBulletinCategories() {
+		return bulletinCategories;
+	}
+
+	public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
+		this.bulletinCategories = bulletinCategories;
+	}
+
+	public List<FaqCategory> getFaqCategories() {
+		return faqCategories;
+	}
+
+	public void setFaqCategories(List<FaqCategory> faqCategories) {
+		this.faqCategories = faqCategories;
+	}
+
+	public List<FeedbackCategory> getFeedbackCategories() {
+		return feedbackCategories;
+	}
+
+	public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
+		this.feedbackCategories = feedbackCategories;
+	}
+
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public List<Faq> getFaqs() {
+		return faqs;
+	}
+
+	public void setFaqs(List<Faq> faqs) {
+		this.faqs = faqs;
+	}
+
+	public List<FaqKeyword> getFaqKeywords() {
+		return faqKeywords;
+	}
+
+	public void setFaqKeywords(List<FaqKeyword> faqKeywords) {
+		this.faqKeywords = faqKeywords;
+	}
 
 	@Override
 	public String toString() {

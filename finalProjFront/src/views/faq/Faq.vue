@@ -59,33 +59,7 @@
                     </div>
                 </div>
             </div>
-            <!-- 
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item" v-for="faq in paginatedFaqs" :key="faq.id">
-                    <h2 class="accordion-header" :id="`heading-${faq.id}`">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            :data-bs-target="`#collapse-${faq.id}`" aria-expanded="false"
-                            :aria-controls="`collapse-${faq.id}`">
-                            <h5>
-                                <span :class="['badge', 'rounded-pill', getCategoryBadgeClass(faq.category)]">
-                                    {{ faq.category }}
-                                </span>
-                            </h5>
-                            &nbsp;{{ faq.question }}
-                        </button>
-                    </h2>
-                    <div :id="`collapse-${faq.id}`" class="accordion-collapse collapse"
-                        :aria-labelledby="`heading-${faq.id}`" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            <p class="mb-2">{{ faq.answer }}</p>
-                            <p class="small text-muted">
-                                分類：{{ faq.category }} | 更新時間：{{ formatDate(faq.lastModified) }}
-                            </p>
-                            <p class="small text-muted">關鍵字：{{ faq.keywords.join(', ') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+
 
             <!-- 分頁控制 -->
             <nav class="mt-4" v-if="totalPages > 1">
@@ -118,6 +92,8 @@ const selectedCategory = ref('全部')
 const page = ref(1)
 const pageSize = 10
 const searchKeyword = ref('')
+const communityId = 1
+const userId = 1
 
 // 計算顯示用 FAQ
 const filteredFaqs = computed(() =>
@@ -141,20 +117,26 @@ const fetchFaqs = async () => {
     try {
         const [faqRes, categoryRes] = await Promise.all([
             axios.get('http://localhost:8080/api/faq'),
-            axios.get(`http://localhost:8080/api/faq/1/category`)
+            axios.get(`http://localhost:8080/api/faq/${communityId}/category`)
         ])
 
         const categoryOrder = categoryRes.data || []
         categories.value = categoryOrder
 
         if (faqRes.data.success) {
-            fullfaqList.value = faqRes.data.list.sort((a, b) => {
+            // 只保留 postStatus 為 true 的資料
+            const filtered = faqRes.data.list.filter(faq => faq.postStatus === true)
+
+            // 再根據分類順序排序
+            fullfaqList.value = filtered.sort((a, b) => {
                 const aIndex = categoryOrder.indexOf(a.category)
                 const bIndex = categoryOrder.indexOf(b.category)
                 return aIndex - bIndex
             })
+
             faqList.value = fullfaqList.value
         }
+
     } catch (error) {
         console.error('取得FAQ或分類失敗:', error)
     } finally {
@@ -225,7 +207,7 @@ const nextPage = () => {
 }
 
 const buttonClass = (cat) =>
-    `btn ${selectedCategory.value === cat ? 'btn-primary' : 'btn-outline-primary'}`
+    `btn-class ${selectedCategory.value === cat ? 'btn-outline-class' : ''}`
 
 const getCategoryBadgeClass = (category) => {
     const index = categories.value.indexOf(category)
@@ -240,3 +222,64 @@ const getCategoryBadgeClass = (category) => {
 
 onMounted(fetchFaqs)
 </script>
+
+<style scoped>
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    /* transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-class {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px !important;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: rgb(135, 175, 212);
+
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-class {
+
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    /* 可有可無：藍色光暈感 */
+    background: rgb(138, 193, 245);
+    background: linear-gradient(135deg, #9eace9 0%, #764ba2 100%);
+    font-weight: 600;
+
+
+}
+
+
+
+
+
+.btn:hover {
+    transform: translateY(0px);
+    /* box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); */
+}
+</style>

@@ -3,13 +3,17 @@ package finalProj.domain.faq;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -27,6 +31,19 @@ public class FaqKeyword {
     @OneToMany(mappedBy = "keyword")
     @JsonManagedReference("keyword-faq")
     private List<FaqFaqKeyword> faqLinks;
+
+    @ManyToOne
+    @JoinColumn(name = "community_id", nullable = true)
+    @JsonBackReference("community-faq-keyword")
+    private Community community;
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
+    }
 
     public Integer getId() {
         return id;

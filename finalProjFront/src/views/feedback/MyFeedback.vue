@@ -74,11 +74,29 @@
                                         <button class="btn btn-outline-primary btn-sm" @click="toggleReplies(feedback)">
                                             {{ feedback.showReplies ? '隱藏回覆' : '顯示所有回覆' }}
                                         </button>
-                                        <button class="btn btn-outline-secondary btn-sm"
+                                        <button v-if="feedback.status != '已結案'" class="btn btn-outline-secondary btn-sm"
                                             @click="openEditModal(feedback.id)">
-                                            ✏️ 修改
+                                            修改
                                         </button>
                                     </div>
+                                    <!-- 評分區塊 -->
+                                    <div class="mt-3">
+                                        <div v-if="feedback.status == '已結案'" class="d-flex align-items-center gap-2">
+                                            <span
+                                                v-if="feedback.status == '已結案' && feedback.userRating == null">給予評分：</span>
+                                            <span v-else>您已評分：</span>
+                                            <span v-for="star in 5" :key="star" @click="setRating(feedback, star)"
+                                                :style="{ cursor: feedback.status === '已結案' && feedback.userRating == null ? 'pointer' : 'default', fontSize: '24px', color: 'gold' }">
+                                                <i
+                                                    :class="star <= (feedback.userRating ?? feedback.tempRating) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+
+                                            </span>
+                                            <button v-if="feedback.status == '已結案' && feedback.userRating == null"
+                                                class="btn btn-sm btn-primary ms-3"
+                                                @click="submitRating(feedback)">送出評分</button>
+                                        </div>
+                                    </div>
+
 
                                     <ul class="mt-3 list-unstyled" v-if="feedback.showReplies">
                                         <li v-for="reply in feedback.replies" :key="reply.id" class="d-flex mb-3">
@@ -141,7 +159,8 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
-import FeedbackModal from '@/components/feedback/feedbackModal.vue'
+import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
+import Swal from 'sweetalert2'
 
 const defaultImage = noImage
 const feedbackList = ref([])
@@ -150,6 +169,11 @@ const error = ref(null)
 const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
+
+
+
+
+
 
 import BannerImage from '@/components/forAll/BannerImage.vue';
 import FeedbackBg from '@/assets/images/feedback/feedbackbg.jpg';
@@ -256,6 +280,66 @@ const openEditModal = async (feedbackId) => {
     }
 }
 
+
+// 設定暫存評分
+const setRating = (feedback, star) => {
+    if (!feedback || feedback.userRating != null || feedback.status !== '已結案') return
+    feedback.tempRating = star
+}
+
+// 送出評分
+const submitRating = async (feedback) => {
+    if (!feedback.tempRating) {
+        alert('請選擇星數再送出')
+        return
+    }
+
+    try {
+        const payload = {
+            userRating: feedback.tempRating
+        }
+        const result = await Swal.fire({
+            title: `確定送出${feedback.tempRating}顆星嗎？`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '確定'
+        })
+        if (result.isConfirmed) {
+            const res = await axios.put(`http://localhost:8080/api/feedback/rating/${feedback.id}`, payload)
+
+            if (res.data?.success) {
+                // 更新本地畫面資料
+                feedback.userRating = feedback.tempRating
+                Swal.fire({
+                    icon: 'success',
+                    title: '送出成功',
+                    text: '感謝您的評分！',
+                    timer: 1500
+                })
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '送出失敗',
+                    text: '請再試一次',
+                    timer: 1500
+                })
+            }
+        }
+    } catch (err) {
+        console.error('送出評分失敗', err)
+        Swal.fire({
+            icon: 'error',
+            title: '送出失敗',
+            text: '請再試一次',
+            timer: 1500
+        })
+    }
+}
+
+
 const fetchData = () => {
     const userId = 1 // localStorage.getItem('userId')
     if (!userId) {
@@ -270,7 +354,8 @@ const fetchData = () => {
             feedbackList.value = res.data.map((f) => ({
                 ...f,
                 showReplies: false,
-                newReplyText: ''
+                newReplyText: '',
+                tempRating: null
             }))
             console.log(feedbackList.value);
         })

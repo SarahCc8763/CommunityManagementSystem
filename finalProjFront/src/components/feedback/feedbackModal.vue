@@ -4,9 +4,12 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bolder">💬 聯絡客服 </h5>
+
+                    <h5 class="modal-title fw-bolder text-center w-100">💬 聯絡客服</h5>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <img src="@/assets/images/feedback/postfeedback.jpg" alt="" width="100%">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">標題*</label>

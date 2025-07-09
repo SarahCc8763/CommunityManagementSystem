@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -136,6 +137,23 @@ public class FaqController {
         return response;
     }
 
+    @GetMapping("/community/{communityId}")
+
+    public FaqResponse findFaqByCommunity(@PathVariable Integer communityId) {
+        FaqResponse response = new FaqResponse();
+        if (communityId == null) {
+            response.setSuccess(false);
+            response.setMessage("未提供要查詢哪筆資料");
+        } else {
+
+            response.setSuccess(true);
+            response.setMessage("查詢成功");
+            response.setList(faqService.findByCommunity_CommunityId(communityId));
+
+        }
+        return response;
+    }
+
     @PostMapping("/searchby")
     public FaqResponse searchFaqBy(@RequestBody Faq body) {
         FaqResponse response = new FaqResponse();
@@ -185,7 +203,7 @@ public class FaqController {
     }
 
     @GetMapping("/{communityId}/category")
-    public String[] findAllCategory(@PathVariable Integer communityId) {
+    public String[] findAllCategoryArray(@PathVariable Integer communityId) {
         if (communityId == null) {
             return null;
         }
@@ -200,12 +218,35 @@ public class FaqController {
 
     }
 
+    @GetMapping("/{communityId}/category/list")
+    public List<FaqCategory> findAllCategoryList(@PathVariable Integer communityId) {
+        if (communityId == null) {
+            return null;
+        }
+        List<FaqCategory> list = faqCategoryService.findByCommunity_CommunityId(communityId); // 待修正
+
+        return list;
+
+    }
+
     @PostMapping("/category")
     public FaqCategory addCategory(@RequestBody FaqCategory body) {
         if (body == null) {
             return null;
         }
         return faqCategoryService.save(body);
+
+    }
+
+    // 刪除 FAQ 分類
+    @DeleteMapping("/category/{id}")
+    public ResponseEntity<FaqCategory> deleteCategory(@PathVariable Integer id) {
+        FaqCategory category = faqCategoryService.findById(id).orElse(null);
+        if (category == null) {
+            return ResponseEntity.notFound().build();
+        }
+        faqCategoryService.delete(category);
+        return ResponseEntity.ok(category);
 
     }
 

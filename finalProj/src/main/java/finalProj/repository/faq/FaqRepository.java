@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import finalProj.domain.faq.Faq;
+import finalProj.domain.community.Community;
 
 @Repository
 public interface FaqRepository extends JpaRepository<Faq, Integer> {
@@ -30,5 +31,7 @@ public interface FaqRepository extends JpaRepository<Faq, Integer> {
         List<Faq> findByCategoryAndKeywordLike(
                         @Param("category") String category,
                         @Param("keyword") String keyword);
+
+        public List<Faq> findByCommunity_CommunityId(Integer communityId);
 
 }

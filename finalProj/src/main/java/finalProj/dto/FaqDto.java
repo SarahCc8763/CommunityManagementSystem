@@ -12,6 +12,7 @@ public class FaqDto {
     private String answer;
     private String category;
     private LocalDateTime LastModified;
+    private Boolean postStatus;
     private List<String> keywords;
 
     public FaqDto(Faq faq, List<String> keywords) {
@@ -20,6 +21,7 @@ public class FaqDto {
         answer = faq.getAnswer();
         category = faq.getCategory().getName();
         LastModified = faq.getLastModified();
+        postStatus = faq.getPostStatus();
         this.keywords = keywords;
     }
 
@@ -75,6 +77,14 @@ public class FaqDto {
     public String toString() {
         return "FaqDto [id=" + id + ", question=" + question + ", answer=" + answer + ", category=" + category
                 + ", LastModified=" + LastModified + ", keywords=" + keywords + "]";
+    }
+
+    public Boolean getPostStatus() {
+        return postStatus;
+    }
+
+    public void setPostStatus(Boolean postStatus) {
+        this.postStatus = postStatus;
     }
 
 }

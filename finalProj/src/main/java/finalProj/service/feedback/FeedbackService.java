@@ -238,7 +238,7 @@ public class FeedbackService {
         // }
 
         // 狀態更新與結案時間
-        if (feedback.getStatus() != null && feedback.getStatus().isEmpty()) {
+        if (feedback.getStatus() != null && !feedback.getStatus().isBlank()) {
             if (!"已結案".equals(originalStatus) && "已結案".equals(feedback.getStatus())) {
                 existing.setResolvedAt(LocalDateTime.now());
             }
@@ -270,6 +270,25 @@ public class FeedbackService {
         }
 
         return feedbackRepository.save(existing);
+    }
+
+    public Feedback rating(Feedback feedback) {
+        Optional<Feedback> optionalFeedback = feedbackRepository.findById(feedback.getId());
+        if (optionalFeedback.isEmpty()) {
+            log.info("找不到對應的Feedback");
+            return null;
+        }
+
+        Feedback existing = optionalFeedback.get();
+
+        // 滿意度
+        if (feedback.getUserRating() != null) {
+            existing.setUserRating(feedback.getUserRating());
+            log.info("已更新意見ID {} 使用者滿意度為 {} 星", feedback.getId(), feedback.getUserRating());
+        }
+
+        return feedbackRepository.save(existing);
+
     }
 
     public boolean deleteFeedback(Integer id) {
