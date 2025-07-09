@@ -100,10 +100,19 @@
   <div class="modal fade" id="slotModal" tabindex="-1" aria-labelledby="slotModalLabel" aria-hidden="true" ref="modalRef">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
-        <div class="modal-header">
-          <h5 class="modal-title" id="slotModalLabel">{{ isEditMode ? '編輯車位' : '新增車位' }}</h5>
-          <button type="button" class="btn-close" @click="modalInstance?.hide()" aria-label="Close"></button>
-        </div>
+        <div class="modal-header d-flex justify-content-between align-items-center">
+  <h5 class="modal-title modal-title-colored mb-0">
+    {{ isEditMode ? '編輯車位' : '新增車位' }}
+  </h5>
+  <button
+    type="button"
+    class="btn-close btn-close-custom"
+    @click="modalInstance?.hide()"
+    aria-label="Close"
+  >
+    <i class="bi bi-x-lg"></i>
+  </button>
+</div>
         <div class="form-group">
           <label>車位代碼</label>
           <input v-model="form.slotNumber" class="form-control" @blur="cleanInvalidChars(form, 'slotNumber')" maxlength="10" placeholder="例如：B1-001"/>
@@ -140,7 +149,10 @@
 <script setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { Modal, Collapse } from 'bootstrap'
+
+import '@sweetalert2/theme-dark/dark.css'
 import Swal from 'sweetalert2'
+
 import axios from '@/plugins/axios.js'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -236,7 +248,8 @@ async function submitNewSlot() {
     await Swal.fire({
       icon: 'success',
       title: '新增成功',
-      confirmButtonText: '確定'
+      confirmButtonText: '確定',
+      theme: 'dark'
     })
 
     // 清空表單
@@ -260,7 +273,8 @@ async function submitNewSlot() {
       icon: 'error',
       title: '新增失敗',
       text: e?.response?.data?.message || '請稍後再試',
-      confirmButtonText: '關閉'
+      confirmButtonText: '關閉',
+      theme: 'dark'
     })
   }
 }
@@ -275,7 +289,8 @@ async function saveEdit() {
     await Swal.fire({
       icon: 'success',
       title: '修改成功',
-      confirmButtonText: '確定'
+      confirmButtonText: '確定',
+      theme: 'dark'
     })
     
     console.log(res.data)
@@ -289,7 +304,8 @@ async function saveEdit() {
       icon: 'error',
       title: '修改失敗',
       text: e?.response?.data?.message || '請稍後再試',
-      confirmButtonText: '關閉'
+      confirmButtonText: '關閉',
+      theme: 'dark'
     })
   }
 }
@@ -339,7 +355,9 @@ const deleteSlot = async (id) => {
     confirmButtonColor: '#d33',
     cancelButtonColor: '#6c757d',
     confirmButtonText: '刪除',
-    cancelButtonText: '取消'
+    cancelButtonText: '取消',
+    theme: 'dark',
+    background: '#ccc',
   })
 
   if (result.isConfirmed) {
@@ -349,7 +367,8 @@ const deleteSlot = async (id) => {
         icon: 'success',
         title: '刪除成功',
         showConfirmButton: false,
-        timer: 1000
+        timer: 1000,
+        theme: 'dark'
       })
       fetchSlots()
     } catch (e) {
@@ -358,7 +377,8 @@ const deleteSlot = async (id) => {
         icon: 'error',
         title: '刪除失敗',
         text: e?.response?.data?.message || '請稍後再試',
-        confirmButtonText: '關閉'
+        confirmButtonText: '關閉',
+        theme: 'dark'
       })
     }
   }
@@ -368,8 +388,9 @@ const deleteSlot = async (id) => {
 onMounted(() => {
   modalInstance = new Modal(modalRef.value, {
     backdrop: 'static',
-    keyboard: false
-  })
+    keyboard: false,
+  }
+)
 
   collapseInstance = new Collapse(collapseRef.value, {
     toggle: false // 預設不要自動展開
@@ -513,5 +534,90 @@ textarea::placeholder {
 .form-control::placeholder {
   color: #cbd5e1;
 }
+/* Modal title */
+.modal-title-colored {
+  color: #aebaff; /* 淡藍或你指定的主題紫/藍色系 */
+}
+/* 標題字顏色 */
+.modal-title-colored {
+  color: #aebaff;
+}
+
+/* 關閉按鈕 icon（乾淨、右上角） */
+.btn-close-custom {
+  background: none;
+  border: none;
+  color: #f8f9fa;
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.btn-close-custom:hover {
+  color: #ffffff;
+}
+
+/* 讓 icon 垂直置中對齊標題 */
+.modal-header .btn-close-custom i {
+  display: block;
+}
+
+.dark-input,
+.dark-select,
+input.form-control,
+select.form-select {
+    background-color: #2e2e3e !important;
+    color: #f8f9fa !important;
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    height: auto;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+}
+.swal2-popup.swal2-toast,
+.swal2-popup.swal2-modal {
+  background: #1e1e2f !important;
+  color: #ddd !important;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.swal2-title {
+  color: #aebaff !important;
+  font-weight: 700;
+}
+
+:deep(.swal2-html-container) {
+  color: #ccc !important;
+  background: #ffffff !important;
+}
+
+.swal2-icon.swal2-warning {
+  border-color: #ffb74d !important;
+  color: #ffb74d !important;
+}
+
+/* 按鈕 */
+.swal2-confirm.btn {
+  background: linear-gradient(90deg, #ff6b6b, #ff8e8e) !important;
+  color: #fff !important;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.swal2-cancel.btn {
+  background-color: #6c757d !important;
+  color: #fff !important;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+}
+
 
 </style>

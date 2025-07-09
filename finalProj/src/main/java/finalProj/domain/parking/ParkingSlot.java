@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 // 車位資料表
@@ -41,6 +42,9 @@ public class ParkingSlot {
 	@ManyToOne
 	@JoinColumn(name = "parking_type_id", referencedColumnName = "id")
 	private ParkingType parkingType;
+
+	@Transient
+	private String type;
 
 	// 多對一到擁有人
 	@JsonBackReference("users-parkingSlot")
@@ -169,6 +173,14 @@ public class ParkingSlot {
 
 	public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
 		this.temporaryParking = temporaryParking;
+	}
+
+	public String getType() {
+		return parkingType.getType();
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

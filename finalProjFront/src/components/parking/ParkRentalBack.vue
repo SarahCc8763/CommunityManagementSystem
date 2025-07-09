@@ -17,9 +17,9 @@
         
         <!-- Collapse 搜尋欄 -->
         <div class="collapse mb-4" id="advancedSearch" ref="collapseRef">
-            <div class="shadow-sm p-4 bg-light rounded">
+            <div class="shadow-sm p-4">
                 
-                <div class="row mb-3">
+                <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label">車位代碼</label>
                         <input class="form-control" v-model="filter.slotNumber" maxlength="10" placeholder="例如：B1-001" />
@@ -644,7 +644,6 @@ function cleanInvalidChars(slot, field) {
 
 /* collapse區塊 */
 #advancedSearch {
-    background-color: #f9f9fc;
     border-radius: 12px;
 }
 .form-label {
@@ -654,5 +653,19 @@ function cleanInvalidChars(slot, field) {
     border-radius: 8px;
 }
 
-
+.dark-input,
+.dark-select,
+input.form-control,
+select.form-select {
+    background-color: #2e2e3e !important;
+    color: #f8f9fa !important;
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    height: auto;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+}
 </style>

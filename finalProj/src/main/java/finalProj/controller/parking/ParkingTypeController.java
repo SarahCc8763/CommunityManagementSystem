@@ -16,7 +16,7 @@ import finalProj.dto.parking.ApiResponse;
 import finalProj.repository.parking.ParkingTypeRepository;
 import finalProj.service.parking.ParkingTypeService;
 
-//車位種類 Controller
+// 車位種類 Controller
 @RestController
 @RequestMapping("/park/parking-types")
 public class ParkingTypeController {
