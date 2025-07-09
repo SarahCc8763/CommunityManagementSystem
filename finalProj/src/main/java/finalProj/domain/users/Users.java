@@ -30,7 +30,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({ "feedbacks", "bulletinComments", "bulletinCommentLikes", "pollVotes", "bulletins",		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies" })
+@JsonIgnoreProperties({ "feedbacks", "bulletinComments", "bulletinCommentLikes", "pollVotes", "bulletins",
+		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies", "RolesUsersList" })
 public class Users {
 
 	@Id
@@ -103,6 +104,7 @@ public class Users {
 	// 這個 user 曾報修過的 tickets
 	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("reporterUser")
+	// @JsonIgnore
 	private List<Ticket> reportedTickets;
 
 	// 這個 user 被指派處理的 tickets
@@ -143,7 +145,13 @@ public class Users {
 	@OneToMany(mappedBy = "user")
 	private List<FeedbackReply> feedbackReplies;
 
+	// @JsonManagedReference("RoleUser")
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RolesUsers> RolesUsersList;
+
 	// --- 政宇的關聯 END ---
+
 	public Integer getUsersId() {
 		return usersId;
 	}
@@ -394,6 +402,15 @@ public class Users {
 				+ ", lastFailedLogin=" + lastFailedLogin + ", accountLockedUntil=" + accountLockedUntil
 				+ ", unitsUsersList=" + unitsUsersList + ", community=" + community + ", reportedTickets="
 				+ reportedTickets + ", assignedTickets=" + assignedTickets + "]";
+	}
+
+	@JsonIgnore
+	public List<RolesUsers> getRolesUsersList() {
+		return RolesUsersList;
+	}
+
+	public void setRolesUsersList(List<RolesUsers> rolesUsersList) {
+		RolesUsersList = rolesUsersList;
 	}
 
 }

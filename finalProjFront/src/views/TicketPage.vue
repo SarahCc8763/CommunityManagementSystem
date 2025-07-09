@@ -26,8 +26,12 @@
                         <!-- 描述 + 附件 -->
                         <div class="mb-3">
                             <label class="form-label">問題描述</label>
-                            <QuillEditor v-model:content="form.description" contentType="html" class="form-control"
-                                placeholder="Describe the issue..." />
+                            <QuillEditor 
+                            style="min-height:150px"
+                            v-model:content="form.description" 
+                            contentType="html" 
+                            class="form-control"
+                            placeholder="Describe the issue..." />
 
                             <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent
                                 @drop.prevent="handleDrop">

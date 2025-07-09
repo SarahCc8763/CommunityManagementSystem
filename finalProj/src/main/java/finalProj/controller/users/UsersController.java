@@ -1,16 +1,19 @@
 package finalProj.controller.users;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
 import finalProj.jwt.JsonWebTokenUtility;
 import finalProj.service.users.UsersService;
@@ -64,21 +67,35 @@ public class UsersController {
 		// 登入成功
 		if (user != null) {
 			String token = jwtUtility.createToken(user.getEmail()); // 你現在的 JWT 只用 email
+			// 判斷有無值
+			Units unitObj = null;
+			if (user.getUnitsUsersList() != null 
+			    && !user.getUnitsUsersList().isEmpty()
+			    && user.getUnitsUsersList().getFirst().getUnit() != null) {
+			  unitObj = user.getUnitsUsersList().getFirst().getUnit();
+			}
+			
 			Map<String, Object> response = new HashMap<>();
-	        response.put("success", "true");
-	        response.put("message", "登入成功");
-	        response.put("token", token);
-	        response.put("email", user.getEmail());
-	        response.put("id", user.getUsersId());
-	        response.put("name", user.getName());
-	        response.put("communityId", user.getCommunity().getCommunityId());
-	        response.put("photo", user.getPhoto());
-	        response.put("logFaildTimes", user.getLoginFailTimes());
-	        response.put("points", user.getUnitsUsersList().getFirst().getUnit().getPoint());
-	        response.put("unitId", user.getUnitsUsersList().getFirst().getUnit().getUnitsId());
-	        response.put("unit", user.getUnitsUsersList().getFirst().getUnit().getUnit());
-	        response.put("floor", user.getUnitsUsersList().getFirst().getUnit().getFloor());
-	        return ResponseEntity.ok(response);
+			response.put("success", "true");
+			response.put("message", "登入成功");
+			response.put("token", token);
+			response.put("email", user.getEmail());
+			response.put("id", user.getUsersId());
+			response.put("name", user.getName());
+			response.put("roleId", user.getRolesUsersList().getFirst().getRole().getRolesId());
+			response.put("communityId", user.getCommunity().getCommunityId());
+			response.put("state", user.getState());
+			response.put("contactInfo", user.getContactInfo());
+			response.put("emergencyContactName", user.getEmergencyContactName());
+			response.put("emergencyContactRelation", user.getEmergencyContactRelation());
+			response.put("emergencyContactPhone", user.getEmergencyContactPhone());
+			response.put("photo", user.getPhoto() != null ? user.getPhoto() : null);
+			response.put("logFaildTimes", user.getLoginFailTimes());
+			response.put("points", unitObj != null ? unitObj.getPoint() : null);
+			response.put("unitId", unitObj != null ? unitObj.getUnitsId() : null);
+			response.put("unit", unitObj != null ? unitObj.getUnit() : null);
+			response.put("floor", unitObj != null ? unitObj.getFloor() : null);
+			return ResponseEntity.ok(response);
 	        
 //					ResponseEntity.ok(Map.of(
 //					"success","true",
@@ -100,5 +117,9 @@ public class UsersController {
 		}
 	}
 
-
+	@GetMapping
+	public List<Users> findAll() {
+		// 呼叫 service.findAll()
+		return usersService.findAll(); // 空清單回傳
+	}
 }

@@ -28,8 +28,12 @@
       <!-- 描述 + 附件 -->
       <div class="mb-3">
         <label class="label">問題描述</label>
-        <QuillEditor v-model:content="form.description" contentType="html" placeholder="Describe the issue..."
-          class="input" />
+        <QuillEditor 
+        style="min-height:300px"
+        v-model:content="form.description" 
+        contentType="html" 
+        placeholder="Describe the issue..."
+        class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
           <p>📎 拖曳圖片到這裡，或 <span @click="fileInput.click()" class="text-primary">點選上傳</span></p>

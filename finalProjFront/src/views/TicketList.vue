@@ -65,11 +65,12 @@
     </div>
 
     <!-- 通報人 -->
-    <div class="col-md-3 mb-2">
-      <label class="form-label">通報人</label>
-      <input type="text" class="form-control" v-model="filter.reporter" />
-    </div>
-
+    <select class="form-select" v-model="filter.reporter">
+  <option value="">全部</option>
+  <option v-for="user in users" :key="user.id" :value="user.name">
+    {{ user.name }}
+  </option>
+</select>
     <!-- 建立時間 -->
     <div class="col-md-3 mb-2">
       <label class="form-label">建立時間</label>
@@ -162,10 +163,21 @@
   const searchText = ref('')
   const filter = ref({
           issueTypeNames: [],
-          reporter: user.name,
+          reporter: '',
           date: '',
         })
-watch(searchText, () => {
+
+
+        const users = ref([])
+
+
+  const router = useRouter()
+  const ticketModal = ref(null)
+  const tickets = ref([])
+  const expandedIndexes = ref([])
+  const issueTypes = ref([])
+
+  watch(searchText, () => {
   applySearch()
 })
 
@@ -173,15 +185,25 @@ watch(filter, () => {
   applySearch()
 }, { deep: true })
 
-  const router = useRouter()
-  const ticketModal = ref(null)
-  const tickets = ref([])
-  const expandedIndexes = ref([])
-  const issueTypes = ref([])
   onMounted(() => {
   fetchIssueTypes()
   callTicketSearch()
+  fetchUsers()
 })
+
+
+const fetchUsers = async () => {
+  try {
+    const res = await axios.get('http://localhost:8080/users') // 或用你剛剛設的 /users/simple
+    users.value = res.data.map(user => ({
+      id: user.usersId,
+      name: user.name
+    }))
+  } catch (err) {
+    console.error('❌ 載入使用者失敗', err)
+  }
+}
+
 
 const fetchIssueTypes = async () => {
   try {
@@ -206,11 +228,18 @@ const toggleFilter = () => {
 }
 
 const applySearch = async () => {
+  let reporterId = null
+  if (filter.value.reporter) {
+    const match = users.value.find(u => u.name === filter.value.reporter)
+    if (match) reporterId = match.id
+  }
+
+
   const payload = {
     title: searchText.value || null,
     status: filter.value.status || null,
     startDate: filter.value.date || null,
-    reporterId: filter.value.reporter || null,
+    reporterId,
     issueTypeNames: filter.value.issueTypeNames || []
   }
 

@@ -10,7 +10,7 @@
         shadow-sm" @click="openDetail(ticket)">
           <h5>{{ ticket.title }}</h5>
           <p>通報人：{{ ticket.name }}</p>
-          <p>指派人：{{ ticket.assigneeName ?? '（未知）' }}</p>
+          <!-- <p>指派人：{{ ticket.assigneeName ?? '（未知）' }}</p> -->
           <p>廠商：{{ ticket.vendorName ?? '（尚未指派）' }}</p>
           <p>建立時間：{{ formatDate(ticket.startDate) }}</p>
 
@@ -81,6 +81,21 @@
     <!-- 問題描述 -->
     <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
 
+       <!-- ✅ ⬇️ 插入這區塊（附件圖片）⬇️ -->
+       <div class="mb-2" v-if="ticket.attachments?.length">
+      <p><strong>附件圖片：</strong></p>
+      <div class="d-flex flex-wrap gap-2">
+        <img
+          v-for="(img, i) in ticket.attachments"
+          :key="i"
+          :src="img.url"
+          class="rounded border"
+          style="width: 100px; height: 100px; object-fit: cover;"
+        />
+      </div>
+    </div>
+    <!-- ✅ ⬆️ 附件區結束 ⬆️ -->
+
     <!-- 工程商選擇區 -->
     <div class="row mt-3">
       <!-- 左欄：下拉選單 -->
@@ -139,6 +154,7 @@
       </div>
     </div>
   </div>
+  
 </transition>
 
     </div>
@@ -154,9 +170,12 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
 
+
 const tickets = ref([])
 const vendors = ref([])
 const expanded = ref([])
+
+const previewImageUrl = ref(null)
 
 const showDetailModal = ref(false)
 const selectedTicket = ref(null)
@@ -205,13 +224,19 @@ async function fetchTickets() {
     tickets.value = ticketRes.data.map(ticket => {
       const assignedVendorIds = ticketMap.get(ticket.id) || []
       console.log('Ticket ID:', ticket.id, 'assignedVendorIds:', assignedVendorIds)
+
+      const attachments = (ticket.attachments || []).map(a => ({
+    url: `data:image/png;base64,${a.file}`,
+    fileName: a.fileName
+  }))
       return {
         ...ticket,
         assignedVendorIds,
         assigned: assignedVendorIds.length > 0,
         assigneeName: ticket.assigner?.name ?? null,
         vendorName: assignedVendorIds.map(id => vendors.value.find(v => v.vendorID === id)?.vendorName).join(', '),
-        selectedVendorIds: []
+        selectedVendorIds: [],
+        attachments
       }
     })
   } catch (err) {
@@ -221,6 +246,7 @@ async function fetchTickets() {
 
 const assignedTickets = computed(() => tickets.value.filter(t => t.assigned))
 const unassignedTickets = computed(() => tickets.value.filter(t => !t.assigned))
+
 
 async function confirmAssign(ticket) {
   if (!ticket.selectedVendorIds?.length) {

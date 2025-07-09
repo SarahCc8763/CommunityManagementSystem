@@ -2,6 +2,7 @@ package finalProj.domain.community;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -44,7 +45,8 @@ public class Community {
 	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
 	private Long function; // 使用功能
 
-	@JsonManagedReference("communityTicket")
+	// @JsonManagedReference("communityTicket")
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
 
