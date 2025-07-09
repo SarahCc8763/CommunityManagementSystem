@@ -74,7 +74,7 @@
                   <label class="form-label">建立者</label>
                   <input v-model="form.createdBy" class="form-control" />
                 </div>
-          
+
               </div>
               <div v-if="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
               <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
@@ -106,24 +106,28 @@
       </div>
       <div class="col-lg-3 col-md-6 col-12">
         <label class="form-label mb-1">期別名稱</label>
-        <input v-model="searchName" class="form-control" placeholder="ex:2024年6月" />
+        <input v-model="searchName" class="form-control" placeholder="ex: 25M6" />
       </div>
       <div class="col-lg-7 col-12">
         <label class="form-label mb-1">期別代碼</label>
         <div class="input-group flex-nowrap period-code-group align-items-stretch">
           <span class="input-group-text align-items-center" style="height:38px;">年份</span>
-          <input v-model="searchYear" class="form-control year-input" style="max-width: 110px; min-width: 80px; height:38px;" disabled />
+          <input v-model="searchYear" class="form-control year-input"
+            style="max-width: 110px; min-width: 80px; height:38px;" disabled />
           <span class="input-group-text align-items-center" style="height:38px;">期數</span>
-          <select v-model="searchMonth" class="form-select month-select" style="max-width: 110px; min-width: 80px; height:38px;">
+          <select v-model="searchMonth" class="form-select month-select"
+            style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="">--</option>
             <option v-for="n in 12" :key="n" :value="n">{{ n }}</option>
           </select>
           <span class="input-group-text align-items-center" style="height:38px;">月份／季</span>
-          <select v-model="searchType" class="form-select type-select" style="max-width: 110px; min-width: 80px; height:38px;">
+          <select v-model="searchType" class="form-select type-select"
+            style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="M">月</option>
             <option value="Q">季</option>
           </select>
-          <button class="btn btn-primary d-flex align-items-center" style="height:38px;" @click="searchBillingPeriod" type="button">搜尋</button>
+          <button class="btn btn-primary d-flex align-items-center" style="height:38px;" @click="searchBillingPeriod"
+            type="button">搜尋</button>
         </div>
       </div>
     </div>

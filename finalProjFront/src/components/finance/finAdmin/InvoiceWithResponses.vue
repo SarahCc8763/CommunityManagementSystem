@@ -66,7 +66,7 @@
           <div>留言：{{ response.lastResponse }}</div>
           <div>末五碼：{{ response.accountCode }}</div>
           <div>回覆時間：{{ response.lastResponseTime }}</div>
-          <div>審核狀態：<span v-if="response.verified">已審核</span><span v-else>未審核</span></div>
+
           <div v-if="isOverdue(invoice.deadline)"><span class="badge bg-danger">逾期</span></div>
         </div>
         <button class="btn btn-outline-primary btn-sm ms-2"
