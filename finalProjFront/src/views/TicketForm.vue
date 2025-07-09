@@ -213,3 +213,10 @@ async function handleSubmit() {
   }
 }
 </script>
+<style scoped>
+.container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+}
+</style>

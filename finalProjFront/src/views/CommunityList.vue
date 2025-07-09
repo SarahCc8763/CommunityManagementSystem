@@ -2,14 +2,7 @@
 
   <div class="container py-4">
     <!-- 🔽 社區選擇 -->
-    <div class="mb-4">
-      <label for="communitySelect" class="form-label">選擇社區：</label>
-      <select v-model="selectedCommunity" class="form-select" id="communitySelect">
-        <option v-for="c in communities" :key="c.communityId" :value="c">
-          {{ c.name }}
-        </option>
-      </select>
-    </div>
+
 
     <h2 class="mb-4">🏘 {{ selectedCommunity?.name || '社區' }} - 功能設定</h2>
 
@@ -72,8 +65,12 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
+import { useUserStore } from '@/stores/UserStore'
 
 
+const userStore = useUserStore()
+
+console.log(userStore.rawData.communityId)
 
 // 所有功能定義（主功能與子功能）
 const allFunctionOptions = [
@@ -155,42 +152,49 @@ const allFunctionOptions = [
 ]
 
 // 狀態資料
-const communities = ref([])
+// const communities = ref([])
 const selectedCommunity = ref(null)
 const selectedFunctionNames = ref([])
 
 // 🧠 轉換 bitmask -> 主功能值清單
-function convertFunctionBitToNames(funcBit) {
-  const result = []
-  allFunctionOptions.forEach((module, i) => {
-    const mask = BigInt(1) << BigInt(i)
-    if ((BigInt(funcBit) & mask) !== 0n) {
-      result.push(module.value)
-    }
-  })
-  return result
-}
+// function convertFunctionBitToNames(funcBit) {
+//   const result = []
+//   allFunctionOptions.forEach((module, i) => {
+//     const mask = BigInt(1) << BigInt(i)
+//     if ((BigInt(funcBit) & mask) !== 0n) {
+//       result.push(module.value)
+//     }
+//   })
+//   return result
+// }
 
 // 載入社區
+
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:8080/communitys')
-    communities.value = res.data
-
-    if (communities.value.length > 0) {
-      selectedCommunity.value = communities.value[0]
-
-      // 新增：抓該社區的功能清單（主 + 子）
-      const functionRes = await axios.get(
-        `http://localhost:8080/communitys/functions/${selectedCommunity.value.communityId}`
-      )
-      selectedFunctionNames.value = functionRes.data
+    const communityId = userStore.rawData?.communityId
+    if (!communityId) {
+      console.error('❌ 無法取得登入者社區 ID')
+      return
     }
+
+    // 直接用登入者的社區 ID 當作唯一社區
+    selectedCommunity.value = {
+      communityId,
+      name: '目前登入社區',
+      address: '尚未設定',
+      createTime: new Date().toISOString()
+    }
+
+    // 載入對應功能
+    const functionRes = await axios.get(
+      `http://localhost:8080/communitys/functions/${communityId}`
+    )
+    selectedFunctionNames.value = functionRes.data
   } catch (err) {
     console.error('❌ 載入失敗', err)
   }
 })
-
 // 切換社區時更新選項
 watch(selectedCommunity, async (newVal) => {
   if (newVal) {

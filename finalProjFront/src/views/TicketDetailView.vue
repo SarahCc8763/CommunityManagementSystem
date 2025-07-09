@@ -10,6 +10,7 @@
       <div class="section">
         <h3>Description</h3>
         <QuillEditor
+          style="min-height:300px"
           v-model:content="edited.issueDescription"
           contentType="html"
           @focus="isEditing.issueDescription = true"
@@ -77,11 +78,11 @@
     <div class="ticket-side p-4 bg-light border-start" style="width: 320px; overflow-y: auto;">
       <div class="mb-3">
         <label class="label">Status</label>
-        <select v-model="ticket.status" class="form-control">
-          <option value="To Do">To Do</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Done">Done</option>
-        </select>
+        <select v-model="ticket.status" @change="saveStatus" class="form-control">
+  <option value="To Do">To Do</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Done">Done</option>
+</select>
       </div>
 
     <div class="mb-3">
@@ -182,6 +183,18 @@ function formatDate(datetime) {
   })
 }
 
+async function saveStatus() {
+  try {
+    await axios.put(`http://localhost:8080/ticket/status/${ticket.value.id}`, {
+      status: ticket.value.status // 只送出 status 欄位即可
+    })
+    console.log('✅ 狀態更新成功')
+  } catch (err) {
+    console.error('❌ 狀態更新失敗', err)
+  }
+}
+
+
 async function saveIssueTypes() {
   try {
     const ids = selectedIssueTypes.value.map(t => t.id)
@@ -279,8 +292,11 @@ const reversedComments = computed(() =>
   justify-content: center;
   font-size: 14px;
 }
+.ql-editor {
+  min-height: 600px;
+}
 .custom-quill {
-  height: 600px;
+  height: 1000px;
   border-radius: 10px;
   border: 1px solid #ccc;
   overflow: auto;

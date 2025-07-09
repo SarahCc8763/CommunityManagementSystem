@@ -36,8 +36,8 @@
     <!-- 使用者區塊 -->
     <div class="user-info">
       <div class="welcome-block" v-if="isLoggedIn">
-        <span class="welcome">你好，{{ user.name }}</span>
-        <span class="points">{{ user.points }} pt</span>
+        <span class="welcome">你好，{{ userStore.name }}</span>
+        <span class="points">{{ userStore.points }} pt</span>
       </div>
       <div v-else class="avatar placeholder">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,9 +48,23 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + user.avatar + ')' }"></div>
-      <button @click.stop="isLoggedIn ? logout() : triggerLogin()" class="auth-button">
-        {{ isLoggedIn ? '登出' : '登入' }}
+      <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
+
+
+
+
+
+      <div v-if="isAdmin">
+       <button class="admin-button" @click="router.push('/AdminDashboard')">
+  管理後台
+</button>
+      </div>
+
+
+
+      
+      <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
+        {{ userStore.isAuthenticated ? '登出' : '登入' }}
       </button>
     </div>
   </header>
@@ -59,12 +73,13 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount,watch ,computed} from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useUserStore } from '@/stores/UserStore'
 import Logo from '@/assets/images/main/Logo.png'
 
+const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()
 const userStore = useUserStore()
 const isLoggedIn = ref(false)
@@ -77,14 +92,70 @@ const finalMenuList = ref([])
 // 控制目前滑鼠停留的分類 index
 const activeIndex = ref(null)
 
-// 假資料!!!!!!!!!使用者登入狀態與資料
-const user = ref({
-  name: '小明',
-  avatar: 'https://randomuser.me/api/portraits/men/71.jpg',
-  points: 120
+
+const isNotificationCenterOpen = ref(false)
+const notificationCenterRef = ref(null)
+// 模擬通知資料
+// const notifications = ref([
+//   '您有一個新包裹到達',
+//   '社區公告更新',
+//   '新的停車位預約提醒'
+// ])
+
+// watch(
+//   () => userStore.communityId,
+//   async (newVal) => {
+//     if (!newVal) {
+//       console.warn('❗ 尚未取得登入者社區 ID')
+//       return
+//     }
+
+//     try {
+//       const res = await axios.get(`http://localhost:8080/communitys/functions/${newVal}`)
+//       communityFunctions.value = res.data
+//       console.log('✅ 社區功能載入成功')
+//     } catch (err) {
+//       console.error('❌ 載入社區功能失敗', err)
+//     }
+//   },
+//   { immediate: true }
+// )
+
+watch(
+  () => userStore.communityId,
+  (newVal) => {
+    if (newVal) {
+      loadCommunityFunctions()
+    } else {
+      console.warn('❗️ 尚未取得社區 ID，跳過功能載入')
+    }
+  },
+  { immediate: true }
+)
+
+function toggleNotificationCenter() {
+  isNotificationCenterOpen.value = !isNotificationCenterOpen.value
+  if (isNotificationCenterOpen.value) {
+    fetchNotifications()
+  }
+}
+function handleClickOutside(event) {
+  if (
+    notificationCenterRef.value &&
+    !notificationCenterRef.value.contains(event.target) &&
+    !event.target.closest('.avatar')
+  ) {
+    isNotificationCenterOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
 })
 
-
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 // 回首頁
 const goHome = () => {
@@ -95,6 +166,7 @@ const goHome = () => {
 const triggerLogin = () => {
   // 觸發自定義事件，讓 App.vue 顯示登入模態框
   window.dispatchEvent(new CustomEvent('show-login-modal'))
+  // console.log(userStore.communityId)
 }
 
 // 處理登入成功
@@ -108,12 +180,30 @@ const login = () => {
   isLoggedIn.value = true
 }
 
+// const logout = () => {
+//   isLoggedIn.value = false
+//   // 觸發全局登出事件
+//   window.dispatchEvent(new CustomEvent('logout'))
+//   // 同時更新 UserStore
+//   userStore.logout()
+//   // router.push('/')
+// }
+
 const logout = () => {
   isLoggedIn.value = false
-  // 觸發全局登出事件
-  window.dispatchEvent(new CustomEvent('logout'))
-  // 同時更新 UserStore
   userStore.logout()
+
+  // 清空功能選單
+  communityFunctions.value = []
+  finalMenuList.value = []
+
+
+  router.push('/')
+  // 觸發全局登出事件（可有可無）
+  window.dispatchEvent(new CustomEvent('logout'))
+
+  // 可選：導回首頁
+  // router.push('/')
 }
 
 // 滑鼠移出 header，下拉收起
@@ -126,9 +216,22 @@ const keepDropdown = () => {
 }
 
 // 點擊子功能導頁
+// const handleNavigate = (item) => {
+//   router.push({ name: item.routeName })
+// }
+
+// 點擊子功能導頁
 const handleNavigate = (item) => {
-  router.push({ name: item.routeName })
+  if (item.params) {
+    router.push({ name: item.routeName, params: item.params })
+  } else {
+    router.push({ name: item.routeName })
+  }
 }
+
+
+
+
 
 // 監聽登入成功事件
 const handleGlobalLoginSuccess = (event) => {
@@ -148,9 +251,9 @@ onMounted(() => {
 
   // 初始化登入狀態
   isLoggedIn.value = userStore.isAuthenticated
-  if (userStore.isAuthenticated) {
-    user.value.name = userStore.name
-  }
+  // if (userStore.isAuthenticated) {
+  //   user.value.name = userStore.name
+  // }
 })
 
 onUnmounted(() => {
@@ -241,7 +344,7 @@ const menuList = ref([
 ])
 
 onMounted(() => {
-  loadCommunityFunctions()
+  // loadCommunityFunctions()
 
   window.addEventListener('refresh-community-functions', loadCommunityFunctions)
 })
@@ -252,7 +355,8 @@ onUnmounted(() => {
 
 async function loadCommunityFunctions() {
   try {
-    const res = await axios.get('http://localhost:8080/communitys/functions/1')
+    console.log(userStore.rawData.communityId)
+    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.rawData.communityId}`)
     console.log('✅ API 回傳內容：', res.data)
 
     if (Array.isArray(res.data)) {

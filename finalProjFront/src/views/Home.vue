@@ -230,7 +230,7 @@ const features = [
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
-        link: '/TicketList'
+        link: '/TicketDashboard'
     }
 ];
 

@@ -162,7 +162,7 @@
   const searchText = ref('')
   const filter = ref({
           issueTypeNames: [],
-          reporter: user.user.id,
+          reporter: user.name,
           date: '',
         })
 watch(searchText, () => {
@@ -270,13 +270,13 @@ const handleIssueTypeChange = () => {
 }
 
   
-  function statusClass(status) {
-    return {
-      'bg-warning': status === 'to do',
-      'bg-primary': status === 'in progress',
-      'bg-success': status === 'done',
-    }
+function statusClass(status) {
+  return {
+    'bg-warning text-dark': status.toLowerCase() === 'to do',
+    'bg-danger': status.toLowerCase() === 'in progress',
+    'bg-secondary': status.toLowerCase() === 'done',
   }
+}
   
   function fetchTickets() {
     callTicketSearch()

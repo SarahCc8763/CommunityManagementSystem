@@ -80,7 +80,7 @@
           </div>
 
           <!-- 驗證碼 -->
-          <div class="input-group">
+          <!-- <div class="input-group">
             <div class="captcha-container">
               <div class="input-wrapper captcha-input">
                 <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +109,7 @@
               </div>
             </div>
             <span class="error-message" v-if="errors.captcha">{{ errors.captcha }}</span>
-          </div>
+          </div> -->
 
           <!-- 記住我選項 -->
           <div class="form-options">
@@ -118,7 +118,7 @@
               <span class="checkmark"></span>
               <span class="checkbox-label">記住我</span>
             </label>
-            <a href="#" class="forgot-password">忘記密碼？</a>
+            <a @click="goResetPassword" class="forgot-password">忘記密碼？</a>
           </div>
 
           <!-- 登入按鈕 -->
@@ -134,7 +134,13 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-
+import axios from 'axios'
+import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
+import { useRouter } from 'vue-router'
+import resetPassword from '@/components/profile/resetPassword.vue';
+const userStore = useUserStore();
+const router = useRouter()
 const props = defineProps({
   isVisible: {
     type: Boolean,
@@ -143,6 +149,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'login-success'])
+
+// 忘記密碼
+const goResetPassword = () => {
+  router.push({ name: 'resetPassword' })
+  closeModal()
+}
 
 // 表單數據
 const form = ref({
@@ -164,7 +176,7 @@ const captchaText = ref('')
 // 關閉模態框
 const closeModal = () => {
   emit('close')
-  resetForm()
+  // resetForm()
 }
 
 // 重置表單
@@ -173,7 +185,7 @@ const resetForm = () => {
     username: '',
     password: '',
     captcha: '',
-    rememberMe: false
+    // rememberMe: false
   }
   errors.value = {}
 }
@@ -235,54 +247,104 @@ const refreshCaptcha = () => {
 }
 
 // 處理登入
+
+
 const handleLogin = async () => {
   // 驗證表單
-  errors.value = {}
-  
+  // errors.value = {}
+
   if (!form.value.username.trim()) {
     errors.value.username = '請輸入帳號'
   }
-  
+
   if (!form.value.password.trim()) {
     errors.value.password = '請輸入密碼'
   }
   
-  if (!form.value.captcha.trim()) {
-    errors.value.captcha = '請輸入驗證碼'
-  } else if (form.value.captcha.toUpperCase() !== captchaText.value) {
-    errors.value.captcha = '驗證碼錯誤'
-    refreshCaptcha()
-    return
+  if (form.value.password.trim() === 'P@ssw0rd') {
+  router.push({name:'resetPassword'})
+  closeModal()
+  Swal.fire({
+                    text: '首次登入請變更密碼',
+                    icon: "warning",
+                });
+  return
   }
-  
-  if (Object.keys(errors.value).length > 0) {
-    return
-  }
-  
-  // 模擬登入過程
+
+  // if (!form.value.captcha.trim()) {
+  //   errors.value.captcha = '請輸入驗證碼'
+  // } else if (form.value.captcha.toUpperCase() !== captchaText.value) {
+  //   errors.value.captcha = '驗證碼錯誤'
+  //   refreshCaptcha()
+  //   return
+  // }
+
+  // if (Object.keys(errors.value).length > 0) {
+  //   return
+  // }
+
   isLoading.value = true
-  
+
   try {
-    // 模擬API調用
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    emit('login-success', {
-      username: form.value.username,
-      rememberMe: form.value.rememberMe
+    const response = await axios.post('http://localhost:8080/users/login', {
+      "email": form.value.username,
+      "password": form.value.password
     })
-    
-    closeModal()
+  
+    // 後端成功回傳
+    if (response.data.success) {
+      // remember me
+      if (form.value.rememberMe) {
+        localStorage.setItem('rememberedUsername', form.value.username)
+      } else {
+        localStorage.removeItem('rememberedUsername')
+      }  
+      
+      userStore.login(response.data)
+      console.log(response.data);
+      // emit('login-success', {
+      //   username: form.value.username,
+      //   rememberMe: form.value.rememberMe
+      // })
+
+      closeModal()
+      router.push({ name: 'home' })
+      await Swal.fire({
+                    text: response.data.message,
+                    icon: "success",
+                });
+    } else {
+      // 後端回傳失敗訊息
+      Swal.fire({
+                    text: response.data.message,
+                    icon: "warning",
+                });
+      errors.value.general = response.data.message || '登入失敗'
+    }
   } catch (error) {
-    console.error('登入失敗:', error)
+    closeModal()
+    Swal.fire({
+    text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
+    icon: "error",
+  });
+  console.error('登入失敗:', error)
+  errors.value.general = '伺服器錯誤，請稍後再試' 
   } finally {
     isLoading.value = false
   }
 }
 
+
 onMounted(() => {
   nextTick(() => {
     generateCaptcha()
   })
+  // remember me
+  const remembered = localStorage.getItem('rememberedUsername')
+  if (remembered) {
+    form.value.username = remembered
+    form.value.rememberMe = true
+  }
 })
 </script>
 
@@ -552,6 +614,7 @@ onMounted(() => {
 }
 
 .forgot-password:hover {
+  cursor: pointer;
   color: #5a6fd8;
 }
 

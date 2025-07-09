@@ -1,3 +1,6 @@
+
+import { useUserStore } from '@/stores/UserStore'
+
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
@@ -12,6 +15,12 @@ import TicketList from '../views/TicketList.vue'
 import TicketPage from '../views/TicketPage.vue'
 import AllTicketsByAssignment from '../views/AllTicketsByAssignment.vue'
 import CommunityList from '../views/CommunityList.vue'
+import resetPassword from '@/components/profile/resetPassword.vue';
+import AdminDashboard from '@/views/AdminDashboard.vue'
+import packages from '@/components/package/packages.vue'
+import TicketDashboard from '../views/TicketDashboard.vue'
+
+
 
 
 
@@ -91,6 +100,27 @@ const router = createRouter({
       component: CommunityList,
       meta: { dark: true },
     },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/AdminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard,
+    },
+    {
+      path: '/packages',
+      name: 'packages',
+      component: packages,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/TicketDashboard',
+      name: 'TicketDashboard',
+      component: TicketDashboard,
+    }
     // {
     //   path: '/',
     //   name: 'home',
@@ -112,6 +142,21 @@ const router = createRouter({
     //   component: Home.vue,
     // },
   ],
+
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 }
+  }
 })
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+
+  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+    console.log('尚未登入，導去首頁並觸發登入 modal')
+    window.dispatchEvent(new CustomEvent('show-login-modal'))
+    return { name: 'home' }
+  }
+  
+})
+
 
 export default router
