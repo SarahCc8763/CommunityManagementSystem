@@ -126,8 +126,8 @@ public class CommunityService {
 		Community community = communityRepository.findById(communityId)
 				.orElseThrow(() -> new RuntimeException("找不到社區 ID: " + communityId));
 		
-		Long funvtionValue = community.getFunction();
-		List<CommunityFunction> enabledFunctions = CommunityFunctionUtils.showAllEnableFunction(funvtionValue);
+		Long functionValue = community.getFunction();
+		List<CommunityFunction> enabledFunctions = CommunityFunctionUtils.showAllEnableFunction(functionValue);
 		
 		   return enabledFunctions.stream()
 		            .map(Enum::name)
