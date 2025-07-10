@@ -133,9 +133,11 @@
         <div class="modal fade" id="slotDetailModal" tabindex="-1" ref="modalRef">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content p-4">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="slotModalLabel">{{ isEditMode ? '新增承租紀錄' : '承租紀錄詳情' }}</h5>
-                        <button type="button" class="btn-close" @click="handleModalClose" aria-label="Close"></button>
+                    <div class="modal-header d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title modal-title-colored mb-0" id="slotModalLabel">{{ isEditMode ? '新增承租紀錄' : '承租紀錄詳情' }}</h5>
+                        <button type="button" class="btn-close btn-close-custom" @click="handleModalClose" aria-label="Close">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
                     <div v-if="selectedRecord" class="form-group">
                         <div class="container-fluid">
@@ -157,10 +159,10 @@
                                     </select>
                                 </div>
 
-                                <!-- 區域 -->
+                                <!-- 位置 -->
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold">區域</label>
-                                    <input class="form-control" v-model="selectedRecord.location" readonly />
+                                    <label class="form-label fw-semibold">位置</label>
+                                    <input class="form-control" v-model="selectedRecord.location" placeholder="請先選擇種類及編號" readonly />
                                 </div>
 
                                 <!-- 承租者 -->
@@ -667,5 +669,46 @@ select.form-select {
     appearance: auto;
     -webkit-appearance: auto;
     -moz-appearance: auto;
+}
+/* Modal title */
+.modal-title-colored {
+  color: #aebaff; /* 淡藍或你指定的主題紫/藍色系 */
+}
+/* 標題字顏色 */
+.modal-title-colored {
+  color: #aebaff;
+}
+
+/* 關閉按鈕 icon（乾淨、右上角） */
+.btn-close-custom {
+  background: none;
+  border: none;
+  color: #f8f9fa;
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.btn-close-custom:hover {
+  color: #ffffff;
+}
+
+/* 讓 icon 垂直置中對齊標題 */
+.modal-header .btn-close-custom i {
+  display: block;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: #cbd5e1; /* 比 #888 更亮，更適合深色背景 */
+  opacity: 0.9;
+}
+.form-control::placeholder {
+  color: #cbd5e1;
 }
 </style>

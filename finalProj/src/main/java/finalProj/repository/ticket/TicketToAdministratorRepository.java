@@ -12,4 +12,5 @@ public interface TicketToAdministratorRepository extends JpaRepository<TicketToA
 
 	List<TicketToAdministrator> findByVendorId(Integer vendorId);
 
+	void deleteByTicketId(Integer ticketId);
 }

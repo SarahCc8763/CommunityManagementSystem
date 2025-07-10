@@ -41,7 +41,7 @@ public class Ticket {
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketComment> comments;// (ticket)一對多(留言)
 
-//	@JsonManagedReference("ticketAndIssueTypes")
+	@JsonManagedReference("ticketAndIssueTypes")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<IssueTypeAndTicket> issueTypes;
 

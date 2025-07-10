@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -22,135 +23,137 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Units", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"unit", "floor"})
+@Table(name = "Units", uniqueConstraints = { @UniqueConstraint(columnNames = { "unit", "floor" })
 })
 public class Units {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "units_id")
-    private Integer unitsId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "units_id")
+	private Integer unitsId;
 
-    @Column(nullable = false, length = 10)
-    private String unit;
+	@Column(nullable = false, length = 10)
+	private String unit;
 
-    @Column(nullable = false, length = 10)
-    private String floor;
+	@Column(nullable = false, length = 10)
+	private String floor;
 
-    @Column(length = 10)
-    private String building;
+	@Column(length = 10)
+	private String building;
 
-    @Column(nullable = false, precision = 6, scale = 2)
-    private BigDecimal ping;
+	@Column(nullable = false, precision = 6, scale = 2)
+	private BigDecimal ping;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
-    private Integer point = 0;
+	@Column(columnDefinition = "INT DEFAULT 0")
+	private Integer point = 0;
 
-    @JsonManagedReference("unitPackage")
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Packages> packagesList;
+	@JsonManagedReference("unitPackage")
+	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Packages> packagesList;
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("unitsUsersList")
-    private List<UnitsUsers> unitsUsersList;
+	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("unitsUsersList")
+	private List<UnitsUsers> unitsUsersList;
 
-    @JsonBackReference("communityUnit")
-    @ManyToOne
-    @JoinColumn(name = "community_id", referencedColumnName = "id")
-    private Community community;
-    // --- Julie的關聯 START ---
-    // 一對多到車位
-    @JsonManagedReference("units-temporaryParking")
-    @OneToMany(mappedBy = "units", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TemporaryParkingApplication> temporaryParking;
+	// @JsonBackReference("communityUnit")
+	@ManyToOne
+	@JoinColumn(name = "community_id", referencedColumnName = "id")
+	private Community community;
 
-    // --- Julie的關聯 END ---
-    public Integer getUnitsId() {
-        return unitsId;
-    }
+	// --- Julie的關聯 START ---
+	// 一對多到車位
+	// @JsonManagedReference("units-temporaryParking")
+	@JsonIgnore
+	@OneToMany(mappedBy = "units", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TemporaryParkingApplication> temporaryParking;
 
-    public void setUnitsId(Integer unitsId) {
-        this.unitsId = unitsId;
-    }
+	// --- Julie的關聯 END ---
 
-    public String getUnit() {
-        return unit;
-    }
+	public Integer getUnitsId() {
+		return unitsId;
+	}
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public void setUnitsId(Integer unitsId) {
+		this.unitsId = unitsId;
+	}
 
-    public String getFloor() {
-        return floor;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-    public String getBuilding() {
-        return building;
-    }
+	public String getFloor() {
+		return floor;
+	}
 
-    public void setBuilding(String building) {
-        this.building = building;
-    }
+	public void setFloor(String floor) {
+		this.floor = floor;
+	}
 
-    public BigDecimal getPing() {
-        return ping;
-    }
+	public String getBuilding() {
+		return building;
+	}
 
-    public void setPing(BigDecimal ping) {
-        this.ping = ping;
-    }
+	public void setBuilding(String building) {
+		this.building = building;
+	}
 
-    public Integer getPoint() {
-        return point;
-    }
+	public BigDecimal getPing() {
+		return ping;
+	}
 
-    public void setPoint(Integer point) {
-        this.point = point;
-    }
+	public void setPing(BigDecimal ping) {
+		this.ping = ping;
+	}
 
-    public List<Packages> getPackagesList() {
-        return packagesList;
-    }
+	public Integer getPoint() {
+		return point;
+	}
 
-    public void setPackagesList(List<Packages> packagesList) {
-        this.packagesList = packagesList;
-    }
+	public void setPoint(Integer point) {
+		this.point = point;
+	}
 
-    public List<UnitsUsers> getUnitsUsersList() {
-        return unitsUsersList;
-    }
+	public List<Packages> getPackagesList() {
+		return packagesList;
+	}
 
-    public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
-        this.unitsUsersList = unitsUsersList;
-    }
+	public void setPackagesList(List<Packages> packagesList) {
+		this.packagesList = packagesList;
+	}
 
-    public Community getCommunity() {
-        return community;
-    }
+	public List<UnitsUsers> getUnitsUsersList() {
+		return unitsUsersList;
+	}
 
-    public void setCommunity(Community community) {
-        this.community = community;
-    }
+	public void setUnitsUsersList(List<UnitsUsers> unitsUsersList) {
+		this.unitsUsersList = unitsUsersList;
+	}
 
-    @Override
-    public String toString() {
-        return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
-                + ", ping=" + ping + ", point=" + point + ", packagesList=" + packagesList + ", unitsUsersList="
-                + unitsUsersList + ", community=" + community + "]";
-    }
+	public Community getCommunity() {
+		return community;
+	}
 
-    public List<TemporaryParkingApplication> getTemporaryParking() {
-        return temporaryParking;
-    }
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
 
-    public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
-        this.temporaryParking = temporaryParking;
-    }
+	@Override
+	public String toString() {
+		return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
+				+ ", ping=" + ping + ", point=" + point + ", packagesList=" + packagesList + ", unitsUsersList="
+				+ unitsUsersList + ", community=" + community + "]";
+	}
+
+	public List<TemporaryParkingApplication> getTemporaryParking() {
+		return temporaryParking;
+	}
+
+	public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
+		this.temporaryParking = temporaryParking;
+	}
 
 }

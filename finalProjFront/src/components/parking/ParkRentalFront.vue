@@ -99,7 +99,7 @@
                 </div>
 
                 <!-- v-if：只有在資料備妥才顯示 -->
-                <div class="modal-body" v-if="rentalSlot">
+                <div class="modal-body" v-if="rentalSlot && rentalSlot.slotNumber">
                     <p><strong>承租者：</strong>{{ userName }}</p>
                     <p><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</p>
                     <p><strong>車位區域：</strong>{{ rentalSlot.location }}</p>
@@ -164,10 +164,26 @@
                 {{ record.approved ? '已審核' : '待審核' }}
               </span>
             </td>
-            <td>
-              <button class="btn btn-primary btn-sm" @click="viewDetails(record)">點我繳費</button>
-              <button class="btn btn-primary btn-sm" @click="viewDetails(record)">續租</button>
-            </td>
+            <td class="d-flex justify-content-center flex-wrap gap-2">
+
+  <button
+    class="btn btn-primary btn-sm rounded-pill action-btn"
+    :disabled="record.status && record.approved || !isWithinRentalPeriod(record) || !record.canExtend"
+    @click="openExtendModal(record)"
+  >
+    續租
+  </button>
+
+  <button
+    class="btn btn-danger btn-sm rounded-pill action-btn"
+    @click="deleteRecord(record)"
+    :disabled="record.status && record.approved"
+  >
+    取消承租
+  </button>
+</td>
+
+
           </tr>
         </tbody>
       </table>
@@ -175,12 +191,42 @@
     </div>
   </div>
 </div>
-
     </div>
+
+    
+    <!-- 續租 Modal -->
+    <div class="modal fade" id="extendModal" tabindex="-1" ref="extendModalRef">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">續租設定</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>車位編號：</strong>{{ selectedSlot.slotNumber }}</p>
+            <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
+            <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
+            <label class="form-label">登記車牌：</label>
+            <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" />
+            <p><strong>承租起始：</strong>{{ extendStart }}</p>
+            <p><strong>承租截止：</strong>{{ extendEnd }}</p>
+            <label class="form-label">續租月數</label>
+            <select class="form-select" v-model="extendMonths">
+              <option v-for="m in 6" :value="m">{{ m }} 個月</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button class="btn btn-success" @click="submitExtend">確認續租</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </template>
     
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import axios from '@/plugins/axios.js'
 import Swal from 'sweetalert2'
 import { Modal } from 'bootstrap'
@@ -270,27 +316,28 @@ const filteredSlots = computed(() => {
 
 function openRentalModal(slot) {
   prepareRental(slot)
-  rentalModalInstance?.show()
+  setTimeout(() => {
+    rentalModalInstance?.show()
+  }, 0)
 }
+
 
 
 function prepareRental(slot) {
-    rentalSlot.value = slot
-    userName.value = userStore.email
+  console.log('準備承租 slot：', slot)
+  rentalSlot.value = slot
+  userName.value = userStore.email
 
-    // 先暫停 watch
-    rentInitialized.value = false
+  rentInitialized.value = false
+  rentStartMonth.value = queryStartMonth.value
+  rentEndMonth.value = queryEndMonth.value
+  licensePlate.value = ''
 
-    // 設定初始值
-    rentStartMonth.value = queryStartMonth.value
-    rentEndMonth.value = queryEndMonth.value
-    licensePlate.value = ''
-
-    // 下一個 tick 再啟用 watch（避免立即觸發）
-    setTimeout(() => {
-        rentInitialized.value = true
-    }, 0)
+  setTimeout(() => {
+    rentInitialized.value = true
+  }, 0)
 }
+
 
 // 日期時間格式化（含時分秒）
 function formatDateTime2(datetimeStr) {
@@ -370,28 +417,97 @@ async function submitRental() {
   }
 }
 
+const extendModalRef = ref(null)
+const extendMonths = ref(1)
+const selectedSlot = ref({})
+const extendStart = ref('')
+const extendEnd = ref('')
 
-// 畫面載入時預設月份
-onMounted(() => {
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = today.getMonth() + 1
-    const isFirstDay = today.getDate() === 1
 
-    const startDate = new Date(year, isFirstDay ? month - 1 : month, 1)
-    const endDate = new Date(startDate)
-    endDate.setMonth(startDate.getMonth() + 1)
+const formatDate = (strOrDate) => {
+  if (!strOrDate) return '-'
+  const d = typeof strOrDate === 'string' ? new Date(strOrDate) : strOrDate
+  return d.toLocaleDateString('zh-TW')
+}
 
-    queryStartMonth.value = startDate.toISOString().slice(0, 7)
-    queryEndMonth.value = endDate.toISOString().slice(0, 7)
+watch(extendMonths, () => {
+  if (!selectedSlot.value.rentEnd) return
+  const start = new Date(selectedSlot.value.rentEnd)
+  start.setDate(start.getDate() + 1)
+  const end = new Date(start)
+  end.setMonth(end.getMonth() + extendMonths.value)
+  extendStart.value = formatDate(start)
+  extendEnd.value = formatDate(end)
+})
 
-    if (modalElement.value) {
-    rentalModalInstance = new Modal(modalElement.value)
+let extendModalInstance ;
+const openExtendModal = (slot) => {
+  selectedSlot.value = { ...slot }
+  extendMonths.value = 1
+  const start = new Date(selectedSlot.value.rentEnd)
+  start.setDate(start.getDate() + 1)
+  const end = new Date(start)
+  end.setMonth(end.getMonth() + extendMonths.value)
+  extendStart.value = formatDate(start)
+  extendEnd.value = formatDate(end)
+  extendModalInstance.show()
+}
+
+const submitExtend = async () => {
+  const start = new Date(selectedSlot.value.rentEnd)
+  start.setDate(start.getDate() + 1)
+  const end = new Date(start)
+  end.setMonth(end.getMonth() + extendMonths.value)
+
+  const payload = {
+    ...selectedSlot.value,
+    rentBuyStart: start.toISOString().slice(0, 10),
+    rentEnd: end.toISOString().slice(0, 10),
+    approved: false,
+    status: false,
+    approverName: null,
+    id: null
   }
 
-    fetchAvailableSlots()
-    fetchType()
-    fetchUserOptions()
+  const result = await Swal.fire({
+    icon: 'question',
+    title: '確認續租？',
+    showCancelButton: true,
+    confirmButtonText: '是',
+    cancelButtonText: '否'
+  })
+  if (!result.isConfirmed) return
+console.log(payload)
+  await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
+  await Swal.fire('續租成功', '', 'success')
+  fetchRentalHistory()
+  extendModalInstance.hide()
+  rentalModalInstance.hide()
+}
+
+// 畫面載入時預設月份
+onMounted(async () => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth() + 1
+  const isFirstDay = today.getDate() === 1
+
+  const startDate = new Date(year, isFirstDay ? month - 1 : month, 1)
+  const endDate = new Date(startDate)
+  endDate.setMonth(startDate.getMonth() + 1)
+
+  queryStartMonth.value = startDate.toISOString().slice(0, 7)
+  queryEndMonth.value = endDate.toISOString().slice(0, 7)
+
+  await nextTick()
+  if (modalElement.value) {
+    rentalModalInstance = new Modal(modalElement.value)
+  }
+  extendModalInstance = new Modal(extendModalRef.value)
+
+  fetchAvailableSlots()
+  fetchType()
+  fetchUserOptions()
 })
 
 // 搜尋區：起始月變更 → 自動修正截止月不得早於 +1 月
@@ -425,8 +541,16 @@ const rentalHistory = ref([])
 
 async function fetchRentalHistory() {
   const res = await axios.get(`/park/parking-rentals/user?usersId=${usersId.value}`)
-  rentalHistory.value = res.data.data || []
+  const records = res.data.data || []
+
+  // 加上是否可續租欄位
+  for (const r of records) {
+    r.canExtend = await canExtendSlot(r)
+  }
+
+  rentalHistory.value = records
 }
+
 watch(selectedTab, (tab) => {
   if (tab === 'history') fetchRentalHistory()
 })
@@ -437,6 +561,72 @@ watch([selectedType, queryStartMonth, queryEndMonth, searchKeyword], ([type, sta
   fetchAvailableSlots();
 });
 
+
+function isWithinRentalPeriod(record) {
+  if (!record.rentBuyStart || !record.rentEnd) return false
+  const now = new Date()
+  const start = new Date(record.rentBuyStart)
+  const end = new Date(record.rentEnd)
+  return now >= start && now <= end
+}
+
+async function canExtendSlot(record) {
+  const nextStart = new Date(record.rentEnd)
+  nextStart.setDate(nextStart.getDate() + 1)
+  const nextEnd = new Date(nextStart)
+  nextEnd.setMonth(nextEnd.getMonth() + 1)
+
+  try {
+    const res = await axios.get(`/park/parking-rentals/available-slots`, {
+      params: {
+        parkingTypeId: selectedType.value, // or record.parkingTypeId if你有
+        communityId: communityId,
+        start: nextStart.toISOString().slice(0, 10),
+        end: nextEnd.toISOString().slice(0, 10),
+      }
+    })
+    const availableSlots = res.data.data || []
+    return availableSlots.some(slot => slot.slotNumber === record.slotNumber)
+  } catch (err) {
+    console.error('檢查續租衝突失敗', err)
+    return false // 若錯誤保守處理，不給按
+  }
+}
+
+// 刪除紀錄
+async function deleteRecord(record) {
+  console.log(record)
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '此操作無法還原！',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '刪除',
+        cancelButtonText: '取消'
+    })
+    
+    if (!result.isConfirmed) return
+    try {
+        const res = await axios.delete(`/park/parking-rentals/${record.id}`)
+        await Swal.fire({
+            icon: 'success',
+            title: '刪除成功',
+            showConfirmButton: false,
+            timer: 1000
+        })
+        fetchRentalHistory()
+        console.log(res.data.data)
+
+    } catch (e) {
+        await Swal.fire({
+            icon: 'error',
+            title: '刪除失敗',
+            text: e.response?.data?.message || '請稍後再試',
+        })
+    }
+}
 </script>
 
     
@@ -565,6 +755,53 @@ watch([selectedType, queryStartMonth, queryEndMonth, searchKeyword], ([type, sta
     font-weight: 600;
     padding: 6px 16px;
     transition: all 0.2s ease;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+td .btn {
+  min-width: 80px;
+  font-weight: 500;
+}
+td .btn-sm {
+  min-width: 100px;
+  font-weight: 500;
+  border-radius: 999px;
+}
+
+
+/* 共用圓角按鈕樣式 */
+.action-btn {
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* hover 效果：讓每顆都有亮感 */
+.btn-success:hover:not(:disabled),
+.btn-primary:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* 圓角外觀精緻 */
+.btn-sm {
+  border-radius: 999px !important;
+  padding: 4px 12px !important;
 }
 
 </style>

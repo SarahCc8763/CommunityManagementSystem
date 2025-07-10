@@ -163,6 +163,7 @@ const fetchUnits = async () => {
     console.log("communityId: " + communityId)
     const res = await axios.get(`/units?communityId=${communityId}`)
     units.value = res.data.data
+    console.log(res.data);
     console.log("units: " + units.value)
 }
 
@@ -505,7 +506,6 @@ async function removeSelected() {
 function addRow() {
     const defaultUnitId = units.value[0]?.unitsId ?? null
     const filteredUserList = getAvailableUsersForUnit(defaultUnitId)
-
     parkingSlots.value.push({
         slotNumber: '',
         location: '',

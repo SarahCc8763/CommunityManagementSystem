@@ -1,5 +1,6 @@
 package finalProj.controller.users;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.ApiResponse;
 import finalProj.jwt.JsonWebTokenUtility;
@@ -24,23 +26,14 @@ import finalProj.service.users.UsersService;
 @RequestMapping("/users")
 public class UsersController {
 
-	// @Autowired
-	// private UsersRepository usersRepository;
+	@Autowired
+	private UsersRepository usersRepository;
 
 	@Autowired
 	private UsersService usersService;
 
 	@Autowired
-	private UsersRepository usersRepository;
-
-	@Autowired
 	private JsonWebTokenUtility jwtUtility;
-
-	@GetMapping
-	public ResponseEntity<ApiResponse<List<Users>>> findByCommunity(@RequestParam("communityId") Integer communityId) {
-		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
-		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
-	}
 
 	@PostMapping("/resetPassword")
 	public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
@@ -77,16 +70,65 @@ public class UsersController {
 		// 登入成功
 		if (user != null) {
 			String token = jwtUtility.createToken(user.getEmail()); // 你現在的 JWT 只用 email
-			return ResponseEntity
-					.ok(Map.of("success", "true", "message", "登入成功", "token", token, "email", user.getEmail(), "id",
-							user.getUsersId(), "name", user.getName(), "communityId",
-							user.getCommunity().getCommunityId(), "photo",
-							user.getPhoto(), "logFaildTimes", user.getLoginFailTimes()// 你可以加上更多資料
-					));
+			// 判斷有無值
+			Units unitObj = null;
+			if (user.getUnitsUsersList() != null
+					&& !user.getUnitsUsersList().isEmpty()
+					&& user.getUnitsUsersList().getFirst().getUnit() != null) {
+				unitObj = user.getUnitsUsersList().getFirst().getUnit();
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("success", "true");
+			response.put("message", "登入成功");
+			response.put("token", token);
+			response.put("email", user.getEmail());
+			response.put("id", user.getUsersId());
+			response.put("name", user.getName());
+			response.put("roleId", user.getRolesUsersList().getFirst().getRole().getRolesId());
+			response.put("communityId", user.getCommunity().getCommunityId());
+			response.put("state", user.getState());
+			response.put("contactInfo", user.getContactInfo());
+			response.put("emergencyContactName", user.getEmergencyContactName());
+			response.put("emergencyContactRelation", user.getEmergencyContactRelation());
+			response.put("emergencyContactPhone", user.getEmergencyContactPhone());
+			response.put("photo", user.getPhoto() != null ? user.getPhoto() : null);
+			response.put("logFaildTimes", user.getLoginFailTimes());
+			response.put("points", unitObj != null ? unitObj.getPoint() : null);
+			response.put("unitId", unitObj != null ? unitObj.getUnitsId() : null);
+			response.put("unit", unitObj != null ? unitObj.getUnit() : null);
+			response.put("floor", unitObj != null ? unitObj.getFloor() : null);
+			return ResponseEntity.ok(response);
+
+			// ResponseEntity.ok(Map.of(
+			// "success","true",
+			// "message", "登入成功",
+			// "token", token,
+			// "email", user.getEmail(),
+			// "id",
+			// user.getUsersId(),
+			// "name", user.getName(),
+			// "communityId", user.getCommunity().getCommunityId(),
+			// "photo", user.getPhoto(),
+			// "logFaildTimes", user.getLoginFailTimes(),
+			// "points", user.getUnitsUsersList().get(0).getUnit().getPoint(),
+			// "unit",user.getUnitsUsersList().get(0).getUnit().getUnit()// 你可以加上更多資料
+			// ));
 			// 登入失敗
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "登入失敗"));
 		}
 	}
 
+	@GetMapping("/ticket")
+	public List<Users> findAll() {
+		// 呼叫 service.findAll()
+		return usersService.findAll(); // 空清單回傳
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponse<List<Users>>> findByCommunity(@RequestParam("communityId") Integer communityId) {
+		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
+	}
 }

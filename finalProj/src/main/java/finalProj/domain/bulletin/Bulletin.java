@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
-import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
@@ -86,15 +85,6 @@ public class Bulletin {
     @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("bulletin-comment")
     private List<BulletinComment> comments;
-
-    // --- Julie的關聯 START ---
-
-    // 一對一到車位抽籤
-    @JsonManagedReference("bulletin-lotteryEevents")
-    @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL)
-    private LotteryEvents lotteryEvents;
-
-    // --- Julie的關聯 END ---
 
     public List<BulletinAttachment> getAttachments() {
         return attachments;
@@ -225,13 +215,5 @@ public class Bulletin {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public LotteryEvents getLotteryEvents() {
-        return lotteryEvents;
-    }
-
-    public void setLotteryEvents(LotteryEvents lotteryEvents) {
-        this.lotteryEvents = lotteryEvents;
     }
 }

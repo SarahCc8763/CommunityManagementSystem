@@ -1,5 +1,8 @@
 package finalProj.domain.users;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,9 +22,13 @@ public class RolesUsers {
     @Column(name = "rolesusers_id")
     private Integer rolesusersId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "users_id", nullable = false)
-    private Users user;
+	
+	@JsonBackReference("RoleUser")
+	// @JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "users_id", nullable = false)
+	private Users user;
+
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "roles_id", nullable = false)

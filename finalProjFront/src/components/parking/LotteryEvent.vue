@@ -409,4 +409,49 @@ onMounted(() => {
   z-index: 10000 !important;
 }
 
+
+
+/* Modal title */
+.modal-title-colored {
+  color: #aebaff; /* 淡藍或你指定的主題紫/藍色系 */
+}
+/* 標題字顏色 */
+.modal-title-colored {
+  color: #aebaff;
+}
+
+/* 關閉按鈕 icon（乾淨、右上角） */
+.btn-close-custom {
+  background: none;
+  border: none;
+  color: #f8f9fa;
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.btn-close-custom:hover {
+  color: #ffffff;
+}
+
+/* 讓 icon 垂直置中對齊標題 */
+.modal-header .btn-close-custom i {
+  display: block;
+}
+
+.dark-input,
+.dark-select,
+input.form-control,
+select.form-select {
+    background-color: #2e2e3e !important;
+    color: #f8f9fa !important;
+    border: 1px solid #555;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    height: auto;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+}
 </style>

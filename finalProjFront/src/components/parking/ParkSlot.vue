@@ -249,7 +249,6 @@ async function submitNewSlot() {
       icon: 'success',
       title: '新增成功',
       confirmButtonText: '確定',
-      theme: 'dark'
     })
 
     // 清空表單
@@ -274,7 +273,6 @@ async function submitNewSlot() {
       title: '新增失敗',
       text: e?.response?.data?.message || '請稍後再試',
       confirmButtonText: '關閉',
-      theme: 'dark'
     })
   }
 }
@@ -290,7 +288,6 @@ async function saveEdit() {
       icon: 'success',
       title: '修改成功',
       confirmButtonText: '確定',
-      theme: 'dark'
     })
     
     console.log(res.data)
@@ -305,7 +302,6 @@ async function saveEdit() {
       title: '修改失敗',
       text: e?.response?.data?.message || '請稍後再試',
       confirmButtonText: '關閉',
-      theme: 'dark'
     })
   }
 }
@@ -356,8 +352,6 @@ const deleteSlot = async (id) => {
     cancelButtonColor: '#6c757d',
     confirmButtonText: '刪除',
     cancelButtonText: '取消',
-    theme: 'dark',
-    background: '#ccc',
   })
 
   if (result.isConfirmed) {
@@ -368,7 +362,6 @@ const deleteSlot = async (id) => {
         title: '刪除成功',
         showConfirmButton: false,
         timer: 1000,
-        theme: 'dark'
       })
       fetchSlots()
     } catch (e) {
@@ -378,7 +371,6 @@ const deleteSlot = async (id) => {
         title: '刪除失敗',
         text: e?.response?.data?.message || '請稍後再試',
         confirmButtonText: '關閉',
-        theme: 'dark'
       })
     }
   }

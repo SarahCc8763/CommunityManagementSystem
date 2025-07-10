@@ -3,6 +3,7 @@ package finalProj.controller.ticket;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.ticket.Ticket;
@@ -82,4 +84,24 @@ public class TickrtController {
 		return ticketService.searchTickets(dto);
 	}
 
+//只改狀態
+	@PutMapping("/status/{id}")
+public ApiResponse<Ticket> updateStatus(@PathVariable("id") Integer id, @RequestBody TicketDTO dto) {
+	try {
+		Ticket result = ticketService.updateStatusOnly(id, dto);
+		return new ApiResponse<>(true, "狀態更新成功", result);
+	} catch (IllegalArgumentException e) {
+		return new ApiResponse<>(false, e.getMessage(), null);
+	}
+}
+
+
+	//分頁功能
+// 	@GetMapping("/ticketsPage")
+// public Page<Ticket> findAllPaged(
+//     @RequestParam(defaultValue = "0") int page,
+//     @RequestParam(defaultValue = "10") int size
+// ) {
+//     return ticketService.findAllPages(page, size);
+// }
 }
