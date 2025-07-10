@@ -57,11 +57,7 @@ const route = useRoute()
 // ✅ 只判斷 meta.dark
 const isDarkMode = computed(() => route.meta?.dark === true)
 
-user.login({
-  name: '王小明',
-  username: 'ming123',
-  avatarUrl: 'https://i.pravatar.cc/100?img=13'
-})
+// 刪除 user.login({ ... }) 這段
 
 const handleLoginSuccess = (loginData) => {
   user.login({
@@ -136,6 +132,11 @@ Swal.mixin({
 
 .main-area.with-right-nav {
   margin-right: 0px;
+}
+
+.main-area.dark-mode {
+  background: #23272f !important;
+  color: #e0e6ed !important;
 }
 
 /* 左右 SideNav */

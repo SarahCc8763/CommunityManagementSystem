@@ -198,7 +198,6 @@ const submitRemit = async () => {
       lastResponse: remitNote.value,
       accountCode: remitCode.value
     }
-
     console.log(payload)
     await axiosapi.post(`/finance/invoice-responses`, payload)
 
@@ -214,6 +213,8 @@ const submitRemit = async () => {
     })
 
     payMsg.value = '' // 清除訊息
+    // 重新載入帳單卡片
+    await reloadInvoices()
   } catch (e) {
     payMsg.value = '送出失敗：' + (e.response?.data?.message || e.message)
 
@@ -226,6 +227,16 @@ const submitRemit = async () => {
         popup: 'swal-on-top'
       }
     })
+  }
+}
+
+// 重新查詢帳單
+async function reloadInvoices() {
+  try {
+    const res = await axiosapi.post('/finance/invoice/unpaid-or-pending/by-user', { userId: userStore.userId })
+    invoices.value = Array.isArray(res.data) ? res.data : []
+  } catch (e) {
+    invoices.value = []
   }
 }
 const goCredit = () => {
@@ -250,7 +261,7 @@ function isOverdue(invoice) {
 
 onMounted(async () => {
   try {
-    const res = await axiosapi.post('/finance/invoice/unpaid/by-user', { userId: userStore.userId })
+    const res = await axiosapi.post('/finance/invoice/unpaid-or-pending/by-user', { userId: userStore.userId })
     console.log('API 回傳資料', res.data)
     invoices.value = Array.isArray(res.data) ? res.data : []
     console.log(invoices.value);

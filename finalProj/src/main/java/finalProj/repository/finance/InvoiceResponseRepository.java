@@ -26,7 +26,7 @@ public interface InvoiceResponseRepository extends JpaRepository<InvoiceResponse
                 FROM Invoice i
                 JOIN InvoiceResponse r ON r.invoice.invoiceId = i.invoiceId
                 WHERE i.communityId = :communityId
-                  AND i.paymentStatus = 'unpaid'
+                  AND (i.paymentStatus = 'unpaid' OR i.paymentStatus = 'pending')
             """)
     List<InvoiceDTO> findUnpaidInvoiceWithResponseByCommunityId(@Param("communityId") Integer communityId);
 

@@ -3,6 +3,8 @@ package finalProj.dto.finance;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import lombok.Data;
 
@@ -55,6 +57,14 @@ public class InvoiceDTO {
         if (i.getBillingPeriod() != null) {
             this.billingPeriod = new BillingPeriodDTO(i.getBillingPeriod());
         }
+        // 補上 invoiceResponses 轉 DTO
+        if (i.getInvoiceResponses() != null) {
+            this.invoiceResponses = i.getInvoiceResponses().stream()
+                    .map(InvoiceResponseDTO::new)
+                    .collect(Collectors.toList());
+        }
+        if (this.invoiceResponses == null)
+            this.invoiceResponses = new ArrayList<>();
     }
 
     public InvoiceDTO() {

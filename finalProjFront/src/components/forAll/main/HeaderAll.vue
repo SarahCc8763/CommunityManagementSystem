@@ -37,8 +37,8 @@
     <!-- 使用者區塊 -->
     <div class="user-info">
       <div class="welcome-block" v-if="isLoggedIn">
-        <span class="welcome">你好，{{ user.name }}</span>
-        <span class="points">{{ user.points }} pt</span>
+        <span class="welcome">你好，{{ userStore.name }}</span>
+        <span class="points">{{ userStore.points }} pt</span>
       </div>
       <div v-else class="avatar placeholder">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -173,7 +173,7 @@ const triggerLogin = () => {
 // 處理登入成功
 const handleLoginSuccess = (loginData) => {
   isLoggedIn.value = true
-  user.value.name = loginData.username
+  userStore.name = loginData.username
 }
 
 // 登入登出切換
@@ -293,8 +293,8 @@ const menuList = ref([
       { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
       { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
       { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
+      { label: 'A審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
       { label: 'A查看繳款回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
-
     ]
   },
   {

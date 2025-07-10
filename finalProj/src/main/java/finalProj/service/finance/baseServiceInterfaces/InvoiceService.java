@@ -34,4 +34,6 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     List<InvoiceDTO> findUnpaidInvoicesByCommunityId(Integer communityId);
 
+    // 查詢某用戶所有 paymentStatus 不是 'paid' 的帳單（即 unpaid + pending）
+    List<InvoiceDTO> findUnpaidOrPendingInvoicesByUserId(Integer userId);
 }

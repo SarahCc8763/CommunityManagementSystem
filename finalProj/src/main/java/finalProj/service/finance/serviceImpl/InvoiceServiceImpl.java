@@ -114,6 +114,12 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<InvoiceDTO> findUnpaidOrPendingInvoicesByUserId(Integer userId) {
+        return invoiceRepository.findUnpaidOrPendingByUserId(userId)
+                .stream().map(this::toDTO).collect(java.util.stream.Collectors.toList());
+    }
+
     private InvoiceDTO toDTO(Invoice invoice) {
         if (invoice == null)
             return null;

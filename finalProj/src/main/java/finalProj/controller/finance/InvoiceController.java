@@ -98,4 +98,12 @@ public class InvoiceController {
         return ResponseEntity.ok().build();
     }
 
+    // 查詢登入者所有未繳（unpaid + pending）帳單（傳 userId）
+    @PostMapping("/unpaid-or-pending/by-user")
+    public ResponseEntity<List<InvoiceDTO>> getUnpaidOrPendingInvoicesByUser(
+            @RequestBody Map<String, Integer> payload) {
+        Integer userId = payload.get("userId");
+        return ResponseEntity.ok(invoiceService.findUnpaidOrPendingInvoicesByUserId(userId));
+    }
+
 }

@@ -9,15 +9,13 @@ import Home from '../views/Home.vue'
 import finUser from '@/components/finance/finUser/finUser.vue'
 import Invoice from '@/components/finance/finUser/Invoice.vue'
 import Receipt from '@/components/finance/finUser/Receipt.vue'
-import InvoiceHistory from '@/components/finance/finUser/InvoiceHistory.vue'
-import InvoiceResponseAdd from '@/components/finance/finUser/InvoiceResponseAdd.vue'
 //財務相關-管理員
 import Dashboard from '@/components/finance/finAdmin/Dashboard.vue'
 import FeeTypeAdd from '@/components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '@/components/finance/finAdmin/BillingPeriodAdd.vue'
 import InvoiceAdd from '@/components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceValidate from '@/components/finance/finAdmin/InvoiceValidate.vue'
-import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponses.vue'
+import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponse.vue'
 import ReceiptAdd from '@/components/finance/finAdmin/ReceiptAdd.vue'
 
 
@@ -68,18 +66,6 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice-response/add',
-      name: 'InvoiceResponseAdd',
-      component: InvoiceResponseAdd,
-
-    },
-    {
-      path: '/finance/receipt/add',
-      name: 'ReceiptAdd',
-      component: ReceiptAdd,
-      meta: { dark: true },
-    },
-    {
       path: '/finance/invoice/Receipt',
       name: 'ReceiptHistory',
       component: Receipt,
@@ -120,11 +106,6 @@ const router = createRouter({
     // },
 
     {
-      path: '/finance/invoice/history',
-      name: 'InvoiceHistory',
-      component: InvoiceHistory,
-    },
-    {
       path: '/ticket/:id',
       name: 'TicketDetail',
       component: TicketDetailView,
@@ -163,6 +144,7 @@ const router = createRouter({
       path: '/AdminDashboard',
       name: 'AdminDashboard',
       component: AdminDashboard,
+      meta: { dark: true },
     },
     {
       path: '/packages',

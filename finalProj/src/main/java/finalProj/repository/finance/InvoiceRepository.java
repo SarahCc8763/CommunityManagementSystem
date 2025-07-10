@@ -37,4 +37,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Invoice> findByCommunityIdAndPaymentStatus(@Param("communityId") Integer communityId,
             @Param("paymentStatus") String paymentStatus);
 
+    // 查詢某用戶所有 paymentStatus 不是 'paid' 的帳單（即 unpaid + pending）
+    @Query("SELECT i FROM Invoice i WHERE i.users.usersId = :usersId AND i.paymentStatus <> 'paid'")
+    List<Invoice> findUnpaidOrPendingByUserId(@Param("usersId") Integer usersId);
 }

@@ -20,6 +20,10 @@ export const useUserStore = defineStore('user', () => {
     const communityId = ref('')
     const rawData = reactive({}) // 保存完整後端回傳
 
+    // 假資料 for 開發測試
+    const userId = ref(3)
+    communityId.value = 1
+
 
     function login(payload) {
         isAuthenticated.value = true
@@ -83,6 +87,7 @@ export const useUserStore = defineStore('user', () => {
         emergencyContactRelation,
         emergencyContactPhone,
         communityId,
+        userId,
         // displayName,
     }
 }, {
