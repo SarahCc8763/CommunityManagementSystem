@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
@@ -13,6 +14,7 @@ import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "ticket")
@@ -38,6 +41,7 @@ public class Ticket {
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketComment> comments;// (ticket)一對多(留言)
 
+	@JsonManagedReference("ticketAndIssueTypes")
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<IssueTypeAndTicket> issueTypes;
 
@@ -50,16 +54,22 @@ public class Ticket {
 	private List<TicketIssueCostAttachment> costAttachment;// (ticket)一對多(金額附件)
 
 	// 報修人（使用者）
-	@JsonBackReference("reporterIdTicket")
 	@ManyToOne
 	@JoinColumn(name = "reporter_id", nullable = true, referencedColumnName = "users_id")
-	private Users reporterId;
+	@JsonBackReference("reporterUser")
+	private Users reporter;
+
+	@Transient
+	private String name;
 
 	// 被指派處理的管理員
 	@JsonBackReference("assignerIdTicket")
 	@ManyToOne
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
+
+	// @Transient
+	// private String assignerName;
 
 	@Column(name = "title")
 	private String title; // 問題標題
@@ -92,11 +102,41 @@ public class Ticket {
 
 	@Override
 	public String toString() {
-		return "Ticket [id=" + id + ", community=" + community + ", comments=" + comments + ", attachments="
-				+ attachments + ", costAttachment=" + costAttachment + ", reporterId=" + reporterId + ", assignerId="
-				+ assignerId + ", title=" + title + ", status=" + status + ", issueDescription=" + issueDescription
-				+ ", cost=" + cost + ", actionTime=" + actionTime + ", actionBy=" + actionBy + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
+		return "Ticket [id=" + id + ", community=" + community + ", comments=" + comments + ", issueTypes=" + issueTypes
+				+ ", attachments=" + attachments + ", costAttachment=" + costAttachment + ", reporter=" + reporter
+				+ ", assignerId=" + assignerId + ", title=" + title + ", status=" + status + ", issueDescription="
+				+ issueDescription + ", cost=" + cost + ", actionTime=" + actionTime + ", actionBy=" + actionBy
+				+ ", startDate=" + startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
+	}
+
+	public List<IssueTypeAndTicket> getIssueTypes() {
+		return issueTypes;
+	}
+
+	public void setIssueTypes(List<IssueTypeAndTicket> issueTypes) {
+		this.issueTypes = issueTypes;
+	}
+
+	// public String getAssignerName() {
+	// if (reporter != null) {
+	// assignerName = assignerId.getName();
+	// }
+	// return assignerName;
+	// }
+	//
+	// public void setAssignerName(String assignerName) {
+	// this.assignerName = assignerName;
+	// }
+
+	public String getName() {
+		if (reporter != null) {
+			name = reporter.getName();
+		}
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Users getAssignerId() {
@@ -107,12 +147,12 @@ public class Ticket {
 		this.assignerId = assignerId;
 	}
 
-	public Users getReporterId() {
-		return reporterId;
+	public Users getReporter() {
+		return reporter;
 	}
 
-	public void setReporterId(Users reporterId) {
-		this.reporterId = reporterId;
+	public void setReporter(Users reporter) {
+		this.reporter = reporter;
 	}
 
 	public List<TicketAttachment> getAttachments() {

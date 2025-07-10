@@ -1,5 +1,8 @@
 package finalProj.domain.ticket;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,9 +20,12 @@ public class IssueTypeAndTicket {
 	@Column(name = "id")
 	private Integer id;
 
+	@JsonBackReference("ticketAndIssueTypes")
 	@ManyToOne
 	@JoinColumn(name = "ticket_id")
 	private Ticket ticket;// ticket流水號
+
+	@JsonIgnoreProperties({ "tickets" })
 	@ManyToOne
 	@JoinColumn(name = "issue_type_id")
 	private IssueType issueType;

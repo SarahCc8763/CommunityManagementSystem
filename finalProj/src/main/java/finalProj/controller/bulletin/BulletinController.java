@@ -27,7 +27,11 @@ import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
+<<<<<<< HEAD
 import finalProj.dto.bulletin.BulletinResponse;
+=======
+import finalProj.dto.BulletinResponse;
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 import finalProj.repository.users.UsersRepository;
 import finalProj.service.bulletin.BulletinAttachmentService;
 import finalProj.service.bulletin.BulletinCategoryService;
@@ -246,11 +250,19 @@ public class BulletinController {
     // -- 查詢公告 --
     //
 
+<<<<<<< HEAD
     // 查詢所有該社區公告
     @GetMapping("/community/{communityId}")
     public BulletinResponse findAllBulletin(@PathVariable Integer communityId) {
         BulletinResponse response = new BulletinResponse();
         if (bulletinService.findAll(communityId).isEmpty()) {
+=======
+    // 查詢所有公告
+    @GetMapping
+    public BulletinResponse findAllBulletin() {
+        BulletinResponse response = new BulletinResponse();
+        if (bulletinService.findAll().isEmpty()) {
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
             response.setMessage("查無資料");
             response.setSuccess(false);
         } else {
@@ -258,7 +270,11 @@ public class BulletinController {
             response.setCount(bulletinService.count());
             response.setSuccess(true);
             response.setMessage("查詢成功");
+<<<<<<< HEAD
             response.setList(bulletinService.findAll(communityId));
+=======
+            response.setList(bulletinService.findAll());
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
         }
         return response;
     }
@@ -325,6 +341,7 @@ public class BulletinController {
     //
 
     @PutMapping("/comment/{id}")
+<<<<<<< HEAD
     public ResponseEntity<?> updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
         if (body != null) {
             body.setId(id);
@@ -336,6 +353,14 @@ public class BulletinController {
             }
         }
         return ResponseEntity.badRequest().body("請求資料無效");
+=======
+    public BulletinComment updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
+        if (body != null) {
+            body.setId(id);
+            return bulletinCommentService.modify(body);
+        }
+        throw new RuntimeException("修改失敗");
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     }
 
     //
@@ -344,6 +369,7 @@ public class BulletinController {
     //
     //
 
+<<<<<<< HEAD
     // -- 根據社區查詢公告分類 --
 
     @GetMapping("/category/community/{communityId}")
@@ -351,6 +377,8 @@ public class BulletinController {
         return bulletinCategoryService.findByCommunityId(communityId);
     }
 
+=======
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     // -- 新增公告分類 --
 
     @PostMapping("/category")
@@ -387,6 +415,7 @@ public class BulletinController {
         }
     }
 
+<<<<<<< HEAD
     @PutMapping("/category/{id}")
     public BulletinCategory modifyBulletinCategory(@PathVariable Integer id, @RequestBody BulletinCategory body) {
         if (body != null) {
@@ -395,6 +424,17 @@ public class BulletinController {
         }
         return null;
     }
+=======
+    // 暫不提供修改
+    // @PutMapping("/category/{id}")
+    // public BulletinCategory modifyBulletinCategory(@RequestBody BulletinCategory
+    // body) {
+    // if (body != null) {
+    // return bulletinCategoryService.modify(body);
+    // }
+    // return null;
+    // }
+>>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 
     //
     // -- 查詢全部公告分類 --

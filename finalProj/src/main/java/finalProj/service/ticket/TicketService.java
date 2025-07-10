@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ import finalProj.repository.ticket.IssueTypeAndTicketRepository;
 import finalProj.repository.ticket.IssueTypeRepository;
 import finalProj.repository.ticket.TicketAttachmentRepository;
 import finalProj.repository.ticket.TicketRepository;
+import finalProj.repository.ticket.TicketToAdministratorRepository;
 import finalProj.repository.users.UsersRepository;
 import finalProj.util.CommunityFunctionUtils;
 
@@ -41,6 +46,8 @@ public class TicketService {
 	private IssueTypeRepository issueTypeRepository;
 	@Autowired
 	private IssueTypeAndTicketRepository issueTypeAndTicketRepository;
+	@Autowired
+	private TicketToAdministratorRepository ticketToAdministratorRepository;
 
 	// 查詢一筆資料
 	public Ticket findById(Integer id) {
@@ -82,7 +89,7 @@ public class TicketService {
 
 		Ticket ticket = new Ticket();
 		ticket.setCommunity(community);
-		ticket.setReporterId(reporter);
+		ticket.setReporter(reporter);
 		ticket.setTitle(dto.getTitle());
 		ticket.setAssignerId(assigner);
 		ticket.setStatus(dto.getStatus());
@@ -125,11 +132,13 @@ public class TicketService {
 
 	// 刪除一筆資料
 	public boolean remove(Integer id) {
-		if (id != null) {
-			if (ticketRepository.existsById(id)) {
-				ticketRepository.deleteById(id);
-				return true;
-			}
+		if (id != null && ticketRepository.existsById(id)) {
+			// 先刪除中介表中對應的關聯資料
+			ticketToAdministratorRepository.deleteByTicketId(id);
+
+			// 再刪除主資料
+			ticketRepository.deleteById(id);
+			return true;
 		}
 		return false;
 	}
@@ -163,7 +172,7 @@ public class TicketService {
 
 		ticket.setId(id);
 		ticket.setCommunity(community);
-		ticket.setReporterId(reporter);
+		ticket.setReporter(reporter);
 		ticket.setAssignerId(assigner);
 		ticket.setTitle(dto.getTitle());
 		ticket.setStatus(dto.getStatus());
@@ -177,15 +186,44 @@ public class TicketService {
 
 	// 找尋所有資料
 	public List<Ticket> findAll() {
+
 		return ticketRepository.findAll();
 	}
 
 	// 找尋特定資料
 	public List<Ticket> searchTickets(TicketSearchDTO dto) {
-		List<String> keywords = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
-		int size = keywords.size();
-		return ticketRepository.searchTicketsWithOptionalIssueTypes(dto.getId(), dto.getReporterId(),
-				dto.getAssignerId(), dto.getTitle(), keywords, size);
+		List<String> issueTypes = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
+		int issueTypeSize = issueTypes.size();
+
+		return ticketRepository.searchTickets(
+				dto.getTitle(),
+				dto.getStatus(),
+				dto.getStartDate(),
+				dto.getReporterId(),
+				issueTypes,
+				issueTypeSize);
 	}
+
+	// 只改狀態
+	public Ticket updateStatusOnly(Integer id, TicketDTO dto) {
+		Ticket ticket = ticketRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Ticket ID 不存在：" + id));
+
+		if (dto.getStatus() == null || dto.getStatus().isBlank()) {
+			throw new IllegalArgumentException("狀態不得為空");
+		}
+
+		ticket.setStatus(dto.getStatus());
+		ticket.setActionTime(new Date()); // 若你希望記錄修改時間
+
+		return ticketRepository.save(ticket);
+	}
+
+	// 分頁功能
+	// public Page<Ticket> findAllPages(int page,int size) {
+	// Pageable pageable = PageRequest.of(page, size,
+	// Sort.by("startDate").descending());
+	// return ticketRepository.findAll(pageable);
+	// }
 
 }

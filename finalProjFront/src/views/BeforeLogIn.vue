@@ -157,7 +157,7 @@ const projects = [
 ]
 
 function handleLogin() {
-    //console.log('emit login')
+    console.log('emit login')
 
     emit('show-login')
 }

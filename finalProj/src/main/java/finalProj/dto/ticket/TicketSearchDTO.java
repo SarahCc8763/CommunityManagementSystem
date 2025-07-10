@@ -1,20 +1,37 @@
 package finalProj.dto.ticket;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TicketSearchDTO {
-	private Integer id;
-	private Integer reporterId;
-	private Integer assignerId;
 	private String title;
+	private String status;
+	private LocalDate startDate;
+	private Integer reporterId;
 	private List<String> issueTypeNames;
 
-	public Integer getId() {
-		return id;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
 
 	public Integer getReporterId() {
@@ -23,22 +40,6 @@ public class TicketSearchDTO {
 
 	public void setReporterId(Integer reporterId) {
 		this.reporterId = reporterId;
-	}
-
-	public Integer getAssignerId() {
-		return assignerId;
-	}
-
-	public void setAssignerId(Integer assignerId) {
-		this.assignerId = assignerId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public List<String> getIssueTypeNames() {

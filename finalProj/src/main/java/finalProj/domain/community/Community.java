@@ -2,6 +2,7 @@ package finalProj.domain.community;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
@@ -12,6 +13,9 @@ import finalProj.domain.faq.FaqKeyword;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.packages.Packages;
+import finalProj.domain.parking.ParkingRentals;
+import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.parking.ParkingType;
 import finalProj.domain.ticket.Ticket;
 import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
@@ -44,15 +48,18 @@ public class Community {
 	@Column(name = "[function]") // SQL Server 保留字，需用中括號轉義
 	private Long function; // 使用功能
 
-	@JsonManagedReference("communityTicket")
+	// @JsonManagedReference("communityTicket")
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
 
-	@JsonManagedReference("communityUser")
+	// @JsonManagedReference("communityUser")
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Users> users;
 
-	@JsonManagedReference("communityUnit")
+	// @JsonManagedReference("communityUnit")
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Units> units;
 
@@ -63,7 +70,8 @@ public class Community {
 	// --- 政宇的關聯 START ---
 	// 社區-公告
 	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-bulletin")
+	// @JsonManagedReference("community-bulletin")
+	@JsonIgnore
 	private List<Bulletin> bulletins;
 	// 社區-公告分類
 	@OneToMany(mappedBy = "community")
@@ -91,6 +99,33 @@ public class Community {
 	private List<FaqKeyword> faqKeywords;
 
 	// --- 政宇的關聯 END ---
+
+	// --- Julie的關聯 START ---
+	// 一對多到車位種類
+	// @JsonManagedReference("community-parkingType")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingType> parkingType;
+
+	// 一對多到車位
+	// @JsonManagedReference("community-parkingSlot")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingSlot> parkingSlot;
+
+	// 一對多到承租紀錄
+	// @JsonManagedReference("community-parkingRentals")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingRentals> parkingRentals;
+
+	// --- Julie的關聯 END ---
+
+	@Override
+	public String toString() {
+		return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
+				+ address + ", createTime=" + createTime + ", function=" + function + "]";
+	}
 
 	public List<Units> getUnits() {
 		return units;
@@ -156,18 +191,28 @@ public class Community {
 		this.faqs = faqs;
 	}
 
-	public List<FaqKeyword> getFaqKeywords() {
-		return faqKeywords;
+	public List<ParkingType> getParkingType() {
+		return parkingType;
 	}
 
-	public void setFaqKeywords(List<FaqKeyword> faqKeywords) {
-		this.faqKeywords = faqKeywords;
+	public void setParkingType(List<ParkingType> parkingType) {
+		this.parkingType = parkingType;
 	}
 
-	@Override
-	public String toString() {
-		return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
-				+ address + ", createTime=" + createTime + ", function=" + function + "]";
+	public List<ParkingSlot> getParkingSlot() {
+		return parkingSlot;
+	}
+
+	public void setParkingSlot(List<ParkingSlot> parkingSlot) {
+		this.parkingSlot = parkingSlot;
+	}
+
+	public List<ParkingRentals> getParkingRentals() {
+		return parkingRentals;
+	}
+
+	public void setParkingRentals(List<ParkingRentals> parkingRentals) {
+		this.parkingRentals = parkingRentals;
 	}
 
 	public Integer getCommunityId() {

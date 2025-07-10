@@ -2,6 +2,7 @@ package finalProj.domain.users;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +16,10 @@ import finalProj.domain.community.Community;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.feedback.FeedbackStatusHistory;
+import finalProj.domain.parking.LotteryApply;
+import finalProj.domain.parking.LotteryEvents;
+import finalProj.domain.parking.ParkingRentals;
+import finalProj.domain.parking.ParkingSlot;
 import finalProj.domain.poll.PollVote;
 import finalProj.domain.ticket.Ticket;
 import jakarta.persistence.CascadeType;
@@ -27,11 +32,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users")
 @JsonIgnoreProperties({ "feedbacks", "bulletinComments", "bulletinCommentLikes", "pollVotes", "bulletins",
-		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies" })
+		"handledFeedbacks", "feedbackStatusHistories", "feedbackReplies", "RolesUsersList" })
 public class Users {
 
 	@Id
@@ -96,14 +102,18 @@ public class Users {
 	@JsonIgnore
 	private List<UnitsUsers> unitsUsersList;
 
+	@Transient
+	private List<Units> unit;
+
 	@JsonBackReference("communityUser")
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
 	// 這個 user 曾報修過的 tickets
-	@JsonManagedReference("reporterIdTicket")
-	@OneToMany(mappedBy = "reporterId", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("reporterUser")
+	// @JsonIgnore
 	private List<Ticket> reportedTickets;
 
 	// 這個 user 被指派處理的 tickets
@@ -143,10 +153,83 @@ public class Users {
 
 	@OneToMany(mappedBy = "user")
 	private List<FeedbackReply> feedbackReplies;
-
 	// --- 政宇的關聯 END ---
+
+	// @JsonManagedReference("RoleUser")
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RolesUsers> RolesUsersList;
+
+	// --- Julie的關聯 START ---
+	// 一對多到車位
+	@JsonManagedReference("users-parkingSlot")
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingSlot> parkingSlots;
+
+	// 一對多到承租車位 (承租者)
+	@JsonManagedReference("users-parkingRentals") // 與 users 對應
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingRentals> rentalsMade;
+
+	// 一對多到承租車位 (審核者)
+	@JsonManagedReference("users-approver") // 與 approver 對應
+	@OneToMany(mappedBy = "approver", cascade = CascadeType.ALL)
+	private List<ParkingRentals> rentalsApproved;
+
+	// 一對多到車位抽籤
+	@JsonManagedReference("users-lotteryEevents")
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	private List<LotteryEvents> lotteryEvents;
+
+	// 一對多到車位抽籤申請
+	@JsonManagedReference("users-lotteryApply")
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	private List<LotteryApply> lotteryApply;
+
+	// --- Julie的關聯 END ---
+
 	public Integer getUsersId() {
 		return usersId;
+	}
+
+	public List<ParkingSlot> getParkingSlots() {
+		return parkingSlots;
+	}
+
+	public void setParkingSlots(List<ParkingSlot> parkingSlots) {
+		this.parkingSlots = parkingSlots;
+	}
+
+	public List<ParkingRentals> getRentalsMade() {
+		return rentalsMade;
+	}
+
+	public void setRentalsMade(List<ParkingRentals> rentalsMade) {
+		this.rentalsMade = rentalsMade;
+	}
+
+	public List<ParkingRentals> getRentalsApproved() {
+		return rentalsApproved;
+	}
+
+	public void setRentalsApproved(List<ParkingRentals> rentalsApproved) {
+		this.rentalsApproved = rentalsApproved;
+	}
+
+	public List<LotteryEvents> getLotteryEvents() {
+		return lotteryEvents;
+	}
+
+	public void setLotteryEvents(List<LotteryEvents> lotteryEvents) {
+		this.lotteryEvents = lotteryEvents;
+	}
+
+	public List<LotteryApply> getLotteryApply() {
+		return lotteryApply;
+	}
+
+	public void setLotteryApply(List<LotteryApply> lotteryApply) {
+		this.lotteryApply = lotteryApply;
 	}
 
 	public void setUsersId(Integer usersId) {
@@ -397,4 +480,25 @@ public class Users {
 				+ reportedTickets + ", assignedTickets=" + assignedTickets + "]";
 	}
 
+	@JsonIgnore
+	public List<RolesUsers> getRolesUsersList() {
+		return RolesUsersList;
+	}
+
+	public void setRolesUsersList(List<RolesUsers> rolesUsersList) {
+		RolesUsersList = rolesUsersList;
+	}
+
+	public List<Units> getUnit() {
+		return unitsUsersList == null
+				? List.of()
+				: unitsUsersList.stream()
+						.map(UnitsUsers::getUnit)
+						.filter(Objects::nonNull)
+						.toList();
+	}
+
+	public void setUnit(List<Units> unit) {
+		this.unit = unit;
+	}
 }
