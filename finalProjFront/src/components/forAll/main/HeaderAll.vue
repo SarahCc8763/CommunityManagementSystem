@@ -349,8 +349,7 @@ const props = defineProps({
   isDarkMode: { type: Boolean, default: false }
 })
 
-import { onUnmounted } from 'vue'
-import axios from 'axios'
+
 
 onUnmounted(() => {
   window.removeEventListener('refresh-community-functions', loadCommunityFunctions)
