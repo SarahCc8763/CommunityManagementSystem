@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import finalProj.domain.ticket.Ticket;
 import finalProj.domain.users.RolesUsers;
 import finalProj.domain.users.Users;
 import finalProj.repository.users.RolesUsersRepository;

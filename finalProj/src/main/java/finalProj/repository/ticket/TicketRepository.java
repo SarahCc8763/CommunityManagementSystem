@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
 import finalProj.domain.ticket.Ticket;
 
@@ -35,6 +36,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 			@Param("issueTypes") List<String> issueTypes,
 			@Param("issueTypeSize") int issueTypeSize);
 
+	@NonNull
 	@EntityGraph(attributePaths = { "reporter" })
 	List<Ticket> findAll();
 

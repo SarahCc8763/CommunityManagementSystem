@@ -132,8 +132,6 @@ const router = createRouter({
       meta: { dark: true }
     },
     {
-
-
       path: '/ticket/:id',
       name: 'TicketDetail',
       component: TicketDetailView,

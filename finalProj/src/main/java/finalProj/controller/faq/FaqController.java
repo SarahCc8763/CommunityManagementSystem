@@ -4,10 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
 import org.springframework.http.ResponseEntity;
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
-<<<<<<< HEAD
 import finalProj.dto.faq.FaqDto;
 import finalProj.dto.faq.FaqResponse;
-=======
-import finalProj.dto.FaqDto;
-import finalProj.dto.FaqResponse;
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 import finalProj.service.faq.FaqCategoryService;
 import finalProj.service.faq.FaqService;
 
@@ -145,7 +137,6 @@ public class FaqController {
         return response;
     }
 
-<<<<<<< HEAD
     @GetMapping("/community/{communityId}")
 
     public FaqResponse findFaqByCommunity(@PathVariable Integer communityId) {
@@ -163,8 +154,6 @@ public class FaqController {
         return response;
     }
 
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     @PostMapping("/searchby")
     public FaqResponse searchFaqBy(@RequestBody Faq body) {
         FaqResponse response = new FaqResponse();
@@ -189,7 +178,6 @@ public class FaqController {
         return response;
     }
 
-<<<<<<< HEAD
     @PostMapping("/searchbykeyword")
     public FaqResponse searchFaqByKeyword(@RequestBody Faq body) {
         FaqResponse response = new FaqResponse();
@@ -216,10 +204,6 @@ public class FaqController {
 
     @GetMapping("/{communityId}/category")
     public String[] findAllCategoryArray(@PathVariable Integer communityId) {
-=======
-    @GetMapping("/{communityId}/category")
-    public String[] findAllCategory(@PathVariable Integer communityId) {
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
         if (communityId == null) {
             return null;
         }
@@ -234,7 +218,6 @@ public class FaqController {
 
     }
 
-<<<<<<< HEAD
     @GetMapping("/{communityId}/category/list")
     public List<FaqCategory> findAllCategoryList(@PathVariable Integer communityId) {
         if (communityId == null) {
@@ -246,8 +229,6 @@ public class FaqController {
 
     }
 
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     @PostMapping("/category")
     public FaqCategory addCategory(@RequestBody FaqCategory body) {
         if (body == null) {
@@ -257,7 +238,6 @@ public class FaqController {
 
     }
 
-<<<<<<< HEAD
     // 刪除 FAQ 分類
     @DeleteMapping("/category/{id}")
     public ResponseEntity<FaqCategory> deleteCategory(@PathVariable Integer id) {
@@ -270,6 +250,4 @@ public class FaqController {
 
     }
 
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 }

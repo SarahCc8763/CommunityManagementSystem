@@ -28,11 +28,7 @@ import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.users.Users;
-<<<<<<< HEAD
 import finalProj.dto.feedback.FeedbackResponse;
-=======
-import finalProj.dto.FeedbackResponse;
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
 import finalProj.service.feedback.FeedbackReplyService;
@@ -155,7 +151,6 @@ public class feedbackController {
     }
 
     //
-<<<<<<< HEAD
     // -- 修改意見處理狀態 --
     //
 
@@ -234,23 +229,14 @@ public class feedbackController {
     }
 
     //
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     // --查詢意見主表 --
     //
 
     // 查詢所有意見
-<<<<<<< HEAD
     @GetMapping("/community/{communityId}")
     public FeedbackResponse getAllFeedbacks(@PathVariable Integer communityId) {
         FeedbackResponse response = new FeedbackResponse();
         List<Feedback> feedbacks = feedbackService.findAll(communityId);
-=======
-    @GetMapping
-    public FeedbackResponse getAllFeedbacks() {
-        FeedbackResponse response = new FeedbackResponse();
-        List<Feedback> feedbacks = feedbackService.findAll();
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
         if (feedbacks.isEmpty()) {
             response.setSuccess(false);
             response.setMessage("查無資料");
@@ -422,7 +408,6 @@ public class feedbackController {
         return feedbackReplyService.modify(body);
     }
 
-<<<<<<< HEAD
     @DeleteMapping("/reply/{replyId}")
     public ResponseEntity<Map<String, Object>> deleteFeedbackReply(@PathVariable Integer replyId) {
         Map<String, Object> response = new HashMap<>();
@@ -446,8 +431,6 @@ public class feedbackController {
         }
     }
 
-=======
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
     // 通過使用者尋找
     @GetMapping("/findbyuser/{id}")
     public List<Feedback> findFaqByUser(@PathVariable Integer id) {

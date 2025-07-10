@@ -1,22 +1,16 @@
 package finalProj.config;
 
-<<<<<<< HEAD
-=======
 import java.util.List;
 
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-<<<<<<< HEAD
-=======
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 
 @Configuration
 public class SecurityConfig {
@@ -29,10 +23,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-<<<<<<< HEAD
-=======
                 .cors(Customizer.withDefaults())
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
                 .csrf(csrf -> csrf.disable()) // 如果你要用表單登入，建議不要關
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/**", "/api/**", "/**", "/finance/**").permitAll()
@@ -41,8 +32,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-<<<<<<< HEAD
-=======
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -57,5 +46,4 @@ public class SecurityConfig {
 
         return source;
     }
->>>>>>> 9379fc2c9a9002e2545cce43d38f16ede34eb878
 }

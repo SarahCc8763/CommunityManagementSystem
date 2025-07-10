@@ -1,7 +1,6 @@
 package finalProj.domain.users;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
