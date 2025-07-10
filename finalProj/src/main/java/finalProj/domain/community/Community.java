@@ -13,6 +13,9 @@ import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.packages.Packages;
+import finalProj.domain.parking.ParkingRentals;
+import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.parking.ParkingType;
 import finalProj.domain.ticket.Ticket;
 import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
@@ -50,12 +53,13 @@ public class Community {
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> tickets;
 
-	@JsonManagedReference("communityUser")
+	// @JsonManagedReference("communityUser")
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Users> users;
 
 	// @JsonManagedReference("communityUnit")
-	@JsonIgnoreProperties
+	@JsonIgnore
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Units> units;
 
@@ -66,7 +70,8 @@ public class Community {
 	// --- 政宇的關聯 START ---
 	// 社區-公告
 	@OneToMany(mappedBy = "community")
-	@JsonManagedReference("community-bulletin")
+	// @JsonManagedReference("community-bulletin")
+	@JsonIgnore
 	private List<Bulletin> bulletins;
 	// 社區-公告分類
 	@OneToMany(mappedBy = "community")
@@ -91,10 +96,119 @@ public class Community {
 
 	// --- 政宇的關聯 END ---
 
+	// --- Julie的關聯 START ---
+	// 一對多到車位種類
+	// @JsonManagedReference("community-parkingType")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingType> parkingType;
+
+	// 一對多到車位
+	// @JsonManagedReference("community-parkingSlot")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingSlot> parkingSlot;
+
+	// 一對多到承租紀錄
+	// @JsonManagedReference("community-parkingRentals")
+	@JsonIgnore
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParkingRentals> parkingRentals;
+
+	// --- Julie的關聯 END ---
+
 	@Override
 	public String toString() {
 		return "Community [communityId=" + communityId + ", tickets=" + tickets + ", name=" + name + ", address="
 				+ address + ", createTime=" + createTime + ", function=" + function + "]";
+	}
+
+	public List<Units> getUnits() {
+		return units;
+	}
+
+	public void setUnits(List<Units> units) {
+		this.units = units;
+	}
+
+	public List<Packages> getPackagesList() {
+		return packagesList;
+	}
+
+	public void setPackagesList(List<Packages> packagesList) {
+		this.packagesList = packagesList;
+	}
+
+	public List<Bulletin> getBulletins() {
+		return bulletins;
+	}
+
+	public void setBulletins(List<Bulletin> bulletins) {
+		this.bulletins = bulletins;
+	}
+
+	public List<BulletinCategory> getBulletinCategories() {
+		return bulletinCategories;
+	}
+
+	public void setBulletinCategories(List<BulletinCategory> bulletinCategories) {
+		this.bulletinCategories = bulletinCategories;
+	}
+
+	public List<FaqCategory> getFaqCategories() {
+		return faqCategories;
+	}
+
+	public void setFaqCategories(List<FaqCategory> faqCategories) {
+		this.faqCategories = faqCategories;
+	}
+
+	public List<FeedbackCategory> getFeedbackCategories() {
+		return feedbackCategories;
+	}
+
+	public void setFeedbackCategories(List<FeedbackCategory> feedbackCategories) {
+		this.feedbackCategories = feedbackCategories;
+	}
+
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public List<Faq> getFaqs() {
+		return faqs;
+	}
+
+	public void setFaqs(List<Faq> faqs) {
+		this.faqs = faqs;
+	}
+
+	public List<ParkingType> getParkingType() {
+		return parkingType;
+	}
+
+	public void setParkingType(List<ParkingType> parkingType) {
+		this.parkingType = parkingType;
+	}
+
+	public List<ParkingSlot> getParkingSlot() {
+		return parkingSlot;
+	}
+
+	public void setParkingSlot(List<ParkingSlot> parkingSlot) {
+		this.parkingSlot = parkingSlot;
+	}
+
+	public List<ParkingRentals> getParkingRentals() {
+		return parkingRentals;
+	}
+
+	public void setParkingRentals(List<ParkingRentals> parkingRentals) {
+		this.parkingRentals = parkingRentals;
 	}
 
 	public Integer getCommunityId() {

@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
+import finalProj.dto.parking.ApiResponse;
 import finalProj.jwt.JsonWebTokenUtility;
+import finalProj.repository.users.UsersRepository;
 import finalProj.service.users.UsersService;
 
 //@CrossOrigin
@@ -23,8 +26,8 @@ import finalProj.service.users.UsersService;
 @RequestMapping("/users")
 public class UsersController {
 
-	// @Autowired
-	// private UsersRepository usersRepository;
+	@Autowired
+	private UsersRepository usersRepository;
 
 	@Autowired
 	private UsersService usersService;
@@ -58,7 +61,7 @@ public class UsersController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "更改失敗"));
 	}
 
-@PostMapping("/login")
+	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
 		String email = body.get("email");
 		String password = body.get("password");
@@ -69,12 +72,12 @@ public class UsersController {
 			String token = jwtUtility.createToken(user.getEmail()); // 你現在的 JWT 只用 email
 			// 判斷有無值
 			Units unitObj = null;
-			if (user.getUnitsUsersList() != null 
-			    && !user.getUnitsUsersList().isEmpty()
-			    && user.getUnitsUsersList().getFirst().getUnit() != null) {
-			  unitObj = user.getUnitsUsersList().getFirst().getUnit();
+			if (user.getUnitsUsersList() != null
+					&& !user.getUnitsUsersList().isEmpty()
+					&& user.getUnitsUsersList().getFirst().getUnit() != null) {
+				unitObj = user.getUnitsUsersList().getFirst().getUnit();
 			}
-			
+
 			Map<String, Object> response = new HashMap<>();
 			response.put("success", "true");
 			response.put("message", "登入成功");
@@ -96,30 +99,36 @@ public class UsersController {
 			response.put("unit", unitObj != null ? unitObj.getUnit() : null);
 			response.put("floor", unitObj != null ? unitObj.getFloor() : null);
 			return ResponseEntity.ok(response);
-	        
-//					ResponseEntity.ok(Map.of(
-//					"success","true",
-//					"message", "登入成功", 
-//					"token", token, 
-//					"email", user.getEmail(), 
-//					"id",
-//					user.getUsersId(), 
-//					"name", user.getName(), 
-//					"communityId", user.getCommunity().getCommunityId(), 
-//					"photo", user.getPhoto(), 
-//					"logFaildTimes", user.getLoginFailTimes(),
-//					"points", user.getUnitsUsersList().get(0).getUnit().getPoint(),
-//					"unit",user.getUnitsUsersList().get(0).getUnit().getUnit()// 你可以加上更多資料
-//			));
+
+			// ResponseEntity.ok(Map.of(
+			// "success","true",
+			// "message", "登入成功",
+			// "token", token,
+			// "email", user.getEmail(),
+			// "id",
+			// user.getUsersId(),
+			// "name", user.getName(),
+			// "communityId", user.getCommunity().getCommunityId(),
+			// "photo", user.getPhoto(),
+			// "logFaildTimes", user.getLoginFailTimes(),
+			// "points", user.getUnitsUsersList().get(0).getUnit().getPoint(),
+			// "unit",user.getUnitsUsersList().get(0).getUnit().getUnit()// 你可以加上更多資料
+			// ));
 			// 登入失敗
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "登入失敗"));
 		}
 	}
 
-	@GetMapping
+	@GetMapping("/ticket")
 	public List<Users> findAll() {
 		// 呼叫 service.findAll()
 		return usersService.findAll(); // 空清單回傳
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponse<List<Users>>> findByCommunity(@RequestParam("communityId") Integer communityId) {
+		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
 	}
 }
