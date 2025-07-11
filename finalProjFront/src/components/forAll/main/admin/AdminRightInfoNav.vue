@@ -4,7 +4,7 @@
     <div class="info-list">
       <div class="info-item">
         <span class="info-label">社區名稱</span>
-        <span class="info-value">林苑社區</span>
+        <span class="info-value">River Bank-水岸晴川</span>
       </div>
       <div class="info-item">
         <span class="info-label">電話</span>
@@ -45,15 +45,12 @@
         <div class="mini-value">23 / 19</div>
       </div>
     </div>
-    <div class="map-section">
-      <div class="map-title">幸福社區</div>
-      <iframe class="google-map" src="https://www.google.com/maps?q=台北市信義區松仁路100號&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
+
   </aside>
 </template>
 
 <script setup>
-// 無需 JS 資料
+//我可不可以先寫死資料就好 QwQ 
 </script>
 
 <style scoped>
@@ -65,7 +62,7 @@
   height: calc(100vh - 80px);
   background: linear-gradient(135deg, #232a36 0%, #232a36 100%);
   color: #e0e6ed;
-  box-shadow: -4px 0 24px rgba(80,120,255,0.10);
+  box-shadow: -4px 0 24px rgba(80, 120, 255, 0.10);
   z-index: 2000;
   padding: 24px 18px 18px 18px;
   display: flex;
@@ -73,6 +70,7 @@
   align-items: flex-start;
   border-left: 2.5px solid #4a5670;
 }
+
 .info-title {
   font-size: 1.32rem;
   font-weight: 900;
@@ -86,12 +84,14 @@
   box-shadow: 0 2px 8px #232a3640;
   border-left: 5px solid #a3bffa;
 }
+
 .info-list {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .info-item {
   display: flex;
   align-items: flex-end;
@@ -106,6 +106,7 @@
   border-bottom: 1px solid #3a4060;
   transition: border 0.18s;
 }
+
 .info-label {
   flex: 1 1 60%;
   color: #a3bffa;
@@ -113,12 +114,14 @@
   font-size: 0.98rem;
   padding-right: 8px;
 }
+
 .info-value {
   flex: 0 0 auto;
   color: #fff;
   font-size: 1.05rem;
   font-weight: 900;
 }
+
 .info-row-cards {
   display: flex;
   gap: 10px;
@@ -126,6 +129,7 @@
   width: 100%;
   justify-content: space-between;
 }
+
 .mini-card {
   background: #2a3140;
   border-left: 3px solid #a3bffa;
@@ -141,32 +145,17 @@
   border-radius: 0;
   box-shadow: none;
 }
+
 .mini-label {
   color: #a3bffa;
   font-size: 0.93rem;
   font-weight: 700;
   margin-bottom: 2px;
 }
+
 .mini-value {
   color: #fff;
   font-size: 1.08rem;
   font-weight: 900;
 }
-.map-section {
-  margin-top: 18px;
-  width: 100%;
-}
-.map-title {
-  font-size: 0.98rem;
-  font-weight: 700;
-  color: #a3bffa;
-  margin-bottom: 4px;
-}
-.google-map {
-  width: 100%;
-  height: 140px;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px #232a3640;
-}
-</style> 
+</style>

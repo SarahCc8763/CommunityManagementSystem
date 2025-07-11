@@ -1,3 +1,9 @@
+DROP TABLE if exists finance_FeeType
+DROP TABLE if exists finance_BillingPeriod
+DROP TABLE if exists finance_Invoice
+DROP TABLE if exists finance_Invoice_Response
+DROP TABLE if exists finance_Expense
+DROP TABLE if exists finance_Receipt
 
 
 -- 費用類別 table

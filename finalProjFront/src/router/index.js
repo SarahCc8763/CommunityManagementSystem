@@ -66,9 +66,10 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice/Receipt',
-      name: 'ReceiptHistory',
-      component: Receipt,
+      path: '/finance/receipt/add',
+      name: 'ReceiptAdd',
+      component: ReceiptAdd,
+      meta: { dark: true },
     },
     {
       path: '/finance/invoice',
@@ -98,12 +99,6 @@ const router = createRouter({
       component: InvoiceWithResponse,
       meta: { dark: true },
     },
-    // {
-    //   path: '/parking/rental/back',
-    //   name: 'ParkRentalBack',
-    //   component: ParkRentalBack,
-    //   meta: { dark: true },
-    // },
 
     {
       path: '/ticket/:id',

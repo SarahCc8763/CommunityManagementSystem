@@ -282,7 +282,7 @@ onMounted(async () => {
 }
 
 .invoice-container {
-  max-width: 520px;
+  max-width: 80%;
   margin: 48px auto 0 auto;
   padding: 32px 20px 24px 20px;
   background: #fff;

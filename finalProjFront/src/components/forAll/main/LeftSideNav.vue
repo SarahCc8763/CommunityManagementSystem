@@ -61,6 +61,13 @@
     <!-- 功能選單 -->
     <div class="menu-section">
       <h5 class="menu-title">功能選單</h5>
+
+      <div class="map-section">
+        <div class="map-title">RiverBank社區</div>
+        <iframe class="google-map" src="https://www.google.com/maps?q=103台北市大同區環河北路一段113號&output=embed"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+
       <nav class="menu-nav">
         <ul class="menu-list">
           <li v-for="(item, idx) in menuItems" :key="idx" class="menu-item">
@@ -92,6 +99,7 @@
         </ul>
       </nav>
     </div>
+
   </aside>
 </template>
 
@@ -540,6 +548,28 @@ onUnmounted(() => {
   opacity: 1;
   max-height: 200px;
   transform: translateY(0);
+}
+
+.map-section {
+  margin-top: 18px;
+  margin-bottom: 18px;
+
+  width: 100%;
+}
+
+.map-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #a3bffa;
+  margin-bottom: 4px;
+}
+
+.google-map {
+  width: 100%;
+  height: 140px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #232a3640;
 }
 
 @keyframes slideInLeft {

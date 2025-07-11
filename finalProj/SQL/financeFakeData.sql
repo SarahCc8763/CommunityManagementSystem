@@ -46,21 +46,21 @@ VALUES
 INSERT INTO finance_Invoice_Response (last_response_time, account_code, last_response, verified, verified_time, verified_by, users_id, invoice_id)
 VALUES
 ('2025-08-11', '12345', '已匯款,請查收', 1, '2025-08-12', 1, 1, 1),
-('2025-12-11', '67890', '我在12/12匯款了', 1, '2025-12-12', 1, 1, 3),
+('2025-12-11', '67890', '我在12/12匯款了', 1, '2025-12-12', 1, 1, 6),
 ('2025-08-11', '12345', '已匯款,請查收', 1, '2025-08-12', 1, 1, 1);
 
 
 INSERT INTO finance_Invoice_Response (last_response_time, account_code, verified, verified_time, verified_by, users_id, invoice_id)
 VALUES
-('2025-09-11', '54321', 1, '2025-09-12', 1, 6, 2),
+('2025-09-11', '54321', 1, '2025-09-12', 1, 6, 4),
 ('2025-09-11', '95384', 1, '2025-09-12', 1, 1, 2),
 
 
 INSERT INTO finance_Invoice_Response (last_response_time, last_response, verified, verified_time, verified_by, users_id, invoice_id)
 VALUES
-('2025-08-11', '8/10給王管理員了', 1, '2025-08-12', 1, 2, 1),
-('2025-09-11', '現金', 1, '2025-09-12', 1, 1, 2),
-('2025-12-11', '以現金繳納,請確認', 1, '2025-12-12', 1, 8, 3),
+('2025-08-11', '8/10給王管理員了', 1, '2025-08-12', 1, 2, 3),
+('2025-09-11', '現金', 1, '2025-09-12', 1, 1, 5),
+('2025-12-11', '以現金繳納,請確認', 1, '2025-12-12', 1, 8, 5),
 
 
 
