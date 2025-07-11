@@ -3,6 +3,7 @@ package finalProj.domain.community;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
@@ -30,6 +31,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "community")
+@JsonIgnoreProperties({ "bulletins", "bulletinCategories", "faqCategories", "feedbackCategories", "feedbacks", "faqs",
+		"faqKeywords" })
 public class Community {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,7 +73,7 @@ public class Community {
 	// --- 政宇的關聯 START ---
 	// 社區-公告
 	@OneToMany(mappedBy = "community")
-	// @JsonManagedReference("community-bulletin")
+	@JsonManagedReference("community-bulletin")
 	@JsonIgnore
 	private List<Bulletin> bulletins;
 	// 社區-公告分類

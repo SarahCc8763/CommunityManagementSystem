@@ -84,6 +84,9 @@ const router = useRouter()
 const userStore = useUserStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
 
 //存放社區功能
 const communityFunctions = ref([])
@@ -222,12 +225,28 @@ const keepDropdown = () => {
 
 // 點擊子功能導頁
 const handleNavigate = (item) => {
-  if (item.params) {
-    router.push({ name: item.routeName, params: item.params })
+  // 特殊處理：若是要開啟 Bootstrap Modal
+  if (item.routeName === 'contact-us') {
+    const modalEl = document.getElementById('feedbackModal')
+    if (modalEl) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
+      modal.show()
+    } else {
+      console.warn('找不到 #feedbackModal 元素')
+    }
   } else {
-    router.push({ name: item.routeName })
+    // 正常跳轉路由（有參數 or 無參數）
+    if (item.params) {
+      router.push({ name: item.routeName, params: item.params })
+    } else {
+      router.push({ name: item.routeName })
+    }
   }
+
+  // ✅ 不論是否跳轉或開 Modal，最後都收起 mega menu
+  activeIndex.value = null
 }
+
 
 
 
@@ -320,10 +339,10 @@ const menuList = ref([
     key: 'FQA',
     children: [
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
+      { label: '聯絡客服', routeName: 'feedback', key: 'FQACONTACT' },
       { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進
-      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin' }, //FAQ後台
-      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin' }, //回饋後台
+      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -341,7 +360,7 @@ const menuList = ref([
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
-      { label: '後臺 - 公告管理', routeName: 'bulletin-admin' },
+      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ])

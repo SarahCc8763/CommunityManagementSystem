@@ -48,12 +48,14 @@ import FooterAll from './components/forAll/main/FooterAll.vue'
 import LoginModal from './components/forAll/main/LoginModal.vue'
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
 import RightSideNav from './components/forAll/main/RightSideNav.vue'
-import FeedbackModal from './components/feedback/feedbackModal.vue';
+import FeedbackModal from './components/feedback/FeedbackModal.vue';
 
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
+const route = useRoute()
 
+const isDarkMode = computed(() => route.meta?.dark === true)
 // ✅ 只判斷 meta.dark
 // const isDarkMode = computed(() => route.meta?.dark === true)
 

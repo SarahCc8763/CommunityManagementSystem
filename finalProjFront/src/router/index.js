@@ -78,11 +78,11 @@ const router = createRouter({
       name: 'InvoiceHistory',
       component: InvoiceHistory,
     },
-    {
-      path: '/finance/invoice',
-      name: 'Invoice',
-      component: Invoice
-    },
+    // {
+    //   path: '/finance/invoice',
+    //   name: 'Invoice',
+    //   component: Invoice
+    // },
 
     {
       path: '/faq',
@@ -112,11 +112,11 @@ const router = createRouter({
 
     },
 
-    {
-      path: '/finUser',
-      name: 'FinUser',
-      component: finUser
-    },
+    // {
+    //   path: '/finUser',
+    //   name: 'FinUser',
+    //   component: finUser
+    // },
 
 
     {
