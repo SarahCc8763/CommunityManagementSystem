@@ -69,6 +69,8 @@ import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 
 // 表單資料
 const form = ref({
@@ -158,8 +160,8 @@ async function handleSubmit() {
   }
 
   const payload = {
-    reporterId: 2, // TODO: 改為登入使用者 ID
-    communityId: 1, // TODO: 改為登入者社區 ID
+    reporterId: userStore.userId, // TODO: 改為登入使用者 ID
+    communityId: userStore.communityId, // TODO: 改為登入者社區 ID
     title: form.value.title,
     issueDescription: form.value.description,
     status: 'to do',
@@ -205,7 +207,7 @@ async function handleSubmit() {
       alert('✅ 報修單建立成功（無附件）')
     }
 
-    form.value.summary = ''
+    form.value.title = ''
     form.value.description = ''
     formIssue.value.issueType = []
     files.value = []

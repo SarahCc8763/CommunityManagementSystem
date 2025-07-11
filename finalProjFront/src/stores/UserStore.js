@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 
 export const useUserStore = defineStore('user', () => {
     const isAuthenticated = ref(false)
+    const userId = ref('')
     const name = ref('')
     const username = ref('')
     const avatarUrl = ref('')
@@ -18,6 +19,8 @@ export const useUserStore = defineStore('user', () => {
     const emergencyContactRelation = ref('')
     const emergencyContactPhone = ref('')
     const communityId = ref('')
+    const assignerId = ref('')
+    const actionBy = ref('')
     const rawData = reactive({}) // 保存完整後端回傳
 
 
@@ -26,6 +29,7 @@ export const useUserStore = defineStore('user', () => {
         // 整包儲存
         Object.assign(rawData, payload)
         // 拆出需要立即顯示的欄位
+        userId.value = payload.id
         name.value = payload.name || ''
         username.value = payload.email || ''
         avatarUrl.value = payload.photo || ''
@@ -39,12 +43,15 @@ export const useUserStore = defineStore('user', () => {
         emergencyContactRelation.value = payload.emergencyContactRelation
         emergencyContactPhone.value = payload.emergencyContactPhone
         communityId.value = payload.communityId
-
+        assignerId.value = payload.id
+        actionBy.value = payload.id
+        console.log('登入 payload', payload)
         Object.assign(rawData, payload)
     }
 
     function logout() {
         isAuthenticated.value = false
+        userId.value = ''
         name.value = ''
         username.value = ''
         avatarUrl.value = ''
@@ -58,6 +65,8 @@ export const useUserStore = defineStore('user', () => {
         emergencyContactRelation.value = ''
         emergencyContactPhone.value = ''
         communityId.value = ''
+        assignerId.value = ''
+        actionBy.value=''
         Object.keys(rawData).forEach(k => delete rawData[k])
         localStorage.removeItem('user')
 
@@ -67,6 +76,7 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         isAuthenticated,
+        userId,
         name,
         username,
         avatarUrl,
@@ -83,6 +93,8 @@ export const useUserStore = defineStore('user', () => {
         emergencyContactRelation,
         emergencyContactPhone,
         communityId,
+        assignerId,
+        actionBy,
         // displayName,
     }
 }, {

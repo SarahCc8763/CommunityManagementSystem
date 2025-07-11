@@ -178,15 +178,11 @@ onMounted(async () => {
       return
     }
 
-    // 直接用登入者的社區 ID 當作唯一社區
-    selectedCommunity.value = {
-      communityId,
-      name: '目前登入社區',
-      address: '尚未設定',
-      createTime: new Date().toISOString()
-    }
+    // 從後端取得社區詳細資料
+    const res = await axios.get(`http://localhost:8080/communitys/${communityId}`)
+    selectedCommunity.value = res.data
 
-    // 載入對應功能
+    // 載入該社區的功能設定
     const functionRes = await axios.get(
       `http://localhost:8080/communitys/functions/${communityId}`
     )

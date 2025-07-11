@@ -231,6 +231,11 @@ const features = [
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
         link: '/TicketDashboard'
+    },    {
+        icon: 'bi-tools',
+        title: '廠商',
+        description: '廠商',
+        link: '/Vendor'
     }
 ];
 

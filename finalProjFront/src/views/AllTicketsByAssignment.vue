@@ -1,6 +1,61 @@
 <template>
   <div class="container py-4">
     <h2 class="mb-4">📋 全部報修單列表</h2>
+    <!-- 🔍 搜尋列 -->
+<div class="d-flex align-items-center mb-3">
+  <input
+        v-model="searchText"
+        type="text"
+        class="form-control"
+        placeholder="輸入標題關鍵字"
+      />
+  <!-- <input
+    v-model="searchText"
+    type="text"
+    class="form-control me-2"
+    placeholder="輸入標題關鍵字"
+    @keyup.enter="applySearch"
+  /> -->
+  <!-- <button class="btn btn-secondary" @click="applySearch">搜尋</button> -->
+</div>
+
+<!-- 篩選條件 -->
+<div class="card p-3 mb-3 shadow-sm">
+  <div class="row">
+    <div class="col-md-3">
+      <label class="form-label">狀態</label>
+      <select class="form-select" v-model="filter.status">
+        <option value="">全部</option>
+        <option value="to do">待處理</option>
+        <option value="doing">處理中</option>
+        <option value="done">已完成</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">通報人</label>
+      <select class="form-select" v-model="filter.reporter">
+        <option value="">全部</option>
+        <option v-for="u in users" :key="u.id" :value="u.name">
+          {{ u.name }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">問題種類</label>
+      <select class="form-select" multiple v-model="filter.issueTypeNames">
+        <option v-for="type in issueTypes" :key="type.id" :value="type.issueTypeName">
+          {{ type.issueTypeName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+  <label class="form-label">建立時間</label>
+  <input type="date" class="form-control" v-model="filter.startDate" />
+</div>
+  </div>
+</div>
+
 
     <!-- ✅ 已指派 -->
     <div class="mb-5">
@@ -8,11 +63,34 @@
       <div v-if="assignedTickets.length">
         <div v-for="ticket in assignedTickets" :key="ticket.id" class="card mb-3 p-3 
         shadow-sm" @click="openDetail(ticket)">
+
+
+        <span
+        class="badge position-absolute top-0 end-0 m-2"
+        :class="{
+          'bg-secondary': ticket.status === 'to do',
+          'bg-warning text-dark': ticket.status === 'In Progress',
+          'bg-success': ticket.status === 'Done'
+        }"
+      >
+      {{ formatStatus(ticket.status) }}
+        </span>
+
+
+
+
           <h5>{{ ticket.title }}</h5>
           <p>通報人：{{ ticket.name }}</p>
-          <!-- <p>指派人：{{ ticket.assigneeName ?? '（未知）' }}</p> -->
+          <p>指派人：{{ ticket.assigneeName  ?? '（未知）' }}</p>
           <p>廠商：{{ ticket.vendorName ?? '（尚未指派）' }}</p>
+
+          <!-- <p>狀態:{{ticket.status}}</p> -->
+
           <p>建立時間：{{ formatDate(ticket.startDate) }}</p>
+
+
+
+
 
           <div class="mt-3 border-top pt-2 text-secondary small">
             <p><strong>描述：</strong>{{ ticket.issueDescription || '（無）' }}</p>
@@ -41,6 +119,8 @@
   @update-ticket="selectedTicket = $event"
 />
 
+
+
     <!-- ❌ 未指派 -->
 <div>
   <h4 class="text-danger">❌ 未指派報修單</h4>
@@ -52,6 +132,17 @@
       @click="toggleExpanded(index)"
       style="cursor: pointer"
     >
+    <span
+        class="badge position-absolute top-0 end-0 m-2"
+        :class="{
+          'bg-secondary': ticket.status === 'to do',
+          'bg-warning text-dark': ticket.status === 'In Progress',
+          'bg-success': ticket.status === 'Done'
+        }"
+      >
+      {{ formatStatus(ticket.status) }}
+        </span>
+
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <h5 class="mb-1">{{ ticket.title }}</h5>
@@ -91,9 +182,13 @@
           :src="img.url"
           class="rounded border"
           style="width: 100px; height: 100px; object-fit: cover;"
+          @click.stop="openPreview(img)"
         />
       </div>
     </div>
+    <div v-if="previewImageUrl" class="image-preview-overlay" @click.stop="closePreview">
+        <img :src="previewImageUrl" class="image-preview" @click.stop />
+      </div>
     <!-- ✅ ⬆️ 附件區結束 ⬆️ -->
 
     <!-- 工程商選擇區 -->
@@ -166,19 +261,82 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed ,watch} from 'vue'
 import axios from 'axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
 
 
 const tickets = ref([])
 const vendors = ref([])
 const expanded = ref([])
-
 const previewImageUrl = ref(null)
-
 const showDetailModal = ref(false)
 const selectedTicket = ref(null)
+
+const searchText = ref('')
+const filter = ref({
+  status: '',
+  reporter: '',
+  issueTypeNames: []
+})
+
+const users = ref([])
+const issueTypes = ref([])
+
+
+watch([searchText, filter], async () => {
+  await applySearch()
+}, { deep: true })
+
+function formatStatus(status) {
+  switch (status) {
+    case "to do": return '待處理'
+    case "In Progress": return '處理中'
+    case "Done": return '已完成'
+    default: return '未知'
+  }
+}
+
+
+
+onMounted(() => {
+  fetchTickets()
+  fetchUsers()
+  fetchIssueTypes()
+})
+
+async function fetchUsers() {
+  const res = await axios.get('http://localhost:8080/users/ticket')
+  users.value = res.data.map(u => ({ id: u.usersId, name: u.name }))
+}
+
+async function fetchIssueTypes() {
+  const res = await axios.get('http://localhost:8080/IssueTypes')
+  issueTypes.value = res.data
+}
+
+async function applySearch() {
+  let reporterId = null
+  if (filter.value.reporter) {
+    const match = users.value.find(u => u.name === filter.value.reporter)
+    reporterId = match?.id ?? null
+  }
+
+  const payload = {
+    title: searchText.value || null,
+    status: filter.value.status || null,
+    startDate: filter.value.startDate || null,
+    reporterId,
+    issueTypeNames: filter.value.issueTypeNames || []
+  }
+
+  await fetchTickets(payload)
+}
+
 
 function toggleExpanded(index) {
   if (expanded.value.includes(index)) {
@@ -193,14 +351,33 @@ function openDetail(ticket) {
   showDetailModal.value = true
 }
 
+
+function openPreview(img) {
+  previewImageUrl.value = img.url  // ✅ 不要再包 base64
+}
+function closePreview() {
+  previewImageUrl.value = null
+}
+
+
 onMounted(() => {
   fetchTickets()
 })
 
-async function fetchTickets() {
+async function fetchTickets(searchPayload = null) {
   try {
+
+    const payload = searchPayload || {
+      title: null,
+      status: null,
+      startDate: null,
+      reporterId: null,
+      issueTypeNames: []
+    }
+
     const [ticketRes, assignRes, vendorRes] = await Promise.all([
-      axios.get('http://localhost:8080/ticket'),
+    axios.post('http://localhost:8080/ticket/search', payload),
+      // axios.get('http://localhost:8080/ticket'),
       axios.get('http://localhost:8080/TicketToAdministrator'),
       axios.get('http://localhost:8080/vendors')
     ])
@@ -223,22 +400,27 @@ async function fetchTickets() {
 
     tickets.value = ticketRes.data.map(ticket => {
       const assignedVendorIds = ticketMap.get(ticket.id) || []
-      console.log('Ticket ID:', ticket.id, 'assignedVendorIds:', assignedVendorIds)
+
+      console.log('ticket.assigner:', ticket.assigner)
+      // console.log('Ticket ID:', ticket.id, 'assignedVendorIds:', assignedVendorIds)
 
       const attachments = (ticket.attachments || []).map(a => ({
     url: `data:image/png;base64,${a.file}`,
+    file: a.file,
     fileName: a.fileName
   }))
       return {
         ...ticket,
         assignedVendorIds,
         assigned: assignedVendorIds.length > 0,
-        assigneeName: ticket.assigner?.name ?? null,
+        assigneeName: ticket.assignerName ?? '（未知）',
         vendorName: assignedVendorIds.map(id => vendors.value.find(v => v.vendorID === id)?.vendorName).join(', '),
         selectedVendorIds: [],
         attachments
       }
+      
     })
+ 
   } catch (err) {
     console.error('❌ 載入報修單失敗', err)
   }
@@ -260,6 +442,22 @@ async function confirmAssign(ticket) {
     }
     console.log('🚀 準備送出指派資料：', payload)
     await axios.post('http://localhost:8080/TicketToAdministrator/assign', payload)
+ // ✅ 再補送 PUT 更新 assignerId
+ const putPayload = {
+      reporterId: ticket.reporter?.usersId || ticket.reporterId || 1,  // 避免 undefined，預設 1
+      title: ticket.title,
+      assignerId: userStore.userId,
+      status: ticket.status,
+      issueDescription: ticket.issueDescription,
+      notes: ticket.notes || '',
+      communityId: userStore.communityId,
+      actionBy: userStore.userId, 
+    }
+    console.log('🚀 準備送出 PUT 資料：', putPayload)
+
+    await axios.put(`http://localhost:8080/ticket/${ticket.id}`, putPayload)
+
+    await fetchTickets()
 
     // ✅ 前端同步更新，避免點 Detail 時資料為空
     ticket.assigned = true

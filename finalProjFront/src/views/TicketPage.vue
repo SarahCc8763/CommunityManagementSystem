@@ -70,10 +70,17 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { useUserStore } from '@/stores/UserStore'
 
-const emits = defineEmits(['close', 'created'])
+
+
+
+const userStore = useUserStore()
+
+const emit = defineEmits(['close', 'created'])
 const modal = ref(null)
 let bsModal = null
+
 
 const form = ref({
     project: '',
@@ -102,7 +109,7 @@ function showModal() {
 }
 function hideModal() {
     bsModal?.hide()
-    emits('close')
+    emit('close')
 }
 
 defineExpose({ showModal, hideModal })
@@ -164,8 +171,8 @@ async function handleSubmit() {
         return
     }
     const payload = {
-        reporterId: 2,
-        communityId: 1,
+        reporterId: userStore.userId,
+        communityId: userStore.communityId,
         title: form.value.title,
         issueDescription: form.value.description,
         status: 'to do',
@@ -195,11 +202,14 @@ async function handleSubmit() {
             const uploadResult = uploadRes.data
             if (uploadResult.success) {
                 alert('✅ 報修單與附件上傳成功！')
+                emit('created')
             } else {
                 alert('📎 報修單建立成功，但附件上傳失敗：' + uploadResult.message)
+                emit('created')
             }
         } else {
             alert('✅ 報修單建立成功（無附件）')
+            emit('created')
         }
         form.value.title = ''
         form.value.description = ''

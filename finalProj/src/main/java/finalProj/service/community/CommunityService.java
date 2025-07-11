@@ -87,7 +87,7 @@ public class CommunityService {
 			if (dto.getAddress() != null) {
 				community.setAddress(dto.getAddress());
 			}
-			//修改功能
+			// 修改功能
 			if (dto.getFunctions() != null) {
 				Long functionValue = 0L;
 				for (String name : dto.getFunctions()) {
@@ -120,18 +120,18 @@ public class CommunityService {
 		}
 		return null;
 	}
-	
-	//顯示社區功能
-	public List<String> getEnabledFunctionNames(Integer communityId){
+
+	// 顯示社區功能
+	public List<String> getEnabledFunctionNames(Integer communityId) {
 		Community community = communityRepository.findById(communityId)
 				.orElseThrow(() -> new RuntimeException("找不到社區 ID: " + communityId));
-		
+
 		Long functionValue = community.getFunction();
 		List<CommunityFunction> enabledFunctions = CommunityFunctionUtils.showAllEnableFunction(functionValue);
-		
-		   return enabledFunctions.stream()
-		            .map(Enum::name)
-		            .toList();
+
+		return enabledFunctions.stream()
+				.map(Enum::name)
+				.toList();
 	}
 
 }

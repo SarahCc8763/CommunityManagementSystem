@@ -100,8 +100,12 @@ public class FeedbackReplyService {
 
     }
 
-    public void deleteById(Integer id) {
-        feedbackReplyRepository.deleteById(id);
+    public boolean deleteById(Integer id) {
+        if (feedbackReplyRepository.existsById(id)) {
+            feedbackReplyRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public boolean existsById(Integer id) {

@@ -35,37 +35,38 @@ public class TicketToAdministratorController {
 	public List<TicketToAdministrator> findByTicketId(@PathVariable Integer ticketId) {
 		return ticketToAdministratorService.findByTicketId(ticketId);
 	}
-	
+
 	@GetMapping("/vendor/{vendorId}")
 	public List<TicketToAdministrator> findByVendorId(@PathVariable Integer vendorId) {
 		return ticketToAdministratorService.findByVendorId(vendorId);
 	}
 
-@PostMapping("/assign")
-public List<TicketToAdministrator> assignMultipleVendors(@RequestBody TicketToAdministratorDTO dto) {
-    List<TicketToAdministrator> results = new ArrayList<>();
-    for (Integer vendorId : dto.getVendorIds()) {
-        TicketToAdministrator result = ticketToAdministratorService.create(dto.getTicketId(), vendorId);
-        results.add(result);
-    }
-    return results;
-}
+	@PostMapping("/assign")
+	public List<TicketToAdministrator> assignMultipleVendors(@RequestBody TicketToAdministratorDTO dto) {
+		List<TicketToAdministrator> results = new ArrayList<>();
+		for (Integer vendorId : dto.getVendorIds()) {
+			TicketToAdministrator result = ticketToAdministratorService.create(dto.getTicketId(), vendorId);
+			results.add(result);
+		}
+		return results;
+	}
 
 	@GetMapping
 	public List<TicketToAdministrator> findAll() {
-	return ticketToAdministratorService.findAll();
-}
+		return ticketToAdministratorService.findAll();
+	}
+
 	@PutMapping("/ticket-vendors/update/{ticketId}")
-public ResponseEntity<Map<String, Object>> updateVendors(
-        @PathVariable Integer ticketId,
-        @RequestBody List<Integer> vendorIds) {
+	public ResponseEntity<Map<String, Object>> updateVendors(
+			@PathVariable Integer ticketId,
+			@RequestBody List<Integer> vendorIds) {
 
-    ticketToAdministratorService.updateVendors(ticketId, vendorIds);
+		ticketToAdministratorService.updateVendors(ticketId, vendorIds);
 
-    Map<String, Object> result = new HashMap<>();
-    result.put("success", true);
-    result.put("ticketId", ticketId);
-    result.put("updatedVendorIds", vendorIds);
-    return ResponseEntity.ok(result);
-}
+		Map<String, Object> result = new HashMap<>();
+		result.put("success", true);
+		result.put("ticketId", ticketId);
+		result.put("updatedVendorIds", vendorIds);
+		return ResponseEntity.ok(result);
+	}
 }

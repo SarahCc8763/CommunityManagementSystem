@@ -19,6 +19,8 @@ import resetPassword from '@/components/profile/resetPassword.vue';
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import packages from '@/components/package/packages.vue'
 import TicketDashboard from '../views/TicketDashboard.vue'
+import Vendor from '../views/Vendor.vue'
+
 
 
 
@@ -120,6 +122,11 @@ const router = createRouter({
       path: '/TicketDashboard',
       name: 'TicketDashboard',
       component: TicketDashboard,
+    },
+    {
+      path: '/Vendor',
+      name: 'Vendor',
+      component: Vendor,
     }
     // {
     //   path: '/',
@@ -155,7 +162,7 @@ router.beforeEach((to) => {
     window.dispatchEvent(new CustomEvent('show-login-modal'))
     return { name: 'home' }
   }
-  
+
 })
 
 

@@ -81,10 +81,13 @@ public class BulletinCommentService {
             List<BulletinComment> replies = bulletinCommentRepository.findByParentComment_Id(entity.getId());
             replies.forEach(reply -> reply.setIsAlive(false));
             bulletinCommentRepository.saveAll(replies);
+
         }
 
         original.setTime(LocalDateTime.now());
-
+        original.setComment(entity.getComment());
+        original.setIsAlive(entity.getIsAlive());
+        log.info("修改留言成功 {}", original.getId());
         return bulletinCommentRepository.save(original);
 
     }

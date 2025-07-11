@@ -28,7 +28,7 @@ import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.users.Users;
-import finalProj.dto.FeedbackResponse;
+import finalProj.dto.feedback.FeedbackResponse;
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
 import finalProj.service.feedback.FeedbackReplyService;
@@ -151,14 +151,92 @@ public class feedbackController {
     }
 
     //
+    // -- 修改意見處理狀態 --
+    //
+
+    @PutMapping("/status/{id}")
+    public FeedbackResponse updateStatus(@PathVariable Integer id, @RequestBody Feedback feedback) {
+        FeedbackResponse response = new FeedbackResponse();
+        if (feedback == null || id == null) {
+            response.setSuccess(false);
+            response.setMessage("缺少必要欄位資料");
+            return response;
+        }
+        feedback.setId(id);
+        if (!feedbackService.existsById(id)) {
+            response.setSuccess(false);
+            response.setMessage("欲修改資料不存在");
+            return response;
+        }
+        try {
+            Feedback updatedFeedback = feedbackService.updateStatus(feedback);
+            if (updatedFeedback == null) {
+                response.setSuccess(false);
+                response.setMessage("修改失敗");
+            } else {
+                response.setSuccess(true);
+                response.setMessage("修改成功");
+                List<Feedback> data = new ArrayList<>();
+                data.add(updatedFeedback);
+                response.setList(data);
+            }
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            response.setMessage("處理失敗：" + e.getMessage());
+            return response;
+        }
+    }
+
+    //
+    // -- 結案後使用者評分 --
+    //
+    @PutMapping("/rating/{id}")
+    public FeedbackResponse rating(@PathVariable Integer id, @RequestBody Feedback feedback) {
+        FeedbackResponse response = new FeedbackResponse();
+        if (feedback == null || id == null) {
+            response.setSuccess(false);
+            response.setMessage("缺少必要欄位資料");
+            return response;
+        }
+        feedback.setId(id);
+        if (!feedbackService.existsById(id)) {
+            response.setSuccess(false);
+            response.setMessage("欲修改資料不存在");
+            return response;
+        }
+        try {
+            Feedback updatedFeedback = feedbackService.rating(feedback);
+            if (updatedFeedback == null) {
+                response.setSuccess(false);
+                response.setMessage("修改失敗");
+            } else {
+                response.setSuccess(true);
+                response.setMessage("修改成功");
+                List<Feedback> data = new ArrayList<>();
+                data.add(updatedFeedback);
+                response.setList(data);
+            }
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            response.setMessage("處理失敗：" + e.getMessage());
+            return response;
+        }
+
+    }
+
+    //
     // --查詢意見主表 --
     //
 
     // 查詢所有意見
-    @GetMapping
-    public FeedbackResponse getAllFeedbacks() {
+    @GetMapping("/community/{communityId}")
+    public FeedbackResponse getAllFeedbacks(@PathVariable Integer communityId) {
         FeedbackResponse response = new FeedbackResponse();
-        List<Feedback> feedbacks = feedbackService.findAll();
+        List<Feedback> feedbacks = feedbackService.findAll(communityId);
         if (feedbacks.isEmpty()) {
             response.setSuccess(false);
             response.setMessage("查無資料");
@@ -328,6 +406,29 @@ public class feedbackController {
         }
         body.setId(replyId);
         return feedbackReplyService.modify(body);
+    }
+
+    @DeleteMapping("/reply/{replyId}")
+    public ResponseEntity<Map<String, Object>> deleteFeedbackReply(@PathVariable Integer replyId) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (replyId == null) {
+            response.put("result", "未提供刪除意見回應所需資料");
+            log.warn("未提供刪除意見回應所需資料");
+            return ResponseEntity.badRequest().body(response); // HTTP 400
+        }
+
+        boolean deleted = feedbackReplyService.deleteById(replyId);
+
+        if (deleted) {
+            response.put("result", "刪除成功");
+            log.info("刪除意見回應成功");
+            return ResponseEntity.ok(response); // HTTP 200
+        } else {
+            response.put("result", "找不到此留言，無法刪除");
+            log.warn("找不到此留言，無法刪除");
+            return ResponseEntity.status(404).body(response); // ❗HTTP 404 錯誤
+        }
     }
 
     // 通過使用者尋找

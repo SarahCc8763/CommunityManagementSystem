@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,16 +103,16 @@ public class TicketService {
 			}
 		}
 		if (dto.getIssueTypeNames() != null) {
-		    for (String name : dto.getIssueTypeNames()) {
-		        IssueType issueType = issueTypeRepository.findByIssueTypeName(name)
-		                .orElseThrow(() -> new IllegalArgumentException("找不到對應的 issueType: " + name));
+			for (String name : dto.getIssueTypeNames()) {
+				IssueType issueType = issueTypeRepository.findByIssueTypeName(name)
+						.orElseThrow(() -> new IllegalArgumentException("找不到對應的 issueType: " + name));
 
-		        IssueTypeAndTicket rel = new IssueTypeAndTicket();
-		        rel.setTicket(saved);
-		        rel.setIssueType(issueType);
+				IssueTypeAndTicket rel = new IssueTypeAndTicket();
+				rel.setTicket(saved);
+				rel.setIssueType(issueType);
 
-		        issueTypeAndTicketRepository.save(rel);
-		    }
+				issueTypeAndTicketRepository.save(rel);
+			}
 		}
 
 		return saved;
@@ -135,7 +131,7 @@ public class TicketService {
 		if (id != null && ticketRepository.existsById(id)) {
 			// 先刪除中介表中對應的關聯資料
 			ticketToAdministratorRepository.deleteByTicketId(id);
-	
+
 			// 再刪除主資料
 			ticketRepository.deleteById(id);
 			return true;
@@ -186,44 +182,44 @@ public class TicketService {
 
 	// 找尋所有資料
 	public List<Ticket> findAll() {
-		
+
 		return ticketRepository.findAll();
 	}
 
 	// 找尋特定資料
 	public List<Ticket> searchTickets(TicketSearchDTO dto) {
-	    List<String> issueTypes = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
-	    int issueTypeSize = issueTypes.size();
+		List<String> issueTypes = dto.getIssueTypeNames() != null ? dto.getIssueTypeNames() : new ArrayList<>();
+		int issueTypeSize = issueTypes.size();
 
-	    return ticketRepository.searchTickets(
-	        dto.getTitle(),
-	        dto.getStatus(),
-	        dto.getStartDate(),
-	        dto.getReporterId(),
-	        issueTypes,
-	        issueTypeSize
-	    );
+		return ticketRepository.searchTickets(
+				dto.getTitle(),
+				dto.getStatus(),
+				dto.getStartDate(),
+				dto.getReporterId(),
+				issueTypes,
+				issueTypeSize);
 	}
-	
-	//只改狀態
+
+	// 只改狀態
 	public Ticket updateStatusOnly(Integer id, TicketDTO dto) {
 		Ticket ticket = ticketRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Ticket ID 不存在：" + id));
-	
+
 		if (dto.getStatus() == null || dto.getStatus().isBlank()) {
 			throw new IllegalArgumentException("狀態不得為空");
 		}
-	
+
 		ticket.setStatus(dto.getStatus());
 		ticket.setActionTime(new Date()); // 若你希望記錄修改時間
-	
+
 		return ticketRepository.save(ticket);
 	}
 
-	//分頁功能
+	// 分頁功能
 	// public Page<Ticket> findAllPages(int page,int size) {
-	//         Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
-	// 		return ticketRepository.findAll(pageable);
+	// Pageable pageable = PageRequest.of(page, size,
+	// Sort.by("startDate").descending());
+	// return ticketRepository.findAll(pageable);
 	// }
 
 }

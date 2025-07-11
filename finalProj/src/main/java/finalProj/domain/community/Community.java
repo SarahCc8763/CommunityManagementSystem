@@ -10,6 +10,7 @@ import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
+import finalProj.domain.faq.FaqKeyword;
 import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.packages.Packages;
@@ -30,6 +31,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "community")
+@JsonIgnoreProperties({ "bulletins", "bulletinCategories", "faqCategories", "feedbackCategories", "feedbacks", "faqs",
+		"faqKeywords" })
 public class Community {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,14 +73,14 @@ public class Community {
 	// --- 政宇的關聯 START ---
 	// 社區-公告
 	@OneToMany(mappedBy = "community")
-	// @JsonManagedReference("community-bulletin")
+	@JsonManagedReference("community-bulletin")
 	@JsonIgnore
 	private List<Bulletin> bulletins;
 	// 社區-公告分類
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-bulletin-category")
 	private List<BulletinCategory> bulletinCategories;
-	// 社區-關鍵字分類
+	// 社區-FAQ分類
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-faq-category")
 	private List<FaqCategory> faqCategories;
@@ -93,6 +96,10 @@ public class Community {
 	@OneToMany(mappedBy = "community")
 	@JsonManagedReference("community-faq")
 	private List<Faq> faqs;
+	// 社區-FAQ關鍵字
+	@OneToMany(mappedBy = "community")
+	@JsonManagedReference("community-faq-keyword")
+	private List<FaqKeyword> faqKeywords;
 
 	// --- 政宇的關聯 END ---
 

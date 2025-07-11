@@ -79,16 +79,15 @@
       <div class="mb-3">
         <label class="label">Status</label>
         <select v-model="ticket.status" @change="saveStatus" class="form-control">
-  <option value="To Do">To Do</option>
-  <option value="In Progress">In Progress</option>
-  <option value="Done">Done</option>
-</select>
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Done">Done</option>
+        </select>
       </div>
-
-    <div class="mb-3">
+      <div class="mb-3">
   <label class="label">指派人</label>
   <div class="form-control bg-white">
-    {{ ticket.assignee && ticket.assignee.trim() !== '' ? ticket.assignee : '未指派' }}
+    {{ ticket.assigner?.name || '未指派' }}
   </div>
 </div>
 
@@ -125,6 +124,8 @@ import axios from 'axios'
 import CommentInput from '@/views/CommentInput.vue'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { useUserStore } from '@/stores/UserStore.js'
+const userStore = useUserStore()
 
 const route = useRoute()
 const ticketId = route.params.id
@@ -137,7 +138,12 @@ const edited = ref({ issueDescription: '' })
 const isEditing = ref({ issueDescription: false, title: false })
 const selectedIssueTypes = ref([])
 const allIssueTypes = ref([])
-
+function convertStatusFromBackend(s) {
+  if (s === 'to do') return 'To Do'
+  if (s === 'In Progress') return 'In Progress'
+  if (s === 'Done') return 'Done'
+  return s
+}
 
 onMounted(loadTicket)
 async function loadTicket() {
@@ -149,10 +155,15 @@ async function loadTicket() {
     ticket.value = data
     edited.value.issueDescription = data.issueDescription
 
+    if (!data.assigner) {
+  ticket.value.assigner = { name: userStore.name } // 補上目前登入者名稱
+}
+
     // 設定留言（其實 data.comments 就有了）
     ticket.value.comments = data.comments
 
     // 所有問題種類選項（你若需要載入全部類型供選擇）
+    ticket.value.status = convertStatusFromBackend(data.status)
     const allTypesRes = await axios.get('http://localhost:8080/IssueTypes')
     allIssueTypes.value = allTypesRes.data
 

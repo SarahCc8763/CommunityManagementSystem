@@ -17,7 +17,9 @@ import finalProj.domain.poll.PollOption;
 import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.repository.bulletin.BulletinCategoryRepository;
 import finalProj.repository.bulletin.BulletinRepository;
+import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
+import finalProj.repository.poll.PollVoteRepository;
 import finalProj.repository.users.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,12 +42,18 @@ public class BulletinService {
     @Autowired
     private PollRepository pollRepository;
 
+    @Autowired
+    private PollVoteRepository pollVoteRepository;
+
+    @Autowired
+    private PollOptionRepository pollOptionRepository;
+
     BulletinService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
-    public List<Bulletin> findAll() {
-        return bulletinRepository.findAll();
+    public List<Bulletin> findAll(Integer communityId) {
+        return bulletinRepository.findByCommunity_communityId(communityId);
     }
 
     public Long count() {
@@ -158,6 +166,7 @@ public class BulletinService {
             existing.setCommunity(entity.getCommunity() != null ? entity.getCommunity() : existing.getCommunity());
             existing.setUser(entity.getUser() != null ? usersRepository.findById(entity.getUser().getUsersId()).get()
                     : existing.getUser());
+            existing.setPostStatus(entity.getPostStatus() != null ? entity.getPostStatus() : existing.getPostStatus());
 
             existing.setModifyTime(LocalDateTime.now());
             log.debug("公告基本資訊已更新");
@@ -176,23 +185,34 @@ public class BulletinService {
                 }
             }
 
-            // 移除舊附件
-            if (existing.getAttachments() != null && !existing.getAttachments().isEmpty()) {
-                bulletinAttachmentRepository.deleteAll(existing.getAttachments());
-                existing.getAttachments().clear();
-                log.debug("已刪除舊有附件");
+            List<BulletinAttachment> incoming = entity.getAttachments();
+            List<BulletinAttachment> toKeep = new ArrayList<>();
+            List<BulletinAttachment> toAdd = new ArrayList<>();
+
+            for (BulletinAttachment att : incoming) {
+                if (att.getFileDataBase64() == null && !att.getIsNew()) {
+                    // 是原有檔案，只保留 (用檔名比對，或補個唯一 ID 更穩)
+                    Optional<BulletinAttachment> existingAtt = existing.getAttachments()
+                            .stream()
+                            .filter(e -> e.getFileName().equals(att.getFileName()))
+                            .findFirst();
+                    existingAtt.ifPresent(toKeep::add);
+                    log.info("保留原有附件：{}");
+                } else if (att.getFileDataBase64() != null && att.getIsNew()) {
+                    // 是新檔案，加到待新增清單
+                    att.setBulletin(existing);
+                    toAdd.add(att);
+                } else {
+                    log.warn("附件處理失敗");
+                    return null;
+                }
             }
 
-            // 加入新附件（若有）
-            if (entity.getAttachments() != null && !entity.getAttachments().isEmpty()) {
-                List<BulletinAttachment> newAttachments = new ArrayList<>();
-                for (BulletinAttachment newAttachment : entity.getAttachments()) {
-                    newAttachment.setBulletin(existing);
-                    newAttachments.add(newAttachment);
-                    log.debug("加入新附件：{}", newAttachment.getFileName());
-                }
-                existing.setAttachments(newAttachments);
-            }
+            // 刪除未被保留的舊附件
+            existing.getAttachments().retainAll(toKeep);
+
+            // 加入新附件
+            existing.getAttachments().addAll(toAdd);
 
             Bulletin updated = bulletinRepository.save(existing);
             log.info("公告修改成功，ID = {}", updated.getId());
@@ -215,13 +235,44 @@ public class BulletinService {
         }
 
         try {
-            if (bulletinRepository.existsById(id)) {
-                bulletinRepository.deleteById(id);
+            Optional<Bulletin> optional = bulletinRepository.findById(id);
+
+            if (optional.isPresent()) {
+                Bulletin bulletin = optional.get();
+                Poll poll = bulletin.getPoll();
+
+                if (poll != null) {
+                    // 初始化 LAZY 關聯，避免 Proxy 錯誤
+                    poll.getVotes().size();
+                    poll.getOptions().size();
+
+                    // ✅ Step 1：先刪投票紀錄
+                    pollVoteRepository.deleteAll(poll.getVotes());
+                    pollVoteRepository.flush();
+                    poll.getVotes().clear();
+                    // ✅ Step 2：再刪選項
+                    pollOptionRepository.deleteAll(poll.getOptions());
+                    pollOptionRepository.flush();
+                    poll.getOptions().clear();
+
+                    // ✅ Step 3：解除 bulletin 與 poll 的關聯，先保存解除狀態
+                    pollRepository.saveAndFlush(poll);
+                    bulletin.setPoll(null);
+                    bulletinRepository.saveAndFlush(bulletin); // ⬅ 關鍵點
+
+                    // ✅ Step 4：最後再刪 poll
+                    pollRepository.delete(poll);
+                    pollRepository.flush(); // optional，但安全
+                }
+
+                // ✅ Step 5：刪公告本體
+                bulletinRepository.delete(bulletin);
                 log.info("成功刪除公告，ID = {}", id);
                 return true;
             } else {
                 log.warn("刪除公告失敗：找不到 ID = {}", id);
             }
+
         } catch (Exception e) {
             log.error("刪除公告時發生例外：{}", e.getMessage(), e);
         }
