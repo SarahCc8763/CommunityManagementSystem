@@ -24,15 +24,31 @@ export const useUserStore = defineStore('user', () => {
 
     const userId = ref(3)
     function setUserId(data) {
-        communityId.value = data
+        userId.value = data
     }
-
 
     const communityId = ref(1)
-    function setCommunity(data) {
+    function setCommunityId(data) {
         communityId.value = data
     }
+
+    const community = ref(1)
+    function setCommunity(data) {
+        community.value = data
+    }
+
+    const email = ref('sa')
+    function setEmail(data) {
+        email.value = data
+    }
+
+    const id = ref(1)
+    function setId(data) {
+        id.value = data
+    }
+
     const displayName = computed(() => name.value || username.value)
+
     return {
         isAuthenticated,
         name,
@@ -42,6 +58,14 @@ export const useUserStore = defineStore('user', () => {
         logout,
         displayName,
         userId,
-        communityId
+        setUserId,
+        communityId,
+        setCommunityId,
+        community,
+        setCommunity,
+        email,
+        setEmail,
+        id,
+        setId
     }
 })
