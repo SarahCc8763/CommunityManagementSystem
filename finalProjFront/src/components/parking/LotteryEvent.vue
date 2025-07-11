@@ -18,17 +18,13 @@
             </p>
           </div>
           <div class="card-footer d-flex justify-content-between flex-wrap gap-1">
-            <button
-  class="btn btn-sm btn-success"
-  @click="drawLots(event.id)"
-  :disabled="event.status"
->
-  抽籤
-</button>
+            <button class="btn btn-sm btn-success" @click="drawLots(event.id)" :disabled="event.status">
+              抽籤
+            </button>
 
-  <button class="btn btn-sm btn-info" @click="viewParticipants(event.id)">查看名單</button>
-  <button class="btn btn-sm btn-warning" @click="openEditModal(event)">編輯</button>
-</div>
+            <button class="btn btn-sm btn-info" @click="viewParticipants(event.id)">查看名單</button>
+            <button class="btn btn-sm btn-warning" @click="openEditModal(event)">編輯</button>
+          </div>
 
         </div>
       </div>
@@ -63,68 +59,63 @@
         <div class="mb-3">
           <label>可選車位：</label>
           <div class="form-check" v-for="slot in parkingSlots" :key="slot.id">
-  <input
-    class="form-check-input"
-    type="checkbox"
-    :id="'slot-' + slot.id"
-    :value="slot.id"
-    v-model="rawSlotIds"
-  />
-  <label class="form-check-label" :for="'slot-' + slot.id">
-    {{ slot.slotNumber }} - {{ slot.location }}
-  </label>
-</div>
-<div v-if="parkingSlots.length === 0" class="text-muted">（無可選車位）</div>
+            <input class="form-check-input" type="checkbox" :id="'slot-' + slot.id" :value="slot.id"
+              v-model="rawSlotIds" />
+            <label class="form-check-label" :for="'slot-' + slot.id">
+              {{ slot.slotNumber }} - {{ slot.location }}
+            </label>
+          </div>
+          <div v-if="parkingSlots.length === 0" class="text-muted">（無可選車位）</div>
         </div>
 
         <div class="text-end">
-  <button class="btn btn-secondary me-2" @click="closeModal">取消</button>
-  <button v-if="isEditing" class="btn btn-danger me-2" @click="deleteEvent(form.id)">刪除</button>
-  <button class="btn btn-primary" @click="submitForm">確認</button>
-</div>
+          <button class="btn btn-secondary me-2" @click="closeModal">取消</button>
+          <button v-if="isEditing" class="btn btn-danger me-2" @click="deleteEvent(form.id)">刪除</button>
+          <button class="btn btn-primary" @click="submitForm">確認</button>
+        </div>
 
       </div>
     </div>
   </div>
 
   <!-- 參與名單 Modal -->
-<div v-if="showParticipantModal" class="modal-mask">
-  <div class="modal-container" style="max-width: 800px; width: 90%;">
-    <h5 class="mb-3 border-bottom pb-2">參與名單</h5>
-    <table class="table table-bordered table-sm">
-      <thead class="table-light">
-        <tr>
-          <th>姓名</th>
-          <th>Email</th>
-          <th>申請時間</th>
-          <th>中籤車位</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="participants.length === 0">
-          <td colspan="5" class="text-center text-muted">尚無參與者</td>
-        </tr>
-        <tr v-for="p in participants" :key="p.id">
-          <td>{{ p.userName }}</td>
-          <td>{{ p.email }}</td>
-          <td>{{ p.appliedAt }}</td>
-          <td>
-            <span v-if="p.awardedSlot">{{ p.awardedSlot }}</span>
-            <span v-else-if="lotteryDrawn">未中簽</span>
-            <span v-else>未抽籤</span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-danger" @click="removeParticipant(p)">移除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="text-end">
-      <button class="btn btn-secondary" @click="showParticipantModal = false">關閉</button>
+  <div v-if="showParticipantModal" class="modal-mask">
+    <div class="modal-container" style="max-width: 800px; width: 90%;">
+      <h5 class="mb-3 border-bottom pb-2">參與名單</h5>
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>姓名</th>
+            <th>Email</th>
+            <th>申請時間</th>
+            <th>中籤車位</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="participants.length === 0">
+            <td colspan="5" class="text-center text-muted">尚無參與者</td>
+          </tr>
+          <tr v-for="p in participants" :key="p.id">
+            <td>{{ p.userName }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.appliedAt }}</td>
+            <td>
+              <span v-if="p.awardedSlot">{{ p.awardedSlot }}</span>
+              <span v-else-if="lotteryDrawn">未中簽</span>
+              <span v-else>未抽籤</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-danger" @click="removeParticipant(p)">移除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-end">
+        <button class="btn btn-secondary" @click="showParticipantModal = false">關閉</button>
+      </div>
     </div>
   </div>
-</div>
 
 </template>
 
@@ -224,11 +215,11 @@ const fetchParkingSlots = async () => {
     eventEnd: formatDateTime(form.value.endedAt)
   })
   const res = await axios.post('/park/parking-slots/available', {
-      communityId: communityId,
-      typeName: form.value.typeName,
-      eventStart: formatDateTime(form.value.startedAt),
-      eventEnd: formatDateTime(form.value.endedAt),
-      limit: 10
+    communityId: communityId,
+    typeName: form.value.typeName,
+    eventStart: formatDateTime(form.value.startedAt),
+    eventEnd: formatDateTime(form.value.endedAt),
+    limit: 10
   })
   parkingSlots.value = res.data.data
 }
@@ -266,8 +257,8 @@ function openEditModal(event) {
     status: event.status
   }
   rawSlotIds.value = parkingSlots.value
-  .filter(slot => event.parkingSlotIds.some(p => p.parkingSlotId === slot.id))
-  .map(slot => slot.id)
+    .filter(slot => event.parkingSlotIds.some(p => p.parkingSlotId === slot.id))
+    .map(slot => slot.id)
 
   showModal.value = true
 }
@@ -355,11 +346,11 @@ async function deleteEvent(id) {
 async function drawLots(eventId) {
   try {
     const res = await axios.post(`/park/lottery-event/draw/${eventId}`)
-    if(res.data.data.totalApplicants == 0) {
+    if (res.data.data.totalApplicants == 0) {
       Swal.fire('抽籤失敗', '無人申請', 'info')
-    }else if(res.data.data.totalSpaces == 0){
+    } else if (res.data.data.totalSpaces == 0) {
       Swal.fire('抽籤失敗', '未選擇車位', 'info')
-    }else{
+    } else {
       fetchEvents()
       Swal.fire('抽籤完成', res.data.data.winners, 'success')
     }
@@ -388,25 +379,79 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .modal-mask {
   position: fixed;
   z-index: 1050;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   max-height: 90vh;
   overflow-y: auto;
 }
+
 .modal-container {
   background: white;
   padding: 20px;
   width: 400px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
+
 .swal-z-top {
   z-index: 10000 !important;
 }
 
+
+
+/* Modal title */
+.modal-title-colored {
+  color: #aebaff;
+  /* 淡藍或你指定的主題紫/藍色系 */
+}
+
+/* 標題字顏色 */
+.modal-title-colored {
+  color: #aebaff;
+}
+
+/* 關閉按鈕 icon（乾淨、右上角） */
+.btn-close-custom {
+  background: none;
+  border: none;
+  color: #f8f9fa;
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.btn-close-custom:hover {
+  color: #ffffff;
+}
+
+/* 讓 icon 垂直置中對齊標題 */
+.modal-header .btn-close-custom i {
+  display: block;
+}
+
+.dark-input,
+.dark-select,
+input.form-control,
+select.form-select {
+  background-color: #2e2e3e !important;
+  color: #f8f9fa !important;
+  border: 1px solid #555;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  height: auto;
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+}
 </style>

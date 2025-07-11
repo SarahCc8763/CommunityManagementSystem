@@ -27,7 +27,7 @@ import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.bulletin.BulletinComment;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.users.Users;
-import finalProj.dto.BulletinResponse;
+import finalProj.dto.bulletin.BulletinResponse;
 import finalProj.repository.users.UsersRepository;
 import finalProj.service.bulletin.BulletinAttachmentService;
 import finalProj.service.bulletin.BulletinCategoryService;
@@ -246,11 +246,11 @@ public class BulletinController {
     // -- 查詢公告 --
     //
 
-    // 查詢所有公告
-    @GetMapping
-    public BulletinResponse findAllBulletin() {
+    // 查詢所有該社區公告
+    @GetMapping("/community/{communityId}")
+    public BulletinResponse findAllBulletin(@PathVariable Integer communityId) {
         BulletinResponse response = new BulletinResponse();
-        if (bulletinService.findAll().isEmpty()) {
+        if (bulletinService.findAll(communityId).isEmpty()) {
             response.setMessage("查無資料");
             response.setSuccess(false);
         } else {
@@ -258,7 +258,7 @@ public class BulletinController {
             response.setCount(bulletinService.count());
             response.setSuccess(true);
             response.setMessage("查詢成功");
-            response.setList(bulletinService.findAll());
+            response.setList(bulletinService.findAll(communityId));
         }
         return response;
     }
@@ -325,12 +325,17 @@ public class BulletinController {
     //
 
     @PutMapping("/comment/{id}")
-    public BulletinComment updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
+    public ResponseEntity<?> updateBulletinComment(@PathVariable Integer id, @RequestBody BulletinComment body) {
         if (body != null) {
             body.setId(id);
-            return bulletinCommentService.modify(body);
+            BulletinComment updated = bulletinCommentService.modify(body);
+            if (updated != null) {
+                return ResponseEntity.ok(updated); // 200 OK，回傳更新後的資料
+            } else {
+                return ResponseEntity.badRequest().body("修改失敗");
+            }
         }
-        throw new RuntimeException("修改失敗");
+        return ResponseEntity.badRequest().body("請求資料無效");
     }
 
     //
@@ -338,6 +343,13 @@ public class BulletinController {
     // ------ 公告的分類 ------
     //
     //
+
+    // -- 根據社區查詢公告分類 --
+
+    @GetMapping("/category/community/{communityId}")
+    public List<BulletinCategory> findAllBulletinCategoryByCommunity(@PathVariable Integer communityId) {
+        return bulletinCategoryService.findByCommunityId(communityId);
+    }
 
     // -- 新增公告分類 --
 
@@ -375,15 +387,14 @@ public class BulletinController {
         }
     }
 
-    // 暫不提供修改
-    // @PutMapping("/category/{id}")
-    // public BulletinCategory modifyBulletinCategory(@RequestBody BulletinCategory
-    // body) {
-    // if (body != null) {
-    // return bulletinCategoryService.modify(body);
-    // }
-    // return null;
-    // }
+    @PutMapping("/category/{id}")
+    public BulletinCategory modifyBulletinCategory(@PathVariable Integer id, @RequestBody BulletinCategory body) {
+        if (body != null) {
+            body.setId(id);
+            return bulletinCategoryService.modify(body);
+        }
+        return null;
+    }
 
     //
     // -- 查詢全部公告分類 --

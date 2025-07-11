@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.bulletin.BulletinCategory;
-
 import finalProj.repository.bulletin.BulletinCategoryRepository;
-import finalProj.repository.community.CommunityRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -21,11 +19,15 @@ public class BulletinCategoryService {
     @Autowired
     private BulletinCategoryRepository bulletinCategoryRepository;
 
-    @Autowired
-    CommunityRepository communityRepository;
+    // @Autowired
+    // private CommunityRepository communityRepository;
 
     public List<BulletinCategory> findAll() {
         return bulletinCategoryRepository.findAll();
+    }
+
+    public List<BulletinCategory> findByCommunityId(Integer id) {
+        return bulletinCategoryRepository.findByCommunity_CommunityId(id);
     }
 
     public Optional<BulletinCategory> findByName(String name) {
@@ -41,16 +43,15 @@ public class BulletinCategoryService {
         return bulletinCategoryRepository.save(entity);
     }
 
-    // 不能用，因為name是主鍵不能修改，除非要新增Id當主鍵
-    // ->所以如果新增的時候打錯，只能刪除重新新增，既有的分類且已經被外鍵依賴就沒救了
-    // public BulletinCategory modify(BulletinCategory entity) {
-    // Optional<BulletinCategory> optional =
-    // bulletinCategoryRepository.findByName(entity.getName());
-    // if (optional.isPresent()) {
-    // return bulletinCategoryRepository.save(modified);
-    // }
-    // return null;
-    // }
+    public BulletinCategory modify(BulletinCategory entity) {
+        Optional<BulletinCategory> optional = bulletinCategoryRepository.findById(entity.getId());
+        if (optional.isPresent()) {
+            BulletinCategory modified = optional.get();
+            modified.setName(entity.getName());
+            return bulletinCategoryRepository.save(modified);
+        }
+        return null;
+    }
 
     // 刪除分類
     public String delete(Integer id) {
@@ -65,7 +66,7 @@ public class BulletinCategoryService {
         var categoryOpt = bulletinCategoryRepository.findById(id);
         if (categoryOpt.isPresent() && !categoryOpt.get().getBulletins().isEmpty()) {
             log.warn("分類刪除失敗：存在關聯公告，無法刪除");
-            return "有外鍵約束，刪除失敗";
+            return "分類下還存在公告，無法刪除";
         }
 
         bulletinCategoryRepository.deleteById(id);

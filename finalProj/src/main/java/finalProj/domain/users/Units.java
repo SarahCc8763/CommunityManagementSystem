@@ -3,11 +3,12 @@ package finalProj.domain.users;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.packages.Packages;
+import finalProj.domain.parking.TemporaryParkingApplication;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +58,15 @@ public class Units {
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
+
+	// --- Julie的關聯 START ---
+	// 一對多到車位
+	// @JsonManagedReference("units-temporaryParking")
+	@JsonIgnore
+	@OneToMany(mappedBy = "units", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TemporaryParkingApplication> temporaryParking;
+
+	// --- Julie的關聯 END ---
 
 	public Integer getUnitsId() {
 		return unitsId;
@@ -135,6 +145,14 @@ public class Units {
 		return "Units [unitsId=" + unitsId + ", unit=" + unit + ", floor=" + floor + ", building=" + building
 				+ ", ping=" + ping + ", point=" + point + ", packagesList=" + packagesList + ", unitsUsersList="
 				+ unitsUsersList + ", community=" + community + "]";
+	}
+
+	public List<TemporaryParkingApplication> getTemporaryParking() {
+		return temporaryParking;
+	}
+
+	public void setTemporaryParking(List<TemporaryParkingApplication> temporaryParking) {
+		this.temporaryParking = temporaryParking;
 	}
 
 }

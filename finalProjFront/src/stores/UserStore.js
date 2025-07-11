@@ -17,12 +17,8 @@ export const useUserStore = defineStore('user', () => {
     const state = ref('')
     const emergencyContactRelation = ref('')
     const emergencyContactPhone = ref('')
-    const communityId = ref('')
     const rawData = reactive({}) // 保存完整後端回傳
 
-    // 假資料 for 開發測試
-    const userId = ref(3)
-    communityId.value = 1
 
 
     function login(payload) {
@@ -67,7 +63,32 @@ export const useUserStore = defineStore('user', () => {
 
     }
 
-    // const displayName = computed(() => name.value || username.value)
+    const userId = ref(3)
+    function setUserId(data) {
+        userId.value = data
+    }
+
+    const communityId = ref(1)
+    function setCommunityId(data) {
+        communityId.value = data
+    }
+
+    const community = ref(1)
+    function setCommunity(data) {
+        community.value = data
+    }
+
+    const email = ref('sa')
+    function setEmail(data) {
+        email.value = data
+    }
+
+    const id = ref(1)
+    function setId(data) {
+        id.value = data
+    }
+
+    const displayName = computed(() => name.value || username.value)
 
     return {
         isAuthenticated,
@@ -88,7 +109,15 @@ export const useUserStore = defineStore('user', () => {
         emergencyContactPhone,
         communityId,
         userId,
-        // displayName,
+        setUserId,
+        communityId,
+        setCommunityId,
+        community,
+        setCommunity,
+        email,
+        setEmail,
+        id,
+        setId
     }
 }, {
     persist: true // 啟用 Pinia persistedstate

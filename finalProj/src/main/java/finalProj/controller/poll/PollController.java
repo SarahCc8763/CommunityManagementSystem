@@ -1,8 +1,12 @@
 package finalProj.controller.poll;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.poll.Poll;
 import finalProj.domain.poll.PollVote;
+import finalProj.dto.poll.VoteRequestDto;
 import finalProj.service.poll.PollService;
 import finalProj.service.poll.PollVoteService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/poll")
+@Slf4j
 //
 // 發布公告同時新增投票的controller方在BulletinController的新增公告方法裡面
 //
@@ -37,21 +44,46 @@ public class PollController {
         Poll result = pollService.updatePoll(id, updatedPoll);
 
         if (result != null) {
+            log.info("投票更新成功，ID: {}", id);
             return ResponseEntity.ok("投票更新成功");
         } else {
+            log.warn("投票更新失敗，找不到指定的投票，ID: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("找不到指定的投票");
         }
     }
 
     // 新增/修改投票紀錄
-    @PostMapping("/{id}/vote")
-    public ResponseEntity<?> vote(@PathVariable Integer id, @RequestBody PollVote vote) {
-        vote.setPollId(id);
-        if (pollVoteService.vote(vote) != null) {
-            return ResponseEntity.ok("投票成功");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("投票資料有誤");
-        }
+    @PostMapping("/{pollId}/vote")
+    public ResponseEntity<?> submitVote(@PathVariable Integer pollId, @RequestBody VoteRequestDto voteRequest) {
+        pollVoteService.saveVotes(pollId, voteRequest.getUserId(), voteRequest.getSelectedOptionIds());
+        return ResponseEntity.ok("投票成功");
     }
 
+    /*
+     * @PostMapping("/{id}/vote")
+     * public ResponseEntity<?> vote(@PathVariable Integer id, @RequestBody PollVote
+     * vote) {
+     * vote.setPollId(id);
+     * if (pollVoteService.vote(vote) != null) {
+     * return ResponseEntity.ok("投票成功");
+     * } else {
+     * return ResponseEntity.status(HttpStatus.NOT_FOUND).body("投票資料有誤");
+     * }
+     * }
+     */
+
+    @DeleteMapping("/delete/{pollId}")
+    public ResponseEntity<?> deletePoll(@PathVariable Integer pollId) {
+        pollService.deleteById(pollId);
+        return ResponseEntity.ok("投票刪除成功");
+    }
+
+    // 依據使用者及投票ID查詢投票紀錄
+    @GetMapping("byUserPoll/{userId}/{pollId}")
+    public ResponseEntity<?> getVoteByUserAndPoll(@PathVariable Integer userId, @PathVariable Integer pollId) {
+        List<PollVote> pollVotes = pollVoteService.findByUsersIdAndPollId(userId, pollId);
+
+        return ResponseEntity.ok(pollVotes);
+
+    }
 }
