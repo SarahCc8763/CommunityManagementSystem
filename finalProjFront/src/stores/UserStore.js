@@ -24,45 +24,48 @@ export const useUserStore = defineStore('user', () => {
 
     const userId = ref(3)
     function setUserId(data) {
-        communityId.value = data
+        userId.value = data
     }
-
 
     const communityId = ref(1)
-    function setCommunity(data) {
+    function setCommunityId(data) {
         communityId.value = data
     }
 
-    const community = ref(1) // 登入時設定
+    const community = ref(1)
     function setCommunity(data) {
         community.value = data
     }
-    const email = ref('sa') // 登入時設定
+
+    const email = ref('sa')
     function setEmail(data) {
         email.value = data
     }
-    const id = ref(1) // 登入時設定
+
+    const id = ref(1)
     function setId(data) {
         id.value = data
-        const displayName = computed(() => name.value || username.value)
-        return {
-            isAuthenticated,
-            name,
-            username,
-            avatarUrl,
-            login,
-            logout,
-            displayName,
-            token,
-            setToken,
-            community,
-            setCommunity,
-            email,
-            setEmail,
-            id,
-            setId,
-            userId,
-            communityId
-        }
+    }
+
+    const displayName = computed(() => name.value || username.value)
+
+    return {
+        isAuthenticated,
+        name,
+        username,
+        avatarUrl,
+        login,
+        logout,
+        displayName,
+        userId,
+        setUserId,
+        communityId,
+        setCommunityId,
+        community,
+        setCommunity,
+        email,
+        setEmail,
+        id,
+        setId
     }
 })
