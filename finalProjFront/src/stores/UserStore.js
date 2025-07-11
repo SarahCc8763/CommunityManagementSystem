@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         isAuthenticated,
-        name,
+        name: "張大明",
         username,
         avatarUrl,
         login,

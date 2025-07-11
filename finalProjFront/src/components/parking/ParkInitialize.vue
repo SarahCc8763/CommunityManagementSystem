@@ -287,9 +287,9 @@ function onUserChange(index) {
 // 範例CSV下載
 function downloadSampleCSV() {
     const headers = ['車位編號', '區域', '車位種類', '擁有人戶號', '車位擁有人', '登記車牌號', '是否可承租']
-    const example = ['B1-001', 'B1 A區', '汽車', 'A棟-7F-A1', 'sa', 'ABC-1234', '是']
+    const example = ['B1-001', 'B1 A區', '汽車', 'B棟-5F-10', '陳小芳', 'ABC-1234', '否']
 
-    const csvContent = [headers.join(','), example.join(',')].join('\n')
+    const csvContent = '\uFEFF' + [headers.join(','), example.join(',')].join('\n') // 加入 BOM
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
 
@@ -301,6 +301,7 @@ function downloadSampleCSV() {
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
 }
+
 
 // 車位資料陣列
 const parkingSlots = ref([])
@@ -343,13 +344,21 @@ function handleFileUpload(event) {
                     [building, floor, unit] = segments.map(s => s.trim())
                 }
             }
-            
             const user = users.value.find(u => 
                 u.name.trim().replace(/\s/g, '').toLowerCase() === 
                 user_name.trim().replace(/\s/g, '').toLowerCase()
             )
-            const isRentable = is_rentable_text === '是'
+            
+            let unitsId = null
+if (building && floor && unit) {
+    const matchedUnit = units.value.find(u =>
+        u.building === building && u.floor === floor && u.unit === unit
+    )
+    unitsId = matchedUnit?.unitsId ?? null
+}
 
+            const isRentable = is_rentable_text === '是'
+            
             result.push({
                 slotNumber: slot_number,
                 location,
@@ -360,11 +369,12 @@ function handleFileUpload(event) {
                 usersId: user ? user.usersId : null,
                 building,
                 floor,
-                unit
+                unit,
+                unitsId: unitsId,
             })
         }
         parkingSlots.value = result
-
+        
         result.forEach((slot, index) => {
             filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
             filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)

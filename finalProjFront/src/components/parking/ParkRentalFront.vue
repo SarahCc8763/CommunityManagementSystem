@@ -99,7 +99,12 @@
                 </div>
 
                 <!-- v-if：只有在資料備妥才顯示 -->
-                <div class="modal-body" v-if="rentalSlot && rentalSlot.slotNumber">
+                <div v-if="!rentInitialized" class="text-center text-muted">
+                  <div class="spinner-border text-secondary" role="status"></div>
+                  <p class="mt-2">載入中...</p>
+                </div>
+
+<div v-else>
                     <p><strong>承租者：</strong>{{ userName }}</p>
                     <p><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</p>
                     <p><strong>車位區域：</strong>{{ rentalSlot.location }}</p>
@@ -112,7 +117,14 @@
 
 
                     <label class="form-label mt-2">登記車牌：</label>
-                    <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" />
+                    <input
+  type="text"
+  class="form-control"
+  v-model="licensePlate"
+  placeholder="僅限英數，不可含中文"
+/>
+
+
 
                     <div class="text-end mt-3">
                         <button class="btn btn-success" @click="submitRental">送出承租</button>
@@ -166,13 +178,14 @@
             </td>
             <td class="d-flex justify-content-center flex-wrap gap-2">
 
-  <button
-    class="btn btn-primary btn-sm rounded-pill action-btn"
-    :disabled="record.status && record.approved || !isWithinRentalPeriod(record) || !record.canExtend"
-    @click="openExtendModal(record)"
-  >
-    續租
-  </button>
+              <button
+  class="btn btn-primary btn-sm rounded-pill action-btn"
+  :disabled="!record.approved || !record.canExtend"
+  @click="openExtendModal(record)"
+>
+  續租
+</button>
+
 
   <button
     class="btn btn-danger btn-sm rounded-pill action-btn"
@@ -268,7 +281,8 @@ const fetchUserOptions = async () => {
 }
 
 const usersId = computed(() => {
-  const match = allUsers.value.find(user => user.name === userStore.email)
+  console.log(userStore.name);
+  const match = allUsers.value.find(user => user.name === userStore.name)
   return match ? match.usersId : null
 })
 
@@ -293,7 +307,7 @@ const fetchType = async () => {
 // 查詢可承租車位
 async function fetchAvailableSlots() {
     if (!queryStartMonth.value || !queryEndMonth.value || !selectedType.value) return
-    const res = await axios.get(`/park/parking-rentals/available-slots?communityId=${communityId}`, {
+    const res = await axios.get(`/park/parking-rentals/available-slots`, {
         params: {
             parkingTypeId: selectedType.value,
             start: getFirstDayOfMonth(queryStartMonth.value),
@@ -315,28 +329,51 @@ const filteredSlots = computed(() => {
 })
 
 function openRentalModal(slot) {
-  prepareRental(slot)
-  setTimeout(() => {
+  console.log('打開承租 Modal，slot：', slot)
+
+  rentInitialized.value = false
+  rentalSlot.value = { ...slot }
+  userName.value = userStore.name
+  rentStartMonth.value = queryStartMonth.value
+  rentEndMonth.value = queryEndMonth.value
+  licensePlate.value = ''
+
+  // ✅ 等 DOM 更新完後才 show Modal
+  nextTick(() => {
+    rentInitialized.value = true
     rentalModalInstance?.show()
-  }, 0)
+  })
 }
+
+
+
+modalElement.value?.addEventListener('hidden.bs.modal', () => {
+  rentInitialized.value = false
+  rentalSlot.value = null
+  licensePlate.value = ''
+  rentStartMonth.value = ''
+  rentEndMonth.value = ''
+})
 
 
 
 function prepareRental(slot) {
   console.log('準備承租 slot：', slot)
-  rentalSlot.value = slot
-  userName.value = userStore.email
+  rentalSlot.value = { ...slot }
+  userName.value = userStore.name
 
   rentInitialized.value = false
   rentStartMonth.value = queryStartMonth.value
   rentEndMonth.value = queryEndMonth.value
-  licensePlate.value = ''
 
-  setTimeout(() => {
+  // 改為初始化空值，而不是被 slot.licensePlate 污染
+  // licensePlate.value = ''
+
+  nextTick(() => {
     rentInitialized.value = true
-  }, 0)
+  })
 }
+
 
 
 // 日期時間格式化（含時分秒）
@@ -368,7 +405,7 @@ async function submitRental() {
   }
 
   const payload = {
-    userName: userStore.email,
+    userName: userStore.name,
     usersId: usersId.value,
     slotNumber: rentalSlot.value.slotNumber,
     rentBuyStart: formatDateOnly(getFirstDayOfMonth(rentStartMonth.value)), // yyyy-MM-dd
@@ -577,21 +614,24 @@ async function canExtendSlot(record) {
   nextEnd.setMonth(nextEnd.getMonth() + 1)
 
   try {
+    const parkingTypeId = parkingTypes.value.find(type => type.label === record.parkingType)?.id
     const res = await axios.get(`/park/parking-rentals/available-slots`, {
       params: {
-        parkingTypeId: selectedType.value, // or record.parkingTypeId if你有
+        parkingTypeId: parkingTypeId,
         communityId: communityId,
         start: nextStart.toISOString().slice(0, 10),
         end: nextEnd.toISOString().slice(0, 10),
       }
     })
     const availableSlots = res.data.data || []
+
     return availableSlots.some(slot => slot.slotNumber === record.slotNumber)
   } catch (err) {
     console.error('檢查續租衝突失敗', err)
-    return false // 若錯誤保守處理，不給按
+    return false
   }
 }
+
 
 // 刪除紀錄
 async function deleteRecord(record) {
@@ -616,7 +656,10 @@ async function deleteRecord(record) {
             showConfirmButton: false,
             timer: 1000
         })
+        rentalSlot.value = null
+rentInitialized.value = false
         fetchRentalHistory()
+        fetchAvailableSlots()
         console.log(res.data.data)
 
     } catch (e) {
