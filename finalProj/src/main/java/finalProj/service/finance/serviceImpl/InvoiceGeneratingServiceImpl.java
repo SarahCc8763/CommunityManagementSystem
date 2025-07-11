@@ -43,7 +43,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     private InvoiceRepository invoiceRepository;
 
     @Transactional
-    public void generateInvoices(Integer feeTypeId, Integer billingPeriodId) {
+    public Boolean generateInvoices(Integer feeTypeId, Integer billingPeriodId, Integer createdBy) {
         System.out.println(">>>>> 產生繳款單開始，feeTypeId: " + feeTypeId + ", billingPeriodId: " + billingPeriodId);
         FeeType feeType = feeTypeRepository.findById(feeTypeId)
                 .orElseThrow(() -> new IllegalArgumentException("無效的費用類別ID: " + feeTypeId));
@@ -52,6 +52,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
 
         // 只抓該社區的戶
         List<Units> units = unitsRepository.findAll(); // 若有findByCommunityId可改用
+        System.out.println(units.size());
         for (Units unit : units) {
             // 若有社區過濾
             if (feeType.getCommunityId() != null && unit.getCommunity() != null &&
@@ -63,8 +64,10 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
 
             System.out.println(">>> 准備新增繳費單 for unit " + unit.getUnit());
             List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
+
             if (unitUsers == null || unitUsers.isEmpty())
                 continue;
+            System.out.println("111111111111111111111");
             Users user = unitUsers.get(0).getUser(); // 主用戶
             java.math.BigDecimal unitCount;
             if ("每坪".equals(feeType.getUnit())) {
@@ -78,6 +81,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             java.math.BigDecimal totalAmount = unitCount.multiply(unitPrice);
 
             Invoice invoice = new Invoice();
+            invoice.setCreatedBy(createdBy);
             invoice.setUsers(user);
             invoice.setFeeType(feeType);
             invoice.setBillingPeriod(billingPeriod);
@@ -92,8 +96,15 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setStatus(false);
             invoice.setNote("system generated");
             invoice.setCreatedAt(LocalDateTime.now());
-            invoiceRepository.save(invoice);
-            System.out.println(">>> 儲存 invoice 給 unit: " + unit.getUnit());
+            try {
+                Invoice result = invoiceRepository.save(invoice);
+                System.out.println(">>> 儲存 invoice 給 unit: " + unit.getUnit());
+
+            } catch (Exception e) {
+                return false;
+            }
+
         }
+        return true;
     }
 }

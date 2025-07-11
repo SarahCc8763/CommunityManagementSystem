@@ -287,14 +287,14 @@ const menuList = ref([
     children: [
       { label: '繳費總覽', routeName: 'FinUser' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
-      { label: '繳費紀錄', routeName: 'ReceiptHistory', key: 'RECEIPTHISTORY' },
+      { label: '繳費紀錄', routeName: 'Receipt', key: 'RECEIPT' },
       { label: 'A新增費用類型', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
       { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
       { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
       { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
       { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
       { label: 'A審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
-      { label: 'A查看繳款回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
+
     ]
   },
   {

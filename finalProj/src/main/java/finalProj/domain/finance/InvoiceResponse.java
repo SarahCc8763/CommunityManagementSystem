@@ -39,7 +39,7 @@ public class InvoiceResponse {
     @JoinColumn(name = "users_id", insertable = false, updatable = false)
     private Users user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "invoice_id", insertable = false, updatable = false)
     @JsonBackReference
     private Invoice invoice;

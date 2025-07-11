@@ -1,6 +1,10 @@
 package finalProj.dto.finance;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import finalProj.domain.finance.Invoice;
+import finalProj.domain.finance.InvoiceResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +20,7 @@ public class InvoiceResponseDTO {
     private Boolean verified; // 管理員是否已審核
     private LocalDateTime verifiedTime; // 審核時間
     private Integer verifiedBy; // 審核人員ID
+    private Invoice invoice;
 
     // Entity 轉 DTO 建構子
     public InvoiceResponseDTO(finalProj.domain.finance.InvoiceResponse entity) {
@@ -30,5 +35,6 @@ public class InvoiceResponseDTO {
         this.verified = entity.getVerified();
         this.verifiedTime = entity.getVerifiedTime();
         this.verifiedBy = entity.getVerifiedBy();
+        this.invoice = entity.getInvoice();
     }
 }

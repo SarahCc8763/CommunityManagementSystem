@@ -56,6 +56,9 @@ const router = createRouter({
       name: 'home',
       component: Home,
     },
+
+    // Finance相關
+    //// Fin-Admin
     {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
@@ -81,16 +84,6 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice',
-      name: 'Invoice',
-      component: Invoice,
-    },
-    {
-      path: '/finUser',
-      name: 'FinUser',
-      component: finUser,
-    },
-    {
       path: '/finance/invoice/validate',
       name: 'InvoiceValidate',
       component: InvoiceValidate,
@@ -108,6 +101,23 @@ const router = createRouter({
       component: InvoiceWithResponse,
       meta: { dark: true },
     },
+    ////fin-user
+    {
+      path: '/finance/receipt/my',
+      name: 'Receipt',
+      component: Receipt,
+    },
+    {
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice,
+    },
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser,
+    },
+    //Finance相關 end
     {
       path: "/pages/park/initialize",
       name: "parkInitialize",

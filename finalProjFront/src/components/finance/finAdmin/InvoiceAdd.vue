@@ -182,10 +182,17 @@ const submitForm = async () => {
     return
   }
   try {
-    await axiosapi.post('/finance/invoice-generator/generate', {
-      feeTypeId: form.value.feeTypeId,
-      billingPeriodId: form.value.billingPeriodId
+    const res = await axiosapi.post('/finance/invoice-generator/generate', {
+
+      feeType: {
+        feeTypeId: form.value.feeTypeId
+      },
+      billingPeriod: {
+        billingPeriodId: form.value.billingPeriodId,
+      },
+      createdBy: 2
     })
+    console.log(res);
     successMsg.value = '新增成功！將導向審核頁面...'
     selectedFeeTypeDesc.value = ''
     selectedFeeType.value = null

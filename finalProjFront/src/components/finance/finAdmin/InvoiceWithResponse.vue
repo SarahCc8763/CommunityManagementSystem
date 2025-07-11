@@ -36,8 +36,10 @@
       <div class="mt-2">
         <h5>回覆紀錄：</h5>
         <div v-if="Array.isArray(inv.invoiceResponses) && inv.invoiceResponses.length > 0">
-          <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId" class="response-card d-flex align-items-center mb-2">
-            <input type="checkbox" class="form-check-input me-2" :value="res.invoiceResponseId" v-model="checkedResponses" />
+          <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId"
+            class="response-card d-flex align-items-center mb-2">
+            <input type="checkbox" class="form-check-input me-2" :value="res.invoiceResponseId"
+              v-model="checkedResponses" />
             <div class="flex-grow-1">
               <div>留言：{{ res.lastResponse }}</div>
               <div>末五碼：{{ res.accountCode }}</div>
@@ -98,9 +100,26 @@ const formatDate = (date) => {
   }
 }
 
-// filteredInvoices：目前直接回傳所有 invoices，可依需求加條件
 const filteredInvoices = computed(() => {
-  return Array.isArray(invoices.value) ? invoices.value : []
+  if (!Array.isArray(invoices.value)) return []
+
+  return invoices.value.filter(inv => {
+    // 篩選期別（模糊比對）
+    const matchPeriod = filter.periodName === '' ||
+      (inv.billingPeriod?.periodName || '').includes(filter.periodName)
+
+    // 篩選費用類別（模糊比對）
+    const matchFeeType = filter.feeType === '' ||
+      (inv.feeType?.description || '').includes(filter.feeType)
+
+    // 篩選逾期
+    const matchOverdue =
+      filter.overdue === '' ||
+      (filter.overdue === 'true' && isOverdue(inv.deadline)) ||
+      (filter.overdue === 'false' && !isOverdue(inv.deadline))
+
+    return matchPeriod && matchFeeType && matchOverdue
+  })
 })
 
 // 找出 paymentStatus 為 pending 且有回覆的所有 response
@@ -145,8 +164,10 @@ onMounted(async () => {
 
 async function reloadInvoices() {
   // 查詢所有 paymentStatus='unpaid' 且有回覆的 invoice（新版API）
-  const res = await axiosapi.get('/finance/invoice-responses/with-response/unpaid', { params: { communityId: userStore.communityId } })
+  const res = await axiosapi.get('/finance/invoice-responses/all', { params: { communityId: userStore.communityId } })
+  console.log(res);
   invoices.value = res.data
+  console.log("✅ 載入完成 filteredInvoices：", filteredInvoices.value)
 }
 
 function openReceiptModal(invoice, userId) {
@@ -237,7 +258,7 @@ async function batchCreateReceipts() {
     }
     if (!found) {
       failCount++
-      failList.push({resId, reason: '找不到對應資料'})
+      failList.push({ resId, reason: '找不到對應資料' })
       continue
     }
     // 防呆：檢查 invoiceId 與 amountPay
@@ -245,12 +266,12 @@ async function batchCreateReceipts() {
     let amountPay = found.invoice.amountDue
     if (invoiceId == null) {
       failCount++
-      failList.push({resId, reason: 'invoiceId 為空'})
+      failList.push({ resId, reason: 'invoiceId 為空' })
       continue
     }
     if (amountPay == null || isNaN(amountPay) || Number(amountPay) < 0) {
       failCount++
-      failList.push({resId, reason: '金額為空或負數'})
+      failList.push({ resId, reason: '金額為空或負數' })
       continue
     }
     amountPay = Number(amountPay)
@@ -270,7 +291,7 @@ async function batchCreateReceipts() {
       successCount++
     } catch (e) {
       failCount++
-      failList.push({resId, reason: e.response?.data?.message || e.message})
+      failList.push({ resId, reason: e.response?.data?.message || e.message })
     }
   }
   await reloadInvoices()
