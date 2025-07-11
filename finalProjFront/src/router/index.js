@@ -16,7 +16,8 @@ import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
 import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
 import TemporaryParking from "@/components/parking/TemporaryParking.vue"
-import MySlots from '../components/parking/MySlots.vue'
+import MySlots from '@/components/parking/MySlots.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

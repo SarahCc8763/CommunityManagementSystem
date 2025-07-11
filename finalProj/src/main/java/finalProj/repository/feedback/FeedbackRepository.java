@@ -11,4 +11,6 @@ import finalProj.domain.feedback.Feedback;
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     public List<Feedback> findByUser_UsersId(Integer id);
+
+    public List<Feedback> findByCommunity_CommunityId(Integer id);
 }

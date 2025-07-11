@@ -1,7 +1,7 @@
+
 package finalProj.domain.ticket;
 
 import java.util.List;
-
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,8 +21,8 @@ public class IssueType {
 	private Integer Id;// 問題類別流水號
 	@Column(name = "issue_type_name")
 	private String issueTypeName;// 問題類別名稱
-	
-//	@JsonManagedReference("issueTypesAndTicket")
+
+	// @JsonManagedReference("issueTypesAndTicket")
 	@OneToMany(mappedBy = "issueType", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<IssueTypeAndTicket> tickets;
 
@@ -54,7 +54,5 @@ public class IssueType {
 	public void setTickets(List<IssueTypeAndTicket> tickets) {
 		this.tickets = tickets;
 	}
-
-	
 
 }

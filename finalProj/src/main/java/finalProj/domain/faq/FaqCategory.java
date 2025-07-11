@@ -19,7 +19,7 @@ public class FaqCategory {
     @Column(name = "faq_category_name", length = 20)
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("faq-category")
     private List<Faq> faqs;
 

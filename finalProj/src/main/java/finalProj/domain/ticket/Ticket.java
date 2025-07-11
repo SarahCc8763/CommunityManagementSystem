@@ -68,8 +68,8 @@ public class Ticket {
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
 
-//	@Transient
-//	private String assignerName;
+	// @Transient
+	// private String assignerName;
 
 	@Column(name = "title")
 	private String title; // 問題標題
@@ -117,16 +117,16 @@ public class Ticket {
 		this.issueTypes = issueTypes;
 	}
 
-//	public String getAssignerName() {
-//		if (reporter != null) {
-//			assignerName = assignerId.getName();
-//		}
-//		return assignerName;
-//	}
-//
-//	public void setAssignerName(String assignerName) {
-//		this.assignerName = assignerName;
-//	}
+	// public String getAssignerName() {
+	// if (reporter != null) {
+	// assignerName = assignerId.getName();
+	// }
+	// return assignerName;
+	// }
+	//
+	// public void setAssignerName(String assignerName) {
+	// this.assignerName = assignerName;
+	// }
 
 	public String getName() {
 		if (reporter != null) {

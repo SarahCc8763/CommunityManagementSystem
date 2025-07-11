@@ -24,13 +24,15 @@ export const useUserStore = defineStore('user', () => {
 
     const userId = ref(3)
     function setUserId(data) {
-        userId.value = data
+        communityId.value = data
     }
 
-    const token = ref('')
-    function setToken(data) {
-        token.value = data
+
+    const communityId = ref(1)
+    function setCommunity(data) {
+        communityId.value = data
     }
+
     const community = ref(1) // 登入時設定
     function setCommunity(data) {
         community.value = data
@@ -42,23 +44,25 @@ export const useUserStore = defineStore('user', () => {
     const id = ref(1) // 登入時設定
     function setId(data) {
         id.value = data
-    }
-    const displayName = computed(() => name.value || username.value)
-    return {
-        isAuthenticated,
-        name,
-        username,
-        avatarUrl,
-        login,
-        logout,
-        displayName,
-        token,
-        setToken,
-        community,
-        setCommunity,
-        email,
-        setEmail,
-        id,
-        setId
+        const displayName = computed(() => name.value || username.value)
+        return {
+            isAuthenticated,
+            name,
+            username,
+            avatarUrl,
+            login,
+            logout,
+            displayName,
+            token,
+            setToken,
+            community,
+            setCommunity,
+            email,
+            setEmail,
+            id,
+            setId,
+            userId,
+            communityId
+        }
     }
 })

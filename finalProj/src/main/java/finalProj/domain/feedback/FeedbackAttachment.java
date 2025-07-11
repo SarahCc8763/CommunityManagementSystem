@@ -33,7 +33,7 @@ public class FeedbackAttachment {
     @Lob
     private byte[] attachment;
 
-    @Column(name = "feedback_attachment_mime_type", nullable = false, length = 20)
+    @Column(name = "feedback_attachment_mime_type", nullable = false, length = 50)
     private String mimeType;
 
     @Column(name = "feedback_attachment_file_size", nullable = false)

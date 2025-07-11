@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 36b1738c7d7032f820c519a1e2babfa4f07584be
 package finalProj.domain.bulletin;
 
 import java.time.LocalDateTime;
@@ -47,6 +50,23 @@ public class Bulletin {
     private BulletinCategory category;
 
     @Transient
+<<<<<<< HEAD
+=======
+    private Integer categoryId;
+
+    public Integer getCategoryId() {
+        if (category != null) {
+            categoryId = category.getId();
+        }
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    @Transient
+>>>>>>> 36b1738c7d7032f820c519a1e2babfa4f07584be
     private String categoryName;
 
     @ManyToOne
@@ -74,6 +94,7 @@ public class Bulletin {
     @JsonBackReference("community-bulletin")
     private Community community;
 
+<<<<<<< HEAD
     @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("bulletin-poll")
     private Poll poll;
@@ -86,6 +107,24 @@ public class Bulletin {
     @JsonManagedReference("bulletin-comment")
     private List<BulletinComment> comments;
 
+=======
+    @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("bulletin-poll")
+    private Poll poll;
+
+    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("bulletin-attachment")
+    private List<BulletinAttachment> attachments;
+
+    @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("bulletin-comment")
+    private List<BulletinComment> comments;
+
+    @Transient
+    private String userName;
+
+    @Transient
+>>>>>>> 36b1738c7d7032f820c519a1e2babfa4f07584be
     public List<BulletinAttachment> getAttachments() {
         return attachments;
     }
@@ -216,4 +255,18 @@ public class Bulletin {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+<<<<<<< HEAD
+=======
+
+    public String getUserName() {
+        if (user != null) {
+            userName = user.getName();
+        }
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+>>>>>>> 36b1738c7d7032f820c519a1e2babfa4f07584be
 }

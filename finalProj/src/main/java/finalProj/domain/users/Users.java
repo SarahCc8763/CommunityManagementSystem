@@ -153,13 +153,12 @@ public class Users {
 
 	@OneToMany(mappedBy = "user")
 	private List<FeedbackReply> feedbackReplies;
+	// --- 政宇的關聯 END ---
 
 	// @JsonManagedReference("RoleUser")
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RolesUsers> RolesUsersList;
-
-	// --- 政宇的關聯 END ---
 
 	// --- Julie的關聯 START ---
 	// 一對多到車位

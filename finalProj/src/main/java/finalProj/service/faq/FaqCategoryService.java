@@ -30,6 +30,10 @@ public class FaqCategoryService {
         return faqCategoryRepository.findByName(name);
     }
 
+    public Optional<FaqCategory> findById(Integer id) {
+        return faqCategoryRepository.findById(id);
+    }
+
     public FaqCategory save(FaqCategory entity) {
         if (entity.getCommunity() == null || entity.getCommunity().getCommunityId() == null) {
             return null;
@@ -52,6 +56,19 @@ public class FaqCategoryService {
 
     public List<FaqCategory> findByCommunity_CommunityId(Integer id) {
         return faqCategoryRepository.findByCommunity_CommunityId(id);
+    }
+
+    public Boolean delete(FaqCategory entity) {
+        try {
+            faqCategoryRepository.delete(entity);
+            log.info("FAQ 分類已刪除");
+            return true;
+
+        } catch (Exception e) {
+            log.error("FAQ 分類刪除失敗");
+            return false;
+        }
+
     }
 
 }
