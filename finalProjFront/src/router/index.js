@@ -1,38 +1,22 @@
-
-import { useUserStore } from '@/stores/UserStore'
-
+import finUser from '@/components/finance/finUser/finUser.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
+import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
-import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
+import Invoice from '../components/finance/finUser/Invoice.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
-import TicketDetailView from '../views/TicketDetailView.vue'
-import TicketForm from '../views/TicketForm.vue'
-import TicketList from '../views/TicketList.vue'
-import TicketPage from '../views/TicketPage.vue'
-import AllTicketsByAssignment from '../views/AllTicketsByAssignment.vue'
-import CommunityList from '../views/CommunityList.vue'
-import resetPassword from '@/components/profile/resetPassword.vue';
-import AdminDashboard from '@/views/AdminDashboard.vue'
-import packages from '@/components/package/packages.vue'
-import TicketDashboard from '../views/TicketDashboard.vue'
-// Yu Start
-import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
-import FaqAdmin from '../views/faq/FaqAdmin.vue'
-import FeedbackAdmin from '../views/feedback/FeedbackAdmin.vue'
-import Faq from '@/views/faq/Faq.vue'
-import MyFeedback from '@/views/feedback/MyFeedback.vue'
-import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
-//Yu End
-
-
-
-
-
-
+import Home from '../views/Home.vue'
+import LotteryApply from "@/components/parking/LotteryApply.vue"
+import LotteryEvent from "@/components/parking/LotteryEvent.vue"
+import ParkingBack from "@/components/parking/ParkingBack.vue"
+import ParkingFront from "@/components/parking/ParkingFront.vue"
+import ParkInitialize from "@/components/parking/ParkInitialize.vue"
+import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
+import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
+import ParkSlot from "@/components/parking/ParkSlot.vue"
+import TemporaryParking from "@/components/parking/TemporaryParking.vue"
+import MySlots from '@/components/parking/MySlots.vue'
 
 
 const router = createRouter({
@@ -61,12 +45,7 @@ const router = createRouter({
       component: InvoiceAdd,
       meta: { dark: true },
     },
-    {
-      path: '/finance/invoice-response/add',
-      name: 'InvoiceResponseAdd',
-      component: InvoiceResponseAdd,
 
-    },
     {
       path: '/finance/receipt/add',
       name: 'ReceiptAdd',
@@ -78,146 +57,74 @@ const router = createRouter({
       name: 'InvoiceHistory',
       component: InvoiceHistory,
     },
-    // {
-    //   path: '/finance/invoice',
-    //   name: 'Invoice',
-    //   component: Invoice
-    // },
-
     {
-      path: '/faq',
-      name: 'faq',
-      component: Faq
-
-    },
-
-    {
-      path: '/feedback',
-      name: 'feedback',
-      component: MyFeedback
-
-    },
-
-    {
-      path: '/announcement-latest',
-      name: 'announcement-latest',
-      component: AnnouncementLatest
-
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice
     },
     {
-      path: '/bulletin-admin',
-      name: 'bulletin-admin',
-      component: BulletinAdmin,
-      meta: { dark: true }
-
-    },
-
-    // {
-    //   path: '/finUser',
-    //   name: 'FinUser',
-    //   component: finUser
-    // },
-
-
-    {
-      path: '/feebackAdmin',
-      name: 'feedbackAdmin',
-      component: FeedbackAdmin,
-      meta: { dark: true }
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser
     },
     {
-      path: '/faqAdmin',
-      name: 'faqAdmin',
-      component: FaqAdmin,
-      meta: { dark: true }
-    },
-    {
-      path: '/ticket/:id',
-      name: 'TicketDetail',
-      component: TicketDetailView,
-    },
-    {
-      path: '/TicketForm',
-      name: 'TicketForm',
-      component: TicketForm,
-    },
-    {
-      path: '/TicketList',
-      name: 'TicketList',
-      component: TicketList,
-    },
-    {
-      path: '/TicketPage',
-      name: 'TicketPage',
-      component: TicketPage,
-    }, {
-      path: '/AllTicketsByAssignment',
-      name: 'AllTicketsByAssignment',
-      component: AllTicketsByAssignment,
-    },
-    {
-      path: '/CommunityList',
-      name: 'CommunityList',
-      component: CommunityList,
+      path: "/pages/park/initialize",
+      name: "parkInitialize",
+      component: ParkInitialize,
       meta: { dark: true },
     },
     {
-      path: '/resetPassword',
-      name: 'resetPassword',
-      component: resetPassword,
+      path: "/pages/park/slot",
+      name: "parkSlot",
+      component: ParkSlot,
+      meta: { dark: true },
     },
     {
-      path: '/AdminDashboard',
-      name: 'AdminDashboard',
-      component: AdminDashboard,
+      path: "/pages/park/rental-front",
+      name: "parkRentalFront",
+      component: ParkRentalFront,
     },
     {
-      path: '/packages',
-      name: 'packages',
-      component: packages,
-      meta: { requiresAuth: true }
+      path: "/pages/park/rental-back",
+      name: "parkRentalBack",
+      component: ParkRentalBack,
+      meta: { dark: true },
     },
     {
-      path: '/TicketDashboard',
-      name: 'TicketDashboard',
-      component: TicketDashboard,
+      path: "/pages/park/lottery-event",
+      name: "lotteryEvent",
+      component: LotteryEvent,
+      meta: { dark: true },
+    },
+    {
+      path: "/pages/park/lottery-apply",
+      name: "lotteryApply",
+      component: LotteryApply,
+    },
+    {
+      path: "/pages/park/temporary-parking",
+      name: "temporaryParking",
+      component: TemporaryParking,
+      meta: { dark: true },
+    },
+    {
+      path: "/pages/park/parking-front",
+      name: "parkingFront",
+      component: ParkingFront,
+    },
+    {
+      path: "/pages/park/parking-back",
+      name: "parkingBack",
+      component: ParkingBack,
+      meta: { dark: true },
+    },
+    {
+      path: '/pages/park/my-slots',
+      name: 'mySlots',
+      component: MySlots,
     }
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home.vue,
-    // },
+
   ],
-
-  scrollBehavior(to, from, savedPosition) {
-    return { top: 0 }
-  }
 })
-router.beforeEach((to) => {
-  const userStore = useUserStore()
-
-  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    console.log('尚未登入，導去首頁並觸發登入 modal')
-    window.dispatchEvent(new CustomEvent('show-login-modal'))
-    return { name: 'home' }
-  }
-
-})
-
 
 export default router

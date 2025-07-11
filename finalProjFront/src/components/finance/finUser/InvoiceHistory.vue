@@ -36,6 +36,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { jsPDF } from 'jspdf'
+import '@/assets/fonts/msjh-normal.js'
 
 //這段來抓User跟Community ID
 import { useUserStore } from '@/stores/UserStore'
@@ -58,9 +59,8 @@ const fetchReceipts = async () => {
 
 onMounted(fetchReceipts)
 
-const downloadPDF = async (r) => {
+const downloadPDF = (r) => {
   const doc = new jsPDF()
-  await import('@/assets/fonts/msjh-normal.js')
   doc.setFont('msjh')
   doc.setFontSize(16)
   doc.text('收據', 15, 20)

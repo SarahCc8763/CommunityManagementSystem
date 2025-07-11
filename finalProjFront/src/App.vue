@@ -21,7 +21,6 @@
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
         <RouterView />
-        <FeedbackModal />
       </div>
     </main>
 
@@ -48,68 +47,38 @@ import FooterAll from './components/forAll/main/FooterAll.vue'
 import LoginModal from './components/forAll/main/LoginModal.vue'
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
 import RightSideNav from './components/forAll/main/RightSideNav.vue'
-import FeedbackModal from './components/feedback/FeedbackModal.vue';
 
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
 const route = useRoute()
 
-const isDarkMode = computed(() => route.meta?.dark === true)
 // ✅ 只判斷 meta.dark
-// const isDarkMode = computed(() => route.meta?.dark === true)
+const isDarkMode = computed(() => route.meta?.dark === true)
 
-// user.login({
-//   name: '王小明',
-//   username: 'ming123',
-//   avatarUrl: 'https://i.pravatar.cc/100?img=13'
-// })
+user.login({
+  name: '王小明',
+  username: 'ming123',
+  avatarUrl: 'https://i.pravatar.cc/100?img=13'
+})
 
-const handleShowLoginModal = () => {
-  showLogin.value = true
-}
-
-
-// 處理登入成功
-// const handleLoginSuccess = (loginData) => {
-//   // 更新用戶狀態
-//   user.login({
-//     name: loginData.username,
-//     username: loginData.username,
-//     avatarUrl: 'https://i.pravatar.cc/100?img=13'
-//   })
-//   showLogin.value = false
-
-//   // 觸發全局登入成功事件，讓其他組件也能收到通知
-//   window.dispatchEvent(new CustomEvent('login-success', {
-//     detail: loginData
-//   }))
-//   window.dispatchEvent(new Event('refresh-community-functions'))
-// }
 const handleLoginSuccess = (loginData) => {
-  user.login(loginData) // ✅ 傳整包 payload，不要自己手動塞東西
+  user.login({
+    name: loginData.username,
+    username: loginData.username,
+    avatarUrl: 'https://i.pravatar.cc/100?img=13'
+  })
   showLogin.value = false
-
-  // 讓其他元件知道登入完成
   window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
-  window.dispatchEvent(new Event('refresh-community-functions')) // ✅ 即時刷新 header 功能
-  console.log(loginData)
-}
-
-// 處理登出
-const handleLogout = () => {
-  // 這裡可以添加登出時的清理邏輯
-  console.log('用戶已登出')
 }
 
 onMounted(() => {
-  window.addEventListener('show-login-modal', handleShowLoginModal)
-  window.addEventListener('logout', handleLogout)
+  window.addEventListener('show-login-modal', () => (showLogin.value = true))
+  window.addEventListener('logout', () => console.log('用戶已登出'))
 })
-
 onUnmounted(() => {
-  window.removeEventListener('show-login-modal', handleShowLoginModal)
-  window.removeEventListener('logout', handleLogout)
+  window.removeEventListener('show-login-modal', () => (showLogin.value = true))
+  window.removeEventListener('logout', () => console.log('用戶已登出'))
 })
 </script>
 
