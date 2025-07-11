@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "poll_option")
@@ -35,6 +36,20 @@ public class PollOption {
     @OneToMany(mappedBy = "option")
     @JsonIgnore
     private List<PollVote> votes;
+
+    @Transient
+    private Integer votesCount;
+
+    public Integer getVotesCount() {
+        if (votes != null) {
+            votesCount = votes.size();
+        }
+        return votesCount;
+    }
+
+    public void setVotesCount(Integer votesCount) {
+        this.votesCount = votesCount;
+    }
 
     public Integer getId() {
         return id;

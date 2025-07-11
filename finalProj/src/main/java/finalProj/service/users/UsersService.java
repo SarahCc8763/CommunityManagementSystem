@@ -115,4 +115,8 @@ public class UsersService {
 	// return false;
 	// }
 
+	public List<Users> findAll() {
+
+		return usersRepository.findAll();
+	}
 }

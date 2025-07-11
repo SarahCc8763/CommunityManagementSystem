@@ -1,6 +1,7 @@
 package finalProj.domain.users;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import finalProj.domain.community.Community;
 import jakarta.persistence.Column;
@@ -32,6 +33,7 @@ public class UnitsUsers {
     private Units unit;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "community_id", referencedColumnName = "id")
     private Community community;
 

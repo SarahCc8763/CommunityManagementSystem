@@ -82,4 +82,23 @@ public class TickrtController {
 		return ticketService.searchTickets(dto);
 	}
 
+	// 只改狀態
+	@PutMapping("/status/{id}")
+	public ApiResponse<Ticket> updateStatus(@PathVariable("id") Integer id, @RequestBody TicketDTO dto) {
+		try {
+			Ticket result = ticketService.updateStatusOnly(id, dto);
+			return new ApiResponse<>(true, "狀態更新成功", result);
+		} catch (IllegalArgumentException e) {
+			return new ApiResponse<>(false, e.getMessage(), null);
+		}
+	}
+
+	// 分頁功能
+	// @GetMapping("/ticketsPage")
+	// public Page<Ticket> findAllPaged(
+	// @RequestParam(defaultValue = "0") int page,
+	// @RequestParam(defaultValue = "10") int size
+	// ) {
+	// return ticketService.findAllPages(page, size);
+	// }
 }

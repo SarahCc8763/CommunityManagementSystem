@@ -1,5 +1,6 @@
 package finalProj.repository.bulletin;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,8 @@ public interface BulletinCategoryRepository extends JpaRepository<BulletinCatego
     public void deleteByName(String name);
 
     public boolean existsByName(String name);
+
+    public List<BulletinCategory> findByCommunity_CommunityId(Integer id);
 
     public Optional<BulletinCategory> findByCommunity_CommunityIdAndName(Integer id, String name);
 }

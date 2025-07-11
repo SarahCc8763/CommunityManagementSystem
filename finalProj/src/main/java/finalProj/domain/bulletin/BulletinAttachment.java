@@ -28,13 +28,15 @@ public class BulletinAttachment {
     @Column(name = "bulletin_attachment", nullable = false)
     private byte[] fileData;
 
-    @Column(name = "bulletin_attachment_mime_type", nullable = false, length = 20)
+    @Column(name = "bulletin_attachment_mime_type", nullable = false, length = 50)
     private String mimeType;
 
     @Transient // 不存入資料庫，只作為接收 JSON 時用的欄位
     private String fileDataBase64;
+    @Transient
+    private Boolean isNew;
 
-    // Getters and Setters
+    // Getters and Setterss
 
     public Integer getId() {
         return id;
@@ -104,6 +106,14 @@ public class BulletinAttachment {
 
     public void setFileDataBase64(String fileDataBase64) {
         this.fileDataBase64 = fileDataBase64;
+    }
+
+    public Boolean getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(Boolean isNew) {
+        this.isNew = isNew;
     }
 
 }

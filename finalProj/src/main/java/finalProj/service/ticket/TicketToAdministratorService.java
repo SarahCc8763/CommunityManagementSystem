@@ -31,4 +31,20 @@ public class TicketToAdministratorService {
 		return ticketToAdministratorRepository.findByVendorId(id);
 	}
 
+	public List<TicketToAdministrator> findAll() {
+		return ticketToAdministratorRepository.findAll();
+	}
+
+	public void updateVendors(Integer ticketId, List<Integer> vendorIds) {
+        // 先刪除原有廠商紀錄
+        ticketToAdministratorRepository.deleteByTicketId(ticketId);
+
+        // 重新插入新的廠商資料
+        for (Integer vendorId : vendorIds) {
+            TicketToAdministrator entity = new TicketToAdministrator();
+            entity.setTicketId(ticketId);
+            entity.setVendorId(vendorId);
+            ticketToAdministratorRepository.save(entity);
+        }
+    }
 }

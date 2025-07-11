@@ -20,4 +20,6 @@ public interface BulletinRepository extends JpaRepository<Bulletin, Integer> {
                         "AND (:title IS NULL OR b.title like %:title%) ")
         public List<Bulletin> findByCategoryAndTitle(@Param("category") String category,
                         @Param("title") String title);
+
+        public List<Bulletin> findByCommunity_communityId(Integer communityId);
 }

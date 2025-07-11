@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.users.Users;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,7 +49,7 @@ public class BulletinComment {
     @Column(name = "bulletin_comment_is_alive", insertable = false)
     private Boolean isAlive;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("bulletinComment-like")
     private List<BulletinCommentLike> bulletinCommentLikes;
 
@@ -57,7 +58,7 @@ public class BulletinComment {
     @JsonBackReference("bulletinComment-parent")
     private BulletinComment parentComment;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("bulletinComment-parent")
     private List<BulletinComment> replies;
 
@@ -68,20 +69,34 @@ public class BulletinComment {
     private Integer parentCommentId;
 
     @Transient
-    private List<String> userData;
+    private List<Object> userData;
+
+    @Transient
+    private Boolean isLikedByCurrentUser;
+
+    @Transient
+    public boolean isLikedByUser(Integer usersId) {
+        if (bulletinCommentLikes == null || usersId == null)
+            return false;
+
+        return bulletinCommentLikes.stream()
+                .anyMatch(like -> like.getUser() != null &&
+                        like.getUser().getUsersId().equals(usersId) && like.getComment() != null
+                        && like.getComment().getId().equals(id) && like.getIsValid());
+    }
 
     //
     //
     // getters and setters
 
-    public List<String> getUserData() {
+    public List<Object> getUserData() {
         if (user != null) {
-            return List.of(user.getName(), user.getGender());
+            return List.of(user.getName(), user.getGender(), user.getUsersId());
         }
         return List.of(); // or Collections.emptyList()
     }
 
-    public void setUserData(List<String> userData) {
+    public void setUserData(List<Object> userData) {
         this.userData = userData;
     }
 
@@ -186,6 +201,14 @@ public class BulletinComment {
 
     public void setParentCommentId(Integer parentCommentId) {
         this.parentCommentId = parentCommentId;
+    }
+
+    public Boolean getIsLikedByCurrentUser() {
+        return isLikedByCurrentUser;
+    }
+
+    public void setIsLikedByCurrentUser(Boolean isLikedByCurrentUser) {
+        this.isLikedByCurrentUser = isLikedByCurrentUser;
     }
 
 }
