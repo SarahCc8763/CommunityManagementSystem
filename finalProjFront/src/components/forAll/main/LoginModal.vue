@@ -81,6 +81,7 @@
 
           <!-- 驗證碼 -->
           <!-- <div class="input-group">
+          <div class="input-group">
             <div class="captcha-container">
               <div class="input-wrapper captcha-input">
                 <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -177,6 +178,7 @@ const captchaText = ref('')
 const closeModal = () => {
   emit('close')
   // resetForm()
+  resetForm()
 }
 
 // 重置表單
@@ -186,6 +188,7 @@ const resetForm = () => {
     password: '',
     captcha: '',
     // rememberMe: false
+    rememberMe: false
   }
   errors.value = {}
 }
@@ -333,7 +336,6 @@ const handleLogin = async () => {
     isLoading.value = false
   }
 }
-
 
 onMounted(() => {
   nextTick(() => {

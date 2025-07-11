@@ -2,7 +2,7 @@
 
 
 <template>
-  <header class="header" @mouseleave="closeDropdown">
+  <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
     <router-link to="/" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
@@ -49,20 +49,11 @@
         </svg>
       </div>
       <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
-
-
-
-
-
       <div v-if="isAdmin">
        <button class="admin-button" @click="router.push('/AdminDashboard')">
   管理後台
 </button>
       </div>
-
-
-
-      
       <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
         {{ userStore.isAuthenticated ? '登出' : '登入' }}
       </button>
@@ -95,31 +86,6 @@ const activeIndex = ref(null)
 
 const isNotificationCenterOpen = ref(false)
 const notificationCenterRef = ref(null)
-// 模擬通知資料
-// const notifications = ref([
-//   '您有一個新包裹到達',
-//   '社區公告更新',
-//   '新的停車位預約提醒'
-// ])
-
-// watch(
-//   () => userStore.communityId,
-//   async (newVal) => {
-//     if (!newVal) {
-//       console.warn('❗ 尚未取得登入者社區 ID')
-//       return
-//     }
-
-//     try {
-//       const res = await axios.get(`http://localhost:8080/communitys/functions/${newVal}`)
-//       communityFunctions.value = res.data
-//       console.log('✅ 社區功能載入成功')
-//     } catch (err) {
-//       console.error('❌ 載入社區功能失敗', err)
-//     }
-//   },
-//   { immediate: true }
-// )
 
 watch(
   () => userStore.communityId,
@@ -180,15 +146,6 @@ const login = () => {
   isLoggedIn.value = true
 }
 
-// const logout = () => {
-//   isLoggedIn.value = false
-//   // 觸發全局登出事件
-//   window.dispatchEvent(new CustomEvent('logout'))
-//   // 同時更新 UserStore
-//   userStore.logout()
-//   // router.push('/')
-// }
-
 const logout = () => {
   isLoggedIn.value = false
   userStore.logout()
@@ -216,10 +173,6 @@ const keepDropdown = () => {
 }
 
 // 點擊子功能導頁
-// const handleNavigate = (item) => {
-//   router.push({ name: item.routeName })
-// }
-
 // 點擊子功能導頁
 const handleNavigate = (item) => {
   if (item.params) {
@@ -227,6 +180,7 @@ const handleNavigate = (item) => {
   } else {
     router.push({ name: item.routeName })
   }
+  activeIndex.value = null
 }
 
 
@@ -254,6 +208,9 @@ onMounted(() => {
   // if (userStore.isAuthenticated) {
   //   user.value.name = userStore.name
   // }
+  if (userStore.isAuthenticated) {
+    user.value.name = userStore.name
+  }
 })
 
 onUnmounted(() => {
@@ -374,9 +331,15 @@ async function loadCommunityFunctions() {
     console.error('載入社區功能失敗', err)
   }
 }
+
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
+
 </script>
 
 <style scoped>
+/* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 .header {
   width: 100vw;
   height: 72px;

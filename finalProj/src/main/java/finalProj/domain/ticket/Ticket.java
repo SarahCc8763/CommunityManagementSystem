@@ -71,7 +71,6 @@ public class Ticket {
 	@Transient
 	private String assignerName;
 
-
 	// @Transient
 	// private String assignerName;
 

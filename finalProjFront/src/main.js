@@ -1,7 +1,8 @@
-// Bootstrap
+//Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import axios from 'axios'
 
 // 引入自定義全局樣式
 import './assets/custom-bootstrap.scss'
@@ -9,7 +10,6 @@ import './assets/custom-bootstrap.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'

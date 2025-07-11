@@ -84,10 +84,10 @@
   </div>
 
   <!-- 顯示每筆資料 -->
-  <div class="container mt-4">
+  <div class="container mt-4" :class="{ 'dark-mode': isDarkMode }">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="tag-style px-4 py-2">
+      <div class="tag-style px-4 py-2" :class="{ 'dark-mode': isDarkMode }">
         <h4 class="mb-0 fw-bold text-primary section-title">費用類別列表</h4>
       </div>
       <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#feeTypeModal">
@@ -96,7 +96,8 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table align-middle table-hover table-borderless shadow-sm rounded">
+      <table class="table align-middle table-hover table-borderless shadow-sm rounded"
+        :class="{ 'dark-mode': isDarkMode }">
         <thead class=" text-secondary border-bottom">
           <tr>
             <th scope="col">費用代碼</th>
@@ -133,7 +134,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios.js'
+
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
@@ -144,7 +147,16 @@ const customUnit = ref('')
 const customFrequency = ref('')
 const editItem = ref({})
 const deleteTarget = ref(null)
+const feeTypes = ref([])
 
+const fetchFeeTypes = async () => {
+  try {
+    const response = await axios.get('/finance/fee-types') // ← API 路徑請依實際命名修改
+    feeTypes.value = response.data
+  } catch (e) {
+    errorMsg.value = '載入費用類別失敗：' + (e.response?.data?.message || e.message)
+  }
+}
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
 const form = ref({
@@ -161,72 +173,48 @@ const form = ref({
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+
   try {
     await axios.post('/finance/fee-types', form.value)
     successMsg.value = '新增成功！'
-    Object.keys(form.value).forEach(k => {
-      form.value[k] = typeof form.value[k] === 'boolean' ? true : null
-    })
+
+    // 清空表單
+    form.value = {
+      feeCode: '',
+      description: '',
+      amountPerUnit: null,
+      unit: '',
+      frequency: '',
+      note: '',
+      communityId: null,
+      status: true
+    }
+
+    // 關閉 modal
     const modalEl = document.getElementById('feeTypeModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
     modal?.hide()
+
+    // 重新載入列表
+    await fetchFeeTypes()
+
   } catch (e) {
-    errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
+    if (e.response?.status === 409) {
+      errorMsg.value = '新增失敗：費用代碼已存在，請改用其他代碼'
+    } else {
+      errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
+    }
   }
 }
 
-const feeTypes = ref([
-  {
-    feeTypeId: 1,
-    feeCode: 'MNT',
-    description: '管理費',
-    amountPerUnit: 50,
-    unit: '每坪',
-    frequency: '每月',
-    note: '依坪數計費',
-  },
-  {
-    feeTypeId: 2,
-    feeCode: 'CLN',
-    description: '清潔費',
-    amountPerUnit: 100,
-    unit: '每戶',
-    frequency: '每月',
-    note: '每戶固定收取',
-  },
-  {
-    feeTypeId: 3,
-    feeCode: 'PKG',
-    description: '車位管理費',
-    amountPerUnit: 200,
-    unit: '每住戶',
-    frequency: '每月',
-    note: '含地上與地下車位',
-  },
-])
-onMounted(() => {
-  // fetchFeeTypes()
+
+
+onMounted(async () => {
+  try {
+    await fetchFeeTypes()
+  } catch (err) {
+    console.error('載入失敗：', err)
+  }
 })
+
 </script>
-
-<style>
-.table {
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-th {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-td {
-  vertical-align: middle;
-  font-size: 0.95rem;
-}
-
-.modal {
-  padding-top: 100px;
-  /* 避開 header */
-}
-</style>

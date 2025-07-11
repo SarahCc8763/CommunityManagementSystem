@@ -1,11 +1,11 @@
 <template>
     <!-- 左邊側欄 -->
     <div class="d-flex">
-        
+
         <main>
             <BannerImage :imageSrc="OO" heading="財務管理區" subtext="快速查帳、繳費與明細查詢，提醒您 : 別忘了定期查看帳單與費用明細" textAlign="left" />
             <FeatureCards :features="cards" />
-</main>
+        </main>
     </div>
 </template>
 
@@ -19,13 +19,13 @@ const cards = [
         icon: 'bi-receipt',
         title: '待繳帳單',
         description: '檢視尚未繳交的費用並選擇繳費方式',
-        link: '/bill/unpaid'
+        link: '/finance/invoice'
     },
     {
         icon: 'bi-journal-text',
         title: '繳費紀錄',
         description: '查看過往繳費明細與下載收據',
-        link: '/bill/history'
+        link: '/invoiceHistory'
     },
     {
         icon: 'bi-bar-chart-line',
@@ -44,6 +44,4 @@ const cards = [
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

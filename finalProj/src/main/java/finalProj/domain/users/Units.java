@@ -3,7 +3,7 @@ package finalProj.domain.users;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 

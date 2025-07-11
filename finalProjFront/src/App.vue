@@ -1,24 +1,20 @@
 <template>
-  <div id="app">
-    <HeaderAll />
+  <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
 
+    <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
-
-      <!-- 這裡是左右的Nav -->
       <aside>
-      <LeftSideNav />
-      <RightSideNav :show="showRightNav" @close="showRightNav = false" />
+        <LeftSideNav :isDarkMode="isDarkMode" />
+        <RightSideNav :show="showRightNav" @close="showRightNav = false" />
 
-      <button class="right-nav-toggle" @click="showRightNav = true">
+        <button class="right-nav-toggle" @click.stop="showRightNav = true">
           <i class="bi bi-layout-sidebar-inset"></i>
         </button>
-
 
         <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
           <i class="bi bi-chevron-left"></i>
           <span class="drawer-tab-text">更多</span>
         </div>
-
         <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
       </aside>
 
@@ -45,9 +41,9 @@
 
 <script setup>
 //功能類import
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView ,RouterView} from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 
 //固定的頁首頁尾以及側邊欄位
@@ -58,39 +54,21 @@ import RightSideNav from './components/forAll/main/RightSideNav.vue';
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
 
 
+
+
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
 
 // ✅ 只判斷 meta.dark
-// const isDarkMode = computed(() => route.meta?.dark === true)
-
-// user.login({
-//   name: '王小明',
-//   username: 'ming123',
-//   avatarUrl: 'https://i.pravatar.cc/100?img=13'
-// })
-
+const isDarkMode = computed(() => route.meta?.dark === true)
 const handleShowLoginModal = () => {
   showLogin.value = true
 }
 
 
 // 處理登入成功
-// const handleLoginSuccess = (loginData) => {
-//   // 更新用戶狀態
-//   user.login({
-//     name: loginData.username,
-//     username: loginData.username,
-//     avatarUrl: 'https://i.pravatar.cc/100?img=13'
-//   })
-//   showLogin.value = false
-
-//   // 觸發全局登入成功事件，讓其他組件也能收到通知
-//   window.dispatchEvent(new CustomEvent('login-success', {
-//     detail: loginData
-//   }))
-//   window.dispatchEvent(new Event('refresh-community-functions'))
+window.dispatchEvent(new Event('refresh-community-functions'))
 // }
 const handleLoginSuccess = (loginData) => {
   user.login(loginData) // ✅ 傳整包 payload，不要自己手動塞東西
@@ -116,7 +94,21 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('show-login-modal', handleShowLoginModal)
   window.removeEventListener('logout', handleLogout)
-})
+const route = useRoute()})
+
+
+
+
+// const handleLoginSuccess = (loginData) => {
+//   user.login({
+//     name: loginData.username,
+//     username: loginData.username,
+//     avatarUrl: 'https://i.pravatar.cc/100?img=13'
+//   })
+//   showLogin.value = false
+//   window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
+// }
+
 </script>
 
 
