@@ -17,6 +17,14 @@ import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
 import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 import MySlots from '@/components/parking/MySlots.vue'
+// Yu Start
+import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
+import FaqAdmin from '../views/faq/FaqAdmin.vue'
+import FeedbackAdmin from '../views/feedback/FeedbackAdmin.vue'
+import Faq from '@/views/faq/Faq.vue'
+import MyFeedback from '@/views/feedback/MyFeedback.vue'
+import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
+//Yu End
 
 
 const router = createRouter({
@@ -122,7 +130,46 @@ const router = createRouter({
       path: '/pages/park/my-slots',
       name: 'mySlots',
       component: MySlots,
-    }
+    }, {
+      path: '/faq',
+      name: 'faq',
+      component: Faq
+
+    },
+
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: MyFeedback
+
+    },
+
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
+
+    },
+    {
+      path: '/bulletin-admin',
+      name: 'bulletin-admin',
+      component: BulletinAdmin,
+      meta: { dark: true }
+
+    },
+
+    {
+      path: '/feebackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
 
   ],
 })

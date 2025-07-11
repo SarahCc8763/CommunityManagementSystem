@@ -161,12 +161,17 @@ import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
+const userId = userStore.id || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const defaultImage = noImage
 const feedbackList = ref([])
 const loading = ref(false)
 const error = ref(null)
-const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
 

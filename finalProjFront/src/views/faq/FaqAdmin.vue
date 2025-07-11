@@ -109,6 +109,12 @@ import axios from 'axios'
 import FaqFormModal from '@/components/faq/FaqFormModal.vue'
 import FaqCategoryModal from '@/components/faq/FaqCategoryModal.vue'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
+const userId = userStore.id || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const fullfaqList = ref([])
 const faqList = ref([])
@@ -124,8 +130,7 @@ const showFaqModal = ref(false)
 const editingFaq = ref(null)
 const showCategoryModal = ref(false)
 
-const communityId = 1
-const userId = 1
+
 
 const openEditModal = (faq) => {
     editingFaq.value = { ...faq }
