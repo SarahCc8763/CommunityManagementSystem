@@ -3,8 +3,6 @@ import { useUserStore } from '@/stores/UserStore'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
-import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
@@ -22,20 +20,10 @@ import TicketDashboard from '../views/TicketDashboard.vue'
 import Vendor from '../views/Vendor.vue'
 
 
-
-
-
-
-
 import finUser from '@/components/finance/finUser/finUser.vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
-import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
-import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import Invoice from '../components/finance/finUser/Invoice.vue'
-import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
-import Home from '../views/Home.vue'
 import LotteryApply from "@/components/parking/LotteryApply.vue"
 import LotteryEvent from "@/components/parking/LotteryEvent.vue"
 import ParkingBack from "@/components/parking/ParkingBack.vue"

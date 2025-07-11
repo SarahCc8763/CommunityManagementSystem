@@ -41,7 +41,7 @@
 
 <script setup>
 //功能類import
-import { RouterLink, RouterView ,RouterView} from 'vue-router'
+import { RouterLink,RouterView} from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
@@ -53,7 +53,8 @@ import HeaderAll from './components/forAll/main/HeaderAll.vue';
 import RightSideNav from './components/forAll/main/RightSideNav.vue';
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
 
-
+import { useRoute } from 'vue-router'  // ✅ 加上這行
+const route = useRoute()
 
 
 const user = useUserStore()

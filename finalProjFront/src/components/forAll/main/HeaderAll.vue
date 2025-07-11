@@ -208,9 +208,8 @@ onMounted(() => {
   // if (userStore.isAuthenticated) {
   //   user.value.name = userStore.name
   // }
-  if (userStore.isAuthenticated) {
-    user.value.name = userStore.name
-  }
+  //不要解開!!!!!
+
 })
 
 onUnmounted(() => {
