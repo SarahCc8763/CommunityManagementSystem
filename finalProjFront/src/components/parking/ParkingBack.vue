@@ -67,7 +67,7 @@
         </div>
   
         <!-- 4. 外賓臨時停車 -->
-        <div class="col-md-6 col-lg-4">
+        <!-- <div class="col-md-6 col-lg-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex align-items-center">
               <i class="bi bi-person-walking fs-1 me-3 text-secondary"></i>
@@ -78,7 +78,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
   
       </div>
     </div>
@@ -102,9 +102,9 @@
       case 'lottery':
         router.push('/pages/park/lottery-event')
         break
-      case 'temporary':
-        router.push('/pages/park/temporary-parking')
-        break
+      // case 'temporary':
+      //   router.push('/pages/park/temporary-parking')
+      //   break
     }
   }
   </script>

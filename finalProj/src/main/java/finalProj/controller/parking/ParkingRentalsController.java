@@ -124,6 +124,7 @@ public class ParkingRentalsController {
 			ParkingSlot parkingSlot = record.getParkingSlot();
 			if (parkingSlot != null) {
 				dto.setSlotNumber(parkingSlot.getSlotNumber());
+				dto.setSlotId(parkingSlot.getId());
 				dto.setLocation(parkingSlot.getLocation());
 				dto.setParkingType(parkingSlot.getParkingType().getType());
 			}
