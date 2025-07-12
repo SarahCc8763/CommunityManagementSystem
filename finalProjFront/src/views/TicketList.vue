@@ -118,9 +118,8 @@
                   <div class="avatar">{{ getInitials(ticket.name) }}</div>
                   {{ ticket.name ?? '無資料' }}
                 </td>
-                <td class="text-secondary small">
-                  {{ ticket.issueDescription.slice(0, 25) }}...
-                </td>
+                <td class="text-secondary small" v-html="getShortHtmlSummary(ticket.issueDescription, 25)"></td>
+
                 <td class="text-secondary small">{{ formatDate(ticket.startDate) }}</td>
               </tr>
   
@@ -188,9 +187,13 @@
   import axios from 'axios'
   import TicketPage from './TicketPage.vue'
   import { watch } from 'vue'
-  // import { useUserStore } from '@/stores/UserStore'
+  import DOMPurify from 'dompurify'
 
-  // const user = useUserStore()
+function getShortHtmlSummary(html, length = 25) {
+  // 清掉 HTML 標籤後取前幾字（避免<p>出現）
+  const plain = DOMPurify.sanitize(html || '', { ALLOWED_TAGS: [] })
+  return plain.length > length ? plain.slice(0, length) + '...' : plain
+}
 
 
 const currentPage = ref(1)

@@ -142,11 +142,17 @@ const allFunctionOptions = [
   },
   {
     label: '停車管理',
-    value: 'PARKING',
+    value: 'PARK',
     children: [
-      { label: '車位資訊維護', key: 'PARKINGINFO' },
-      { label: '停車預約', key: 'PARKINGRESERVE' },
-      { label: '承租車位管理', key: 'PARKINGRENT' }
+    { label: '社區停車場建置', key: 'PARKINIT'},
+      { label: '所有車位查詢', key: 'PARKSLOT'},  // 共用同個路徑去韋韋那頁
+      { label: '使用者承租車位', key: 'PARKRENT'},
+      { label: '承租記錄查詢', key: 'PARKREC'},
+      { label: '抽籤活動', key: 'PARKEVE'},
+      { label: '抽籤申請', key: 'PARKAPP'},
+      { label: '臨時停車', key: 'PARKTEM'},
+      { label: '前端停車主頁', key: 'PARKFRONT'},
+      { label: '後端停車主頁', key: 'PARKBACK'},
     ]
   }
 ]

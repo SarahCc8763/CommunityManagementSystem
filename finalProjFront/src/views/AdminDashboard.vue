@@ -89,11 +89,17 @@ const menuList = [
   },
   {
     title: '車位管理',
-    key: 'PARKING',
+    key: 'PARK',
     children: [
-      { label: '車位資訊維護', routeName: 'parking-info-edit', key: 'PARKINGINFO' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'PARKINGRESERVE' },
-      { label: '承租車位管理', routeName: 'parking-rent', key: 'PARKINGRENT' }
+    { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
+      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },  // 共用同個路徑去韋韋那頁
+      { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
+      { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
+      { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
+      { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
+      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
+      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
+      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
     ]
   },
   {
