@@ -139,7 +139,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 import { useRouter } from 'vue-router'
@@ -182,6 +182,7 @@ const captchaText = ref('')
 const closeModal = () => {
   emit('close')
   // resetForm()
+  resetForm()
 }
 
 // 重置表單
@@ -191,6 +192,7 @@ const resetForm = () => {
     password: '',
     captcha: '',
     // rememberMe: false
+    rememberMe: false
   }
   errors.value = {}
 }
@@ -291,7 +293,7 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    const response = await axios.post('http://localhost:8080/users/login', {
+    const response = await axios.post('/users/login', {
       "email": form.value.username,
       "password": form.value.password
     })

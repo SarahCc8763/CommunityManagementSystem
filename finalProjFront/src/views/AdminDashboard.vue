@@ -49,9 +49,12 @@ const menuList = [
     title: '預約系統',
     key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
+      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
+      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
+      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
+      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
+      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
     ]
   },
   {
@@ -113,8 +116,23 @@ const menuList = [
   }
 ]
 
-onMounted(() => {
-  groupedCards.value = menuList
+onMounted(async () => {
+  try {
+    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
+    const allowed = res.data
+
+    // 根據社區權限過濾主功能與子功能
+    groupedCards.value = menuList
+      .filter(m => allowed.includes(m.key)) // 主功能有啟用
+      .map(m => ({
+        title: m.title,
+        key: m.key,
+        children: m.children.filter(child => allowed.includes(child.key)) // 子功能也需有啟用
+      }))
+      .filter(group => group.children.length > 0) // 避免空的群組顯示
+  } catch (err) {
+    console.error('❌ 載入社區功能失敗', err)
+  }
 })
 
 function goTo(name) {

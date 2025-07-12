@@ -20,13 +20,15 @@
 
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
-        <RouterView />
+          <RouterView />
       </div>
     </main>
+  
+  <FooterAll />
 
-    <FooterAll />
-    <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
-  </div>
+  <!-- 登入模態框 -->
+  <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
+</div>
 </template>
 
 
@@ -56,18 +58,42 @@ const route = useRoute()
 
 // ✅ 只判斷 meta.dark
 const isDarkMode = computed(() => route.meta?.dark === true)
-
-// 刪除 user.login({ ... }) 這段
-
-const handleLoginSuccess = (loginData) => {
-  user.login({
-    name: loginData.username,
-    username: loginData.username,
-    avatarUrl: 'https://i.pravatar.cc/100?img=13'
-  })
-  showLogin.value = false
-  window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
+const handleShowLoginModal = () => {
+  showLogin.value = true
 }
+
+
+// 處理登入成功
+window.dispatchEvent(new Event('refresh-community-functions'))
+// }
+const handleLoginSuccess = (loginData) => {
+  user.login(loginData) // ✅ 傳整包 payload，不要自己手動塞東西
+  showLogin.value = false
+
+  // 讓其他元件知道登入完成
+  window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
+  window.dispatchEvent(new Event('refresh-community-functions')) // ✅ 即時刷新 header 功能
+  console.log(loginData)
+}
+
+// 處理登出
+const handleLogout = () => {
+  // 這裡可以添加登出時的清理邏輯
+  console.log('用戶已登出')
+}
+
+onMounted(() => {
+  window.addEventListener('show-login-modal', handleShowLoginModal)
+  window.addEventListener('logout', handleLogout)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('show-login-modal', handleShowLoginModal)
+  window.removeEventListener('logout', handleLogout)
+const route = useRoute()})
+
+
+
 
 onMounted(() => {
   window.addEventListener('show-login-modal', () => (showLogin.value = true))

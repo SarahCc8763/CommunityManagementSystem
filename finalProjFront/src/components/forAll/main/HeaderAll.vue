@@ -9,9 +9,8 @@
     </router-link>
 
     <nav class="nav">
-      <div v-for="(category, index) in menuList" :key="category.title" class="nav-item"
-        :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index"
-        @click="handleMainNavClick(category)">
+      <div v-for="(category, index) in finalMenuList" :key="category.title" class="nav-item"
+        :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index">
         {{ category.title }}
       </div>
     </nav>
@@ -19,7 +18,7 @@
     <!-- 下拉大選單 -->
     <div class="mega-menu" v-if="activeIndex !== null" @mouseenter="keepDropdown" @mouseleave="closeDropdown">
       <div class="mega-grid">
-        <div v-for="(category, index) in menuList" :key="category.title" class="mega-category"
+        <div v-for="(category, index) in finalMenuList" :key="category.title" class="mega-category"
           :class="{ 'mega-active': activeIndex === index, 'mega-inactive': activeIndex !== index }">
           <!-- 大分類標題（下拉內） -->
           <div class="category-title">{{ category.title }}</div>
@@ -38,7 +37,7 @@
     <div class="user-info">
       <div class="welcome-block" v-if="isLoggedIn">
         <span class="welcome">你好，{{ userStore.name }}</span>
-        <span class="points">{{ userStore.points }} pt</span>
+        <span class="points">{{ facilitiesStore.totalBalance }} pt</span>
       </div>
       <div v-else class="avatar placeholder">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -50,20 +49,11 @@
         </svg>
       </div>
       <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
-
-
-
-
-
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
         </button>
       </div>
-
-
-
-
       <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
         {{ userStore.isAuthenticated ? '登出' : '登入' }}
       </button>
@@ -76,13 +66,15 @@
 <script setup>
 import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
+import { useFacilitiesStore } from '@/stores/FacilitiesStore'
 import Logo from '@/assets/images/main/Logo.png'
 
 const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()
 const userStore = useUserStore()
+const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
 
@@ -96,31 +88,6 @@ const activeIndex = ref(null)
 
 const isNotificationCenterOpen = ref(false)
 const notificationCenterRef = ref(null)
-// 模擬通知資料
-// const notifications = ref([
-//   '您有一個新包裹到達',
-//   '社區公告更新',
-//   '新的停車位預約提醒'
-// ])
-
-// watch(
-//   () => userStore.communityId,
-//   async (newVal) => {
-//     if (!newVal) {
-//       console.warn('❗ 尚未取得登入者社區 ID')
-//       return
-//     }
-
-//     try {
-//       const res = await axios.get(`http://localhost:8080/communitys/functions/${newVal}`)
-//       communityFunctions.value = res.data
-//       console.log('✅ 社區功能載入成功')
-//     } catch (err) {
-//       console.error('❌ 載入社區功能失敗', err)
-//     }
-//   },
-//   { immediate: true }
-// )
 
 watch(
   () => userStore.communityId,
@@ -180,15 +147,6 @@ const handleLoginSuccess = (loginData) => {
 const login = () => {
   isLoggedIn.value = true
 }
-
-// const logout = () => {
-//   isLoggedIn.value = false
-//   // 觸發全局登出事件
-//   window.dispatchEvent(new CustomEvent('logout'))
-//   // 同時更新 UserStore
-//   userStore.logout()
-//   // router.push('/')
-// }
 
 const logout = () => {
   isLoggedIn.value = false
@@ -277,13 +235,17 @@ const menuList = ref([
     title: '預約系統',
     key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
+      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
+      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
+      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
+      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
+      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
     ]
   },
   {
     title: '繳費資訊',
+    key: 'INVOICE',
     children: [
       { label: '繳費總覽', routeName: 'FinUser' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
@@ -327,17 +289,11 @@ const menuList = ref([
   },
   {
     title: '車位管理',
-    key: 'PARK',
+    key: 'PARKING',
     children: [
-      { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
-      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },  // 共用同個路徑去韋韋那頁
-      { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
-      { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
-      { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
-      { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
-      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
-      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
-      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
+      { label: '車位資訊維護', routeName: 'parking-info-edit', key: 'PARKINGINFO' },
+      { label: '停車預約', routeName: 'reservation-parking', key: 'PARKINGRESERVE' },
+      { label: '承租車位管理', routeName: 'parking-rent', key: 'PARKINGRENT' }
     ]
   },
   {
@@ -350,12 +306,13 @@ const menuList = ref([
   }
 ])
 
-
 const props = defineProps({
   isDarkMode: { type: Boolean, default: false }
 })
 
-
+onMounted(() => {
+  // loadCommunityFunctions()
+})
 
 onUnmounted(() => {
   window.removeEventListener('refresh-community-functions', loadCommunityFunctions)
@@ -364,9 +321,7 @@ onUnmounted(() => {
 async function loadCommunityFunctions() {
   try {
     console.log(userStore.rawData.communityId)
-
-    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.rawData.communityId}`)
-
+    const res = await axios.get(`/communitys/functions/${userStore.rawData.communityId}`)
     console.log('✅ API 回傳內容：', res.data)
 
     if (Array.isArray(res.data)) {
@@ -386,13 +341,14 @@ async function loadCommunityFunctions() {
   }
 }
 
+
+
+
 </script>
 
 
-
-
-
 <style scoped>
+/* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 .header {
   width: 100vw;
   height: 72px;
@@ -411,7 +367,7 @@ async function loadCommunityFunctions() {
   left: 0;
   right: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-
+  backdrop-filter: blur(10px);
 }
 
 body {

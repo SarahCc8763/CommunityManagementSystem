@@ -12,24 +12,16 @@
       <!-- 問題種類 -->
       <div class="mb-3">
         <label class="label">問題種類</label>
-        <Multiselect
-         v-model="formIssue.issueType" 
-         :options="issueOptions" 
-         :multiple="true" 
-         :taggable="true"
-         :close-on-select="false" 
-         :hide-selected="true" 
-         placeholder="請選擇或輸入問題種類" 
-         tag-placeholder="新增項目" 
-         track-by="name"
-        label="name" @tag="addNewTag" />
+        <Multiselect v-model="formIssue.issueType" :options="issueOptions" :multiple="true" :taggable="true"
+          :close-on-select="false" :hide-selected="true" placeholder="請選擇或輸入問題種類" tag-placeholder="新增項目" track-by="name"
+          label="name" @tag="addNewTag" />
       </div>
 
       <!-- 描述 + 附件 -->
       <div class="mb-3">
         <label class="label">問題描述</label>
-        <QuillEditor v-model:content="form.description" contentType="html" placeholder="Describe the issue..."
-          class="input" />
+        <QuillEditor style="min-height:300px" v-model:content="form.description" contentType="html"
+          placeholder="Describe the issue..." class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
           <p>📎 拖曳圖片到這裡，或 <span @click="fileInput.click()" class="text-primary">點選上傳</span></p>
@@ -60,11 +52,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 
 // 表單資料
 const form = ref({
@@ -79,7 +73,7 @@ const issueOptions = ref([])
 
 // 取得 issueType 選項
 onMounted(() => {
-  axios.get('http://localhost:8080/IssueTypes')
+  axios.get('/IssueTypes')
     .then(res => {
       issueOptions.value = res.data.map(item => ({ name: item.issueTypeName }))
     })
@@ -92,7 +86,7 @@ onMounted(() => {
 async function addNewTag(newTag) {
   const newOption = { name: newTag }
   try {
-    await axios.post('http://localhost:8080/IssueTypes', {
+    await axios.post('/IssueTypes', {
       issueTypeName: newTag
     })
     issueOptions.value.push(newOption)
@@ -154,8 +148,8 @@ async function handleSubmit() {
   }
 
   const payload = {
-    reporterId: 2, // TODO: 改為登入使用者 ID
-    communityId: 1, // TODO: 改為登入者社區 ID
+    reporterId: userStore.userId, // TODO: 改為登入使用者 ID
+    communityId: userStore.communityId, // TODO: 改為登入者社區 ID
     title: form.value.title,
     issueDescription: form.value.description,
     status: 'to do',
@@ -165,7 +159,7 @@ async function handleSubmit() {
   }
 
   try {
-    const ticketRes = await axios.post('http://localhost:8080/ticket', payload)
+    const ticketRes = await axios.post('/ticket', payload)
     const ticketResponse = ticketRes.data
 
     if (!ticketResponse.success) {
@@ -187,7 +181,7 @@ async function handleSubmit() {
 
     if (base64Files.length > 0) {
       const uploadRes = await axios.post(
-        'http://localhost:8080/ticket-attachment/upload/base64/multiple',
+        '/ticket-attachment/upload/base64/multiple',
         base64Files
       )
       const uploadResult = uploadRes.data
@@ -201,7 +195,7 @@ async function handleSubmit() {
       alert('✅ 報修單建立成功（無附件）')
     }
 
-    form.value.summary = ''
+    form.value.title = ''
     form.value.description = ''
     formIssue.value.issueType = []
     files.value = []
