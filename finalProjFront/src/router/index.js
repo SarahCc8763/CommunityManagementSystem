@@ -1,7 +1,7 @@
 
-import { useUserStore } from '@/stores/UserStore'
 
-import { createRouter, createWebHistory } from 'vue-router'
+
+
 
 
 
@@ -40,7 +40,7 @@ import Vendor from '../views/Vendor.vue'
 
 
 
-import Home from '../views/Home.vue'
+
 import LotteryApply from "@/components/parking/LotteryApply.vue"
 import LotteryEvent from "@/components/parking/LotteryEvent.vue"
 import ParkingBack from "@/components/parking/ParkingBack.vue"
