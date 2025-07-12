@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import finalProj.domain.finance.Invoice;
 import finalProj.domain.finance.Receipt;
+import finalProj.dto.finance.InvoiceDTO;
 import finalProj.dto.finance.ReceiptDTO;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.finance.ReceiptRepository;
@@ -72,6 +73,10 @@ public class ReceiptServiceImpl implements ReceiptService {
         dto.setAmountPay(entity.getAmountPay());
         dto.setInstallments(entity.getInstallments());
         dto.setNote(entity.getNote());
+        // 補齊 invoice 欄位
+        if (entity.getInvoice() != null) {
+            dto.setInvoice(new InvoiceDTO(entity.getInvoice()));
+        }
         return dto;
     }
 

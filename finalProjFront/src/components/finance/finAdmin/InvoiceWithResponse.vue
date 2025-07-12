@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <!-- 查詢區塊 -->
     <div class="filter-bar mb-3">
       <label class="me-2">期別：</label>
@@ -16,15 +15,20 @@
       <button class="btn btn-outline-primary btn-sm" @click="clearFilter">清除</button>
     </div>
 
-    <div class="d-flex align-items-center mb-2" v-if="allInvoiceResponses.length > 0">
+    <div class="d-flex align-items-center mb-2" v-if="filteredInvoices.length > 0">
       <input type="checkbox" v-model="allChecked" @change="toggleAll" class="form-check-input me-2" />
       <span>全選</span>
-      <button class="btn btn-success btn-sm ms-3" :disabled="checkedResponses.length === 0"
+      <button class="btn btn-success btn-sm ms-3" :disabled="checkedInvoices.length === 0"
         @click="batchCreateReceipts">一鍵產生收據</button>
     </div>
 
     <div v-for="inv in filteredInvoices" :key="inv.invoiceId" class="invoice-card mb-4">
-      <h3>發票資訊</h3>
+      <div class="d-flex align-items-center mb-2">
+        <input type="checkbox" class="form-check-input me-2" :value="inv.invoiceId" v-model="checkedInvoices" />
+        <h3 class="mb-0">帳單資訊</h3>
+        <button class="btn btn-outline-primary btn-sm ms-auto"
+          @click="openReceiptModal(inv, inv.user?.usersId)">審核已付款</button>
+      </div>
       <h4>發票 ID：{{ inv.invoiceId }}　| 狀態：{{ inv.paymentStatus }}</h4>
       <div>住戶：{{ inv.user?.name }}</div>
       <div>費用類型：{{ inv.feeType?.description }}</div>
@@ -38,20 +42,55 @@
         <div v-if="Array.isArray(inv.invoiceResponses) && inv.invoiceResponses.length > 0">
           <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId"
             class="response-card d-flex align-items-center mb-2">
-            <input type="checkbox" class="form-check-input me-2" :value="res.invoiceResponseId"
-              v-model="checkedResponses" />
             <div class="flex-grow-1">
               <div>留言：{{ res.lastResponse }}</div>
               <div>末五碼：{{ res.accountCode }}</div>
               <div>時間：{{ res.lastResponseTime }}</div>
-              <div>是否審核：{{ res.verified ? '✅' : '❌' }}</div>
+           
               <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
             </div>
-            <button class="btn btn-outline-primary btn-sm ms-2"
-              @click="goToReceiptAdd(inv.invoiceId, res.userId)">審核已付款</button>
           </div>
         </div>
         <div v-else>尚無回覆</div>
+      </div>
+    </div>
+    <!-- 收據 modal 區塊（兩階段：送出表單/正式收據卡片） -->
+    <div v-if="showReceiptModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);">
+      <div class="dark-modal-card">
+        <template v-if="!receiptDetail">
+          <h4>產生收據</h4>
+          <div>發票ID：{{ receiptForm.invoiceId }}</div>
+          <div>金額：{{ receiptForm.amountPay }}</div>
+          <div>住戶姓名：{{ selectedInvoice.value?.user?.name || '-' }}</div>
+          <div>地址：{{ selectedInvoice.value?.user?.address || '-' }}</div>
+          <div>費用類型：{{ selectedInvoice.value?.feeType?.description || '-' }}</div>
+          <div>期別：{{ selectedInvoice.value?.billingPeriod?.periodName || '-' }}</div>
+          <div>備註：{{ selectedInvoice.value?.note || '-' }}</div>
+          <!-- 其餘表單內容可擴充 -->
+          <button class="btn btn-primary me-2" @click="submitReceipt">送出收據</button>
+          <button class="btn btn-secondary" @click="closeReceiptModal">取消</button>
+        </template>
+        <template v-else>
+          <div class="receipt-title" style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:18px;">{{ communityName }} 收據</div>
+          <div class="receipt-row"><span>收據號碼：</span>{{ receiptDetail.receiptNum || receiptDetail.receiptId }}</div>
+          <div class="receipt-row"><span>住戶姓名：</span>{{ receiptDetail.userName }}</div>
+          <div class="receipt-row"><span>地址：</span>{{ receiptDetail.address }}</div>
+          <div class="receipt-row"><span>發票ID：</span>{{ receiptDetail.invoiceId }}</div>
+          <div class="receipt-row"><span>費用類型：</span>{{ receiptDetail.feeType }}</div>
+          <div class="receipt-row"><span>期別：</span>{{ receiptDetail.periodName }}</div>
+          <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{ receiptDetail.amountPay?.toLocaleString() }}</b></div>
+          <div class="receipt-row"><span>付款方式：</span>{{ receiptDetail.paymentMethod }}</div>
+          <div class="receipt-row"><span>付款時間：</span>{{ formatDate(receiptDetail.paidAt) }}</div>
+          <div class="receipt-row"><span>扣款時間：</span>{{ formatDate(receiptDetail.debitAt) }}</div>
+          <div class="receipt-row"><span>備註：</span>{{ receiptDetail.note }}</div>
+          <div class="receipt-row"><span>經手人：</span>{{ receiptDetail.createdBy || '管理員' }}</div>
+          <div class="receipt-footer" style="margin-top:24px;text-align:right;font-size:1.1rem;">收款日期：{{ formatDate(receiptDetail.createdAt) }}　　收款人簽章：</div>
+          <div class="mt-3 d-flex justify-content-end">
+            <button class="btn btn-outline-primary me-2" @click="printReceipt">列印收據</button>
+            <button class="btn btn-outline-success me-2" @click="downloadPDF">下載PDF</button>
+            <button class="btn btn-secondary" @click="closeReceiptModal">關閉</button>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -102,51 +141,29 @@ const formatDate = (date) => {
 
 const filteredInvoices = computed(() => {
   if (!Array.isArray(invoices.value)) return []
-
+  // 只顯示 paymentStatus 為 unpaid 或 pending，且有回覆的 invoice
   return invoices.value.filter(inv => {
+    const statusOk = inv.paymentStatus === 'unpaid' || inv.paymentStatus === 'pending'
+    const hasResponse = Array.isArray(inv.invoiceResponses) && inv.invoiceResponses.length > 0
     // 篩選期別（模糊比對）
-    const matchPeriod = filter.periodName === '' ||
-      (inv.billingPeriod?.periodName || '').includes(filter.periodName)
-
+    const matchPeriod = filter.periodName === '' || (inv.billingPeriod?.periodName || '').includes(filter.periodName)
     // 篩選費用類別（模糊比對）
-    const matchFeeType = filter.feeType === '' ||
-      (inv.feeType?.description || '').includes(filter.feeType)
-
+    const matchFeeType = filter.feeType === '' || (inv.feeType?.description || '').includes(filter.feeType)
     // 篩選逾期
     const matchOverdue =
-      filter.overdue === '' ||
-      (filter.overdue === 'true' && isOverdue(inv.deadline)) ||
-      (filter.overdue === 'false' && !isOverdue(inv.deadline))
-
-    return matchPeriod && matchFeeType && matchOverdue
+      filter.overdue === '' || (filter.overdue === 'true' && isOverdue(inv.deadline)) || (filter.overdue === 'false' && !isOverdue(inv.deadline))
+    return statusOk && hasResponse && matchPeriod && matchFeeType && matchOverdue
   })
 })
 
-// 找出 paymentStatus 為 pending 且有回覆的所有 response
-const filteredResponses = computed(() => {
-  if (!Array.isArray(invoices.value)) return []
-  // 只取 paymentStatus=pending 且有回覆的 invoice
-  return invoices.value
-    .filter(inv => inv.paymentStatus === 'pending' && Array.isArray(inv.invoiceResponses) && inv.invoiceResponses.length > 0)
-    .flatMap(inv => inv.invoiceResponses.map(res => ({ ...res, invoiceId: inv.invoiceId, invoice })))
-})
-
-// 新增一個 allInvoiceResponses 計算所有回覆的 id 陣列
-const allInvoiceResponses = computed(() => {
-  if (!Array.isArray(invoices.value)) return []
-  return invoices.value.flatMap(inv =>
-    Array.isArray(inv.invoiceResponses) ? inv.invoiceResponses.map(res => res.invoiceResponseId) : []
-  )
-})
-
-// checkedResponses, allChecked, toggleAll 保持原有邏輯
-const checkedResponses = ref([])
+// checkedInvoices, allChecked, toggleAll 基於 invoice 操作
+const checkedInvoices = ref([])
 const allChecked = ref(false)
 function toggleAll() {
   if (allChecked.value) {
-    checkedResponses.value = allInvoiceResponses.value.slice()
+    checkedInvoices.value = filteredInvoices.value.map(inv => inv.invoiceId)
   } else {
-    checkedResponses.value = []
+    checkedInvoices.value = []
   }
 }
 
@@ -163,14 +180,15 @@ onMounted(async () => {
 })
 
 async function reloadInvoices() {
-  // 查詢所有 paymentStatus='unpaid' 且有回覆的 invoice（新版API）
-  const res = await axiosapi.get('/finance/invoice-responses/all', { params: { communityId: userStore.communityId } })
-  console.log(res);
+  // 查詢所有 paymentStatus='unpaid' 或 'pending' 且有回覆的 invoice（新版API）
+  const res = await axiosapi.get('/finance/invoice-responses/with-response/unpaid', { params: { communityId: userStore.communityId } })
+  console.log('API 回應：', res.data)
   invoices.value = res.data
-  console.log("✅ 載入完成 filteredInvoices：", filteredInvoices.value)
+  console.log('載入完成，共', invoices.value?.length || 0, '筆資料')
 }
 
 function openReceiptModal(invoice, userId) {
+  console.log('openReceiptModal 被呼叫', invoice, userId)
   showReceiptModal.value = true
   selectedInvoice.value = invoice
   selectedUserId.value = userId
@@ -187,15 +205,43 @@ function openReceiptModal(invoice, userId) {
   receiptDetail.value = null
 }
 
+function closeReceiptModal() {
+  showReceiptModal.value = false
+  errorMsg.value = ''
+  successMsg.value = ''
+}
+
 async function submitReceipt() {
   successMsg.value = ''
   errorMsg.value = ''
+  // 取得該 invoice 的第一筆 response 的 lastResponseTime
+  let paidAt = null
+  if (selectedInvoice.value && Array.isArray(selectedInvoice.value.invoiceResponses) && selectedInvoice.value.invoiceResponses.length > 0) {
+    paidAt = selectedInvoice.value.invoiceResponses[0].lastResponseTime || null
+  }
+  const payload = {
+    invoiceId: receiptForm.invoiceId,
+    paymentMethod: receiptForm.paymentMethod,
+    paidAt: paidAt,
+    debitAt: null, // 由後端自動產生
+    amountPay: receiptForm.amountPay,
+    installments: receiptForm.installments,
+    note: receiptForm.note
+  }
+  console.log('submitReceipt payload', JSON.stringify(payload))
   try {
     // 1. 新增收據
-    const res = await axiosapi.post('/finance/receipts', { ...receiptForm, status: false })
-    successMsg.value = '新增成功！'
-    // 2. 取得收據詳細資料
+    const res = await axiosapi.post('/finance/receipts', payload)
+    console.log('createReceipt 回傳', res.data)
     const receiptId = res.data.receiptId || res.data.id
+    console.log('receiptId', receiptId)
+    if (!receiptId) {
+      Swal.fire('收據產生失敗', '無法取得收據ID', 'error')
+      return
+    }
+    successMsg.value = '新增成功！'
+    errorMsg.value = ''
+    // 2. 取得收據詳細資料
     const detailRes = await axiosapi.get(`/finance/receipts/${receiptId}`)
     receiptDetail.value = detailRes.data
     // 3. 查社區名稱
@@ -208,7 +254,7 @@ async function submitReceipt() {
     // 4. 將 invoice 狀態設為 paid
     await axiosapi.put(`/finance/invoice/status/${receiptForm.invoiceId}?status=paid`)
     await reloadInvoices()
-    showReceiptModal.value = false
+    closeReceiptModal()
     Swal.fire('收據已產生並設為已繳', '', 'success')
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
@@ -240,68 +286,57 @@ function downloadPDF() {
 }
 
 async function batchCreateReceipts() {
-  if (!checkedResponses.value.length) return
+  if (!checkedInvoices.value.length) return
   let successCount = 0
   let failCount = 0
   let failList = []
-  for (const resId of checkedResponses.value) {
-    // 找到對應的 invoiceId/userId
-    let found = null
-    for (const inv of invoices.value) {
-      if (Array.isArray(inv.invoiceResponses)) {
-        const res = inv.invoiceResponses.find(r => r.invoiceResponseId === resId)
-        if (res) {
-          found = { invoice: inv, response: res }
-          break
-        }
-      }
-    }
-    if (!found) {
+  for (const invId of checkedInvoices.value) {
+    const invoice = invoices.value.find(inv => inv.invoiceId === invId)
+    if (!invoice) {
       failCount++
-      failList.push({ resId, reason: '找不到對應資料' })
+      failList.push({ invId, reason: '找不到對應發票資料' })
       continue
     }
-    // 防呆：檢查 invoiceId 與 amountPay
-    const invoiceId = found.invoice.invoiceId
-    let amountPay = found.invoice.amountDue
+    const invoiceId = invoice.invoiceId
+    let amountPay = invoice.amountDue
     if (invoiceId == null) {
       failCount++
-      failList.push({ resId, reason: 'invoiceId 為空' })
+      failList.push({ invId, reason: 'invoiceId 為空' })
       continue
     }
     if (amountPay == null || isNaN(amountPay) || Number(amountPay) < 0) {
       failCount++
-      failList.push({ resId, reason: '金額為空或負數' })
+      failList.push({ invId, reason: '金額為空或負數' })
       continue
     }
     amountPay = Number(amountPay)
-    // 組成收據資料
     const payload = {
       invoiceId,
-      paymentMethod: found.response.paymentMethod || '',
-      paidAt: found.response.paidAt || null,
-      debitAt: found.response.debitAt || null,
+      paymentMethod: '',
+      paidAt: null,
+      debitAt: null,
       amountPay,
-      installments: found.response.installments || '',
-      note: found.response.lastResponse || ''
+      installments: '',
+      note: ''
     }
+    console.log('產生收據 payload', JSON.stringify(payload))
     try {
       await axiosapi.post('/finance/receipts', payload)
       await axiosapi.put(`/finance/invoice/status/${invoiceId}?status=paid`)
       successCount++
     } catch (e) {
       failCount++
-      failList.push({ resId, reason: e.response?.data?.message || e.message })
+      failList.push({ invId, reason: e.response?.data?.message || e.message })
     }
   }
   await reloadInvoices()
-  checkedResponses.value = []
+  checkedInvoices.value = []
   allChecked.value = false
   if (successCount > 0) {
     Swal.fire('成功', `成功產生 ${successCount} 筆收據`, 'success')
   }
   if (failCount > 0) {
-    const msg = failList.map(f => `ID:${f.resId} ${f.reason}`).join('\n')
+    const msg = failList.map(f => `ID:${f.invId} ${f.reason}`).join('\n')
     Swal.fire('失敗', `有 ${failCount} 筆收據產生失敗\n${msg}`, 'error')
   }
 }
@@ -416,5 +451,67 @@ h4,
 span,
 div {
   color: #e0e0e0;
+}
+.dark-modal-card {
+  background: #23272b;
+  color: #e0e0e0;
+  padding: 32px;
+  border-radius: 16px;
+  min-width: 340px;
+  max-width: 440px;
+  box-shadow: 0 4px 32px #000a;
+  z-index: 10000;
+}
+.dark-modal-card h4 {
+  color: #90caf9;
+}
+.dark-modal-card .btn {
+  background: #23272b;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  transition: background 0.2s, color 0.2s;
+}
+.dark-modal-card .btn-primary {
+  background: #1976d2;
+  border-color: #1976d2;
+  color: #fff;
+}
+.dark-modal-card .btn-primary:hover,
+.dark-modal-card .btn-primary:active {
+  background: #1565c0;
+  border-color: #1565c0;
+  color: #fff;
+}
+.dark-modal-card .btn-secondary {
+  background: #23272b;
+  color: #b0b0b0;
+  border: 1px solid #444;
+}
+.dark-modal-card .btn-secondary:hover,
+.dark-modal-card .btn-secondary:active {
+  background: #181a1b;
+  color: #fff;
+}
+.dark-modal-card .btn-outline-primary {
+  color: #90caf9;
+  border-color: #90caf9;
+  background: transparent;
+}
+.dark-modal-card .btn-outline-primary:hover,
+.dark-modal-card .btn-outline-primary:active {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+.dark-modal-card .btn-outline-success {
+  color: #b9f6ca;
+  border-color: #43a047;
+  background: transparent;
+}
+.dark-modal-card .btn-outline-success:hover,
+.dark-modal-card .btn-outline-success:active {
+  background: #388e3c;
+  color: #fff;
+  border-color: #388e3c;
 }
 </style>

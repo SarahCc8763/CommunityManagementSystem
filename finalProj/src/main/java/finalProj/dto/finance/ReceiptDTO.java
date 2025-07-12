@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import finalProj.dto.finance.InvoiceDTO;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,6 @@ public class ReceiptDTO {
     private BigDecimal amountPay;
     private String installments;
     private String note;
+    // 新增：關聯發票資訊
+    private InvoiceDTO invoice;
 }
