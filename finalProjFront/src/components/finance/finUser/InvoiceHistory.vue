@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { jsPDF } from 'jspdf'
 import '@/assets/fonts/msjh-normal.js'
 

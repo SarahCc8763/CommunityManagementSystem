@@ -216,7 +216,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
@@ -281,7 +281,7 @@ const submitReply = async (feedback) => {
 
     try {
         const res = await axios.post(
-            `http://localhost:8080/api/feedback/${feedback.id}/reply`,
+            `/api/feedback/${feedback.id}/reply`,
             payload
         )
 
@@ -355,7 +355,7 @@ const formatDateTime = (datetime) => {
 
 const openEditModal = async (feedbackId) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
+        const res = await axios.get(`/api/feedback/${feedbackId}`)
         const feedback = res.data
         //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
@@ -386,7 +386,7 @@ const deleteReply = async (replyId) => {
     if (!result.isConfirmed) return;
 
     try {
-        const res = await axios.delete(`http://localhost:8080/api/feedback/reply/${replyId}`);
+        const res = await axios.delete(`/api/feedback/reply/${replyId}`);
 
         if (res.data?.result !== '刪除成功') {
             throw new Error('伺服器回應非預期');
@@ -429,7 +429,7 @@ const fetchData = async () => {
 
     loading.value = true
     await axios
-        .get(`http://localhost:8080/api/feedback/community/${communityId}`)
+        .get(`/api/feedback/community/${communityId}`)
         .then((res) => {
             feedbackList.value = res.data.list.map((f) => ({
                 ...f,
@@ -446,7 +446,7 @@ const fetchData = async () => {
             loading.value = false
         })
 
-    axios.get(`http://localhost:8080/api/feedback/${communityId}/category`)
+    axios.get(`/api/feedback/${communityId}/category`)
         .then((res) => {
             categoryList.value = res.data.data
             //console.log(res);

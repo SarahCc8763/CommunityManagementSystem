@@ -78,7 +78,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const vendors = ref([])
 const newVendor = ref({
@@ -91,7 +91,7 @@ const newVendor = ref({
 
 async function fetchVendors() {
   try {
-    const res = await axios.get('http://localhost:8080/vendors')
+    const res = await axios.get('/vendors')
     vendors.value = res.data
   } catch (err) {
     console.error('❌ 載入廠商失敗', err)
@@ -100,7 +100,7 @@ async function fetchVendors() {
 
 async function createVendor() {
   try {
-    await axios.post('http://localhost:8080/vendors', newVendor.value)
+    await axios.post('/vendors', newVendor.value)
     await fetchVendors()
     Object.assign(newVendor.value, {
       vendorName: '',
@@ -116,7 +116,7 @@ async function createVendor() {
 
 async function updateVendor(vendor) {
   try {
-    await axios.put(`http://localhost:8080/vendors/${vendor.vendorID}`, vendor)
+    await axios.put(`/vendors/${vendor.vendorID}`, vendor)
     await fetchVendors()
   } catch (err) {
     console.error('❌ 更新廠商失敗', err)
@@ -125,7 +125,7 @@ async function updateVendor(vendor) {
 
 async function deleteVendor(id) {
   try {
-    await axios.delete(`http://localhost:8080/vendors/${id}`)
+    await axios.delete(`/vendors/${id}`)
     await fetchVendors()
   } catch (err) {
     console.error('❌ 刪除廠商失敗', err)
@@ -138,7 +138,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-th, td {
+th,
+td {
   vertical-align: middle;
 }
 </style>

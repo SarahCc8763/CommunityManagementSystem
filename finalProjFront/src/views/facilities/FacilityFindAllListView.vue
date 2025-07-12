@@ -12,7 +12,7 @@
                             <h5 class="card-title">{{ facility.facilityName }}</h5>
                             <p class="card-text">{{ facility.facilityDescription }}</p>
                             <p class="card-text text-muted">{{ facility.facilityLocation }}</p>
-                            <p class="card-text text-primary">每次收費：{{ facility.fee }} 點</p>
+                            <p class="card-text text-primary">每小時收費：{{ facility.fee }} 點</p>
                         </div>
                         <div class="card-footer bg-transparent border-0 text-end">
                             <router-link

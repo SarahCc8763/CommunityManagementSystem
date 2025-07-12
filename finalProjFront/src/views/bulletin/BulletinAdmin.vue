@@ -94,7 +94,7 @@
 <script setup>
 // 函式庫
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Swal from 'sweetalert2'
 
@@ -170,7 +170,7 @@ function deleteBulletin(id) {
         cancelButtonText: '取消'
     }).then((result) => {
         if (result.isConfirmed) {
-            axios.delete(`http://localhost:8080/api/bulletin/${id}`).then(res => {
+            axios.delete(`/api/bulletin/${id}`).then(res => {
                 if (res.data.success) {
                     Swal.fire({
                         title: '刪除成功',
@@ -202,7 +202,7 @@ function normalizeNewline(text) {
 
 
 function searchBulletins() {
-    axios.post('http://localhost:8080/api/bulletin/searchby', {
+    axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
         category: searchCategory.value ? { name: searchCategory.value } : undefined
     }).then(res => {
@@ -222,7 +222,7 @@ onMounted(() => {
 })
 
 function fetchAll() {
-    axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
+    axios.get('/api/bulletin/community/' + communityId)
         .then(res => {
             // 根據 postTime 由新到舊排序
             const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
@@ -237,7 +237,7 @@ function fetchAll() {
             //console.log('觸發了!!!');
         })
 
-    axios.get('http://localhost:8080/api/bulletin/category/community/' + communityId)
+    axios.get('/api/bulletin/category/community/' + communityId)
         .then(res => {
             const cats = res.data.map(cat => ({ id: cat.id, name: cat.name }))
             categoryList.value = cats

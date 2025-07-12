@@ -95,7 +95,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 
@@ -211,17 +211,20 @@ onMounted(async () => {
   margin-bottom: 32px;
   text-align: center;
 }
+
 .no-invoice {
   text-align: center;
   color: #718096;
   font-size: 1.2rem;
   margin-top: 60px;
 }
+
 .no-invoice i {
   font-size: 2.2rem;
   color: #a0aec0;
   margin-bottom: 12px;
 }
+
 .invoice-list {
   display: flex;
   flex-direction: column;
@@ -298,6 +301,7 @@ onMounted(async () => {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
   transform: translateY(-2px) scale(1.04);
 }
+
 .total-row {
   display: flex;
   justify-content: flex-end;
@@ -310,11 +314,13 @@ onMounted(async () => {
   margin-top: 24px;
   padding-top: 16px;
 }
+
 .total-amount {
   color: #d53f8c;
   font-size: 1.4rem;
   font-weight: 900;
 }
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -327,6 +333,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
 }
+
 .modal-wrapper {
   width: 100vw;
   max-width: 400px;
@@ -377,27 +384,33 @@ onMounted(async () => {
     padding: 12px 2vw 16px 2vw;
     border-radius: 10px;
   }
+
   .serif-title {
     font-size: 1.3rem;
     margin-bottom: 18px;
   }
+
   .invoice-card {
     padding: 14px 8px 12px 8px;
     border-radius: 8px;
   }
+
   .invoice-details {
     gap: 12px;
     font-size: 0.95rem;
   }
+
   .pay-btn {
     padding: 8px 16px;
     font-size: 0.95rem;
     border-radius: 8px;
   }
+
   .total-row {
     font-size: 1rem;
     padding-top: 8px;
   }
+
   .total-amount {
     font-size: 1.1rem;
   }

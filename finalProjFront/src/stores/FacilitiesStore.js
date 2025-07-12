@@ -13,6 +13,10 @@ export const useFacilitiesStore = defineStore('facilities', () => {
     const expiredAt = ref('')
     const unit = ref('') //0704 javert新增增加unit門牌號
     const floor = ref('') //0704 javert新增增加unit門牌號
+    console.log('unitId=' + unitId)
+    console.log('unit=' + unit)
+    console.log('floor=' + floor )
+
 
     function setAccountInfo(payload) {
         accountId.value = payload.accountId || ''

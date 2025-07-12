@@ -46,7 +46,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 
 
@@ -164,12 +164,12 @@ onMounted(async () => {
     }
 
     // 從後端取得社區詳細資料
-    const res = await axios.get(`http://localhost:8080/communitys/${communityId}`)
+    const res = await axios.get(`/communitys/${communityId}`)
     selectedCommunity.value = res.data
 
     // 載入該社區的功能設定
     const functionRes = await axios.get(
-      `http://localhost:8080/communitys/functions/${communityId}`
+      `/communitys/functions/${communityId}`
     )
     selectedFunctionNames.value = functionRes.data
   } catch (err) {
@@ -181,7 +181,7 @@ watch(selectedCommunity, async (newVal) => {
   if (newVal) {
     try {
       const res = await axios.get(
-        `http://localhost:8080/communitys/functions/${newVal.communityId}`
+        `/communitys/functions/${newVal.communityId}`
       )
       selectedFunctionNames.value = res.data
     } catch (err) {
@@ -238,7 +238,7 @@ async function saveFunction() {
     }
 
     const res = await axios.put(
-      `http://localhost:8080/communitys/${selectedCommunity.value.communityId}`,
+      `/communitys/${selectedCommunity.value.communityId}`,
       payload
     )
     selectedCommunity.value.function = res.data.function

@@ -164,15 +164,15 @@ const features = [
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
-        description: '線上預約健身房、交誼廳等公設，避免重複與衝突。',
-        link: '/reservation'
+        description: '線上預約健身房、交誼廳等公設，點數管理。',
+        link: '/facilities'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
         link: '/TicketDashboard'
-    },    
+    },
     {
         icon: 'bi-tools',
         title: '廠商',

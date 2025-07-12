@@ -1,6 +1,8 @@
 // src/stores/user.js
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
+import axios from '@/plugins/axios'
+import { useFacilitiesStore } from '../stores/FacilitiesStore'
 import Swal from 'sweetalert2'
 
 export const useUserStore = defineStore('user', () => {
@@ -54,7 +56,7 @@ export const useUserStore = defineStore('user', () => {
         //0704 javert新增查詢帳戶資訊
         if (payload.unitId) {
             try {
-                const res = await axios.get(`/api/pointAccount/unit/${payload.unitId}`)
+                const res = await axios.get(`/api/pointAccount/unit/${payload.unitId}`)                
                 const facilitiesStore = useFacilitiesStore()
                 facilitiesStore.setAccountInfo({
                     accountId: res.data.accountId,

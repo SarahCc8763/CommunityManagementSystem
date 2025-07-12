@@ -81,7 +81,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const fullfaqList = ref([])
 const faqList = ref([])
@@ -116,8 +116,8 @@ const fetchFaqs = async () => {
     loading.value = true
     try {
         const [faqRes, categoryRes] = await Promise.all([
-            axios.get('http://localhost:8080/api/faq'),
-            axios.get(`http://localhost:8080/api/faq/${communityId}/category`)
+            axios.get('/api/faq'),
+            axios.get(`/api/faq/${communityId}/category`)
         ])
 
         const categoryOrder = categoryRes.data || []
@@ -158,7 +158,7 @@ const searchFaqs = async () => {
 
 
     try {
-        const res = await axios.post('http://localhost:8080/api/faq/searchbykeyword', requestBody)
+        const res = await axios.post('/api/faq/searchbykeyword', requestBody)
         if (res.data.success) {
             // ✅ 重新依分類順序排序
             const categoryOrder = categories.value

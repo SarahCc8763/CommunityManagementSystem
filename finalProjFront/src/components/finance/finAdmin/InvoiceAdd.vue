@@ -75,7 +75,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import dayjs from 'dayjs'  // 如果你沒裝，可用 new Date().toISOString().slice(0,16) 代替
 
 const form = ref({

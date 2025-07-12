@@ -16,7 +16,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -106,7 +106,7 @@ const menuList = [
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.communityId}`)
+    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
     const allowed = res.data
 
     // 根據社區權限過濾主功能與子功能

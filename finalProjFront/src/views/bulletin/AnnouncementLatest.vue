@@ -195,7 +195,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Swal from 'sweetalert2'
 import BarChart from '@/components/bulletin/BarChart.vue'
@@ -280,7 +280,7 @@ onMounted(() => {
 
 function fetchAll() {
     //console.log(communityId);
-    axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
+    axios.get('/api/bulletin/community/' + communityId)
         .then(res => {
             // //console.log(res.data.list);
             const postedList = res.data.list.filter(val => val.postStatus === true)
@@ -291,7 +291,7 @@ function fetchAll() {
 }
 
 function openBulletin(id) {
-    axios.get(`http://localhost:8080/api/bulletin/${id}`).then(async res => {
+    axios.get(`/api/bulletin/${id}`).then(async res => {
         selectedBulletin.value = res.data.list[0]
         selectedOptions.value = []
 
@@ -308,7 +308,7 @@ function openBulletin(id) {
 
         if (poll) {
             try {
-                const voteRes = await axios.get(`http://localhost:8080/api/poll/byUserPoll/${userId}/${poll.id}`)
+                const voteRes = await axios.get(`/api/poll/byUserPoll/${userId}/${poll.id}`)
                 const votes = voteRes.data
 
                 const checkedVotes = votes.filter(v => v.isChecked)
@@ -332,7 +332,7 @@ function openBulletin(id) {
 
 
 function searchBulletins() {
-    axios.post('http://localhost:8080/api/bulletin/searchby', {
+    axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
         category: searchCategory.value ? { name: searchCategory.value } : undefined
     }).then(res => {
@@ -358,7 +358,7 @@ async function submitVote() {
         const poll = selectedBulletin.value.poll
         const selectedIds = poll.isMultiple ? selectedOptions.value : [selectedOptions.value]
 
-        await axios.post(`http://localhost:8080/api/poll/${poll.id}/vote`, {
+        await axios.post(`/api/poll/${poll.id}/vote`, {
             userId,
             selectedOptionIds: selectedIds
         })
@@ -384,12 +384,12 @@ async function submitVote() {
 
 
 function submitComment() {
-    axios.post(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}/comment`, {
+    axios.post(`/api/bulletin/${selectedBulletin.value.id}/comment`, {
         user: { usersId: userId },
         comment: newComment.value
     }).then(() => {
         // ✅ 只更新留言部分
-        axios.get(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}`)
+        axios.get(`/api/bulletin/${selectedBulletin.value.id}`)
             .then(res => {
                 selectedBulletin.value.comments = res.data.list[0].comments
                 newComment.value = ''
@@ -404,12 +404,12 @@ function toggleReply(commentId) {
 }
 
 function submitReply(parentId) {
-    axios.post(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}/comment`, {
+    axios.post(`/api/bulletin/${selectedBulletin.value.id}/comment`, {
         user: { usersId: userId },
         comment: replyContent.value,
         parentComment: { id: parentId }
     }).then(() => {
-        axios.get(`http://localhost:8080/api/bulletin/${selectedBulletin.value.id}`).then(res => {
+        axios.get(`/api/bulletin/${selectedBulletin.value.id}`).then(res => {
             selectedBulletin.value.comments = res.data.list[0].comments
         })
 
@@ -420,7 +420,7 @@ function submitReply(parentId) {
 }
 
 function likeComment(commentId) {
-    axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}/like/${userId}`)
+    axios.post(`/api/bulletin/comment/${commentId}/like/${userId}`)
         .then(res => {
             const updated = res.data
             const comment = selectedBulletin.value.comments.find(c => c.id === commentId)
@@ -455,7 +455,7 @@ async function deleteComment(bulletinId, comment) {
 
     if (result.isConfirmed) {
         try {
-            await axios.put(`http://localhost:8080/api/bulletin/comment/${comment.id}`, data)
+            await axios.put(`/api/bulletin/comment/${comment.id}`, data)
 
             // ✅ 關閉 Modal
             const modalEl = document.getElementById('bulletinModal')

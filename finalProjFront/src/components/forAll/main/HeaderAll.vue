@@ -37,7 +37,7 @@
     <div class="user-info">
       <div class="welcome-block" v-if="isLoggedIn">
         <span class="welcome">你好，{{ userStore.name }}</span>
-        <span class="points">{{ userStore.points }} pt</span>
+        <span class="points">{{ facilitiesStore.totalBalance }} pt</span>
       </div>
       <div v-else class="avatar placeholder">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,13 +66,15 @@
 <script setup>
 import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
+import { useFacilitiesStore } from '@/stores/FacilitiesStore'
 import Logo from '@/assets/images/main/Logo.png'
 
 const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()
 const userStore = useUserStore()
+const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
 
@@ -315,7 +317,7 @@ onUnmounted(() => {
 async function loadCommunityFunctions() {
   try {
     console.log(userStore.rawData.communityId)
-    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.rawData.communityId}`)
+    const res = await axios.get(`/communitys/functions/${userStore.rawData.communityId}`)
     console.log('✅ API 回傳內容：', res.data)
 
     if (Array.isArray(res.data)) {
