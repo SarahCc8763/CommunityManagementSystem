@@ -15,19 +15,21 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
-//                .addPathPatterns("/users/**"); // 只攔截受保護的路徑
-        .excludePathPatterns("/users/**","/api/**","/**");
+				//.addPathPatterns("/users/**"); // 只攔截受保護的路徑
+        		.excludePathPatterns("/users/**","/api/**","/**");
 
     }
 	
 	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		
+	public void addCorsMappings(CorsRegistry registry) {		
 		registry.addMapping("/**")
-		.allowedOrigins("http://localhost:5173")
-		.allowedMethods("GET","POST","PUT","DELETE")
-		.allowedHeaders("*")
-		.allowCredentials(true);
+				.allowedOrigins("http://localhost:5173",						
+						"https://payment-stage.ecpay.com.tw",
+						"https://payment.ecpay.com.tw",
+						"null")
+				.allowedMethods("GET","POST","PUT","DELETE")
+				.allowedHeaders("*")
+				.allowCredentials(true);
 	}
 	
 	

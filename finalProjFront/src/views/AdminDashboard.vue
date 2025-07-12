@@ -5,12 +5,7 @@
     <div class="group" v-for="group in groupedCards" :key="group.key">
       <h4 class="group-title">{{ group.title }}</h4>
       <div class="card-grid">
-        <div
-          class="card"
-          v-for="item in group.children"
-          :key="item.routeName"
-          @click="goTo(item.routeName)"
-        >
+        <div class="card" v-for="item in group.children" :key="item.routeName" @click="goTo(item.routeName)">
           {{ item.label }}
         </div>
       </div>
@@ -29,7 +24,7 @@ const groupedCards = ref([])
 
 // 原始功能清單（僅保留你希望放進後台卡片的主功能）
 const menuList = [
- {
+  {
     title: '包裹管理',
     key: 'PACKAGE',
     children: [
@@ -41,9 +36,12 @@ const menuList = [
     title: '預約系統',
     key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
+      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
+      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
+      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
+      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
+      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
     ]
   },
   {
@@ -135,6 +133,7 @@ function goTo(name) {
   flex-wrap: wrap;
   gap: 20px;
 }
+
 .card {
   padding: 20px;
   background: #f0f4f8;
@@ -144,6 +143,7 @@ function goTo(name) {
   font-weight: bold;
   transition: 0.2s ease;
 }
+
 .card:hover {
   background: #e2e8f0;
   transform: translateY(-3px);

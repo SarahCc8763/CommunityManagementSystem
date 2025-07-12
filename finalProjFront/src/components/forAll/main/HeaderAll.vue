@@ -50,9 +50,9 @@
       </div>
       <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
       <div v-if="isAdmin">
-       <button class="admin-button" @click="router.push('/AdminDashboard')">
-  管理後台
-</button>
+        <button class="admin-button" @click="router.push('/AdminDashboard')">
+          管理後台
+        </button>
       </div>
       <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
         {{ userStore.isAuthenticated ? '登出' : '登入' }}
@@ -64,7 +64,7 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted, onBeforeUnmount,watch ,computed} from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useUserStore } from '@/stores/UserStore'
@@ -234,9 +234,12 @@ const menuList = ref([
     title: '預約系統',
     key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
+      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
+      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
+      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
+      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
+      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
     ]
   },
   {

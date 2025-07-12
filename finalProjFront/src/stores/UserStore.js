@@ -21,10 +21,12 @@ export const useUserStore = defineStore('user', () => {
     const communityId = ref('')
     const assignerId = ref('')
     const actionBy = ref('')
+    const unit = ref('')                     //0704 javert新增增加unit門牌號
+    const floor = ref('')                    //0704 javert新增增加unit門牌號
     const rawData = reactive({}) // 保存完整後端回傳
 
 
-    function login(payload) {
+    async function login(payload) {
         isAuthenticated.value = true
         // 整包儲存
         Object.assign(rawData, payload)
@@ -45,7 +47,30 @@ export const useUserStore = defineStore('user', () => {
         communityId.value = payload.communityId
         assignerId.value = payload.id
         actionBy.value = payload.id
+        unit.value = payload.unit || ''         //0704 javert新增增加unit門牌號
+        floor.value = payload.floor || ''         //0704 javert新增增加unit門牌號
         console.log('登入 payload', payload)
+
+        //0704 javert新增查詢帳戶資訊
+        if (payload.unitId) {
+            try {
+                const res = await axios.get(`/api/pointAccount/unit/${payload.unitId}`)
+                const facilitiesStore = useFacilitiesStore()
+                facilitiesStore.setAccountInfo({
+                    accountId: res.data.accountId,
+                    unitId: payload.unitId,
+                    unit: payload.unit, 
+                    floor: payload.floor,
+                    username: payload.name,
+                    userEmail: payload.email,
+                    totalBalance: res.data.totalBalance,                    
+                    expiredAt: res.data.expiredAt
+                })
+                points.value = res.data.totalBalance //把點數改成account裡的真實餘額
+            } catch (e) {
+                console.error('查詢帳戶失敗', e)
+            }
+        }
         Object.assign(rawData, payload)
     }
 
@@ -67,7 +92,10 @@ export const useUserStore = defineStore('user', () => {
         communityId.value = ''
         assignerId.value = ''
         actionBy.value=''
+        unit.value = ''  //0704 javert新增增加unit門牌號
+        floor.value = ''  //0704 javert新增增加unit門牌號
         Object.keys(rawData).forEach(k => delete rawData[k])
+        useFacilitiesStore().clearAccountInfo()  // 同時清空帳戶資訊 0704 javert新增
         localStorage.removeItem('user')
 
     }
@@ -95,6 +123,8 @@ export const useUserStore = defineStore('user', () => {
         communityId,
         assignerId,
         actionBy,
+        unit,                //0704 javert新增增加unit門牌號
+        floor,               //0704 javert新增增加unit門牌號
         // displayName,
     }
 }, {
