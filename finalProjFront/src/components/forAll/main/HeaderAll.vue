@@ -69,7 +69,7 @@ import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import { useFacilitiesStore } from '@/stores/FacilitiesStore'
-import Logo from '@/assets/images/main/Logo.png'
+import Logo from '@/assets/images/main/Logo.jpg'
 
 const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()

@@ -68,6 +68,9 @@ import PointTransferView from '../views/facilities/PointTransferView.vue'
 import PointTopupView from '../views/facilities/PointTopupView.vue'
 import PointTopupResultView from '../views/facilities/PointTopupResultView.vue'
 
+// 新增 BeforeLogIn 頁面路由
+import BeforeLogIn from '@/views/BeforeLogIn.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +79,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+      meta: { requiresAuth: true }
     },
 
     // Finance相關
@@ -241,21 +245,31 @@ const router = createRouter({
       component: PointTopupResultView,
       props: true
     },
+    {
+      path: '/login',
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
+    },
   ],
 
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }
   }
 })
-router.beforeEach((to) => {
+// 修改路由守衛
+router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
+  const isLoggedIn = userStore.isAuthenticated
 
-  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    console.log('尚未登入，導去首頁並觸發登入 modal')
-    window.dispatchEvent(new CustomEvent('show-login-modal'))
-    return { name: 'home' }
+  // 需要登入的頁面，未登入導去 BeforeLogIn
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    next({ name: 'BeforeLogIn' })
+    // 已登入者進入 BeforeLogIn，自動導去 Home
+  } else if (to.name === 'BeforeLogIn' && isLoggedIn) {
+    next({ name: 'home' })
+  } else {
+    next()
   }
-
 })
 
 

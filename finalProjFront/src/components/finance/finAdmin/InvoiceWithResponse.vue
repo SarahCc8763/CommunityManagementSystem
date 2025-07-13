@@ -43,11 +43,11 @@
           <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId"
             class="response-card d-flex align-items-center mb-2">
             <div class="flex-grow-1">
-              <div>留言：{{ res.lastResponse }}</div>
-              <div>末五碼：{{ res.accountCode }}</div>
-              <div>時間：{{ res.lastResponseTime }}</div>
+            <div>留言：{{ res.lastResponse }}</div>
+            <div>末五碼：{{ res.accountCode }}</div>
+            <div>時間：{{ res.lastResponseTime }}</div>
            
-              <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
+            <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@
             <button class="btn btn-outline-primary me-2" @click="printReceipt">列印收據</button>
             <button class="btn btn-outline-success me-2" @click="downloadPDF">下載PDF</button>
             <button class="btn btn-secondary" @click="closeReceiptModal">關閉</button>
-          </div>
+      </div>
         </template>
       </div>
     </div>
