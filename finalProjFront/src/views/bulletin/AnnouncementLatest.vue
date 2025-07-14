@@ -219,7 +219,7 @@ const replyingToId = ref(null)
 const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
-const userId = userStore.id || 0 // 假設當前使用者 id
+const userId = userStore.userId || 0 // 假設當前使用者 id
 const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 console.log(userId, communityId);

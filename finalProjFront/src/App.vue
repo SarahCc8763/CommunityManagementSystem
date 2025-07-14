@@ -21,6 +21,8 @@
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
         <RouterView />
+        <FeedbackModal />
+
       </div>
     </main>
 
@@ -52,6 +54,9 @@ import LoginModal from './components/forAll/main/LoginModal.vue';
 import HeaderAll from './components/forAll/main/HeaderAll.vue';
 import RightSideNav from './components/forAll/main/RightSideNav.vue';
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
+// Yu
+import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
+// Yu
 
 import { useRoute } from 'vue-router'  // ✅ 加上這行
 const route = useRoute()

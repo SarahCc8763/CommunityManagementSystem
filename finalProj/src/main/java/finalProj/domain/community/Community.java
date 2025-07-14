@@ -133,21 +133,20 @@ public class Community {
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("community-facilities")
 	private List<FacilitiesBean> facilities;
-	
+
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("community-facilityReservations")
 	private List<FacilityReservationsBean> reservations;
-	
+
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("community-pointAccounts")
 	private List<PointAccountsBean> pointAccounts;
-	
+
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("community-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
 
 	// --- javert關聯 end ---
-
 
 	@Override
 	public String toString() {
