@@ -72,7 +72,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 const status = ref('')
@@ -117,7 +117,7 @@ watch(
 // ✅ 修改狀態 更新 feedback.status
 const submitReply = async () => {
     try {
-        const res = await axios.put(`http://localhost:8080/api/feedback/status/${props.selectedFeedback.id}`, {
+        const res = await axios.put(`/api/feedback/status/${props.selectedFeedback.id}`, {
             id: props.selectedFeedback.id, // ✅ 後端使用 findById(id)
             status: status.value, // ✅ 後端會比對原始與新狀態
             handler: {

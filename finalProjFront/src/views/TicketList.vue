@@ -44,9 +44,9 @@
           <label class="form-label">狀態</label>
           <select class="form-select" v-model="filter.status">
             <option value="">全部</option>
-            <option value="todo">待處理</option>
-            <option value="doing">處理中</option>
-            <option value="done">已完成</option>
+            <option value="to do">待處理</option>
+            <option value="In Progress">處理中</option>
+            <option value="Done">已完成</option>
           </select>
         </div>
 
@@ -74,7 +74,7 @@
         <thead class="bg-light text-secondary">
           <tr>
             <th></th>
-            <th><input type="checkbox" /></th>
+            <!-- <th><input type="checkbox" /></th> -->
             <th>ID</th>
             <th>標題</th>
             <th>狀態</th>
@@ -85,10 +85,11 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(ticket, index) in tickets" :key="ticket.id">
+          <!-- <template v-for="(ticket, index) in tickets" :key="ticket.id"> -->
+          <template v-for="(ticket, index) in pagedTickets" :key="ticket.id">
             <tr @click="goToDetail(ticket.id)" class="clickable-row">
-              <td @click.stop="toggleExpanded(index)" class="text-center text-primary">▶</td>
-              <td><input type="checkbox" /></td>
+              <td @click.stop="toggleExpanded(ticket.id)" class="text-center text-primary">▶</td>
+              <!-- <td><input type="checkbox" /></td> -->
               <td>T-{{ ticket.id }}</td>
               <td class="text-primary font-semibold">{{ ticket.title }}</td>
               <td>
@@ -110,10 +111,10 @@
             </tr>
 
             <!-- 展開區塊 -->
-            <tr v-if="expandedIndexes.includes(index)">
+            <tr v-if="expandedIndexes.includes(ticket.id)">
               <td colspan="9" class="p-0 border-0">
                 <transition name="slide-fade">
-                  <div class="expand-wrapper" v-show="expandedIndexes.includes(index)">
+                  <div class="expand-wrapper" v-show="expandedIndexes.includes(ticket.id)">
                     <div class="p-3">
                       <strong>問題種類：</strong>
                       <span v-for="(type, i) in ticket.issueTypes ?? []" :key="i" class="badge bg-info me-2">
@@ -128,18 +129,59 @@
         </tbody>
       </table>
     </div>
+    <div class="d-flex justify-content-center mt-3">
+      <nav>
+        <ul class="pagination mb-0">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="prevPage">上一頁</button>
+          </li>
+
+          <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
+            <button class="page-link" @click="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="nextPage">下一頁</button>
+          </li>
+        </ul>
+        <div class="d-flex justify-content-end mb-2">
+          <label class="me-2">每頁顯示</label>
+          <select class="form-select w-auto" v-model.number="pageSize">
+            <option :value="5">5 筆</option>
+            <option :value="10">10 筆</option>
+            <option :value="20">20 筆</option>
+          </select>
+        </div>
+      </nav>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import TicketPage from './TicketPage.vue'
 import { watch } from 'vue'
-import { useUserStore } from '@/stores/UserStore'
+// import { useUserStore } from '@/stores/UserStore'
 
-const user = useUserStore()
+// const user = useUserStore()
+
+
+const currentPage = ref(1)
+const pageSize = ref(5) // 每頁幾筆資料
+const pagedTickets = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return tickets.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(tickets.value.length / pageSize.value)
+})
+
 const showSearch = ref(false)
 const showFilter = ref(false)
 const searchText = ref('')
@@ -158,6 +200,9 @@ const ticketModal = ref(null)
 const tickets = ref([])
 const expandedIndexes = ref([])
 const issueTypes = ref([])
+watch(pageSize, () => {
+  currentPage.value = 1
+})
 
 watch(searchText, () => {
   applySearch()
@@ -176,7 +221,8 @@ onMounted(() => {
 
 const fetchUsers = async () => {
   try {
-    const res = await axios.get('http://localhost:8080/users') // 或用你剛剛設的 /users/simple
+    const res = await axios.get('/users/ticket') // 或用你剛剛設的 /users/simple
+    console.log(res.data)
     users.value = res.data.map(user => ({
       id: user.usersId,
       name: user.name
@@ -189,7 +235,7 @@ const fetchUsers = async () => {
 
 const fetchIssueTypes = async () => {
   try {
-    const res = await axios.get('http://localhost:8080/IssueTypes')
+    const res = await axios.get('/IssueTypes')
     issueTypes.value = res.data
   } catch (err) {
     console.error('❌ 載入問題種類失敗', err)
@@ -234,11 +280,12 @@ const applySearch = async () => {
 
   if (isEmpty) {
     callTicketSearch()
+    currentPage.value = 1
     return
   }
 
   try {
-    const ticketRes = await axios.post('http://localhost:8080/ticket/search', payload)
+    const ticketRes = await axios.post('/ticket/search', payload)
     tickets.value = ticketRes.data
   } catch (err) {
     console.error('搜尋失敗 ❌', err)
@@ -256,11 +303,11 @@ function goToDetail(id) {
   router.push({ name: 'TicketDetail', params: { id } })
 }
 
-function toggleExpanded(index) {
-  if (expandedIndexes.value.includes(index)) {
-    expandedIndexes.value = expandedIndexes.value.filter(i => i !== index)
+function toggleExpanded(ticketId) {
+  if (expandedIndexes.value.includes(ticketId)) {
+    expandedIndexes.value = expandedIndexes.value.filter(i => i !== ticketId)
   } else {
-    expandedIndexes.value.push(index)
+    expandedIndexes.value.push(ticketId)
   }
 }
 
@@ -291,12 +338,13 @@ function statusClass(status) {
 
 function fetchTickets() {
   callTicketSearch()
+  currentPage.value = 1
 }
 async function callTicketSearch() {
   try {
     const [ticketRes, relationRes] = await Promise.all([
-      axios.get('http://localhost:8080/ticket'),              // ✅ 改這裡
-      axios.get('http://localhost:8080/ticket-issue'),
+      axios.get('/ticket'),              // ✅ 改這裡
+      axios.get('/ticket-issue'),
     ])
     // console.log(ticketRes.data)
     const issueMap = {}
@@ -314,6 +362,21 @@ async function callTicketSearch() {
     tickets.value = ticketRes.data
   } catch (err) {
     console.error('❌ 資料載入失敗', err)
+  }
+}
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
   }
 }
 

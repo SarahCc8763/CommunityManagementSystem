@@ -156,7 +156,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
@@ -209,7 +209,7 @@ const submitReply = async (feedback) => {
 
     try {
         const res = await axios.post(
-            `http://localhost:8080/api/feedback/${feedback.id}/reply`,
+            `/api/feedback/${feedback.id}/reply`,
             payload
         )
 
@@ -271,7 +271,7 @@ const formatDateTime = (datetime) => {
 
 const openEditModal = async (feedbackId) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
+        const res = await axios.get(`/api/feedback/${feedbackId}`)
         const feedback = res.data
         //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
@@ -312,7 +312,7 @@ const submitRating = async (feedback) => {
             confirmButtonText: '確定'
         })
         if (result.isConfirmed) {
-            const res = await axios.put(`http://localhost:8080/api/feedback/rating/${feedback.id}`, payload)
+            const res = await axios.put(`/api/feedback/rating/${feedback.id}`, payload)
 
             if (res.data?.success) {
                 // 更新本地畫面資料
@@ -354,7 +354,7 @@ const fetchData = () => {
 
     loading.value = true
     axios
-        .get(`http://localhost:8080/api/feedback/findbyuser/${userId}`)
+        .get(`/api/feedback/findbyuser/${userId}`)
         .then((res) => {
             feedbackList.value = res.data.map((f) => ({
                 ...f,

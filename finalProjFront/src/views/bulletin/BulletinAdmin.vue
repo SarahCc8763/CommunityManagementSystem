@@ -31,7 +31,7 @@
                     class=" border p-3 rounded bg-light shadow-sm my-1">
                     <span class="fs-6 text-secondary fw-normal">{{ bulletin.postStatus ? '（已發佈）' :
                         "（草稿）"
-                        }}</span>
+                    }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="fw-bold text-dark fs-5">
                             {{ bulletin.title }} <span v-if="bulletin.poll"
@@ -42,7 +42,7 @@
                     <div class="mb-2">
                         <span class="badge  me-2 fw-normal" style="font-size: 80%;background-color: #BEBEBE;">{{
                             bulletin.categoryName
-                        }}</span>
+                            }}</span>
                         <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
                     </div>
                     <p class="text-truncate text-muted small mb-3 fs-6">
@@ -94,7 +94,7 @@
 <script setup>
 // 函式庫
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Swal from 'sweetalert2'
 
@@ -118,7 +118,6 @@ const selectedBulletin = ref(null)
 const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
-
 
 const showCategoryModal = ref(false)
 const showEdit = ref(false)
@@ -170,7 +169,7 @@ function deleteBulletin(id) {
         cancelButtonText: '取消'
     }).then((result) => {
         if (result.isConfirmed) {
-            axios.delete(`http://localhost:8080/api/bulletin/${id}`).then(res => {
+            axios.delete(`/api/bulletin/${id}`).then(res => {
                 if (res.data.success) {
                     Swal.fire({
                         title: '刪除成功',
@@ -202,7 +201,7 @@ function normalizeNewline(text) {
 
 
 function searchBulletins() {
-    axios.post('http://localhost:8080/api/bulletin/searchby', {
+    axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
         category: searchCategory.value ? { name: searchCategory.value } : undefined
     }).then(res => {
@@ -222,7 +221,7 @@ onMounted(() => {
 })
 
 function fetchAll() {
-    axios.get('http://localhost:8080/api/bulletin/community/' + communityId)
+    axios.get('/api/bulletin/community/' + communityId)
         .then(res => {
             // 根據 postTime 由新到舊排序
             const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
@@ -237,7 +236,7 @@ function fetchAll() {
             //console.log('觸發了!!!');
         })
 
-    axios.get('http://localhost:8080/api/bulletin/category/community/' + communityId)
+    axios.get('/api/bulletin/category/community/' + communityId)
         .then(res => {
             const cats = res.data.map(cat => ({ id: cat.id, name: cat.name }))
             categoryList.value = cats

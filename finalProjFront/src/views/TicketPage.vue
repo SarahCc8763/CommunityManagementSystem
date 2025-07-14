@@ -26,12 +26,8 @@
                         <!-- 描述 + 附件 -->
                         <div class="mb-3">
                             <label class="form-label">問題描述</label>
-                            <QuillEditor 
-                            style="min-height:150px"
-                            v-model:content="form.description" 
-                            contentType="html" 
-                            class="form-control"
-                            placeholder="Describe the issue..." />
+                            <QuillEditor style="min-height:150px" v-model:content="form.description" contentType="html"
+                                class="form-control" placeholder="Describe the issue..." />
 
                             <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent
                                 @drop.prevent="handleDrop">
@@ -64,16 +60,23 @@
 
 <script setup>
 import { ref, onMounted, defineExpose, defineEmits } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { useUserStore } from '@/stores/UserStore'
 
-const emits = defineEmits(['close', 'created'])
+
+
+
+const userStore = useUserStore()
+
+const emit = defineEmits(['close', 'created'])
 const modal = ref(null)
 let bsModal = null
+
 
 const form = ref({
     project: '',
@@ -86,7 +89,7 @@ const formIssue = ref({ issueType: [] })
 const issueOptions = ref([])
 
 onMounted(() => {
-    axios.get('http://localhost:8080/IssueTypes')
+    axios.get('/IssueTypes')
         .then(res => {
             issueOptions.value = res.data.map(item => ({ name: item.issueTypeName }))
         })
@@ -102,7 +105,7 @@ function showModal() {
 }
 function hideModal() {
     bsModal?.hide()
-    emits('close')
+    emit('close')
 }
 
 defineExpose({ showModal, hideModal })
@@ -110,7 +113,7 @@ defineExpose({ showModal, hideModal })
 async function addNewTag(newTag) {
     const newOption = { name: newTag }
     try {
-        await axios.post('http://localhost:8080/IssueTypes', {
+        await axios.post('/IssueTypes', {
             issueTypeName: newTag
         })
         issueOptions.value.push(newOption)
@@ -164,8 +167,8 @@ async function handleSubmit() {
         return
     }
     const payload = {
-        reporterId: 2,
-        communityId: 1,
+        reporterId: userStore.userId,
+        communityId: userStore.communityId,
         title: form.value.title,
         issueDescription: form.value.description,
         status: 'to do',
@@ -174,7 +177,7 @@ async function handleSubmit() {
         issueTypeNames: formIssue.value.issueType.map(i => i.name)
     }
     try {
-        const ticketRes = await axios.post('http://localhost:8080/ticket', payload)
+        const ticketRes = await axios.post('/ticket', payload)
         const ticketResponse = ticketRes.data
         if (!ticketResponse.success) {
             alert('❌ 建立 ticket 失敗：' + ticketResponse.message)
@@ -191,15 +194,18 @@ async function handleSubmit() {
             }
         }))
         if (base64Files.length > 0) {
-            const uploadRes = await axios.post('http://localhost:8080/ticket-attachment/upload/base64/multiple', base64Files)
+            const uploadRes = await axios.post('/ticket-attachment/upload/base64/multiple', base64Files)
             const uploadResult = uploadRes.data
             if (uploadResult.success) {
                 alert('✅ 報修單與附件上傳成功！')
+                emit('created')
             } else {
                 alert('📎 報修單建立成功，但附件上傳失敗：' + uploadResult.message)
+                emit('created')
             }
         } else {
             alert('✅ 報修單建立成功（無附件）')
+            emit('created')
         }
         form.value.title = ''
         form.value.description = ''

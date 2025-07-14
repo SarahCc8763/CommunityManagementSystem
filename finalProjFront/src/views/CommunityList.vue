@@ -14,20 +14,11 @@
       </div>
 
       <div class="function-section">
-        <div
-          v-for="module in allFunctionOptions"
-          :key="module.value"
-          class="mb-4 border-bottom pb-3"
-        >
+        <div v-for="module in allFunctionOptions" :key="module.value" class="mb-4 border-bottom pb-3">
           <!-- 主功能 Checkbox -->
           <div class="form-check mb-2">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              :id="module.value"
-              :checked="isModuleChecked(module)"
-              @change="toggleMainFunction(module.value, module.children)"
-            />
+            <input class="form-check-input" type="checkbox" :id="module.value" :checked="isModuleChecked(module)"
+              @change="toggleMainFunction(module.value, module.children)" />
             <label class="form-check-label fw-bold" :for="module.value">
               {{ module.value }} (主項)
             </label>
@@ -35,18 +26,9 @@
 
           <!-- 子功能列 -->
           <div class="ms-4">
-            <div
-              v-for="child in module.children"
-              :key="child.key"
-              class="form-check form-check-inline"
-            >
-              <input
-                class="form-check-input"
-                type="checkbox"
-                :id="child.key"
-                :checked="selectedFunctionNames.includes(child.key)"
-                @change="toggleChildFunction(child.key)"
-              />
+            <div v-for="child in module.children" :key="child.key" class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" :id="child.key"
+                :checked="selectedFunctionNames.includes(child.key)" @change="toggleChildFunction(child.key)" />
               <label class="form-check-label" :for="child.key">{{ child.label }}</label>
             </div>
           </div>
@@ -64,7 +46,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 
 
@@ -105,9 +87,12 @@ const allFunctionOptions = [
     label: '公設預約',
     value: 'BOOKING',
     children: [
-      { label: '健身房預約', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', key: 'BOOKINGPOOL' },
-      { label: '停車預約', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', key: 'FHV' },
+      { label: '查詢公設', key: 'FFAV' },
+      { label: '我的預約紀錄', key: 'RHV' },
+      { label: '點數轉移', key: 'PTV' },
+      { label: '點數儲值', key: 'PTUV' },
+      { label: '點數交易紀錄', key: 'PHV' },
     ]
   },
   {
@@ -178,17 +163,13 @@ onMounted(async () => {
       return
     }
 
-    // 直接用登入者的社區 ID 當作唯一社區
-    selectedCommunity.value = {
-      communityId,
-      name: '目前登入社區',
-      address: '尚未設定',
-      createTime: new Date().toISOString()
-    }
+    // 從後端取得社區詳細資料
+    const res = await axios.get(`/communitys/${communityId}`)
+    selectedCommunity.value = res.data
 
-    // 載入對應功能
+    // 載入該社區的功能設定
     const functionRes = await axios.get(
-      `http://localhost:8080/communitys/functions/${communityId}`
+      `/communitys/functions/${communityId}`
     )
     selectedFunctionNames.value = functionRes.data
   } catch (err) {
@@ -200,7 +181,7 @@ watch(selectedCommunity, async (newVal) => {
   if (newVal) {
     try {
       const res = await axios.get(
-        `http://localhost:8080/communitys/functions/${newVal.communityId}`
+        `/communitys/functions/${newVal.communityId}`
       )
       selectedFunctionNames.value = res.data
     } catch (err) {
@@ -257,7 +238,7 @@ async function saveFunction() {
     }
 
     const res = await axios.put(
-      `http://localhost:8080/communitys/${selectedCommunity.value.communityId}`,
+      `/communitys/${selectedCommunity.value.communityId}`,
       payload
     )
     selectedCommunity.value.function = res.data.function
@@ -283,6 +264,7 @@ function formatDate(dateStr) {
   font-size: 0.9rem;
   transition: background-color 0.2s;
 }
+
 .badge:hover {
   background-color: #444 !important;
 }

@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 import Swal from 'sweetalert2'
 const focusedId = ref(null)
@@ -56,14 +56,14 @@ watch(() => props.visible, (val) => {
 })
 
 async function fetchCategories() {
-    const res = await axios.get(`http://localhost:8080/api/bulletin/category/community/${props.communityId}`)
+    const res = await axios.get(`/api/bulletin/category/community/${props.communityId}`)
     categoryList.value = res.data
     //console.log(categoryList);
 }
 
 async function addCategory() {
     if (!newCategory.value.trim()) return
-    await axios.post('http://localhost:8080/api/bulletin/category', {
+    await axios.post('/api/bulletin/category', {
         name: newCategory.value.trim(),
         community: { communityId: props.communityId },
     })
@@ -74,7 +74,7 @@ async function addCategory() {
 
 async function updateCategory(cat) {
     //console.log(cat);
-    await axios.put(`http://localhost:8080/api/bulletin/category/${cat.id}`, {
+    await axios.put(`/api/bulletin/category/${cat.id}`, {
         name: cat.name,
         community: { communityId: props.communityId },
     })
@@ -94,7 +94,7 @@ async function deleteCategory(id) {
     })
 
     if (result.isConfirmed) {
-        axios.delete(`http://localhost:8080/api/bulletin/category/${id}`)
+        axios.delete(`/api/bulletin/category/${id}`)
             .then(() => {
                 fetchCategories()
                 emit('updated')

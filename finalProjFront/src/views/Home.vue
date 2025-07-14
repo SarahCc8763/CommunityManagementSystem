@@ -117,7 +117,6 @@
 
 
 
-
 </template>
 
 <script setup>
@@ -148,7 +147,7 @@ const features = [
         icon: 'bi-person-circle',
         title: '帳戶資訊',
         description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/finUser'
+        link: '/account'
     },
     {
         icon: 'bi-megaphone',
@@ -165,14 +164,20 @@ const features = [
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
-        description: '線上預約健身房、交誼廳等公設，避免重複與衝突。',
-        link: '/reservation'
+        description: '線上預約健身房、交誼廳等公設，點數管理。',
+        link: '/facilities'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
-        link: '/repair'
+        link: '/TicketDashboard'
+    },
+    {
+        icon: 'bi-tools',
+        title: '廠商',
+        description: '廠商',
+        link: '/Vendor'
     }
 ];
 

@@ -96,7 +96,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 const fileInput = ref(null) // 綁定 ref
@@ -234,7 +234,7 @@ async function submitEdit() {
     //console.log('送出資料', data)
 
     try {
-        await axios.post(`http://localhost:8080/api/bulletin`, data)
+        await axios.post(`/api/bulletin`, data)
         emit('post')
         emit('update:visible', false)
         await Swal.fire({

@@ -71,7 +71,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import BarChart from '@/components/bulletin/BarChart.vue'
 // import EditPollModal from '@/components/bulletin/EditPollModal.vue'
@@ -193,7 +193,7 @@ function submitEdit() {
 
         //console.log('送出資料', data)
 
-        axios.put(`http://localhost:8080/api/bulletin/${props.bulletin.id}`, data)
+        axios.put(`/api/bulletin/${props.bulletin.id}`, data)
             .then(() => {
                 emit('updated')
                 emit('update:visible', false)

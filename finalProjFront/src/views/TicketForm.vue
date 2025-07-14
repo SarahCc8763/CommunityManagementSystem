@@ -52,11 +52,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 
 // 表單資料
 const form = ref({
@@ -71,7 +73,7 @@ const issueOptions = ref([])
 
 // 取得 issueType 選項
 onMounted(() => {
-  axios.get('http://localhost:8080/IssueTypes')
+  axios.get('/IssueTypes')
     .then(res => {
       issueOptions.value = res.data.map(item => ({ name: item.issueTypeName }))
     })
@@ -84,7 +86,7 @@ onMounted(() => {
 async function addNewTag(newTag) {
   const newOption = { name: newTag }
   try {
-    await axios.post('http://localhost:8080/IssueTypes', {
+    await axios.post('/IssueTypes', {
       issueTypeName: newTag
     })
     issueOptions.value.push(newOption)
@@ -146,8 +148,8 @@ async function handleSubmit() {
   }
 
   const payload = {
-    reporterId: 2, // TODO: 改為登入使用者 ID
-    communityId: 1, // TODO: 改為登入者社區 ID
+    reporterId: userStore.userId, // TODO: 改為登入使用者 ID
+    communityId: userStore.communityId, // TODO: 改為登入者社區 ID
     title: form.value.title,
     issueDescription: form.value.description,
     status: 'to do',
@@ -157,7 +159,7 @@ async function handleSubmit() {
   }
 
   try {
-    const ticketRes = await axios.post('http://localhost:8080/ticket', payload)
+    const ticketRes = await axios.post('/ticket', payload)
     const ticketResponse = ticketRes.data
 
     if (!ticketResponse.success) {
@@ -179,7 +181,7 @@ async function handleSubmit() {
 
     if (base64Files.length > 0) {
       const uploadRes = await axios.post(
-        'http://localhost:8080/ticket-attachment/upload/base64/multiple',
+        '/ticket-attachment/upload/base64/multiple',
         base64Files
       )
       const uploadResult = uploadRes.data
@@ -193,7 +195,7 @@ async function handleSubmit() {
       alert('✅ 報修單建立成功（無附件）')
     }
 
-    form.value.summary = ''
+    form.value.title = ''
     form.value.description = ''
     formIssue.value.issueType = []
     files.value = []

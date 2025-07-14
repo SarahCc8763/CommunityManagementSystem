@@ -56,7 +56,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 const fileInput = ref(null) // 綁定 ref
@@ -148,7 +148,7 @@ async function deletePoll() {
     });
 
     if (result.isConfirmed) {
-        axios.delete(`http://localhost:8080/api/poll/delete/${props.poll.id}`)
+        axios.delete(`/api/poll/delete/${props.poll.id}`)
             .then(() => {
                 emit('updated')
                 emit('update:visible', false)
@@ -187,7 +187,7 @@ function submitEdit() {
     // //console.log(data);
     // //console.log(props.poll.id);
 
-    axios.put(`http://localhost:8080/api/poll/${props.poll.id}`, data)
+    axios.put(`/api/poll/${props.poll.id}`, data)
         .then(() => {
             emit('updated')
             emit('update:visible', false)
@@ -225,7 +225,7 @@ function submitPost() {
     // //console.log(data);
     // //console.log(props.poll.id);
 
-    axios.post(`http://localhost:8080/api/bulletin/${props.bulletinId}/poll`, data)
+    axios.post(`/api/bulletin/${props.bulletinId}/poll`, data)
         .then(() => {
             emit('updated')
             emit('update:visible', false)

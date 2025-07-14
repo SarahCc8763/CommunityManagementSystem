@@ -105,7 +105,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+
 import FaqFormModal from '@/components/faq/FaqFormModal.vue'
 import FaqCategoryModal from '@/components/faq/FaqCategoryModal.vue'
 import Swal from 'sweetalert2'
@@ -115,6 +115,10 @@ import { useUserStore } from '@/stores/UserStore'
 const userStore = useUserStore()
 const userId = userStore.id || 0 // 假設當前使用者 id
 const communityId = userStore.communityId || 0 // 假設當前社區 ID
+import axios from '@/plugins/axios'
+import FaqFormModal from '@/components/faq/FaqFormModal.vue'
+import FaqCategoryModal from '@/components/faq/FaqCategoryModal.vue'
+import Swal from 'sweetalert2'
 
 const fullfaqList = ref([])
 const faqList = ref([])
@@ -129,7 +133,6 @@ const searchKeyword = ref('')
 const showFaqModal = ref(false)
 const editingFaq = ref(null)
 const showCategoryModal = ref(false)
-
 
 
 const openEditModal = (faq) => {
@@ -158,7 +161,7 @@ const confirmDelete = async (faqId) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`http://localhost:8080/api/faq/${faqId}`)
+            await axios.delete(`/api/faq/${faqId}`)
             await fetchFaqs()
             Swal.fire('刪除成功', '', 'success')
         } catch (err) {
@@ -190,8 +193,8 @@ const fetchFaqs = async () => {
     loading.value = true
     try {
         const [faqRes, categoryRes] = await Promise.all([
-            axios.get(`http://localhost:8080/api/faq/community/${communityId}`),
-            axios.get(`http://localhost:8080/api/faq/${communityId}/category`)
+            axios.get(`/api/faq/community/${communityId}`),
+            axios.get(`/api/faq/${communityId}/category`)
         ])
 
         const categoryOrder = categoryRes.data || []
@@ -226,7 +229,7 @@ const searchFaqs = async () => {
 
 
     try {
-        const res = await axios.post('http://localhost:8080/api/faq/searchbykeyword', requestBody)
+        const res = await axios.post('/api/faq/searchbykeyword', requestBody)
         if (res.data.success) {
             // ✅ 重新依分類順序排序
             const categoryOrder = categories.value

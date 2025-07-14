@@ -191,7 +191,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import bannerImg from '@/assets/images/main/adminBanner.jpg'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';

@@ -27,7 +27,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const form = ref({
   invoiceId: null,
@@ -53,5 +53,7 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.container { max-width: 500px; }
-</style> 
+.container {
+  max-width: 500px;
+}
+</style>

@@ -68,6 +68,12 @@ public class Ticket {
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
 
+<<<<<<< HEAD
+=======
+	@Transient
+	private String assignerName;
+
+>>>>>>> f2124abef565dd2e30a73146685f0bf33e28bcf4
 	// @Transient
 	// private String assignerName;
 
@@ -109,6 +115,15 @@ public class Ticket {
 				+ ", startDate=" + startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
 	}
 
+	public String getAssignerName() {
+
+		if (assignerId != null) {
+			assignerName = assignerId.getName();
+		}
+		return assignerName;
+	}
+
+	
 	public List<IssueTypeAndTicket> getIssueTypes() {
 		return issueTypes;
 	}
@@ -266,5 +281,10 @@ public class Ticket {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+
+
+
+
 
 }
