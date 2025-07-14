@@ -19,44 +19,44 @@ import jakarta.persistence.Table;
 @Table(name = "point_transactions")
 public class PointTransactionsBean {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
-    private Integer transactionId;
-    
-    @ManyToOne
-    @JoinColumn(name = "community_id", referencedColumnName = "id")
-    @JsonBackReference("point-transactions")
-    private Community community;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "transaction_id")
+	private Integer transactionId;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id", referencedColumnName = "units_id")
-    @JsonBackReference("unit-transactions")
-    private Units unit;
+	@ManyToOne
+	@JoinColumn(name = "community_id", referencedColumnName = "id")
+	@JsonBackReference("point-transactionsC")
+	private Community community;
 
-    @Column(name = "transaction_type", nullable = false)
-    private String transactionType;
+	@ManyToOne
+	@JoinColumn(name = "unit_id", referencedColumnName = "units_id")
+	@JsonBackReference("unit-transactions")
+	private Units unit;
 
-    @Column(name = "amount", nullable = false)
-    private Integer amount;
+	@Column(name = "transaction_type", nullable = false)
+	private String transactionType;
 
-    @Column(name = "related_unit_id")
-    private Integer relatedUnitId;
-    
-    @ManyToOne
-    @JoinColumn(name = "related_reservation_id", referencedColumnName = "reservation_id")
-    @JsonBackReference("point-transactions")
-    private FacilityReservationsBean reservation;
+	@Column(name = "amount", nullable = false)
+	private Integer amount;
 
-    @Column(name = "transaction_description")
-    private String transactionDescription;
+	@Column(name = "related_unit_id")
+	private Integer relatedUnitId;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+	@ManyToOne
+	@JoinColumn(name = "related_reservation_id", referencedColumnName = "reservation_id")
+	@JsonBackReference("point-transactions")
+	private FacilityReservationsBean reservation;
 
-    // ----------- Getter / Setter ------------
+	@Column(name = "transaction_description")
+	private String transactionDescription;
 
-    public Integer getTransactionId() {
+	@Column(name = "created_at")
+	private LocalDateTime createdAt = LocalDateTime.now();
+
+	// ----------- Getter / Setter ------------
+
+	public Integer getTransactionId() {
 		return transactionId;
 	}
 
@@ -127,20 +127,20 @@ public class PointTransactionsBean {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-	
+
 	// ----------- toString ------------
-    @Override
-    public String toString() {
-        return "PointTransactionBean{" +
-                "transactionId=" + transactionId +
-                ", communityId=" + (community != null ? community.getCommunityId() : null) +
-                ", unitId=" + (unit != null ? unit.getUnitsId() : null) +                
-                ", changeType='" + transactionType + '\'' +
-                ", amount=" + amount +
-                ", relatedUnitId=" + relatedUnitId +
-                ", reservationId=" + (reservation != null ? reservation.getReservationId() : null) +
-                ", transactionDescription='" + transactionDescription + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "PointTransactionBean{" +
+				"transactionId=" + transactionId +
+				", communityId=" + (community != null ? community.getCommunityId() : null) +
+				", unitId=" + (unit != null ? unit.getUnitsId() : null) +
+				", changeType='" + transactionType + '\'' +
+				", amount=" + amount +
+				", relatedUnitId=" + relatedUnitId +
+				", reservationId=" + (reservation != null ? reservation.getReservationId() : null) +
+				", transactionDescription='" + transactionDescription + '\'' +
+				", createdAt=" + createdAt +
+				'}';
+	}
 }

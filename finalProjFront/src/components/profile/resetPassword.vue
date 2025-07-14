@@ -73,7 +73,7 @@ const handleResetPassword = async () => {
   }
 
   try {
-    const response = await axios.post(`${path}/users/resetPassword`, {
+    const response = await axios.post(`/users/resetPassword`, {
       "email": form.value.email,
       "newPassword": form.value.password
     })

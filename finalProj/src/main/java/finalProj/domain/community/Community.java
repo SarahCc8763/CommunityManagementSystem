@@ -143,7 +143,7 @@ public class Community {
 	private List<PointAccountsBean> pointAccounts;
 
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("point-transactions")
+	@JsonManagedReference("point-transactionsC")
 	private List<PointTransactionsBean> pointTransactions;
 
 	// --- javert關聯 end ---

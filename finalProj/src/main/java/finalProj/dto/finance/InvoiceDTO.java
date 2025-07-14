@@ -12,7 +12,6 @@ import lombok.Data;
 public class InvoiceDTO {
     private Integer invoiceId;
     private BigDecimal amountDue;
-    private String periodName;
     private LocalDateTime deadline;
     private String paymentPlan;
     private BigDecimal unitCount;
@@ -20,23 +19,22 @@ public class InvoiceDTO {
     private BigDecimal totalAmount;
     private String paymentStatus;
     private String note;
+    private String periodName;
 
-    // 巢狀物件
     private UserSimpleDTO user;
     private FeeTypeDTO feeType;
     private BillingPeriodDTO billingPeriod;
     private ReceiptDTO receipt;
 
-    // BaseEntity
     private Integer communityId;
     private Integer createdBy;
     private Integer updatedBy;
 
-    // 建構子：可接受 Invoice Entity 自動轉換
+    private List<InvoiceResponseDTO> invoiceResponses;
+
     public InvoiceDTO(finalProj.domain.finance.Invoice i) {
         this.invoiceId = i.getInvoiceId();
         this.amountDue = i.getAmountDue();
-        this.periodName = i.getPeriodName();
         this.deadline = i.getDeadline();
         this.paymentPlan = i.getPaymentPlan();
         this.unitCount = i.getUnitCount();
@@ -56,27 +54,23 @@ public class InvoiceDTO {
         }
         if (i.getBillingPeriod() != null) {
             this.billingPeriod = new BillingPeriodDTO(i.getBillingPeriod());
+            this.periodName = i.getBillingPeriod().getPeriodName(); // ✅ 正確來源
         }
-        // 補上 invoiceResponses 轉 DTO
+
         if (i.getInvoiceResponses() != null) {
             this.invoiceResponses = i.getInvoiceResponses().stream()
                     .map(InvoiceResponseDTO::new)
                     .collect(Collectors.toList());
-        }
-        if (this.invoiceResponses == null)
+        } else {
             this.invoiceResponses = new ArrayList<>();
+        }
+
+        System.out.println("InvoiceDTO from invoiceId = " + i.getInvoiceId() + ", status = " + i.getPaymentStatus());
+        System.out.println("invoiceId=" + i.getInvoiceId()
+                + ", periodName=" + this.periodName
+                + ", billingPeriod=" + (this.billingPeriod != null ? this.billingPeriod.getPeriodName() : "null"));
     }
 
     public InvoiceDTO() {
     }
-
-    public List<InvoiceResponseDTO> getInvoiceResponses() {
-        return invoiceResponses;
-    }
-
-    public void setInvoiceResponses(List<InvoiceResponseDTO> invoiceResponses) {
-        this.invoiceResponses = invoiceResponses;
-    }
-
-    private List<InvoiceResponseDTO> invoiceResponses;
 }

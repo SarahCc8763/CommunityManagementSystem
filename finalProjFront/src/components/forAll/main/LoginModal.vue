@@ -86,6 +86,7 @@
 
           <!-- 驗證碼 -->
           <!-- <div class="input-group">
+          <div class="input-group">
             <div class="captcha-container">
               <div class="input-wrapper captcha-input">
                 <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -297,7 +298,7 @@ const handleLogin = async () => {
       "email": form.value.username,
       "password": form.value.password
     })
-
+    console.log(response);
     // 後端成功回傳
     if (response.data.success) {
       // remember me

@@ -77,6 +77,13 @@ const router = createRouter({
   routes: [
 
     {
+      path: '/adminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard,
+      meta: { dark: true },
+
+    },
+    {
       path: '/',
       name: 'home',
       component: Home,

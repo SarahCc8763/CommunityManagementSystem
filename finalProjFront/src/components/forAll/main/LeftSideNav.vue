@@ -11,7 +11,8 @@
           <div class="member-info-texts">
             <div class="user-name">{{ UserStore.name }}</div>
             <div class="user-row">
-              <span class="user-username">@{{ UserStore.username }}</span>
+              <span class="user-username">{{ UserStore.username }}</span>
+
               <span class="user-badge">一般會員</span>
             </div>
           </div>
@@ -243,8 +244,13 @@ onUnmounted(() => {
 
 .user-row {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+
+
+
+  flex-direction: column;
+  align-items: flex-start;
+
+
   gap: 8px;
 }
 
@@ -270,7 +276,7 @@ onUnmounted(() => {
   width: 100%;
   justify-content: space-between;
   gap: 12px;
-  margin: 12px 0 0 0;
+  margin: 12px 0 0 20px;
 }
 
 .quick-action-card {
@@ -305,7 +311,8 @@ onUnmounted(() => {
 }
 
 .logout-btn-wrapper {
-  margin-top: 32px;
+  margin-top: 12px;
+
   padding-top: 0;
   display: flex;
   justify-content: flex-end;
@@ -314,6 +321,7 @@ onUnmounted(() => {
 .logout-button.no-border-logout {
   width: 100%;
   margin-top: 0;
+
   background: #fff;
   color: #5a67d8;
   border: 2px solid #5a67d8;
@@ -641,13 +649,13 @@ onUnmounted(() => {
 
   .user-name,
   .placeholder-title {
-    font-size: 13px;
+    font-size: 10px;
   }
 
   .user-username,
   .user-badge,
   .placeholder-subtitle {
-    font-size: 10px;
+    font-size: 3px;
   }
 
   .quick-actions-row {

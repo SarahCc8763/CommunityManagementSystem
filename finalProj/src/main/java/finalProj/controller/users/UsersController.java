@@ -65,6 +65,8 @@ public class UsersController {
 	public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
 		String email = body.get("email");
 		String password = body.get("password");
+		System.out.println("Login request: " + email + " / " + password);
+
 		// 嘗試登入
 		Users user = usersService.login(email, password);
 		// 登入成功

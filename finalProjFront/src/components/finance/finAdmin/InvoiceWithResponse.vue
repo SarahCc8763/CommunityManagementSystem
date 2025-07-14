@@ -3,9 +3,9 @@
     <!-- 查詢區塊 -->
     <div class="filter-bar mb-3">
       <label class="me-2">期別：</label>
-      <input v-model="filter.periodName" class="form-control d-inline-block w-auto me-3" placeholder="請輸入期別" />
+      <input v-model="filter.periodName" class="form-control d-inline-block w-auto me-3" placeholder="ex:2025年10月" />
       <label class="me-2">費用類別：</label>
-      <input v-model="filter.feeType" class="form-control d-inline-block w-auto me-3" placeholder="請輸入費用類別" />
+      <input v-model="filter.feeType" class="form-control d-inline-block w-auto me-3" placeholder="ex:清潔費" />
       <label class="me-2">逾期：</label>
       <select v-model="filter.overdue" class="form-select d-inline-block w-auto me-3">
         <option value="">全部</option>
@@ -43,11 +43,11 @@
           <div v-for="res in inv.invoiceResponses" :key="res.invoiceResponseId"
             class="response-card d-flex align-items-center mb-2">
             <div class="flex-grow-1">
-            <div>留言：{{ res.lastResponse }}</div>
-            <div>末五碼：{{ res.accountCode }}</div>
-            <div>時間：{{ res.lastResponseTime }}</div>
-           
-            <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
+              <div>留言：{{ res.lastResponse }}</div>
+              <div>末五碼：{{ res.accountCode }}</div>
+              <div>時間：{{ res.lastResponseTime }}</div>
+
+              <div v-if="isOverdue(inv.deadline)"><span class="badge bg-danger">逾期</span></div>
             </div>
           </div>
         </div>
@@ -55,41 +55,45 @@
       </div>
     </div>
     <!-- 收據 modal 區塊（兩階段：送出表單/正式收據卡片） -->
-    <div v-if="showReceiptModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);">
+    <div v-if="showReceiptModal"
+      style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);">
       <div class="dark-modal-card">
         <template v-if="!receiptDetail">
           <h4>產生收據</h4>
           <div>發票ID：{{ receiptForm.invoiceId }}</div>
           <div>金額：{{ receiptForm.amountPay }}</div>
-          <div>住戶姓名：{{ selectedInvoice.value?.user?.name || '-' }}</div>
-          <div>地址：{{ selectedInvoice.value?.user?.address || '-' }}</div>
-          <div>費用類型：{{ selectedInvoice.value?.feeType?.description || '-' }}</div>
-          <div>期別：{{ selectedInvoice.value?.billingPeriod?.periodName || '-' }}</div>
-          <div>備註：{{ selectedInvoice.value?.note || '-' }}</div>
+          <div>住戶姓名：{{ selectedInvoice.user?.name || '-' }}</div>
+          <div>地址：{{ selectedInvoice.user?.address || '-' }}</div>
+          <div>費用類型：{{ selectedInvoice.feeType?.description || '-' }}</div>
+          <div>期別：{{ selectedInvoice.billingPeriod?.periodName || '-' }}</div>
+          <div>備註：{{ selectedInvoice.note || '-' }}</div>
           <!-- 其餘表單內容可擴充 -->
           <button class="btn btn-primary me-2" @click="submitReceipt">送出收據</button>
           <button class="btn btn-secondary" @click="closeReceiptModal">取消</button>
         </template>
         <template v-else>
-          <div class="receipt-title" style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:18px;">{{ communityName }} 收據</div>
+          <div class="receipt-title" style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:18px;">{{
+            communityName }} 收據</div>
           <div class="receipt-row"><span>收據號碼：</span>{{ receiptDetail.receiptNum || receiptDetail.receiptId }}</div>
           <div class="receipt-row"><span>住戶姓名：</span>{{ receiptDetail.userName }}</div>
           <div class="receipt-row"><span>地址：</span>{{ receiptDetail.address }}</div>
           <div class="receipt-row"><span>發票ID：</span>{{ receiptDetail.invoiceId }}</div>
           <div class="receipt-row"><span>費用類型：</span>{{ receiptDetail.feeType }}</div>
           <div class="receipt-row"><span>期別：</span>{{ receiptDetail.periodName }}</div>
-          <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{ receiptDetail.amountPay?.toLocaleString() }}</b></div>
+          <div class="receipt-row"><span>實付金額：</span><b class="text-danger">NT$ {{
+            receiptDetail.amountPay?.toLocaleString() }}</b></div>
           <div class="receipt-row"><span>付款方式：</span>{{ receiptDetail.paymentMethod }}</div>
           <div class="receipt-row"><span>付款時間：</span>{{ formatDate(receiptDetail.paidAt) }}</div>
           <div class="receipt-row"><span>扣款時間：</span>{{ formatDate(receiptDetail.debitAt) }}</div>
           <div class="receipt-row"><span>備註：</span>{{ receiptDetail.note }}</div>
           <div class="receipt-row"><span>經手人：</span>{{ receiptDetail.createdBy || '管理員' }}</div>
-          <div class="receipt-footer" style="margin-top:24px;text-align:right;font-size:1.1rem;">收款日期：{{ formatDate(receiptDetail.createdAt) }}　　收款人簽章：</div>
+          <div class="receipt-footer" style="margin-top:24px;text-align:right;font-size:1.1rem;">收款日期：{{
+            formatDate(receiptDetail.createdAt) }}　　收款人簽章：</div>
           <div class="mt-3 d-flex justify-content-end">
             <button class="btn btn-outline-primary me-2" @click="printReceipt">列印收據</button>
             <button class="btn btn-outline-success me-2" @click="downloadPDF">下載PDF</button>
             <button class="btn btn-secondary" @click="closeReceiptModal">關閉</button>
-      </div>
+          </div>
         </template>
       </div>
     </div>
@@ -97,11 +101,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, computed } from 'vue'
 import axiosapi from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
-import Swal from 'sweetalert2'
 import html2pdf from 'html2pdf.js'
+import Swal from 'sweetalert2'
+import { computed, onMounted, reactive, ref } from 'vue'
 const userStore = useUserStore()
 const invoices = ref([])
 const receiptDetail = ref(null)
@@ -143,7 +147,7 @@ const filteredInvoices = computed(() => {
   if (!Array.isArray(invoices.value)) return []
   // 只顯示 paymentStatus 為 unpaid 或 pending，且有回覆的 invoice
   return invoices.value.filter(inv => {
-    const statusOk = inv.paymentStatus === 'unpaid' || inv.paymentStatus === 'pending'
+    const statusOk = ['unpaid', 'pending'].includes(inv.paymentStatus)
     const hasResponse = Array.isArray(inv.invoiceResponses) && inv.invoiceResponses.length > 0
     // 篩選期別（模糊比對）
     const matchPeriod = filter.periodName === '' || (inv.billingPeriod?.periodName || '').includes(filter.periodName)
@@ -200,9 +204,12 @@ function openReceiptModal(invoice, userId) {
   receiptForm.installments = ''
   receiptForm.note = ''
   receiptForm.status = false
+  receiptForm.users_id = invoice.user?.usersId || null
   successMsg.value = ''
   errorMsg.value = ''
   receiptDetail.value = null
+  console.log(selectedInvoice.value);
+  console.log('invoice.user =', invoice.user);
 }
 
 function closeReceiptModal() {
@@ -220,15 +227,20 @@ async function submitReceipt() {
     paidAt = selectedInvoice.value.invoiceResponses[0].lastResponseTime || null
   }
   const payload = {
+    users_id: receiptForm.users_id || null,
+    updated_by: userStore.userId,
     invoiceId: receiptForm.invoiceId,
     paymentMethod: receiptForm.paymentMethod,
     paidAt: paidAt,
-    debitAt: null, // 由後端自動產生
+    debitAt: new Date().toISOString(),
     amountPay: receiptForm.amountPay,
     installments: receiptForm.installments,
-    note: receiptForm.note
+    note: receiptForm.note,
+    createdBy: userStore.userId,           // ✅ 管理員的 userId
+    createdAt: new Date().toISOString(),
+    communityId: userStore.communityId,
   }
-  console.log('submitReceipt payload', JSON.stringify(payload))
+  console.log('submitReceipt payload', payload)
   try {
     // 1. 新增收據
     const res = await axiosapi.post('/finance/receipts', payload)
@@ -393,6 +405,13 @@ select.form-select:focus {
   border-color: #888;
 }
 
+input::placeholder {
+  color: #808080;
+
+  opacity: 1;
+
+}
+
 .btn,
 .btn:focus,
 .btn:active {
@@ -452,6 +471,7 @@ span,
 div {
   color: #e0e0e0;
 }
+
 .dark-modal-card {
   background: #23272b;
   color: #e0e0e0;
@@ -462,52 +482,62 @@ div {
   box-shadow: 0 4px 32px #000a;
   z-index: 10000;
 }
+
 .dark-modal-card h4 {
   color: #90caf9;
 }
+
 .dark-modal-card .btn {
   background: #23272b;
   color: #e0e0e0;
   border: 1px solid #444;
   transition: background 0.2s, color 0.2s;
 }
+
 .dark-modal-card .btn-primary {
   background: #1976d2;
   border-color: #1976d2;
   color: #fff;
 }
+
 .dark-modal-card .btn-primary:hover,
 .dark-modal-card .btn-primary:active {
   background: #1565c0;
   border-color: #1565c0;
   color: #fff;
 }
+
 .dark-modal-card .btn-secondary {
   background: #23272b;
   color: #b0b0b0;
   border: 1px solid #444;
 }
+
 .dark-modal-card .btn-secondary:hover,
 .dark-modal-card .btn-secondary:active {
   background: #181a1b;
   color: #fff;
 }
+
 .dark-modal-card .btn-outline-primary {
   color: #90caf9;
   border-color: #90caf9;
   background: transparent;
 }
+
 .dark-modal-card .btn-outline-primary:hover,
 .dark-modal-card .btn-outline-primary:active {
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
 }
+
 .dark-modal-card .btn-outline-success {
   color: #b9f6ca;
   border-color: #43a047;
   background: transparent;
 }
+
 .dark-modal-card .btn-outline-success:hover,
 .dark-modal-card .btn-outline-success:active {
   background: #388e3c;

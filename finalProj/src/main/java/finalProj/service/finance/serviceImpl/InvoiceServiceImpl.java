@@ -97,7 +97,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public List<InvoiceDTO> findUnpaidInvoicesByCommunityId(Integer communityId) {
         List<Invoice> list = invoiceRepository.findByCommunityIdAndPaymentStatus(communityId, "unpaid");
         return list.stream()
-                .map(this::toDTO)
+                .map(InvoiceDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -110,14 +110,14 @@ public class InvoiceServiceImpl implements InvoiceService {
     public List<InvoiceDTO> findUnpaidInvoicesByUserId(Integer usersId) {
         return invoiceRepository.findByUsers_UsersIdAndPaymentStatusIgnoreCase(usersId, "unpaid")
                 .stream()
-                .map(this::toDTO)
+                .map(InvoiceDTO::new) // ✅ 統一走 DTO 建構子
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<InvoiceDTO> findUnpaidOrPendingInvoicesByUserId(Integer userId) {
         return invoiceRepository.findUnpaidOrPendingByUserId(userId)
-                .stream().map(this::toDTO).collect(java.util.stream.Collectors.toList());
+                .stream().map(InvoiceDTO::new).collect(java.util.stream.Collectors.toList());
     }
 
     private InvoiceDTO toDTO(Invoice invoice) {
@@ -127,7 +127,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         InvoiceDTO dto = new InvoiceDTO();
         dto.setInvoiceId(invoice.getInvoiceId());
         dto.setAmountDue(invoice.getAmountDue());
-        dto.setPeriodName(invoice.getPeriodName());
+
         dto.setDeadline(invoice.getDeadline());
         dto.setPaymentPlan(invoice.getPaymentPlan());
         dto.setUnitCount(invoice.getUnitCount());
@@ -138,6 +138,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setCommunityId(invoice.getCommunityId());
         dto.setCreatedBy(invoice.getCreatedBy());
         dto.setUpdatedBy(invoice.getUpdatedBy());
+        dto.setPeriodName(invoice.getBillingPeriod().getPeriodName());
 
         // 巢狀物件處理（視情況而定，以下為空值判斷）
         if (invoice.getUsers() != null) {

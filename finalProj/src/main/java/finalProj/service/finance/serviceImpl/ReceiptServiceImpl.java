@@ -1,5 +1,6 @@
 package finalProj.service.finance.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,12 +50,17 @@ public class ReceiptServiceImpl implements ReceiptService {
         Receipt receipt = new Receipt();
         receipt.setInvoice(invoice);
         receipt.setReceiptNum(generateReceiptNum());
-        receipt.setPaymentMethod(dto.getPaymentMethod());
-        receipt.setPaidAt(dto.getPaidAt());
-        receipt.setDebitAt(dto.getDebitAt());
         receipt.setAmountPay(dto.getAmountPay());
         receipt.setInstallments(dto.getInstallments());
         receipt.setNote(dto.getNote());
+        receipt.setPaidAt(dto.getPaidAt());
+        receipt.setDebitAt(dto.getDebitAt());
+        receipt.setPaymentMethod(dto.getPaymentMethod());
+        receipt.setCreatedBy(dto.getCreatedBy());
+        receipt.setCreatedAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now());
+
+        receipt.setCommunityId(dto.getCommunityId());
+        receipt.setStatus(dto.getStatus() != null ? dto.getStatus() : false);
 
         Receipt saved = receiptRepository.save(receipt);
         return toDTO(saved);

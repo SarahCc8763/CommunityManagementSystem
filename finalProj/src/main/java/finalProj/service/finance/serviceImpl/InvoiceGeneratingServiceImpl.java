@@ -85,7 +85,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setUsers(user);
             invoice.setFeeType(feeType);
             invoice.setBillingPeriod(billingPeriod);
-            invoice.setPeriodName(billingPeriod.getPeriodName());
+
             invoice.setDeadline(billingPeriod.getDueDate());
             invoice.setUnitCount(unitCount);
             invoice.setUnitPrice(unitPrice);
