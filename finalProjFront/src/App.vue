@@ -25,6 +25,8 @@
     </main>
 
     <FooterAll />
+
+    <!-- 登入模態框 -->
     <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
   </div>
 </template>
@@ -38,48 +40,77 @@
 
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute, RouterView } from 'vue-router'
+//功能類import
+import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
-import HeaderAll from './components/forAll/main/HeaderAll.vue'
-import FooterAll from './components/forAll/main/FooterAll.vue'
-import LoginModal from './components/forAll/main/LoginModal.vue'
-import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
-import RightSideNav from './components/forAll/main/RightSideNav.vue'
+
+//固定的頁首頁尾以及側邊欄位
+import FooterAll from './components/forAll/main/FooterAll.vue';
+import LoginModal from './components/forAll/main/LoginModal.vue';
+import HeaderAll from './components/forAll/main/HeaderAll.vue';
+import RightSideNav from './components/forAll/main/RightSideNav.vue';
+import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
+
+import { useRoute } from 'vue-router'  // ✅ 加上這行
+const route = useRoute()
+
 
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
-const route = useRoute()
 
 // ✅ 只判斷 meta.dark
 const isDarkMode = computed(() => route.meta?.dark === true)
+const handleShowLoginModal = () => {
+  showLogin.value = true
+}
 
-user.login({
-  name: '王小明',
-  username: 'ming123',
-  avatarUrl: 'https://i.pravatar.cc/100?img=13'
-})
 
+// 處理登入成功
+window.dispatchEvent(new Event('refresh-community-functions'))
+// }
 const handleLoginSuccess = (loginData) => {
-  user.login({
-    name: loginData.username,
-    username: loginData.username,
-    avatarUrl: 'https://i.pravatar.cc/100?img=13'
-  })
+  user.login(loginData) // ✅ 傳整包 payload，不要自己手動塞東西
   showLogin.value = false
+
+  // 讓其他元件知道登入完成
   window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
+  window.dispatchEvent(new Event('refresh-community-functions')) // ✅ 即時刷新 header 功能
+  console.log(loginData)
+}
+
+// 處理登出
+const handleLogout = () => {
+  // 這裡可以添加登出時的清理邏輯
+  console.log('用戶已登出')
 }
 
 onMounted(() => {
-  window.addEventListener('show-login-modal', () => (showLogin.value = true))
-  window.addEventListener('logout', () => console.log('用戶已登出'))
+  window.addEventListener('show-login-modal', handleShowLoginModal)
+  window.addEventListener('logout', handleLogout)
 })
+
 onUnmounted(() => {
-  window.removeEventListener('show-login-modal', () => (showLogin.value = true))
-  window.removeEventListener('logout', () => console.log('用戶已登出'))
+  window.removeEventListener('show-login-modal', handleShowLoginModal)
+  window.removeEventListener('logout', handleLogout)
+  const route = useRoute()
 })
+
+
+
+
+// const handleLoginSuccess = (loginData) => {
+//   user.login({
+//     name: loginData.username,
+//     username: loginData.username,
+//     avatarUrl: 'https://i.pravatar.cc/100?img=13'
+//   })
+//   showLogin.value = false
+//   window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
+// }
+
 </script>
 
 

@@ -95,7 +95,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 

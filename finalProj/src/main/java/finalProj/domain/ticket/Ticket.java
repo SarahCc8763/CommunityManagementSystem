@@ -68,6 +68,9 @@ public class Ticket {
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
 
+	@Transient
+	private String assignerName;
+
 	// @Transient
 	// private String assignerName;
 
@@ -107,6 +110,14 @@ public class Ticket {
 				+ ", assignerId=" + assignerId + ", title=" + title + ", status=" + status + ", issueDescription="
 				+ issueDescription + ", cost=" + cost + ", actionTime=" + actionTime + ", actionBy=" + actionBy
 				+ ", startDate=" + startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
+	}
+
+	public String getAssignerName() {
+
+		if (assignerId != null) {
+			assignerName = assignerId.getName();
+		}
+		return assignerName;
 	}
 
 	public List<IssueTypeAndTicket> getIssueTypes() {

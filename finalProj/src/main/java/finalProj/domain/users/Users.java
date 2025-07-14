@@ -98,7 +98,7 @@ public class Users {
 	private LocalDateTime accountLockedUntil;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	// @JsonManagedReference("unitsUsers")
+	@JsonManagedReference("unitsUsers")
 	@JsonIgnore
 	private List<UnitsUsers> unitsUsersList;
 
