@@ -26,12 +26,12 @@ public class PointTransactionsBean {
     
     @ManyToOne
     @JoinColumn(name = "community_id", referencedColumnName = "id")
-    @JsonBackReference("point-transactions")
+    @JsonBackReference("community-pointTransactions")
     private Community community;
 
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "units_id")
-    @JsonBackReference("unit-transactions")
+    @JsonBackReference("units-pointTransactions")
     private Units unit;
 
     @Column(name = "transaction_type", nullable = false)
@@ -45,7 +45,7 @@ public class PointTransactionsBean {
     
     @ManyToOne
     @JoinColumn(name = "related_reservation_id", referencedColumnName = "reservation_id")
-    @JsonBackReference("point-transactions")
+    @JsonBackReference("facilityReservations-pointTransactions")
     private FacilityReservationsBean reservation;
 
     @Column(name = "transaction_description")

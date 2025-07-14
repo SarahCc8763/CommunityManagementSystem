@@ -31,7 +31,7 @@ public class FacilitiesBean {
 		
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
-	@JsonBackReference("facilities")
+	@JsonBackReference("community-facilities")
 	private Community community;	
 
 	@Column(name = "facility_name", nullable = false)
@@ -68,11 +68,11 @@ public class FacilitiesBean {
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("facility-images")
+	@JsonManagedReference("facilities-facilityImages")
 	private List<FacilityImagesBean> images;
 
 	@OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("facility-reservations")
+	@JsonManagedReference("facilities-facilityReservations")
 	private List<FacilityReservationsBean> reservations;
 
 	// ---------- Getter & Setter ----------

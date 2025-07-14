@@ -77,17 +77,17 @@ public class Units {
 
 	// 對應 facility_reservations 單位預約（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-reservations")
+	@JsonManagedReference("units-facilityReservations")
 	private List<FacilityReservationsBean> reservations;
 
 	// 對應 point_accounts 一對一帳戶關聯：
 	@OneToOne(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-account")
+	@JsonManagedReference("units-pointAccounts")
 	private PointAccountsBean pointAccount;
 
 	// 對應 point_transactions 點數異動紀錄（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-transactions")
+	@JsonManagedReference("units-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
 
 	// --- javert的關聯 END ---

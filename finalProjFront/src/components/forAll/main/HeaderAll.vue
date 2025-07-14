@@ -35,7 +35,7 @@
 
     <!-- 使用者區塊 -->
     <div class="user-info">
-      <div class="welcome-block" v-if="isLoggedIn">
+      <div class="welcome-block" v-if="userStore.isAuthenticated">
         <span class="welcome">你好，{{ userStore.name }}</span>
         <span class="points">{{ facilitiesStore.totalBalance }} pt</span>
       </div>
