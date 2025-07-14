@@ -704,7 +704,7 @@
             <div class="user-name">{{ UserStore.name }}</div>
             <div class="user-row">
               <span class="user-username">@{{ UserStore.username }}</span>
-              <span class="user-badge">管理員</span>
+              <span class="user-badge">{{ UserStore.roleId === 2 ? '管理員' : '一般會員' }}</span>
             </div>
           </div>
         </div>

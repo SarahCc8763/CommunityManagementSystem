@@ -183,7 +183,6 @@ const captchaText = ref('')
 const closeModal = () => {
   emit('close')
   // resetForm()
-  resetForm()
 }
 
 // 重置表單
