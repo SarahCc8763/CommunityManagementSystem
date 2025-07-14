@@ -19,6 +19,7 @@ import InvoiceAdd from '@/components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceValidate from '@/components/finance/finAdmin/InvoiceValidate.vue'
 import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponse.vue'
 import ReceiptAdd from '@/components/finance/finAdmin/ReceiptAdd.vue'
+import Dashboard from '@/components/finance/finAdmin/Dashboard.vue'
 
 
 // 📌 首頁
@@ -132,6 +133,12 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/admin-dashboard',
+      name: 'FinAdminDashboard',
+      component: Dashboard,
       meta: { dark: true },
     },
     ////fin-user

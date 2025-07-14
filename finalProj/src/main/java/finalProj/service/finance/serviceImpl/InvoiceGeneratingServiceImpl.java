@@ -17,6 +17,7 @@ import finalProj.repository.finance.FeeTypeRepository;
 import finalProj.repository.finance.InvoiceRepository;
 import finalProj.repository.users.UnitsRepository;
 import finalProj.repository.users.UnitsUsersRepository;
+import finalProj.repository.users.UsersRepository;
 import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
 import jakarta.transaction.Transactional;
 
@@ -41,6 +42,9 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     @Transactional
     public Boolean generateInvoices(Integer feeTypeId, Integer billingPeriodId, Integer createdBy) {
@@ -106,5 +110,41 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
 
         }
         return true;
+    }
+
+    // 新增：批次產生請款單
+    @Override
+    @Transactional
+    public void batchGenerateInvoices(Integer billingPeriodId, Integer feeTypeId, List<Integer> userIds,
+            Integer createdBy) {
+        FeeType feeType = feeTypeRepository.findById(feeTypeId)
+                .orElseThrow(() -> new IllegalArgumentException("無效的費用類別ID: " + feeTypeId));
+        BillingPeriod billingPeriod = billingPeriodRepository.findById(billingPeriodId)
+                .orElseThrow(() -> new IllegalArgumentException("無效的期別ID: " + billingPeriodId));
+        for (Integer userId : userIds) {
+            Users user = usersRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("無效的用戶ID: " + userId));
+            // 這裡可根據費用類型決定單位數
+            java.math.BigDecimal unitCount = java.math.BigDecimal.ONE;
+            java.math.BigDecimal unitPrice = feeType.getAmountPerUnit();
+            java.math.BigDecimal totalAmount = unitCount.multiply(unitPrice);
+
+            Invoice invoice = new Invoice();
+            invoice.setCreatedBy(createdBy);
+            invoice.setUsers(user);
+            invoice.setFeeType(feeType);
+            invoice.setBillingPeriod(billingPeriod);
+            invoice.setDeadline(billingPeriod.getDueDate());
+            invoice.setUnitCount(unitCount);
+            invoice.setUnitPrice(unitPrice);
+            invoice.setTotalAmount(totalAmount);
+            invoice.setAmountDue(totalAmount);
+            invoice.setPaymentStatus("unpaid");
+            invoice.setCommunityId(feeType.getCommunityId());
+            invoice.setStatus(false);
+            invoice.setNote("batch generated");
+            invoice.setCreatedAt(LocalDateTime.now());
+            invoiceRepository.save(invoice);
+        }
     }
 }
