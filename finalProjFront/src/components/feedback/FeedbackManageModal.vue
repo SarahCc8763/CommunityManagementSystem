@@ -34,8 +34,8 @@
                             <div class="col-sm-3">
                                 <select v-model="status" class="form-select bg-status ">
                                     <option value="待處理">待處理</option>
-                                    <option value="處理中">處理中</option>
                                     <option value="確認中">確認中</option>
+                                    <option value="處理中">處理中</option>
                                     <option value="已結案">已結案</option>
                                 </select>
                             </div>

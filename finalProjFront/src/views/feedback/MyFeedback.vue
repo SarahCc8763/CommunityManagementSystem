@@ -346,7 +346,6 @@ const submitRating = async (feedback) => {
 
 
 const fetchData = () => {
-    const userId = 1 // localStorage.getItem('userId')
     if (!userId) {
         error.value = '找不到使用者資訊，請重新登入。'
         return

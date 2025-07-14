@@ -32,4 +32,8 @@ public class FeedbackStatusHistoryService {
     public void deleteById(Integer id) {
         feedbackStatusHistoryRepository.deleteById(id);
     }
+
+    public List<FeedbackStatusHistory> findByFeedback_Id(Integer feedbackId) {
+        return feedbackStatusHistoryRepository.findByFeedback_Id(feedbackId);
+    }
 }

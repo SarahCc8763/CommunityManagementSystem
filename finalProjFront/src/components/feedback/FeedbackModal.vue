@@ -71,7 +71,7 @@ const form = reactive({
     title: '',
     description: '',
     category: { id: '' },
-    user: { usersId: userStore.usersId },
+    user: { usersId: userStore.userId },
     community: { communityId: userStore.communityId },
 })
 
