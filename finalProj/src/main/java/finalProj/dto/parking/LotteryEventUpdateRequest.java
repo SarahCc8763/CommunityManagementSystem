@@ -10,8 +10,10 @@ public class LotteryEventUpdateRequest {
 	private Integer id;
 
 	private String title;
-	
+
 	private String typeName;
+
+	private Integer typeId;
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	private Date startedAt;
@@ -20,16 +22,16 @@ public class LotteryEventUpdateRequest {
 	private Date endedAt;
 
 	private Integer usersId;
-	
+
 	private String usersName;
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	private Date createdAt;
 
 	private Set<LotteryEventSpaceDTO> parkingSlotIds;
-	
+
 	private Boolean status;
-	
+
 	public String getTypeName() {
 		return typeName;
 	}
@@ -108,6 +110,14 @@ public class LotteryEventUpdateRequest {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	public Integer getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
 	}
 
 }

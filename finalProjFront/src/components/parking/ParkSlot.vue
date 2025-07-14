@@ -101,31 +101,31 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
         <div class="modal-header d-flex justify-content-between align-items-center">
-  <h5 class="modal-title modal-title-colored mb-0">
-    {{ isEditMode ? '編輯車位' : '新增車位' }}
-  </h5>
-  <button
-    type="button"
-    class="btn-close btn-close-custom"
-    @click="modalInstance?.hide()"
-    aria-label="Close"
-  >
-    <i class="bi bi-x-lg"></i>
-  </button>
-</div>
-        <div class="form-group">
-          <label>車位代碼</label>
-          <input v-model="form.slotNumber" class="form-control" @blur="cleanInvalidChars(form, 'slotNumber')" maxlength="10" placeholder="例如：B1-001"/>
-          
-          <label class="mt-2">位置</label>
-          <input v-model="form.location" class="form-control" maxlength="10" placeholder="例如：B1 A區"/>
-          
-          <label class="mt-2">車位種類</label>
-          <select v-model="form.parkingTypeId" class="form-select">
-            <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
-          </select>
-          
-          <label class="mt-2">車位擁有人</label>
+          <h5 class="modal-title modal-title-colored mb-0">
+            {{ isEditMode ? '編輯車位' : '新增車位' }}
+          </h5>
+          <button
+          type="button"
+          class="btn-close btn-close-custom"
+          @click="modalInstance?.hide()"
+          aria-label="Close"
+          >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="form-group">
+        <label>車位代碼</label>
+        <input v-model="form.slotNumber" class="form-control" @blur="cleanInvalidChars(form, 'slotNumber')" maxlength="10" placeholder="例如：B1-001"/>
+        
+        <label class="mt-2">位置</label>
+        <input v-model="form.location" class="form-control" maxlength="10" placeholder="例如：B1 A區"/>
+        
+        <label class="mt-2">車位種類</label>
+        <select v-model="form.parkingTypeId" class="form-select">
+          <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
+        </select>
+        
+        <label class="mt-2">車位擁有人</label>
           <select v-model="form.usersId" class="form-select">
             <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
           </select>

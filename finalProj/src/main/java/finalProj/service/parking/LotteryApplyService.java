@@ -17,11 +17,12 @@ public class LotteryApplyService {
 
 	@Autowired
 	private LotteryApplyRepository repository;
-	
-    public List<LotteryApply> findByUserId(Integer userId) {
-        return repository.findByUsers_UsersId(userId);
-    }
 
+	public List<LotteryApply> findByUserId(Integer userId) {
+		return repository.findByUsers_UsersId(userId);
+	}
+
+	// 查詢某抽籤活動的所有申請者
 	public List<LotteryApplyDTO> findByEvent(Integer eventId) {
 		List<LotteryApply> list = repository.findByLotteryEvents_BulletinId(eventId);
 

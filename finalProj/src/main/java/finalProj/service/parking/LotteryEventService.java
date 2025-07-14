@@ -1,6 +1,7 @@
 package finalProj.service.parking;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -13,10 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import finalProj.domain.bulletin.Bulletin;
+import finalProj.domain.bulletin.BulletinCategory;
+import finalProj.domain.community.Community;
 import finalProj.domain.parking.LotteryApply;
 import finalProj.domain.parking.LotteryEventSpace;
 import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.parking.ParkingType;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.DrawLotsResultDTO;
 import finalProj.dto.parking.LotteryEventSpaceDTO;
@@ -31,6 +35,7 @@ import finalProj.repository.parking.LotteryEventSpaceRepository;
 import finalProj.repository.parking.ParkingSlotRepository;
 import finalProj.repository.parking.ParkingTypeRepository;
 import finalProj.repository.users.UsersRepository;
+import finalProj.service.bulletin.BulletinService;
 import jakarta.transaction.Transactional;
 
 // 抽籤活動 Service
@@ -62,6 +67,9 @@ public class LotteryEventService {
 	@Autowired
 	private ParkingTypeRepository parkingTypeRepository;
 
+	@Autowired
+	private BulletinService bulletinService;
+
 	// 查詢所有抽籤活動
 	public List<LotteryEvents> findAll() {
 		return repository.findAll();
@@ -70,10 +78,10 @@ public class LotteryEventService {
 	// 新增抽籤活動
 	public LotteryEventUpdateRequest create(LotteryEventUpdateRequest event, Integer communityId) {
 		String title = event.getTitle();
-		String typeName = event.getTypeName();
+		Integer typeId = event.getTypeId();
 		Date startedAt = event.getStartedAt();
 		Date endedAt = event.getEndedAt();
-		String usersName = event.getUsersName();
+		Integer usersId = event.getUsersId();
 		Set<LotteryEventSpaceDTO> parkingSlots = event.getParkingSlotIds();
 
 		if (parkingSlots == null || parkingSlots.isEmpty()) {
@@ -88,36 +96,40 @@ public class LotteryEventService {
 			return null;
 		}
 
-		Users user = usersRepository.findByName(usersName);
+		Users user = usersRepository.findByUsersId(usersId);
 		if (user == null) {
 			return null;
 		}
 
+		Community community = communityRepository.findByCommunityId(communityId);
 		// 建立 Bulletin
 		Bulletin bulletin = new Bulletin();
 		bulletin.setTitle(title);
+		bulletin.setDescription("請參考車位抽籤活動頁面：" + title);
+		BulletinCategory bulletinCategory = new BulletinCategory();
+		bulletinCategory.setName("抽籤");
+		bulletinCategory.setCommunity(community);
+		bulletin.setCategory(bulletinCategory);
 		bulletin.setUser(user);
-		bulletin.setModifyTime(LocalDateTime.now());
-		bulletin.setPostStatus(false);
-		bulletin.setCommunity(communityRepository.findByCommunityId(communityId));
-		bulletin = bulletinEventRepository.save(bulletin);
+		bulletin.setPostTime(LocalDateTime.now());
+		bulletin.setRemoveTime(LocalDateTime.ofInstant(
+				endedAt.toInstant(),
+				ZoneId.of("Asia/Taipei")));
+		bulletin.setCommunity(community);
+		bulletin = bulletinService.insert(bulletin);
 
 		// 建立 LotteryEvents 並設定 bulletin 的 ID 為主鍵
 		LotteryEvents eventEntity = new LotteryEvents();
 		eventEntity.setBulletin(bulletin); // Bulletin 的 ID = LotteryEvents 的 ID
 		eventEntity.setTitle(title);
 		eventEntity
-				.setParkingType(parkingTypeRepository.findByTypeAndCommunity_CommunityId(typeName, communityId).get());
+				.setParkingType(parkingTypeRepository.findById(typeId).get());
 		eventEntity.setStartedAt(startedAt);
 		eventEntity.setEndedAt(endedAt);
 		eventEntity.setUsers(user);
 		eventEntity.setCreatedAt(new Date());
 		eventEntity.setStatus(false); // 初始設定為未抽籤
 		repository.save(eventEntity);
-
-		System.out.println("新增後查詢 LotteryEvents：" + repository.findById(eventEntity.getBulletinId()));
-		System.out.println("bulletin.communityId = " + bulletin.getCommunity().getCommunityId());
-		System.out.println("parkingType = " + eventEntity.getParkingType().getType());
 
 		List<LotteryEventSpaceDTO> distinctParkingSlots = parkingSlots.stream()
 				.collect(Collectors.collectingAndThen(
@@ -167,10 +179,11 @@ public class LotteryEventService {
 		System.out.println(event.getStatus());
 
 		String title = event.getTitle();
+		Date createdAt = event.getCreatedAt();
 		Date startedAt = event.getStartedAt();
 		Date endedAt = event.getEndedAt();
 		Integer id = event.getId();
-		String usersName = event.getUsersName();
+		Integer usersId = event.getUsersId();
 		Boolean status = event.getStatus();
 		Set<LotteryEventSpaceDTO> parkingSlots = event.getParkingSlotIds();
 
@@ -182,12 +195,17 @@ public class LotteryEventService {
 			return null;
 		}
 
-		if (startedAt == null || endedAt == null) {
+		if (startedAt == null || endedAt == null || createdAt == null) {
 			return null;
 		}
 
-		Users user = usersRepository.findByName(usersName);
+		Users user = usersRepository.findByUsersId(usersId);
 		if (user == null) {
+			return null;
+		}
+
+		ParkingType type = parkingTypeRepository.findById(event.getTypeId()).get();
+		if (type == null) {
 			return null;
 		}
 
@@ -195,13 +213,16 @@ public class LotteryEventService {
 		if (bulletinOp.isEmpty()) {
 			return null;
 		}
-
 		// 更新 Bulletin
 		Bulletin bulletin = bulletinOp.get();
 		bulletin.setTitle(title);
+		bulletin.setDescription("請參考車位抽籤活動頁面：" + title);
 		bulletin.setUser(user);
-		bulletin.setModifyTime(LocalDateTime.now());
-		bulletinEventRepository.save(bulletin);
+
+		bulletin.setRemoveTime(LocalDateTime.ofInstant(
+				endedAt.toInstant(),
+				ZoneId.of("Asia/Taipei")));
+		bulletin = bulletinService.modify(bulletin);
 
 		// 更新 LotteryEvents
 		existing.setTitle(title);
@@ -209,6 +230,8 @@ public class LotteryEventService {
 		existing.setEndedAt(endedAt);
 		existing.setUsers(user);
 		existing.setStatus(status);
+		existing.setCreatedAt(new Date());
+		existing.setParkingType(type);
 		repository.save(existing);
 
 		// 刪除舊車位記錄
@@ -216,9 +239,7 @@ public class LotteryEventService {
 
 		// ✅ 去除重複的 parkingSlotId（用 Map 實作去重）
 		List<LotteryEventSpaceDTO> distinctParkingSlots = parkingSlots.stream()
-				.collect(Collectors.collectingAndThen(Collectors.toMap(LotteryEventSpaceDTO::getParkingSlotId, // 用
-																												// slotId
-																												// 當 key
+				.collect(Collectors.collectingAndThen(Collectors.toMap(LotteryEventSpaceDTO::getParkingSlotId,
 						dto -> dto, // value 為原始 DTO
 						(a, b) -> a // 若重複，保留第一筆
 				), m -> new ArrayList<>(m.values())));
@@ -237,6 +258,9 @@ public class LotteryEventService {
 		LotteryEventUpdateRequest response = new LotteryEventUpdateRequest();
 		response.setId(existing.getBulletinId());
 		response.setTitle(existing.getTitle());
+		response.setTypeId(existing.getParkingType().getId());
+		response.setTypeName(existing.getParkingType().getType());
+		response.setStatus(existing.getStatus());
 		response.setStartedAt(existing.getStartedAt());
 		response.setEndedAt(existing.getEndedAt());
 		response.setUsersId(existing.getUsers().getUsersId());

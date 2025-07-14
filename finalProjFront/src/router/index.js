@@ -15,7 +15,6 @@ import ParkInitialize from "@/components/parking/ParkInitialize.vue"
 import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
 import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
-import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 import MySlots from '@/components/parking/MySlots.vue'
 
 
@@ -100,12 +99,6 @@ const router = createRouter({
       path: "/pages/park/lottery-apply",
       name: "lotteryApply",
       component: LotteryApply,
-    },
-    {
-      path: "/pages/park/temporary-parking",
-      name: "temporaryParking",
-      component: TemporaryParking,
-      meta: { dark: true },
     },
     {
       path: "/pages/park/parking-front",

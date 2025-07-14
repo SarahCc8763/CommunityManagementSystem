@@ -48,7 +48,7 @@ public class LotteryApplyController {
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", records));
 	}
 
-	// 查詢某抽籤活動的所有申請紀錄
+	// 查詢某抽籤活動的所有申請者
 	@GetMapping("/{id}/participants")
 	public ResponseEntity<ApiResponse<List<LotteryApplyDTO>>> getByEvent(@PathVariable("id") Integer id) {
 		List<LotteryApplyDTO> list = service.findByEvent(id);

@@ -64,7 +64,7 @@ public class LotteryEvents {
 
 	// 創建時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "created_at")
 	private Date createdAt;
 
 	@Column(name = "status", nullable = false)

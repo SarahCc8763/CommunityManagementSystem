@@ -5,18 +5,20 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ParkingSlotQueryDTO {
-	
+
 	private Integer communityId;
-	
-    private String typeName;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
-    private Date eventStart;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
-    private Date eventEnd;
-    
-    private Integer limit;
+
+	private String typeName;
+
+	private Integer typeId;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date eventStart;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	private Date eventEnd;
+
+	private Integer limit;
 
 	public Integer getCommunityId() {
 		return communityId;
@@ -58,5 +60,12 @@ public class ParkingSlotQueryDTO {
 		this.limit = limit;
 	}
 
-}
+	public Integer getTypeId() {
+		return typeId;
+	}
 
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+
+}

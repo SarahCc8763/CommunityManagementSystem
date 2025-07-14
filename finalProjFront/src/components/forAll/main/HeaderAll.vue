@@ -209,15 +209,18 @@ const menuList = ref([
     title: '車位管理',
     key: 'PARK',
     children: [
+      // 這邊是後台
+      { label: '後台停車主頁', key: 'PARKBACK', routeName: 'parkingBack' }, // 這個看你設計可以不用
       { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
-      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },  // 共用同個路徑去韋韋那頁
-      { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
+      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },
       { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
       { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
+
+      // 這邊是前台
+      { label: '前台停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' }, // 希望可以當成title的<a>
+      { label: '我的車位', key: 'MYPARK', routeName: 'mySlots' },
+      { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
       { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
-      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
-      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
-      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
     ]
   },
   {
