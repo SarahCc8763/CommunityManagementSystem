@@ -87,7 +87,7 @@
 import { computed, ref } from 'vue'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 import BarChart from '@/components/bulletin/BarChart.vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 
 import maleIcon from '@/assets/images/bulletin/male.png'
@@ -134,7 +134,7 @@ function deleteComment(commentId) {
         confirmButtonText: '確定',
         cancelButtonText: '取消'
     }).then((result) => {
-        axios.post(`http://localhost:8080/api/bulletin/comment/${commentId}`)
+        axios.post(`/api/bulletin/comment/${commentId}`)
             .then(() => emit('refresh'))
 
     })

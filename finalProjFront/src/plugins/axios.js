@@ -7,12 +7,14 @@ const axiosapi = axios.create({
 
 axiosapi.interceptors.response.use(function (response) {
     return response;
-}, function (error) {
-    if (error.response && error.response.status && error.response.status === 403) {
-        window.location.href = '/403'
-    }
-    return Promise.reject(error);
-})
+}, 
+// function (error) {
+//     if (error.response && error.response.status && error.response.status === 403) {
+//         window.location.href = '/403'
+//     }
+//     return Promise.reject(error);
+// }
+)
 
 
 export default axiosapi;

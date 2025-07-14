@@ -37,15 +37,6 @@ const menuList = [
       { label: '領取紀錄', routeName: 'parcel-history', key: 'PACKAGEHISTORY' }
     ]
   },
-  // {
-  //   title: '預約系統',
-  //   key: 'BOOKING',
-  //   children: [
-  //     { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-  //     { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-  //     { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
-  //   ]
-  // },
   {
     title: '繳費資訊',
     key: 'INVOICE',
@@ -71,9 +62,6 @@ const menuList = [
     title: '報修服務',
     key: 'TICKET',
     children: [
-      // { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
-      // { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
-      // { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
       { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
@@ -82,9 +70,8 @@ const menuList = [
     title: '常見問題',
     key: 'FQA',
     children: [
-      { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
-      { label: '回饋與抱怨？', routeName: 'feedback', key: 'FQAFEEDBACK' }
+    { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+    { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -102,8 +89,7 @@ const menuList = [
     title: '公告',
     key: 'NOTICE',
     children: [
-      { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
-      { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' }
+    { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ]

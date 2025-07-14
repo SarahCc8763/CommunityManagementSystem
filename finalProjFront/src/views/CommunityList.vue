@@ -90,7 +90,8 @@ const allFunctionOptions = [
     value: 'NOTICE',
     children: [
       { label: '重要通知', key: 'NOTICEIMPORTANT' },
-      { label: '最新公告', key: 'NOTICELATEST' }
+      { label: '最新公告', key: 'NOTICELATEST' },
+      { label: '後臺 - 公告管理',key: 'BULLETINADMIN' },
     ]
   },
   {
@@ -105,9 +106,12 @@ const allFunctionOptions = [
     label: '公設預約',
     value: 'BOOKING',
     children: [
-      { label: '健身房預約', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', key: 'BOOKINGPOOL' },
-      { label: '停車預約', key: 'BOOKINGPARKING' }
+    { label: '公設與點數系統', key: 'FHV' },
+      { label: '查詢公設', key: 'FFAV' },
+      { label: '我的預約紀錄', key: 'RHV' },
+      { label: '點數轉移', key: 'PTV' },
+      { label: '點數儲值', key: 'PTUV' },
+      { label: '點數交易紀錄', key: 'PHV' },
     ]
   },
   {

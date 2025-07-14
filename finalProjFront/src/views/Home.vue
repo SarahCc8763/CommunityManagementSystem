@@ -120,9 +120,36 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// const router = useRouter()
+// const userStore = useUserStore()
+const groupedCards = ref([])
+onMounted(async () => {
+  try {
+    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.communityId}`)
+    const allowed = res.data
+
+    // 根據社區權限過濾主功能與子功能
+    groupedCards.value = menuList
+      .filter(m => allowed.includes(m.key)) // 主功能有啟用
+      .map(m => ({
+        title: m.title,
+        key: m.key,
+        children: m.children.filter(child => allowed.includes(child.key)) // 子功能也需有啟用
+      }))
+      .filter(group => group.children.length > 0) // 避免空的群組顯示
+  } catch (err) {
+    console.error('❌ 載入社區功能失敗', err)
+  }
+})
+function goTo(name) {
+  router.push({ name })
+}
+
 
 const router = useRouter();
 
@@ -135,49 +162,57 @@ const features = [
         icon: 'bi-box-seam',
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
-        link: '/package'
+        link: '/package',
+        key:'PACKAGE'
     },
     {
         icon: 'bi-car-front-fill',
         title: '停車場管理',
         description: '掌握社區停車位使用狀況，並支援訪客車輛申請與排程。',
-        link: '/parking'
+        link: '/parking',
+        key:'PARK'
     },
     {
         icon: 'bi-person-circle',
         title: '帳戶資訊',
         description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/account'
+        link: '/account',
+        key:'INVOICE'
     },
     {
         icon: 'bi-megaphone',
         title: '最新公告',
         description: '快速接收社區重要通知與活動資訊，不再錯過任何消息。',
-        link: '/announcements'
+        link: '/announcements',
+        key:'NOTICE'
     },
     {
         icon: 'bi-question-circle',
         title: '常見問題',
         description: '整理住戶最常遇到的問題與解答，操作流程一目瞭然。',
-        link: '/faq'
+        link: '/faq',
+        key:'FQA'
     },
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
         description: '線上預約健身房、交誼廳等公設，避免重複與衝突。',
-        link: '/reservation'
+        link: '/reservation',
+        key:'BOOKING'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
-        link: '/TicketDashboard'
+        link: '/TicketDashboard',
+        key:'TICKET'
     },    
     {
         icon: 'bi-tools',
         title: '廠商',
         description: '廠商',
-        link: '/Vendor'
+        link: '/Vendor',
+        key:'VENDOR'
     }
 ];
 

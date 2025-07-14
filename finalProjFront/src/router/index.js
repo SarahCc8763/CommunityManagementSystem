@@ -1,26 +1,27 @@
 
 import { useUserStore } from '@/stores/UserStore'
-
 import { createRouter, createWebHistory } from 'vue-router'
+
+// 📌 首頁
 import Home from '../views/Home.vue'
+
 import BeforeLogIn from '../views/BeforeLogIn.vue'
+
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+//Johnson start
 import TicketDetailView from '../views/TicketDetailView.vue'
 import TicketForm from '../views/TicketForm.vue'
 import TicketList from '../views/TicketList.vue'
 import TicketPage from '../views/TicketPage.vue'
 import AllTicketsByAssignment from '../views/AllTicketsByAssignment.vue'
 import CommunityList from '../views/CommunityList.vue'
-import resetPassword from '@/components/profile/resetPassword.vue';
 import AdminDashboard from '@/views/AdminDashboard.vue'
-import packages from '@/components/package/packages.vue'
 import TicketDashboard from '../views/TicketDashboard.vue'
 import Vendor from '../views/Vendor.vue'
-
-
+//Johnson end
 import finUser from '@/components/finance/finUser/finUser.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
@@ -35,7 +36,30 @@ import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
 import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 import MySlots from '@/components/parking/MySlots.vue'
+// Yu Start
+import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
+import FaqAdmin from '../views/faq/FaqAdmin.vue'
+import FeedbackAdmin from '../views/feedback/FeedbackAdmin.vue'
+import Faq from '@/views/faq/Faq.vue'
+import MyFeedback from '@/views/feedback/MyFeedback.vue'
+import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
+//Yu End
 
+// 📌 使用者功能頁面
+import packages from '@/components/package/packages.vue'
+import profile from '@/components/profile/profile.vue'
+import notification from '@/components/notification/notification.vue'
+import resetPassword from '@/components/profile/resetPassword.vue'
+
+// 📌 公設預約頁面
+import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
+import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
+import ReservationFormView from '../views/facilities/ReservationFormView.vue'
+import ReservationHistoryView from '../views/facilities/ReservationHistoryView.vue'
+import PointHistoryView from '../views/facilities/PointHistoryView.vue'
+import PointTransferView from '../views/facilities/PointTransferView.vue'
+import PointTopupView from '../views/facilities/PointTopupView.vue'
+import PointTopupResultView from '../views/facilities/PointTopupResultView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -206,7 +230,100 @@ const router = createRouter({
       path: '/pages/park/my-slots',
       name: 'mySlots',
       component: MySlots,
-    }
+    },
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
+
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/feebackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: Faq
+
+    },{
+      path: '/feedback',
+      name: 'feedback',
+      component: MyFeedback
+
+    },
+    {
+      path: '/bulletin-admin',
+      name: 'bulletin-admin',
+      component: BulletinAdmin,
+      meta: { dark: true }
+
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: profile,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/notification',
+      name: 'notification',
+      component: notification
+    },
+    {
+      path: '/facilities',
+      name: 'FacilityHomepageView',
+      component: FacilityReservationView
+    },
+    {
+      path: '/facilities/findAll',
+      name: 'FacilityFindAllListView',
+      component: FacilityFindAllListView
+    },
+    {
+      path: '/reservations/book/:facilityId',
+      name: 'ReservationFormView',
+      component: ReservationFormView,
+      props: true
+    },
+    {
+      path: '/reservations/history',
+      name: 'ReservationHistoryView',
+      component: ReservationHistoryView,
+      props: true
+    },
+    {
+      path: '/points/history',
+      name: 'PointHistoryView',
+      component: PointHistoryView,
+      props: true
+    },
+    {
+      path: '/points/transfer',
+      name: 'PointTransferView',
+      component: PointTransferView,
+      props: true
+    },
+    {
+      path: '/points/topup',
+      name: 'PointTopupView',
+      component: PointTopupView,
+      props: true
+    },
+    {
+      path: '/points/topup/result',
+      name: 'PointTopupResultView',
+      component: PointTopupResultView,
+      props: true
+    },
   ],
 
   scrollBehavior(to, from, savedPosition) {

@@ -234,9 +234,12 @@ const menuList = ref([
     title: '預約系統',
     key: 'BOOKING',
     children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
+      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
+      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
+      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
+      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
+      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
     ]
   },
   {
@@ -266,9 +269,6 @@ const menuList = ref([
     children: [
       { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
       { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
-      // { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
-      // { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      // { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -276,8 +276,8 @@ const menuList = ref([
     key: 'FQA',
     children: [
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
-      { label: '回饋與抱怨？', routeName: 'feedback', key: 'FQAFEEDBACK' }
+      { label: '聯絡客服', routeName: 'feedback', key: 'FQACONTACT' },
+      { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進
     ]
   },
   {
@@ -297,7 +297,7 @@ const menuList = ref([
     key: 'NOTICE',
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
-      { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' }
+      { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
     ]
   }
 ])
