@@ -150,7 +150,7 @@ const allFunctionOptions = [
       { label: '承租記錄查詢', key: 'PARKREC'},
       { label: '抽籤活動', key: 'PARKEVE'},
       { label: '抽籤申請', key: 'PARKAPP'},
-      { label: '臨時停車', key: 'PARKTEM'},
+      { label: '我的車位', key: 'MYPARK'},
       { label: '前端停車主頁', key: 'PARKFRONT'},
       { label: '後端停車主頁', key: 'PARKBACK'},
     ]

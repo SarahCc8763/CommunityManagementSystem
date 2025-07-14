@@ -52,7 +52,7 @@
   <script setup>
   import { ref } from 'vue'
   import Swal from 'sweetalert2'
-  import axios from 'axios'
+  import axios from '@/plugins/axios'
   import { useRouter } from 'vue-router'
 
   const router = useRouter();
@@ -90,7 +90,7 @@
     }
   
     try {
-    const response = await axios.post('http://localhost:8080/users/resetPassword', {
+    const response = await axios.post('/users/resetPassword', {
       "email": form.value.email,
       "newPassword": form.value.password
     })

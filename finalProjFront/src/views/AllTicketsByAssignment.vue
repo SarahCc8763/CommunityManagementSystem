@@ -9,14 +9,6 @@
         class="form-control"
         placeholder="輸入標題關鍵字"
       />
-  <!-- <input
-    v-model="searchText"
-    type="text"
-    class="form-control me-2"
-    placeholder="輸入標題關鍵字"
-    @keyup.enter="applySearch"
-  /> -->
-  <!-- <button class="btn btn-secondary" @click="applySearch">搜尋</button> -->
 </div>
 
 <!-- 篩選條件 -->
@@ -40,15 +32,42 @@
         </option>
       </select>
     </div>
-    <div class="col-md-3">
+    <div class="mb-3 position-relative">
       <label class="form-label">問題種類</label>
-      <select class="form-select" multiple v-model="filter.issueTypeNames">
-        <option v-for="type in issueTypes" :key="type.id" :value="type.issueTypeName">
-          {{ type.issueTypeName }}
-        </option>
-      </select>
-    </div>
+      <div class="selected-tags mb-1">
+        <span
+          v-for="(name, idx) in filter.issueTypeNames"
+          :key="idx"
+          class="tag"
+        >
+          {{ name }}
+          <i class="bi bi-x-circle-fill ms-1" @click.stop="removeIssueType(name)"></i>
+        </span>
+      </div>
 
+      <div class="custom-multiselect" @click.stop="toggleDropdown">
+        <div class="select-box">
+          <span class="text-muted">請選擇問題種類（可複選）</span>
+          <i class="bi bi-chevron-down float-end"></i>
+        </div>
+
+        <ul
+          v-if="showDropdown"
+          class="dropdown-list"
+          @click.stop
+        >
+          <li
+            v-for="type in issueTypes"
+            :key="type.id"
+            @click="toggleIssueType(type.issueTypeName)"
+            :class="{ selected: filter.issueTypeNames.includes(type.issueTypeName) }"
+          >
+            {{ type.issueTypeName }}
+            <i v-if="filter.issueTypeNames.includes(type.issueTypeName)" class="bi bi-check2 ms-2"></i>
+          </li>
+        </ul>
+      </div>
+    </div>
     <div class="col-md-3">
   <label class="form-label">建立時間</label>
   <input type="date" class="form-control" v-model="filter.startDate" />
@@ -286,6 +305,24 @@ const filter = ref({
 
 const users = ref([])
 const issueTypes = ref([])
+
+
+const showDropdown = ref(false)
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function toggleIssueType(name) {
+  const list = filter.value.issueTypeNames
+  const index = list.indexOf(name)
+  if (index === -1) list.push(name)
+  else list.splice(index, 1)
+}
+
+function removeIssueType(name) {
+  filter.value.issueTypeNames = filter.value.issueTypeNames.filter(n => n !== name)
+}
 
 
 watch([searchText, filter], async () => {

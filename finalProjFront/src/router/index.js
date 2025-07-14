@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/UserStore'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import BeforeLogIn from '../views/BeforeLogIn.vue'
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
@@ -43,6 +44,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
     },
     {
       path: '/finance/fee-type/add',

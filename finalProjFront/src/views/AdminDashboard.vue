@@ -37,15 +37,15 @@ const menuList = [
       { label: '領取紀錄', routeName: 'parcel-history', key: 'PACKAGEHISTORY' }
     ]
   },
-  {
-    title: '預約系統',
-    key: 'BOOKING',
-    children: [
-      { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
-      { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
-    ]
-  },
+  // {
+  //   title: '預約系統',
+  //   key: 'BOOKING',
+  //   children: [
+  //     { label: '健身房預約', routeName: 'reservation-gym', key: 'BOOKINGGYM' },
+  //     { label: '游泳池預約', routeName: 'reservation-pool', key: 'BOOKINGPOOL' },
+  //     { label: '停車預約', routeName: 'reservation-parking', key: 'BOOKINGPARKING' }
+  //   ]
+  // },
   {
     title: '繳費資訊',
     key: 'INVOICE',
@@ -71,9 +71,9 @@ const menuList = [
     title: '報修服務',
     key: 'TICKET',
     children: [
-      { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
-      { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
-      { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
+      // { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
+      // { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
+      // { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
       { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
@@ -91,15 +91,11 @@ const menuList = [
     title: '車位管理',
     key: 'PARK',
     children: [
-    { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
-      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },  // 共用同個路徑去韋韋那頁
-      { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
+      { label: '後台停車主頁', key: 'PARKBACK', routeName: 'parkingBack' }, // 這個看你設計可以不用
+      { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
+      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },
       { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
       { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
-      { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
-      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
-      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
-      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
     ]
   },
   {

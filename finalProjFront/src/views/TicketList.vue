@@ -41,20 +41,51 @@
 </div>
 
 <!-- 篩選條件區塊 -->
-<div v-if="showFilter" class="mb-3 card p-3 shadow-sm">
+<div v-if="showFilter" class="mb-3 card p-3 shadow-sm" style="margin-bottom: 5rem;">
   <div class="row">
+  
+  <!-- 左側：問題種類 + 狀態 -->
+  <div class="col-md-6">
     <!-- 問題種類 -->
-    <div class="col-md-3 mb-2">
-  <label class="form-label">問題種類</label>
-<select class="form-select" v-model="filter.issueTypeNames" multiple @change="handleIssueTypeChange">
-  <option value="">全部</option>
-  <option v-for="type in issueTypes" :key="type.id" :value="type.issueTypeName">
-    {{ type.issueTypeName }}
-  </option>
-</select>
-</div>
+    <div class="mb-3 position-relative">
+      <label class="form-label">問題種類</label>
+      <div class="selected-tags mb-1">
+        <span
+          v-for="(name, idx) in filter.issueTypeNames"
+          :key="idx"
+          class="tag"
+        >
+          {{ name }}
+          <i class="bi bi-x-circle-fill ms-1" @click.stop="removeIssueType(name)"></i>
+        </span>
+      </div>
+
+      <div class="custom-multiselect" @click.stop="toggleDropdown">
+        <div class="select-box">
+          <span class="text-muted">請選擇問題種類（可複選）</span>
+          <i class="bi bi-chevron-down float-end"></i>
+        </div>
+
+        <ul
+          v-if="showDropdown"
+          class="dropdown-list"
+          @click.stop
+        >
+          <li
+            v-for="type in issueTypes"
+            :key="type.id"
+            @click="toggleIssueType(type.issueTypeName)"
+            :class="{ selected: filter.issueTypeNames.includes(type.issueTypeName) }"
+          >
+            {{ type.issueTypeName }}
+            <i v-if="filter.issueTypeNames.includes(type.issueTypeName)" class="bi bi-check2 ms-2"></i>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <!-- 狀態 -->
-    <div class="col-md-3 mb-2">
+    <div class="mb-3">
       <label class="form-label">狀態</label>
       <select class="form-select" v-model="filter.status">
         <option value="">全部</option>
@@ -63,27 +94,38 @@
         <option value="Done">已完成</option>
       </select>
     </div>
+  </div>
 
+  <!-- 右側：通報人 + 建立時間 -->
+  <div class="col-md-6">
     <!-- 通報人 -->
-    <select class="form-select" v-model="filter.reporter">
-  <option value="">全部</option>
-  <option v-for="user in users" :key="user.id" :value="user.name">
-    {{ user.name }}
-  </option>
-</select>
-    <!-- 建立時間 -->
-    <div class="col-md-3 mb-2">
+    <div class="mb-3">
+      <label class="form-label">通報人</label>
+      <select class="form-select" v-model="filter.reporter">
+        <option value="">全部</option>
+        <option v-for="user in users" :key="user.id" :value="user.name">
+          {{ user.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- 建立日期 -->
+    <div class="mb-3">
       <label class="form-label">建立時間</label>
       <input type="date" class="form-control" v-model="filter.date" />
     </div>
   </div>
+
+
+</div>
+
 </div>
 
 
       <!-- Modal -->
       <TicketPage ref="ticketModal" @created="fetchTickets" />
   
-      <div class="card p-3 mt-3">
+      <div class="card p-3 mt-5">
         <table class="table table-hover align-middle">
           <thead class="bg-light text-secondary">
             <tr>
@@ -182,12 +224,13 @@
   </template>
   
   <script setup>
-  import { ref, onMounted ,computed} from 'vue'
+  import { ref, onMounted ,computed,onUnmounted} from 'vue'
   import { useRouter } from 'vue-router'
   import axios from 'axios'
   import TicketPage from './TicketPage.vue'
   import { watch } from 'vue'
   import DOMPurify from 'dompurify'
+  
 
 function getShortHtmlSummary(html, length = 25) {
   // 清掉 HTML 標籤後取前幾字（避免<p>出現）
@@ -226,6 +269,38 @@ const totalPages = computed(() => {
   const tickets = ref([])
   const expandedIndexes = ref([])
   const issueTypes = ref([])
+  const showDropdown = ref(false)
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function toggleIssueType(name) {
+  const list = filter.value.issueTypeNames
+  const index = list.indexOf(name)
+  if (index === -1) list.push(name)
+  else list.splice(index, 1)
+}
+
+function removeIssueType(name) {
+  filter.value.issueTypeNames = filter.value.issueTypeNames.filter(n => n !== name)
+}
+
+// 點外面自動收起
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+function handleClickOutside(e) {
+  if (!e.target.closest('.custom-multiselect')) {
+    showDropdown.value = false
+  }
+}
+
   watch(pageSize, () => {
   currentPage.value = 1
 })
@@ -459,5 +534,66 @@ function nextPage() {
     overflow: hidden;
     background-color: #f9fcff;
   }
+  .custom-multiselect {
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-box {
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 160px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 1000;
+  margin-top: 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.dropdown-list li {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background-color: #f1f3f5;
+}
+
+.dropdown-list li.selected {
+  background-color: #e9f5ff;
+  color: #1c7ed6;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  background-color: #edf2ff;
+  color: #3b5bdb;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
   </style>
   
