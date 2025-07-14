@@ -1,14 +1,11 @@
 package finalProj.dto.facilities.transfer;
 
-import java.time.LocalDateTime;
-
 public class PointTransferRequest {
-	
+
 	private Integer fromUnitId;
 	private Integer toUnitId;
-	private Integer amount;	
-	
-	
+	private Integer amount;
+
 	public Integer getFromUnitId() {
 		return fromUnitId;
 	}
@@ -33,6 +30,4 @@ public class PointTransferRequest {
 		this.amount = amount;
 	}
 
-
-	
 }

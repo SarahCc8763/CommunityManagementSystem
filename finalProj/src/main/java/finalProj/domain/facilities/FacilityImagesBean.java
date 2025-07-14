@@ -24,7 +24,7 @@ public class FacilityImagesBean {
 	
 	@ManyToOne
 	@JoinColumn(name = "facility_id", referencedColumnName = "facility_id")
-	@JsonBackReference("facility-images")
+	@JsonBackReference("facilities-facilityImages")
 	private FacilitiesBean facility;
 
 	@Column(name = "image_url", nullable = false)
