@@ -5,6 +5,10 @@
                 <input type="checkbox" id="postStatus" class="form-check-input " v-model="form.postStatus">
                 <label for="postStatus" class="form-check-label text-dark ">對外發布</label>
             </div>
+            <div class="form-check form-switch my-3">
+                <input type="checkbox" id="isPinned" class="form-check-input " v-model="form.isPinned">
+                <label for="isPinned" class="form-check-label text-dark ">是否置頂</label>
+            </div>
             <div class="mb-3">
                 <label class="form-label ">標題</label>
                 <input v-model="form.title" class="form-control " required />
@@ -103,7 +107,8 @@ const form = ref({
     existingAttachments: [],
     newAttachments: [],
     postStatus: false,
-    poll: null
+    poll: null,
+    isPinned: false
 })
 
 watch(() => props.bulletin, (val) => {
@@ -116,6 +121,7 @@ watch(() => props.bulletin, (val) => {
         form.value.newAttachments = []
         form.value.postStatus = val.postStatus
         form.value.poll = val.poll
+        form.value.isPinned = val.isPinned
     }
 }, { immediate: true })
 
@@ -188,7 +194,8 @@ function submitEdit() {
 
             })),
             poll: form.value.poll || null,
-            postStatus: form.value.postStatus
+            postStatus: form.value.postStatus,
+            isPinned: form.value.isPinned
         }
 
         //console.log('送出資料', data)

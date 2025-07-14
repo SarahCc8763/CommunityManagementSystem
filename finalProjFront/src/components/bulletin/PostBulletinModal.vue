@@ -1,18 +1,22 @@
 <template>
     <ModalWrapper :visible="visible" @update:visible="val => emit('update:visible', val)" title="新增公告">
         <form @submit.prevent="submitEdit">
+            <div class="form-check form-switch my-3">
+                <input type="checkbox" id="isPinned" class="form-check-input " v-model="form.isPinned">
+                <label for="isPinned" class="form-check-label text-dark ">是否置頂</label>
+            </div>
             <div class="mb-3">
-                <label class="form-label">標題</label>
+                <label class="form-label">*標題</label>
                 <input v-model="form.title" class="form-control " required />
             </div>
 
             <div class="mb-3">
-                <label class="form-label">內容</label>
+                <label class="form-label">內容 (選填)</label>
                 <textarea v-model="form.description" class="form-control" rows="10" required></textarea>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">分類</label>
+                <label class="form-label">*分類</label>
                 <select v-model="form.categoryName" class="form-select" required>
                     <option v-for="cat in categoryList" :key="cat.id" :value="cat.name">
                         {{ cat.name }}
@@ -21,7 +25,11 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">下架時間</label>
+                <label class="form-label">發布時間 <br><small>(選填->預設為現在時間)</small></label>
+                <input type="datetime-local" v-model="form.postTime" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">下架時間<br><small>(選填->預設發布 7 天)</small></label>
                 <input type="datetime-local" v-model="form.removeTime" class="form-control" required />
             </div>
 
@@ -114,24 +122,31 @@ const form = ref({
     title: '',
     description: '',
     categoryName: '',
+    postTime: '',
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
     isNew: false,
-    poll: null
+    poll: null,
+    isPinned: false
 })
 
 function initPost() {
     emit('update:visible', false)
+
+
+
     form.value = {
         title: '',
         description: '',
         categoryName: '',
+        postTime: '',
         removeTime: '',
         existingAttachments: [],
         newAttachments: [],
         isNew: false,
-        poll: null
+        poll: null,
+        isPinned: false
     }
 }
 
@@ -221,6 +236,7 @@ async function submitEdit() {
         user: {
             usersId: props.usersId
         },
+        postTime: form.value.postTime,
         removeTime: form.value.removeTime,
         attachments: form.value.existingAttachments.map(att => ({
             fileName: att.fileName,
@@ -228,21 +244,32 @@ async function submitEdit() {
             fileDataBase64: att.fileDataBase64 || null,
             isNew: att.isNew || false
         })),
-        poll: form.value.poll || null
+        poll: form.value.poll || null,
+        isPinned: form.value.isPinned
     }
 
-    //console.log('送出資料', data)
+    console.log('送出資料', data)
 
     try {
-        await axios.post(`/api/bulletin`, data)
+        const res = await axios.post(`/api/bulletin`, data)
+        console.log(res);
+        if (!res.data.success) {
+            Swal.fire({
+                icon: 'error',
+                title: '失敗',
+                text: '發佈失敗，請確認必填欄位是否已填'
+            })
+            return
+        }
         emit('post')
         emit('update:visible', false)
         await Swal.fire({
             icon: 'success',
             title: '成功',
-            text: '發佈成功',
-            timer: 1500
+            html: '新增公告成功！<br>提醒您！新增後預設為草稿狀態，需另外修改為「已發佈」才會對外顯示。',
+
         })
+        initPost()
 
     } catch (err) {
         console.error('送出失敗', err)

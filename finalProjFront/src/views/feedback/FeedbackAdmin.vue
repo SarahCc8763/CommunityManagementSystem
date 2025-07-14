@@ -217,7 +217,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios'
-// import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
 import Swal from 'sweetalert2'
@@ -424,11 +424,12 @@ const deleteReply = async (replyId) => {
 
 
 const fetchData = async () => {
-
-    if (!userId) {
-        error.value = '找不到使用者資訊，請重新登入。'
-        return
-    }
+    // console.log(userStore);
+    // console.log(userId);
+    // if (!userId) {
+    //     error.value = '找不到使用者資訊，請重新登入。'
+    //     return
+    // }
 
     loading.value = true
     await axios

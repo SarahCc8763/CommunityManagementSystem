@@ -63,14 +63,16 @@ import { ref, onMounted, reactive } from 'vue'
 import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
 
+const userStore = useUserStore()
 const form = reactive({
     id: null,
     title: '',
     description: '',
     category: { id: '' },
-    user: { usersId: 1 },
-    community: { communityId: 1 },
+    user: { usersId: userStore.usersId },
+    community: { communityId: userStore.communityId },
 })
 
 const categories = ref([])
