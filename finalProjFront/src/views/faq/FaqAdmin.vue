@@ -113,12 +113,10 @@ import { useUserStore } from '@/stores/UserStore'
 
 
 const userStore = useUserStore()
-const userId = userStore.id || 0 // 假設當前使用者 id
+const userId = userStore.userId || 0 // 假設當前使用者 id
 const communityId = userStore.communityId || 0 // 假設當前社區 ID
 import axios from '@/plugins/axios'
-import FaqFormModal from '@/components/faq/FaqFormModal.vue'
-import FaqCategoryModal from '@/components/faq/FaqCategoryModal.vue'
-import Swal from 'sweetalert2'
+
 
 const fullfaqList = ref([])
 const faqList = ref([])

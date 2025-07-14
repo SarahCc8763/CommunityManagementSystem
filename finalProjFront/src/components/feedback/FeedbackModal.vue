@@ -139,7 +139,7 @@ const submitFeedback = async () => {
             swal.fire({ icon: 'success', title: '成功', text: form.id ? '意見更新成功' : '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
                 resetForm()
-                location.reload();
+                // location.reload();
 
             })
         } else {
