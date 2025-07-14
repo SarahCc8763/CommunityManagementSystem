@@ -1,6 +1,6 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
-
+    <!-- <BeforeLogIn /> -->
     <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
@@ -20,15 +20,15 @@
 
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
-          <RouterView />
+        <RouterView />
       </div>
     </main>
-  
-  <FooterAll />
 
-  <!-- 登入模態框 -->
-  <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
-</div>
+    <FooterAll />
+
+
+    <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
+  </div>
 </template>
 
 
@@ -40,6 +40,9 @@
 
 
 <script setup>
+
+import BeforeLogIn from '@/views/BeforeLogIn.vue'
+
 import { useUserStore } from '@/stores/UserStore'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
@@ -90,7 +93,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('show-login-modal', handleShowLoginModal)
   window.removeEventListener('logout', handleLogout)
-const route = useRoute()})
+  const route = useRoute()
+})
 
 
 

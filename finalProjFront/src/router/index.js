@@ -1,5 +1,8 @@
 
 
+import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore'
+
 
 
 
@@ -10,7 +13,6 @@ import finUser from '@/components/finance/finUser/finUser.vue'
 import Invoice from '@/components/finance/finUser/Invoice.vue'
 import Receipt from '@/components/finance/finUser/Receipt.vue'
 //財務相關-管理員
-
 import FeeTypeAdd from '@/components/finance/finAdmin/FeeTypeAdd.vue'
 import BillingPeriodAdd from '@/components/finance/finAdmin/BillingPeriodAdd.vue'
 import InvoiceAdd from '@/components/finance/finAdmin/InvoiceAdd.vue'
@@ -19,13 +21,11 @@ import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithRespon
 import ReceiptAdd from '@/components/finance/finAdmin/ReceiptAdd.vue'
 
 
-// Ticket相關
-import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/UserStore'
-
 // 📌 首頁
 import Home from '../views/Home.vue'
 
+
+// Ticket相關
 import TicketDetailView from '../views/TicketDetailView.vue'
 import TicketForm from '../views/TicketForm.vue'
 import TicketList from '../views/TicketList.vue'
@@ -75,11 +75,12 @@ import BeforeLogIn from '@/views/BeforeLogIn.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+
     {
       path: '/',
       name: 'home',
       component: Home,
-      meta: { requiresAuth: true }
+
     },
 
     // Finance相關
@@ -245,10 +246,11 @@ const router = createRouter({
       component: PointTopupResultView,
       props: true
     },
+
     {
-      path: '/login',
-      name: 'BeforeLogIn',
-      component: BeforeLogIn
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword
     },
   ],
 
@@ -256,21 +258,7 @@ const router = createRouter({
     return { top: 0 }
   }
 })
-// 修改路由守衛
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  const isLoggedIn = userStore.isAuthenticated
 
-  // 需要登入的頁面，未登入導去 BeforeLogIn
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    next({ name: 'BeforeLogIn' })
-    // 已登入者進入 BeforeLogIn，自動導去 Home
-  } else if (to.name === 'BeforeLogIn' && isLoggedIn) {
-    next({ name: 'home' })
-  } else {
-    next()
-  }
-})
 
 
 export default router

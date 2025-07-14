@@ -37,7 +37,7 @@ import { ref } from 'vue'
 import Swal from 'sweetalert2'
 import axios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
-
+const path = import.meta.VITE_API_URL
 const router = useRouter();
 
 const form = ref({
@@ -73,7 +73,7 @@ const handleResetPassword = async () => {
   }
 
   try {
-    const response = await axios.post('/users/resetPassword', {
+    const response = await axios.post(`${path}/users/resetPassword`, {
       "email": form.value.email,
       "newPassword": form.value.password
     })
