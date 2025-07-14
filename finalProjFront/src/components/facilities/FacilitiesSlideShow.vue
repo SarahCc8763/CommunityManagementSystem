@@ -52,11 +52,19 @@ defineProps({
     background-color: transparent;
 }
 
+.carousel-item {
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+}
+
+
 .carousel-image {
     width: 100%;
-    height: 80vh;
+    height: 100%;
     object-fit: cover;
-    background-color: transparent;
+    display: block;
+    border-radius: 16px;
 }
 
 .carousel {
