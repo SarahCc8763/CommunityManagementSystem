@@ -1,6 +1,6 @@
 <!-- TicketDetailView.vue -->
 <template>
-  <div class="ticket-detail-layout">
+  <div class="ticket-detail-layout container mt-4">
     <!-- 左側主內容 -->
     <div class="ticket-main">
       <h2 class="ticket-title" contenteditable @input="isEditing.title = true" @blur="checkTitleChange">
