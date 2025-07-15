@@ -47,6 +47,12 @@ import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
 
+// 包裹
+import packages_picked from '@/components/package/packages_picked.vue';
+import packages_security from '@/components/package/packages_security.vue';
+import addPackage from '@/components/package/addPackage.vue';
+
+
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
 import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
@@ -157,6 +163,29 @@ const router = createRouter({
       path: '/notification',
       name: 'notification',
       component: notification
+    },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/packages_picked',
+      name: 'packages_picked',
+      component: packages_picked,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/packages_security',
+      name: 'packages_security',
+      component: packages_security,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/addPackage',
+      name: 'addPackage',
+      component: addPackage,
+      meta: { requiresAuth: true, dark: true }
     },
     {
       path: '/TicketDashboard',

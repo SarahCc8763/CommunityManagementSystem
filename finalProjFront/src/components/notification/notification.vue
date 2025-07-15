@@ -2,11 +2,10 @@
     <div class="notification-center">
         <h1>通知中心</h1>
 
-        <div v-for="notice in notifications" :key="notice.id" class="notification-item"
-            :class="{ unread: !notice.read }" @click="toggleRead(notice)">
+        <div v-for="notice in notifications" :key="notice.unitsNotificationsId" class="notification-item"
+            :class="{ unread: notice.isRead == 0 || notice.isRead === '0' }" @click="toggleRead(notice)">
             <h3>{{ notice.title }}</h3>
-            <p>{{ notice.message }}</p>
-            <span class="time">{{ notice.time }}</span>
+            <!-- <p>{{ notice.message }}</p> -->
         </div>
 
         <div v-if="!notifications.length" class="no-data">
@@ -16,17 +15,60 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { useUserStore } from '@/stores/UserStore';
+import axios from '@/plugins/axios';
+import Swal from 'sweetalert2'
 
-const notifications = ref([
-    { id: 1, title: '包裹已到達', message: '您的包裹已送達管理室，請儘快領取。', time: '2025-07-01 09:00', read: false },
-    { id: 2, title: '社區公告', message: '7/5 社區將進行大樓外牆清潔，請住戶留意。', time: '2025-06-30 17:00', read: true },
-    { id: 3, title: '車位預約提醒', message: '您已成功預約 7/2 車位使用，請準時停車。', time: '2025-06-29 12:30', read: true },
-])
-
-function toggleRead(notice) {
-    notice.read = !notice.read
+const userStore = useUserStore();
+const path = import.meta.env.VITE_API_URL
+const unitId = userStore.unitId
+const notifications = ref([])
+console.log('111' + unitId);
+async function pollNotifications() {
+    try {
+        const res = await axios.get(`/notifications/unit/${unitId}`)
+        console.log('📬 收到通知', res.data.data)
+        // 寫入陣列並按未讀、已讀排序、顯示10筆
+        notifications.value = res.data.data.sort((a,b)=>Number(a.isRead) - Number(b.isRead)).slice(0,10) 
+    } catch (error) {
+        console.error('❌ 輪詢失敗', error)
+    }
 }
+
+let intervalId = null
+
+onMounted(() => {
+    pollNotifications()
+    intervalId = setInterval(pollNotifications, 2000) // 每 2 秒輪詢一次
+})
+
+onBeforeUnmount(() => {
+    clearInterval(intervalId)
+})
+
+// 點擊後：顯示 Swal，並呼叫後端更新 isRead
+async function toggleRead(notice) {
+    console.log('🔍 點擊通知 ID:', notice.unitsNotificationsId)
+
+    await Swal.fire({
+        icon: 'info',
+        title: notice.title,
+        text: notice.description,
+        confirmButtonText: '知道了'
+    })
+
+    try {
+        // 呼叫後端更新已讀
+        await axios.put(`${path}/notifications/isRead/${notice.unitsNotificationsId}`)
+
+        // 成功後，前端也標記已讀（或重新撈）
+        notice.isRead = 1  // 或 true，看你的欄位怎麼回來
+    } catch (error) {
+        console.error('❌ 更新已讀失敗', error)
+    }
+}
+
 </script>
 
 <style scoped>

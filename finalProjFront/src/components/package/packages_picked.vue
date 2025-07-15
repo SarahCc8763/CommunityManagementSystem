@@ -1,14 +1,19 @@
 <template>
     <div class="resident-packages-container">
-        <h1>我的包裹查詢</h1>
+        <h1>我的包裹領取紀錄</h1>
 
+        <!-- <div class="search-bar">
+            <input v-model="residentName" type="text" placeholder="輸入姓名" />
+            <input v-model="unitNumber" type="text" placeholder="輸入門牌號" />
+            <button @click="searchMyPackages">查詢</button>
+        </div> -->
 
         <table v-if="displayedPackages.length" class="packages-table">
             <thead>
                 <tr>
                     <th>編號</th>
+                    <th>件數</th>
                     <th>包裹描述</th>
-                    <th>到達時間</th>
                     <th>到達時間</th>
                     <th>放置地點</th>
                     <th>領取狀態</th>
@@ -31,20 +36,19 @@
 </template>
 
 <script setup>
-import { ref,onMounted, watch } from 'vue'
+import { ref,onMounted } from 'vue'
 import axios from '@/plugins/axios';
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import { useUserStore } from '@/stores/UserStore';
 const userStore = useUserStore();
 const displayedPackages = ref([])
-let stompClient = null
 
 async function searchMyPackages() {
     const unitId = userStore.unitId; // 從 store 拿
     console.log(unitId);
     const payload = {
         // ...searchFormData,
-        unitId: unitId // 放進要送到後端的 DTO
+        unitId: unitId // 👈 放進要送到後端的 DTO
     };
 
     // const token = localStorage.getItem('token'); // 如果有 JWT 的話
@@ -53,13 +57,12 @@ async function searchMyPackages() {
 
     console.log(response.data);
     if (response.data.success) {
-    displayedPackages.value = response.data.data.filter(pkg => pkg.status === '未領取') // 取真正的包裹陣列
+    displayedPackages.value = response.data.data.filter(pkg => pkg.status === '已領取') // 取真正的包裹陣列
   } else {
     console.error('查詢失敗:', response.data.message)
     displayedPackages.value = []
-  } 
+  }
 }
-
 
 onMounted(() => {
   searchMyPackages()
@@ -67,7 +70,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.resident-packages-container {
+/* .resident-packages-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
@@ -95,16 +98,13 @@ h1 {
     padding: 10px 14px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    /* 圓角 */
     outline: none;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .search-bar input:focus {
     border-color: #4a90e2;
-    /* 聚焦邊框色 */
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-    /* 聚焦外光暈 */
 }
 
 .search-bar button {
@@ -113,61 +113,13 @@ h1 {
     color: #fff;
     border: none;
     border-radius: 8px;
-    /* 圓角 */
     cursor: pointer;
     transition: background 0.3s;
 }
 
 .search-bar button:hover {
     background: #357ab7;
-    /* 滑過時顏色稍深 */
-}
-
-.packages-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.packages-table thead {
-  background-color: #e0e7ef; /* 表頭底色稍微深一些 */
-}
-
-.packages-table th,
-.packages-table td {
-  padding: 16px 20px;
-  text-align: left;
-  font-size: 20px;
-}
-
-.packages-table th {
-  font-weight: 600;
-  color: #222; /* 表頭文字再深一點 */
-  border-bottom: 2px solid #ddd; /* 表頭和內容分隔線稍粗 */
-}
-
-.packages-table td {
-  color: #555;
-  border-bottom: 1px solid #eee; /* 每列間的框線（淡灰色） */
-}
-
-.packages-table tbody tr:last-child td {
-  border-bottom: none; /* 最後一列去掉底線 */
-}
-
-.packages-table tbody tr:hover {
-  background-color: #f9fbfd;
-  transition: background-color 0.2s;
-}
-
-
-
-
-
+}*/
 
 .packages-table {
   width: 100%;
@@ -197,8 +149,7 @@ h1 {
 }
 
 .packages-table td {
-  /* color: #555; */
-  color: #222;
+  color: #555;
   border-bottom: 1px solid #eee; 
 }
 
@@ -281,10 +232,6 @@ h1 {
   color: #888;
   margin-top: 1rem;
 }
-
-
-
-
 
 
 </style>
