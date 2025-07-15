@@ -44,12 +44,35 @@
               </div>
             </div>
             <div class="comment-body">
-              <p>{{ comment.text }}</p>
+    <div v-if="isEditingComment === i">
+ <div
+  class="editable-input mb-2"
+  contenteditable="true"
+  @input="editedCommentText = $event.target.innerText"
+  :textContent="editedCommentText"
+></div>
+      <div>
+        <button class="btn btn-sm btn-secondary me-2" @click="cancelCommentEdit">取消</button>
+        <button class="btn btn-sm btn-primary" @click="saveCommentEdit(comment.id)">儲存</button>
+      </div>
+    </div>
+    <div v-else>
+      <p>{{ comment.text }}</p>
+    </div>
 
               <div class="d-flex flex-wrap gap-2 mt-2" v-if="comment.attachments.length">
                 <img v-for="(img, j) in comment.attachments" :key="j" :src="`data:image/png;base64,${img.file}`"
                   :alt="img.fileName" class="rounded border"
                   style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" @click="openPreview(img)" />
+              </div>
+                <div class="mt-2" v-if="userStore.roleId === 2">
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      v-if="userStore.roleId === 2 && isEditingComment !== i"
+                      @click="editComment(comment, i)"
+                    >
+                          編輯
+                </button>
               </div>
             </div>
           </div>
@@ -118,6 +141,9 @@ function convertStatusFromBackend(s) {
   if (s === 'Done') return 'Done'
   return s
 }
+
+const isEditingComment = ref(null) // null 表示沒在編輯，否則記錄 comment index
+const editedCommentText = ref('')  // 暫存編輯中文本
 
 onMounted(loadTicket)
 async function loadTicket() {
@@ -230,12 +256,41 @@ function checkTitleChange() {
 }
 const reversedComments = computed(() =>
   [...ticket.value.comments].reverse().map(c => ({
-    displayName: c.user || c.commenter?.name || '匿名',
+    id: c.id,
+    displayName: c.name || c.commenter?.name || '匿名',
     text: c.text || c.comment,
     time: c.time || c.createdAt || '',
     attachments: c.attachments || []
   }))
 )
+
+function editComment(comment, index) {
+  isEditingComment.value = index
+  editedCommentText.value = comment.text
+}
+
+function cancelCommentEdit() {
+  isEditingComment.value = null
+  editedCommentText.value = ''
+}
+
+async function saveCommentEdit(commentId) {
+  try {
+    const payload={
+      ticketId: ticket.value.id,
+      comment: editedCommentText.value,
+      commenter: userStore.userId 
+    }
+    await axios.put(`/TicketComment/${commentId}`, payload)
+
+    isEditingComment.value = null
+    editedCommentText.value = ''
+    loadTicket() // 重新載入留言
+  } catch (err) {
+    alert('儲存失敗：' + (err.response?.data?.message || err.message))
+  }
+}
+
 </script>
 
 <style scoped>
@@ -313,4 +368,20 @@ const reversedComments = computed(() =>
   border-radius: 8px;
   box-shadow: 0 0 20px #000;
 }
+.editable-input {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 6px 12px;
+  min-height: 38px;
+  background-color: #fff;
+  outline: none;
+}
+.editable-input:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
+}
 </style>
+
+
+
+

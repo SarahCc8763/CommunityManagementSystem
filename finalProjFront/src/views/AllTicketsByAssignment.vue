@@ -12,9 +12,53 @@
 </div>
 
 <!-- 篩選條件 -->
+<!-- 篩選條件 -->
 <div class="card p-3 mb-3 shadow-sm">
   <div class="row">
-    <div class="col-md-3">
+<!-- 問題種類 -->
+<div class="col-md-6 mb-3 position-relative">
+  <label class="form-label">問題種類</label>
+  <div class="selected-tags mb-1">
+    <span
+      v-for="(name, idx) in filter.issueTypeNames"
+      :key="idx"
+      class="tag"
+    >
+      {{ name }}
+      <i class="bi bi-x-circle-fill ms-1" @click.stop="removeIssueType(name)"></i>
+    </span>
+  </div>
+
+  <div class="custom-multiselect" @click.stop="toggleDropdown">
+    <div class="select-box">
+      <span class="text-muted">
+        {{ filter.issueTypeNames.length ? '已選擇 ' + filter.issueTypeNames.length + ' 項' : '請選擇問題種類（可複選）' }}
+      </span>
+      <i class="bi bi-chevron-down float-end"></i>
+    </div>
+
+    <!-- Dropdown 清單 -->
+    <ul
+      v-if="showDropdown"
+      class="dropdown-list"
+      @click.stop
+    >
+      <li
+        v-for="type in issueTypes"
+        :key="type.id"
+        @click="toggleIssueType(type.issueTypeName)"
+        :class="{ selected: filter.issueTypeNames.includes(type.issueTypeName) }"
+      >
+        {{ type.issueTypeName }}
+        <i v-if="filter.issueTypeNames.includes(type.issueTypeName)" class="bi bi-check2 ms-2"></i>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+    <!-- 狀態 -->
+    <div class="col-md-6 mb-3">
       <label class="form-label">狀態</label>
       <select class="form-select" v-model="filter.status">
         <option value="">全部</option>
@@ -23,7 +67,9 @@
         <option value="done">已完成</option>
       </select>
     </div>
-    <div class="col-md-3">
+
+    <!-- 通報人 -->
+    <div class="col-md-6 mb-3">
       <label class="form-label">通報人</label>
       <select class="form-select" v-model="filter.reporter">
         <option value="">全部</option>
@@ -32,48 +78,15 @@
         </option>
       </select>
     </div>
-    <div class="mb-3 position-relative">
-      <label class="form-label">問題種類</label>
-      <div class="selected-tags mb-1">
-        <span
-          v-for="(name, idx) in filter.issueTypeNames"
-          :key="idx"
-          class="tag"
-        >
-          {{ name }}
-          <i class="bi bi-x-circle-fill ms-1" @click.stop="removeIssueType(name)"></i>
-        </span>
-      </div>
 
-      <div class="custom-multiselect" @click.stop="toggleDropdown">
-        <div class="select-box">
-          <span class="text-muted">請選擇問題種類（可複選）</span>
-          <i class="bi bi-chevron-down float-end"></i>
-        </div>
-
-        <ul
-          v-if="showDropdown"
-          class="dropdown-list"
-          @click.stop
-        >
-          <li
-            v-for="type in issueTypes"
-            :key="type.id"
-            @click="toggleIssueType(type.issueTypeName)"
-            :class="{ selected: filter.issueTypeNames.includes(type.issueTypeName) }"
-          >
-            {{ type.issueTypeName }}
-            <i v-if="filter.issueTypeNames.includes(type.issueTypeName)" class="bi bi-check2 ms-2"></i>
-          </li>
-        </ul>
-      </div>
+    <!-- 建立時間 -->
+    <div class="col-md-6 mb-3">
+      <label class="form-label">建立時間</label>
+      <input type="date" class="form-control" v-model="filter.startDate" />
     </div>
-    <div class="col-md-3">
-  <label class="form-label">建立時間</label>
-  <input type="date" class="form-control" v-model="filter.startDate" />
-</div>
   </div>
 </div>
+
 
 
     <!-- ✅ 已指派 -->
@@ -545,4 +558,74 @@ img {
   opacity: 0;
   transform: scaleY(0.95);
 }
+/* 多選下拉外框 */
+.custom-multiselect {
+  position: relative;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #fff;
+  cursor: pointer;
+  min-height: 38px;
+  user-select: none;
+}
+
+/* 文字區（例如「請選擇」） */
+.select-box {
+  user-select: none;
+}
+
+/* 下拉選單列表 */
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  max-height: 160px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 選項樣式 */
+.dropdown-list li {
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+.dropdown-list li:hover {
+  background-color: #f1f3f5;
+}
+.dropdown-list li.selected {
+  background-color: #e9ecef;
+  font-weight: 500;
+}
+
+/* Tag 樣式（已選項目） */
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.tag {
+  background-color: #0d6efd;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+}
+.tag i {
+  margin-left: 0.25rem;
+  cursor: pointer;
+}
+
 </style>
