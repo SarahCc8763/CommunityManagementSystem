@@ -3,6 +3,7 @@ package finalProj.domain.users;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -73,7 +74,7 @@ public class Units {
 
 	// --- Julie的關聯 END ---
 
-	// --- javert的關聯 START ---
+		// --- javert的關聯 START ---
 
 	// 對應 facility_reservations 單位預約（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -92,8 +93,33 @@ public class Units {
 
 	// --- javert的關聯 END ---
 
+
 	public Integer getUnitsId() {
 		return unitsId;
+	}
+
+	public List<FacilityReservationsBean> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<FacilityReservationsBean> reservations) {
+		this.reservations = reservations;
+	}
+
+	public PointAccountsBean getPointAccount() {
+		return pointAccount;
+	}
+
+	public void setPointAccount(PointAccountsBean pointAccount) {
+		this.pointAccount = pointAccount;
+	}
+
+	public List<PointTransactionsBean> getPointTransactions() {
+		return pointTransactions;
+	}
+
+	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
+		this.pointTransactions = pointTransactions;
 	}
 
 	public void setUnitsId(Integer unitsId) {
@@ -162,30 +188,6 @@ public class Units {
 
 	public void setCommunity(Community community) {
 		this.community = community;
-	}
-
-	public List<FacilityReservationsBean> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(List<FacilityReservationsBean> reservations) {
-		this.reservations = reservations;
-	}
-
-	public PointAccountsBean getPointAccount() {
-		return pointAccount;
-	}
-
-	public void setPointAccount(PointAccountsBean pointAccount) {
-		this.pointAccount = pointAccount;
-	}
-
-	public List<PointTransactionsBean> getPointTransactions() {
-		return pointTransactions;
-	}
-
-	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
-		this.pointTransactions = pointTransactions;
 	}
 
 	@Override

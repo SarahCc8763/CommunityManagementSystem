@@ -209,7 +209,8 @@ const features = [
 .hero-image-wrapper {
     position: relative;
     text-align: center;
-    max-width: 80vw;
+    /* max-width: 80vw; */
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -244,13 +245,15 @@ const features = [
 }
 
 :deep(.carousel-image) {
+    width: 100%;
+    height: auto;
     max-height: 400px;
     object-fit: cover;
     border-radius: 16px;
-    /* ✅ 圓角設定，可調整大小 */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    /* 可選的陰影效果 */
+    display: block;
 }
+
 
 .fade-in-slide {
     opacity: 0;
