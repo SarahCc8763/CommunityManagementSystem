@@ -33,7 +33,7 @@
                         "（草稿）"
                     }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="fw-bold text-dark fs-5">
+                        <div class="fw-bold text-dark fs-5"><span v-if="bulletin.isPinned">[置頂]</span>
                             {{ bulletin.title }} <span v-if="bulletin.poll"
                                 class="fs-6 text-secondary fw-normal">(投票活動)</span>
                         </div>

@@ -93,7 +93,9 @@
                                     <div class="card-body d-flex flex-row justify-content-between gap-3">
                                         <div class="flex-grow-1">
 
-                                            <h5 class="fw-normal">主旨：span{{ feedback.title }}</h5>
+
+
+                                            <h5 class="fw-normal">主旨：span{{ feedback.title }} </h5>
                                             <p class="card-text mx-2">內容：{{ feedback.description }}</p>
                                             <!-- 確保你先載入 feedback.statusHistory 資料 -->
 
@@ -107,6 +109,7 @@
                                                             1].repliedAt) }}</div>
                                                 </div>
                                                 <div v-else>尚無回覆</div>
+
                                             </div>
                                             <!-- 附件 -->
                                             <div v-if="feedback.attachments?.length" class="mt-4">
@@ -132,18 +135,9 @@
                                             </div>
 
                                             <br>
-                                            <div class="d-flex gap-2 mt-2">
-                                                <button class="btn btn-outline-primary btn-sm btn-nn"
-                                                    @click="toggleReplies(feedback)">
-                                                    {{ feedback.showReplies ? '隱藏回覆' : '顯示所有回覆' }}
-                                                </button>
-                                                <button class="btn btn-outline-secondary btn-sm btn-nn"
-                                                    @click="openEditModal(feedback.id)">
-                                                    修改
-                                                </button>
-                                            </div>
 
-                                            <ul class="mt-3 list-unstyled" v-if="feedback.showReplies">
+
+                                            <ul class="mt-3 list-unstyled">
                                                 <li v-for="reply in feedback.replies" :key="reply.id" class="mb-3">
                                                     <div class="d-flex justify-content-between align-items-start">
                                                         <!-- 回覆內容區塊 -->
@@ -203,10 +197,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style="min-width: 180px;">
+                                        <div class="d-flex flex-column align-items-center" style="min-width: 180px;">
                                             <FeedbackProgress :feedback="feedback"
                                                 @show-history-detail="showFeedbackHistoryDetail" />
+                                            <button class="btn btn-outline-secondary btn-sm btn-nn mt-1"
+                                                @click="openEditModal(feedback.id)">
+                                                修改處理進度
+                                            </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -292,10 +291,6 @@ const filteredFeedbackList = computed(() => {
 })
 
 
-const toggleReplies = (feedback) => {
-    feedback.showReplies = !feedback.showReplies
-}
-
 const getFirstImage = (feedback) => {
     const image = feedback.attachments?.find((a) => a.mimeType?.startsWith('image/'))
     if (image && image.attachment) {
@@ -332,11 +327,11 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
 
 
     } catch (err) {
-        console.error('載入意見回饋歷史失敗', err);
+        // console.error('載入意見回饋歷史失敗', err);
         Swal.fire({
             icon: 'error',
             title: '載入失敗',
-            text: '無法載入處理歷程，請稍後再試。'
+            text: '處理歷程目前無法載入。'
         });
     }
 };

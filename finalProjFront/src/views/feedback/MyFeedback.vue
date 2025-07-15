@@ -55,91 +55,99 @@
                             <div class="card h-100 flex-row">
                                 <img :src="getFirstImage(feedback)" class="img-fluid rounded-start" alt="Feedback Image"
                                     style="width: 20%; height: auto; object-fit: contain" />
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="fw-bold">主旨：{{ feedback.title }}</h5>
-                                    <p class="card-text">內容：{{ feedback.description }}</p>
+                                <div class="card-body d-flex flex-row justify-content-between gap-3">
+                                    <div class="flex-grow-1">
+                                        <h5 class="fw-bold">主旨：{{ feedback.title }}</h5>
+                                        <p class="card-text">內容：{{ feedback.description }}</p>
 
-                                    <div>
-                                        <strong>最新進度：</strong>
-                                        <div v-if="feedback.replies && feedback.replies.length > 0">
-                                            {{ feedback.replies[feedback.replies.length - 1].reply }}
-                                            <div class="lh-lg" style="font-size: 70%;">{{
-                                                formatDateTime(feedback.replies[feedback.replies.length -
-                                                    1].repliedAt) }}</div>
+                                        <div>
+                                            <strong>最新進度：</strong>
+                                            <div v-if="feedback.replies && feedback.replies.length > 0">
+                                                {{ feedback.replies[feedback.replies.length - 1].reply }}
+                                                <div class="lh-lg" style="font-size: 70%;">{{
+                                                    formatDateTime(feedback.replies[feedback.replies.length -
+                                                        1].repliedAt) }}</div>
+                                            </div>
+                                            <div v-else class="text-muted">尚無回覆</div>
                                         </div>
-                                        <div v-else class="text-muted">尚無回覆</div>
-                                    </div>
 
-                                    <div class="d-flex gap-2 mt-2">
-                                        <button class="btn btn-outline-primary btn-sm" @click="toggleReplies(feedback)">
-                                            {{ feedback.showReplies ? '隱藏回覆' : '顯示所有回覆' }}
-                                        </button>
-                                        <button v-if="feedback.status != '已結案'" class="btn btn-outline-secondary btn-sm"
-                                            @click="openEditModal(feedback.id)">
-                                            修改
-                                        </button>
-                                    </div>
-                                    <!-- 評分區塊 -->
-                                    <div class="mt-3">
-                                        <div v-if="feedback.status == '已結案'" class="d-flex align-items-center gap-2">
-                                            <span
-                                                v-if="feedback.status == '已結案' && feedback.userRating == null">給予評分：</span>
-                                            <span v-else>您已評分：</span>
-                                            <span v-for="star in 5" :key="star" @click="setRating(feedback, star)"
-                                                :style="{ cursor: feedback.status === '已結案' && feedback.userRating == null ? 'pointer' : 'default', fontSize: '24px', color: 'gold' }">
-                                                <i
-                                                    :class="star <= (feedback.userRating ?? feedback.tempRating) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-
-                                            </span>
-                                            <button v-if="feedback.status == '已結案' && feedback.userRating == null"
-                                                class="btn btn-sm btn-primary ms-3"
-                                                @click="submitRating(feedback)">送出評分</button>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button class="btn btn-outline-primary btn-sm"
+                                                @click="toggleReplies(feedback)">
+                                                {{ feedback.showReplies ? '隱藏回覆' : '顯示所有回覆' }}
+                                            </button>
+                                            <button v-if="feedback.status != '已結案'"
+                                                class="btn btn-outline-secondary btn-sm"
+                                                @click="openEditModal(feedback.id)">
+                                                修改
+                                            </button>
                                         </div>
-                                    </div>
+                                        <!-- 評分區塊 -->
+                                        <div class="mt-3">
+                                            <div v-if="feedback.status == '已結案'"
+                                                class="d-flex align-items-center gap-2">
+                                                <span
+                                                    v-if="feedback.status == '已結案' && feedback.userRating == null">給予評分：</span>
+                                                <span v-else>您已評分：</span>
+                                                <span v-for="star in 5" :key="star" @click="setRating(feedback, star)"
+                                                    :style="{ cursor: feedback.status === '已結案' && feedback.userRating == null ? 'pointer' : 'default', fontSize: '24px', color: 'gold' }">
+                                                    <i
+                                                        :class="star <= (feedback.userRating ?? feedback.tempRating) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+
+                                                </span>
+                                                <button v-if="feedback.status == '已結案' && feedback.userRating == null"
+                                                    class="btn btn-sm btn-primary ms-3"
+                                                    @click="submitRating(feedback)">送出評分</button>
+                                            </div>
+                                        </div>
 
 
-                                    <ul class="mt-3 list-unstyled" v-if="feedback.showReplies">
-                                        <li v-for="reply in feedback.replies" :key="reply.id" class="d-flex mb-3">
+                                        <ul class="mt-3 list-unstyled" v-if="feedback.showReplies">
+                                            <li v-for="reply in feedback.replies" :key="reply.id" class="d-flex mb-3">
+                                                <div class="me-2">
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; font-size: 0.9rem">
+                                                        {{ reply.user?.name?.charAt(0) || '?' }}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}</div>
+                                                    <div class="bg-light rounded p-2">{{ reply.reply }}</div>
+                                                    <div class="text-muted small">{{ formatDateTime(reply.repliedAt) }}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <!-- 回覆輸入區塊 -->
+                                        <div v-if="feedback.showReplies" class="mt-3 d-flex align-items-start">
+                                            <!-- 左側：頭像圓圈（顯示登入者名稱縮寫） -->
                                             <div class="me-2">
-                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                                    style="width: 40px; height: 40px; font-size: 0.9rem">
-                                                    {{ reply.user?.name?.charAt(0) || '?' }}
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                                    style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                                    {{ currentUserInitial }}
                                                 </div>
                                             </div>
-                                            <div>
-                                                <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}</div>
-                                                <div class="bg-light rounded p-2">{{ reply.reply }}</div>
-                                                <div class="text-muted small">{{ formatDateTime(reply.repliedAt) }}
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <!-- 回覆輸入區塊 -->
-                                    <div v-if="feedback.showReplies" class="mt-3 d-flex align-items-start">
-                                        <!-- 左側：頭像圓圈（顯示登入者名稱縮寫） -->
-                                        <div class="me-2">
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                                style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                                {{ currentUserInitial }}
-                                            </div>
-                                        </div>
 
-                                        <!-- 右側：輸入框 + 送出按鈕 -->
-                                        <div class="flex-grow-1">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control rounded-pill px-3"
-                                                    v-model="feedback.newReplyText" placeholder="留言……"
-                                                    @keyup.enter="submitReply(feedback)">
-                                                <button class=" mx-2 rounded-circle send-btn"
-                                                    @click="submitReply(feedback)"
-                                                    style="border: 0 none;background-color: #fff;">
-                                                    <img src="@/assets/images/feedback/sendIcon.png" alt="➤"
-                                                        style="height: 35px;width: 35px;">
-                                                </button>
+                                            <!-- 右側：輸入框 + 送出按鈕 -->
+                                            <div class="flex-grow-1">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control rounded-pill px-3"
+                                                        v-model="feedback.newReplyText" placeholder="留言……"
+                                                        @keyup.enter="submitReply(feedback)">
+                                                    <button class=" mx-2 rounded-circle send-btn"
+                                                        @click="submitReply(feedback)"
+                                                        style="border: 0 none;background-color: #fff;">
+                                                        <img src="@/assets/images/feedback/sendIcon.png" alt="➤"
+                                                            style="height: 35px;width: 35px;">
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div style="min-width: 180px;">
+                                        <FeedbackProgress :feedback="feedback"
+                                            @show-history-detail="showFeedbackHistoryDetail" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,6 +170,7 @@ import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
+import FeedbackProgress from '@/components/feedback/FeedbackProgress.vue'
 
 
 const userStore = useUserStore()
@@ -174,6 +183,7 @@ const loading = ref(false)
 const error = ref(null)
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
+const historyData = ref([])
 
 
 
@@ -228,7 +238,40 @@ const submitReply = async (feedback) => {
         alert('無法送出，請稍後再試')
     }
 }
+const showFeedbackHistoryDetail = async (feedback, stepKey) => {
+    try {
+        if (stepKey === '待處理') {
+            Swal.fire({
+                icon: 'info',
+                title: `建立回饋 -> 待處理`,
+                html: `建立時間：${formatDateTime(feedback.submittedAt)}<br>建立人員：${feedback.frontEndData.userName}`
+            });
+            return;
+        }
+        // 重新發送 API 請求獲取完整的歷史記錄
+        const res = await axios.get(`/api/feedback/history/${feedback.id}`);
+        // console.log(res.data);
+        const historyArray = res.data.filter((item) => item.newStatus === stepKey);
+        historyData.value = historyArray[historyArray.length - 1];
+        // console.log(historyData.value);
+        Swal.fire({
+            icon: 'info',
+            title: `${historyData.value.oldStatus} -> ${historyData.value.newStatus}`,
+            html: `狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}`,
+            showConfirmButton: true,
+            confirmButtonText: '確定'
+        });
 
+
+    } catch (err) {
+        // console.error('載入意見回饋歷史失敗', err);
+        Swal.fire({
+            icon: 'error',
+            title: '載入失敗',
+            text: '處理歷程目前無法載入。'
+        });
+    }
+};
 const getImageAttachments = (feedback) => {
     return feedback.attachments?.filter(a => a.mimeType?.startsWith('image/')) || []
 }
@@ -457,5 +500,87 @@ ul {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     /* 加陰影 */
     transition: all 0.3s ease;
+}
+
+:deep(.feedback-progress-container) {
+    padding: 15px;
+    background-color: #f2f4f8;
+    border-radius: 8px;
+    color: #333333;
+}
+
+:deep(.progress-title) {
+    margin-bottom: 15px;
+    color: #444444;
+}
+
+:deep(.progress-steps) {
+    position: relative;
+    padding: 10px 10px;
+}
+
+:deep(.progress-step) {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    position: relative;
+    cursor: pointer;
+}
+
+:deep(.step-connector) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 12px;
+}
+
+:deep(.circle) {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid #ccc;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #333333;
+    transition: all 0.3s ease;
+}
+
+:deep(.circle.reached) {
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    border-color: #888888;
+}
+
+:deep(.vertical-line) {
+    width: 4px;
+    height: 30px;
+    background-color: #d0d7e2;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+:deep(.step-content) {
+    display: flex;
+    flex-direction: column;
+}
+
+:deep(.label) {
+    font-size: 0.95em;
+    font-weight: 400;
+    color: #444;
+    margin-top: 4px;
+}
+
+:deep(.step-date) {
+    font-size: 0.8em;
+    color: #888888;
+    margin-top: 4px;
+}
+
+:deep(.current-status) {
+    color: #3429ff;
+    font-weight: 600;
 }
 </style>

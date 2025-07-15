@@ -1,6 +1,6 @@
 <template>
     <div class="feedback-progress-container mt-4">
-        <h6>處理進度：</h6>
+        <h6 class="progress-title ">處理進度：</h6>
         <div class="progress-steps d-flex flex-column align-items-start">
             <div v-for="(step, index) in steps" :key="index" class="progress-step"
                 @click="emitShowHistory(step.status)">
@@ -96,7 +96,7 @@ const emitShowHistory = (status) => {
     color: #ffffff;
 }
 
-h6 {
+.progress-title {
     margin-bottom: 15px;
     color: #e0e0e0;
 }

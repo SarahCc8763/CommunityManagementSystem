@@ -43,7 +43,9 @@
                                 :class="getCategoryBadgeClass(faq.category)">
                                 {{ faq.category }}
                             </span>
-                            <span style="font-size: 120%;">{{ faq.question }}</span>
+                            <span style="font-size: 120%;">{{ faq.question }} <small v-if="!faq.postStatus"
+                                    class="text-secondary">( 未公開
+                                    )</small></span>
                         </button>
                     </h2>
                     <div :id="`collapse-${faq.id}`" class="accordion-collapse collapse"

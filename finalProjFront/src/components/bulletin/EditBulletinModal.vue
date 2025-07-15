@@ -16,7 +16,7 @@
 
             <div class="mb-3">
                 <label class="form-label">內容</label>
-                <textarea v-model="form.description" class="form-control" rows="10" required></textarea>
+                <textarea v-model="form.description" class="form-control" rows="10"></textarea>
             </div>
 
             <div class="mb-3">
@@ -27,7 +27,10 @@
                     </option>
                 </select>
             </div>
-
+            <div class="mb-3">
+                <label class="form-label">發布時間</label>
+                <input type="datetime-local" v-model="form.postTime" class="form-control" />
+            </div>
             <div class="mb-3">
                 <label class="form-label">下架時間</label>
                 <input type="datetime-local" v-model="form.removeTime" class="form-control" required />
@@ -103,6 +106,7 @@ const form = ref({
     title: '',
     description: '',
     categoryName: '',
+    postTime: '',
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
@@ -116,6 +120,7 @@ watch(() => props.bulletin, (val) => {
         form.value.title = val.title
         form.value.description = val.description
         form.value.categoryName = props.categoryList.find(c => c.name === val.categoryName)?.name || null
+        form.value.postTime = val.postTime?.slice(0, 16) || ''
         form.value.removeTime = val.removeTime?.slice(0, 16) || ''
         form.value.existingAttachments = val.attachments || []
         form.value.newAttachments = []
@@ -185,6 +190,7 @@ function submitEdit() {
             user: {
                 usersId: props.usersId
             },
+            postTime: form.value.postTime,
             removeTime: form.value.removeTime,
             attachments: form.value.existingAttachments.map(att => ({
                 fileName: att.fileName,
