@@ -80,8 +80,8 @@
                             <ul class="list-group">
                                 <li v-for="att in selectedBulletin.attachments" :key="att.id"
                                     class="list-group-item list-group-item-action m-2">
-                                    <a :href="`http://localhost:8080/api/bulletin/attachments/${att.id}`"
-                                        target="_blank">{{ att.fileName }}</a>
+                                    <a :href="`${url}/api/bulletin/attachments/${att.id}`" target="_blank">{{
+                                        att.fileName }}</a>
                                 </li>
                             </ul>
                         </div>
@@ -203,6 +203,7 @@ import Swal from 'sweetalert2'
 import BarChart from '@/components/bulletin/BarChart.vue'
 
 
+
 import BannerImage from '@/components/forAll/BannerImage.vue';
 import maleIcon from '@/assets/images/bulletin/male.png'
 import femaleIcon from '@/assets/images/bulletin/female.png'
@@ -220,6 +221,7 @@ const bulletins = ref([])
 const selectedBulletin = ref(null)
 const selectedOptions = ref([])
 // 方法用
+const url = import.meta.env.VITE_API_URL
 const newComment = ref('')
 const replyContent = ref('')
 const replyingToId = ref(null)
