@@ -99,7 +99,7 @@
             <h2 class="serif-title text-center mb-4 fw-bold">社區功能導覽</h2>
             <div class="row g-4">
                 <div class="col-md-4" v-for="feature in features" :key="feature.title">
-                    <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature.link)">
+                    <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature)">
                         <div class="card-body text-center">
                             <i :class="['bi', feature.icon, 'animated-icon']" class="display-4 text-success mb-3"></i>
                             <h5 class="card-title fw-bold">{{ feature.title }}</h5>
@@ -123,10 +123,11 @@
 import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 const router = useRouter();
 
-const navigate = (link) => {
+const navigate = (feature) => {
     // 有改---------------------------------
     // if (link) router.push(link);
     if(userStore.roleId == 2 && feature.linkSecurity){
@@ -140,7 +141,7 @@ const features = [
         icon: 'bi-box-seam',
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
-        link: '/package',
+        link: '/packages',
         linkSecurity:'/packages_security'
     },
     {
@@ -153,7 +154,7 @@ const features = [
         icon: 'bi-person-circle',
         title: '帳戶資訊',
         description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/account'
+        link: '/profile'
     },
     {
         icon: 'bi-megaphone',
