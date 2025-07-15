@@ -127,7 +127,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 const router = useRouter();
 
 const navigate = (link) => {
-    if (link) router.push(link);
+    // 有改---------------------------------
+    // if (link) router.push(link);
+    if(userStore.roleId == 2 && feature.linkSecurity){
+        router.push(feature.linkSecurity)
+    }else if (feature.link) router.push(feature.link);
+    // 有改---------------------------------
 };
 
 const features = [
@@ -135,7 +140,8 @@ const features = [
         icon: 'bi-box-seam',
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
-        link: '/package'
+        link: '/package',
+        linkSecurity:'/packages_security'
     },
     {
         icon: 'bi-car-front-fill',
