@@ -13,38 +13,48 @@ import finalProj.domain.parking.ParkingSlot;
 public interface ParkingRentalsRepository extends JpaRepository<ParkingRentals, Integer> {
 
 	List<ParkingRentals> findByParkingSlotId(Integer parkingSlotId);
-
+	
 	@Query("""
-			    SELECT ps
-			    FROM ParkingSlot ps
-			    WHERE ps.parkingType.id = :parkingTypeId
-			      AND ps.isRentable = true
-			      AND ps.id NOT IN (
-			        SELECT pr.parkingSlot.id
-			        FROM ParkingRentals pr
-			        WHERE (
-			          pr.rentBuyStart <= :end AND pr.rentEnd >= :start
-			        )
-			      )
-			""")
+		SELECT ps
+		FROM ParkingSlot ps
+		WHERE ps.parkingType.id = :parkingTypeId
+		AND ps.isRentable = true
+		AND ps.id NOT IN (
+			SELECT pr.parkingSlot.id
+			FROM ParkingRentals pr
+			WHERE (
+				pr.rentBuyStart <= :end AND pr.rentEnd >= :start
+				)
+				)
+				""")
 	List<ParkingSlot> findAvailableSlotsByTypeAndPeriod(
-			@Param("parkingTypeId") Integer parkingTypeId,
-			@Param("start") Date start,
-			@Param("end") Date end);
-
+		@Param("parkingTypeId") Integer parkingTypeId,
+		@Param("start") Date start,
+		@Param("end") Date end);
+					
 	@Query("""
-			    SELECT r FROM ParkingRentals r
-			    WHERE r.community.id = :communityId
-				  AND r.parkingSlot.id = :slotId
-			      AND (:startDate IS NULL OR r.rentBuyStart >= :startDate)
-			""")
+		SELECT r FROM ParkingRentals r
+		WHERE r.community.id = :communityId
+		AND r.parkingSlot.id = :slotId
+		AND (:startDate IS NULL OR r.rentBuyStart >= :startDate)
+		""")
 	List<ParkingRentals> findHistoryBySlotIdAndStartDate(
-			@Param("communityId") Integer communityId,
-			@Param("slotId") Integer slotId,
-			@Param("startDate") Date startDate);
-
+		@Param("communityId") Integer communityId,
+		@Param("slotId") Integer slotId,
+		@Param("startDate") Date startDate);
+		
 	List<ParkingRentals> findByCommunity_CommunityId(Integer communityId);
-
+	
 	List<ParkingRentals> findByUsers_UsersId(Integer usersId);
-
+	
+	@Query("""
+		SELECT r FROM ParkingRentals r
+		WHERE r.parkingSlot.id IN :slotIds
+		AND (
+			(r.rentBuyStart < :endDate AND r.rentEnd > :startDate)
+			)
+			""")
+	List<ParkingRentals> findConflictingRentals(@Param("slotIds") List<Integer> slotIds,
+		@Param("startDate") Date startDate,
+		@Param("endDate") Date endDate);
 }

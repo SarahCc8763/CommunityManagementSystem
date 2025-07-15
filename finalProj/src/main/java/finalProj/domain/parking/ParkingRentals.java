@@ -71,7 +71,7 @@ public class ParkingRentals {
 
 	// 是否已審核
 	@Column(name = "approved", nullable = false)
-	private Boolean approved = false;
+	private Boolean approved;
 
 	// 最後更新時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")

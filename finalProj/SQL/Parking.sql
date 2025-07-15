@@ -184,12 +184,14 @@ CREATE TABLE lottery_events (
     title NVARCHAR(50) NOT NULL,                          -- 標題
     started_at DATETIME NOT NULL,                         -- 開始時間
     ended_at DATETIME NOT NULL,                           -- 結束時間
-    created_at DATETIME DEFAULT GETDATE(),                         -- 創建時間
+    created_at DATETIME DEFAULT GETDATE(),                -- 創建時間
+	rental_start DATETIME NOT NULL,
+	rental_end DATETIME NOT NULL,
     status BIT NOT NULL,                                  -- 是否已抽籤
 
     -- 外鍵約束
     CONSTRAINT FK_lottery_event_bulletin FOREIGN KEY (bulletin_id)
-        REFERENCES bulletin(id),                          -- bulletin.id 為主鍵
+        REFERENCES [dbo].[bulletin](bulletin_id),                          -- bulletin.id 為主鍵
 
     CONSTRAINT FK_lottery_event_users FOREIGN KEY (users_id)
         REFERENCES users(users_id),
@@ -200,13 +202,13 @@ CREATE TABLE lottery_events (
 
 INSERT INTO lottery_events (
     bulletin_id, created_at, ended_at, started_at,
-    [status], title, parking_type_id, users_id
+    [status], title, parking_type_id, users_id, rental_start, rental_end
 )
 VALUES
-(20, '2025-07-14 18:03:33', '2025-07-14 14:25:00', '2025-07-14 14:24:00', 1, N'112年電動車位抽籤', 3, 1),
-(21, '2025-07-14 17:37:44', '2025-07-15 14:37:00', '2025-07-15 14:37:00', 0, N'114年機車位抽籤', 2, 1),
-(22, '2025-07-14 17:20:11', '2025-07-06 15:06:00', '2025-07-06 15:06:00', 0, N'113年汽車位抽籤', 1, 1),
-(23, '2025-07-14 17:24:05', '2025-07-16 17:20:00', '2025-07-15 17:20:00', 0, N'114年殘障車位抽籤', 4, 1);
+(20, '2025-07-14 18:03:33', '2025-07-14 14:25:00', '2025-07-14 14:24:00', 1, N'112年電動車位抽籤', 3, 1, '2023-07-01', '2023-07-31'),
+(21, '2025-07-14 17:37:44', '2025-07-15 14:37:00', '2025-07-15 14:37:00', 0, N'114年機車位抽籤', 2, 1, '2025-07-01', '2025-07-31'),
+(22, '2025-07-14 17:20:11', '2025-07-06 15:06:00', '2025-07-06 15:06:00', 0, N'113年汽車位抽籤', 1, 1, '2024-07-01 ', '2024-07-31'),
+(23, '2025-07-14 17:24:05', '2025-07-16 17:20:00', '2025-07-15 17:20:00', 0, N'114年殘障車位抽籤', 4, 1, '2025-07-01', '2025-07-31');
 
 CREATE TABLE lottery_event_spaces (
     id INT IDENTITY(1,1) PRIMARY KEY,               -- 流水號

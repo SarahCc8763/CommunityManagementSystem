@@ -58,6 +58,12 @@
           
           <label class="form-label fw-semibold">結束時間：</label>
           <input type="datetime-local" v-model="form.endedAt" class="form-control" />
+
+          <label class="form-label fw-semibold">承租起始日：</label>
+          <input type="month" v-model="form.rentalStart" class="form-control" :min="minMonth" />
+          
+          <label class="form-label fw-semibold">承租截止日：</label>
+          <input type="month" v-model="form.rentalEnd" class="form-control" :min="minMonth" />
           
           <!-- 想要抽的數量 -->
           <label class="form-label fw-semibold">想要抽的車位數量：</label>
@@ -188,22 +194,64 @@ function formatDateTime(datetimeStr) {
 const parkingSlots = ref([])
 const fetchParkingSlots = async () => {
   console.log('typeId' + form.value.typeId)
-  if (!form.value.typeId || !form.value.startedAt || !form.value.endedAt) return
+  if (!form.value.typeId || !form.value.rentalStart || !form.value.rentalEnd) return
   console.log('觸發車位查詢', {
     communityId,
     typeId: form.value.typeId,
-    eventStart: formatDateTime(form.value.startedAt),
-    eventEnd: formatDateTime(form.value.endedAt)
+    rentalStart: getFirstDayOfMonth(form.value.rentalStart),
+    rentalEnd: getLastDayOfMonth(form.value.rentalEnd)
   })
   const res = await axios.post('/park/parking-slots/available', {
       communityId: communityId,
       typeId: form.value.typeId,
-      eventStart: formatDateTime(form.value.startedAt),
-      eventEnd: formatDateTime(form.value.endedAt),
-      limit: 10
+      eventStart: getFirstDayOfMonth(form.value.rentalStart),
+      eventEnd: getLastDayOfMonth(form.value.rentalEnd),
+      limit: 50
   })
   parkingSlots.value = res.data.data
   console.log(parkingSlots.value);
+}
+
+// 最小可選月份：本月
+const minMonth = new Date().toISOString().slice(0, 7)
+
+// 補足日期為每月 1 號
+function getFirstDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1
+  } else {
+    return '-'
+  }
+
+  const yyyy = year
+  const mm = String(month).padStart(2, '0')
+  return `${yyyy}-${mm}-01`
+}
+
+
+// 補足日期為每月最後一天
+function getLastDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1 // getMonth() 是 0-based，要補回來
+  } else {
+    return '-'
+  }
+
+  const date = new Date(year, month, 0) // 該月最後一天
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
 }
 
 // 設定新增或編輯模式
@@ -235,6 +283,8 @@ function openCreateModal() {
     typeId: '',
     startedAt: '',
     endedAt: '',
+    rentalStart: '',
+    rentalEnd: '',
     usersId,
     createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
     parkingSlotIds: [],
@@ -259,6 +309,8 @@ async function openEditModal(event) {
     typeId: event.typeId,
     startedAt: event.startedAt.slice(0, 16),
     endedAt: event.endedAt.slice(0, 16),
+    rentalStart: event.rentalStart.slice(0, 7),
+    rentalEnd: event.rentalEnd.slice(0, 7),
     usersId,
     createdAt: event.createdAt,
     parkingSlotIds: event.parkingSlotIds,
@@ -279,8 +331,25 @@ async function openEditModal(event) {
   modalInstance.show()
 }
 
+// Modal：起始月變更 → 自動修正截止月不得早於 +1 月
+watch(() => [form.value.rentalStart, form.value.rentalEnd], ([start, end]) => {
+  console.log('觸發watch');
 
-watch(() => [form.value.typeId, form.value.startedAt, form.value.endedAt], () => {
+  if (!start) return;
+
+  const startDate = new Date(`${start}-01`);
+  const minEndDate = new Date(startDate);
+  minEndDate.setMonth(startDate.getMonth()); // 你說不加一 → OK
+
+  const minEndStr = minEndDate.toISOString().slice(0, 7);
+
+  if (!end || end < minEndStr) {
+    form.value.rentalEnd = minEndStr;
+  }
+});
+
+
+watch(() => [form.value.typeId, form.value.rentalStart, form.value.rentalEnd], () => {
   if (ignoreFormWatch.value) return
   fetchParkingSlots()
 
@@ -356,13 +425,18 @@ async function submitForm() {
     desiredSlotCount.value = rawSlotIds.value.length
   }
   console.log(form.value.typeId);
-  if (!form.value.title || !form.value.typeId || !form.value.startedAt || !form.value.endedAt) {
+  if (!form.value.title || !form.value.typeId || !form.value.startedAt || !form.value.endedAt || !form.value.rentalStart || !form.value.rentalEnd) {
     Swal.fire('請填寫所有欄位', '', 'warning')
     return
   }
 
   if (new Date(form.value.startedAt) >= new Date(form.value.endedAt)) {
-    Swal.fire('起始時間需早於結束時間', '', 'warning')
+    Swal.fire('活動起始時間需早於結束時間', '', 'warning')
+    return
+  }
+
+  if (new Date(form.value.rentalStart) > new Date(form.value.rentalEnd)) {
+    Swal.fire('承租起始時間需早於結束時間', '', 'warning')
     return
   }
 
@@ -375,6 +449,8 @@ async function submitForm() {
     ...form.value,
     startedAt: formatDateTime(form.value.startedAt),
     endedAt: formatDateTime(form.value.endedAt),
+    rentalStart: getFirstDayOfMonth(form.value.rentalStart),
+    rentalEnd: getLastDayOfMonth(form.value.rentalEnd),
     parkingSlotIds: rawSlotIds.value.map(id => ({ parkingSlotId: id }))
   }
 
@@ -672,6 +748,9 @@ select.form-select {
   appearance: auto;
 }
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+input[type="month"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 .text-muted {

@@ -19,6 +19,7 @@ import finalProj.domain.community.Community;
 import finalProj.domain.parking.LotteryApply;
 import finalProj.domain.parking.LotteryEventSpace;
 import finalProj.domain.parking.LotteryEvents;
+import finalProj.domain.parking.ParkingRentals;
 import finalProj.domain.parking.ParkingSlot;
 import finalProj.domain.parking.ParkingType;
 import finalProj.domain.users.Users;
@@ -32,6 +33,7 @@ import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.parking.LotteryApplyRepository;
 import finalProj.repository.parking.LotteryEventRepository;
 import finalProj.repository.parking.LotteryEventSpaceRepository;
+import finalProj.repository.parking.ParkingRentalsRepository;
 import finalProj.repository.parking.ParkingSlotRepository;
 import finalProj.repository.parking.ParkingTypeRepository;
 import finalProj.repository.users.UsersRepository;
@@ -70,6 +72,9 @@ public class LotteryEventService {
 	@Autowired
 	private BulletinService bulletinService;
 
+	@Autowired
+	private ParkingRentalsRepository parkingRentalsRepository;
+
 	// 查詢所有抽籤活動
 	public List<LotteryEvents> findAll() {
 		return repository.findAll();
@@ -87,20 +92,20 @@ public class LotteryEventService {
 		Set<LotteryEventSpaceDTO> parkingSlots = event.getParkingSlotIds();
 
 		if (parkingSlots == null || parkingSlots.isEmpty()) {
-			return null;
+			throw new IllegalArgumentException("車位不可為空");
 		}
 
 		if (title == null || title.trim().isEmpty()) {
-			return null;
+			throw new IllegalArgumentException("標題不可為空");
 		}
 
 		if (startedAt == null || endedAt == null || rentalStart == null || rentalEnd == null) {
-			return null;
+			throw new IllegalArgumentException("時間不可為空");
 		}
 
 		Users user = usersRepository.findByUsersId(usersId);
 		if (user == null) {
-			return null;
+			throw new IllegalArgumentException("使用者不可為空");
 		}
 
 		Community community = communityRepository.findByCommunityId(communityId);
@@ -149,6 +154,25 @@ public class LotteryEventService {
 		}).toList();
 
 		List<LotteryEventSpace> savedSpaces = lotteryEventSpaceRepository.saveAll(newSpaces);
+
+		// ✅ 活動建立者先以承租者名義保留這些車位
+		List<ParkingRentals> reservedRentals = savedSpaces.stream().map(space -> {
+			ParkingRentals rental = new ParkingRentals();
+			rental.setCommunity(community);
+			rental.setParkingSlot(space.getParkingSlot());
+			rental.setUsers(user);
+			rental.setRentBuyStart(rentalStart);
+			rental.setRentEnd(rentalEnd);
+			rental.setLicensePlate("抽籤車位");
+			rental.setStatus(false);
+			rental.setApproved(true);
+			rental.setCreatedAt(new Date());
+			rental.setUpdatedAt(new Date());
+			return rental;
+		}).toList();
+		
+		parkingRentalsRepository.saveAll(reservedRentals);
+
 
 		// 組裝回傳 DTO
 		LotteryEventUpdateRequest response = new LotteryEventUpdateRequest();
@@ -264,6 +288,46 @@ public class LotteryEventService {
 
 		List<LotteryEventSpace> savedSpaces = lotteryEventSpaceRepository.saveAll(newSpaces);
 
+		// ✅ 活動建立者先預約保留的新車位 ID
+		List<Integer> slotIds = savedSpaces.stream()
+			.map(space -> space.getParkingSlot().getId())
+			.toList();
+
+		// ✅ 查詢有時間重疊的承租紀錄（用車位與時間判斷）
+		List<ParkingRentals> conflictingRentals = parkingRentalsRepository.findConflictingRentals(
+			slotIds, rentalStart, rentalEnd
+			);
+
+		// ✅ 篩選掉不是本活動建立者或非系統預留的紀錄（避免誤刪）
+		List<ParkingRentals> toDelete = conflictingRentals.stream()
+			.filter(r -> r.getUsers().getUsersId().equals(usersId) &&
+			"抽籤車位".equals(r.getLicensePlate()) &&
+			Boolean.TRUE.equals(r.getApproved()) &&
+			Boolean.FALSE.equals(r.getStatus()))
+			.toList();
+
+			// ✅ 執行刪除
+		parkingRentalsRepository.deleteAll(toDelete);
+
+		// ✅ 重新新增這次活動車位的保留紀錄
+		List<ParkingRentals> reservedRentals = savedSpaces.stream().map(space -> {
+			ParkingRentals rental = new ParkingRentals();
+			rental.setCommunity(type.getCommunity()); // 用活動的社區
+			rental.setParkingSlot(space.getParkingSlot());
+			rental.setUsers(user); // 活動建立者
+			rental.setRentBuyStart(rentalStart);
+			rental.setRentEnd(rentalEnd);
+			rental.setLicensePlate("抽籤車位"); // 系統保留標記
+			rental.setStatus(false); // 尚未實際承租
+			rental.setApproved(true); // 系統自動通過
+			rental.setCreatedAt(new Date());
+			rental.setUpdatedAt(new Date());
+			return rental;
+		}).toList();
+		
+		parkingRentalsRepository.saveAll(reservedRentals);
+
+
 		// 組裝回傳 DTO
 		LotteryEventUpdateRequest response = new LotteryEventUpdateRequest();
 		response.setId(existing.getBulletinId());
@@ -304,7 +368,6 @@ public class LotteryEventService {
 	}
 
 	// 抽籤
-	@Transactional
 	public DrawLotsResultDTO drawLotsForEvent(Integer eventId) {
 		LotteryEvents event = repository.findById(eventId).orElseThrow(() -> new RuntimeException("活動不存在"));
 
@@ -339,8 +402,50 @@ public class LotteryEventService {
 		}
 
 		lotteryApplyRepository.saveAll(applies);
-
 		event.setStatus(true); // 抽籤完成
+
+		// 1️⃣ 找出所有該活動預約的租用紀錄（抽籤活動建立時預留的）
+		List<Integer> slotIds = spaces.stream()
+        .map(space -> space.getParkingSlot().getId())
+        .toList();
+
+		List<ParkingRentals> reservedRentals = parkingRentalsRepository.findConflictingRentals(
+			slotIds, event.getRentalStart(), event.getRentalEnd()
+			);
+
+		// 2️⃣ 將中籤的租用紀錄改成中籤者的名義
+		for (int i = 0; i < winnersCount; i++) {
+			LotteryApply apply = applies.get(i);
+			LotteryEventSpace space = spaces.get(i);
+			ParkingRentals reserved = reservedRentals.stream()
+			.filter(r -> r.getParkingSlot().getId().equals(space.getParkingSlot().getId()))
+			.findFirst()
+			.orElse(null);
+			
+			if (reserved != null) {
+				reserved.setUsers(apply.getUsers());
+				reserved.setLicensePlate(""); // ✅ 清除原本的 "抽籤車位"
+				reserved.setUpdatedAt(new Date());
+			}
+		}
+				
+		// 3️⃣ 將未中籤對應的車位預約紀錄刪除（超過中籤人數的部分）
+		if (spaces.size() > winnersCount) {
+			List<Integer> unclaimedSlotIds = spaces.subList(winnersCount, spaces.size()).stream()
+			.map(space -> space.getParkingSlot().getId())
+			.toList();
+			
+			List<ParkingRentals> toDelete = reservedRentals.stream()
+			.filter(r -> unclaimedSlotIds.contains(r.getParkingSlot().getId()))
+			.toList();
+
+			parkingRentalsRepository.deleteAll(toDelete);
+		}
+
+		// 4️⃣ 儲存更新後的租用紀錄
+		parkingRentalsRepository.saveAll(reservedRentals);
+
+
 		repository.save(event);
 
 		return new DrawLotsResultDTO(eventId, applies.size(), spaces.size(), winners);
@@ -348,13 +453,40 @@ public class LotteryEventService {
 
 	// 刪除抽籤活動
 	public Boolean delete(Integer id) {
-		if (id != null && bulletinEventRepository.existsById(id)) {
-			bulletinEventRepository.deleteById(id);
-
-			return true;
-
+		if (id == null || !bulletinEventRepository.existsById(id)) {
+			return false;
 		}
-		return false;
-	}
+
+		// 1️⃣ 找出活動資料
+		LotteryEvents event = repository.findById(id).orElse(null);
+		if (event == null) {
+			return false;
+		}
+
+		// 2️⃣ 找出所有抽籤車位
+		List<LotteryEventSpace> spaces = lotteryEventSpaceRepository.findByLotteryEvents_BulletinId(id);
+		List<Integer> slotIds = spaces.stream()
+		.map(s -> s.getParkingSlot().getId())
+		.toList();
+
+		// 3️⃣ 刪除該活動期間的預留租用紀錄（用時間+車位查）
+		List<ParkingRentals> reservedRentals = parkingRentalsRepository.findConflictingRentals(
+			slotIds, event.getRentalStart(), event.getRentalEnd()
+			);
+
+		List<ParkingRentals> toDelete = reservedRentals.stream()
+			.filter(r -> "抽籤車位".equals(r.getLicensePlate()) &&
+			Boolean.TRUE.equals(r.getApproved()) &&
+			Boolean.FALSE.equals(r.getStatus()))
+			.toList();
+			
+		parkingRentalsRepository.deleteAll(toDelete);
+			
+	// 4️⃣ 刪除公告（連帶 LotteryEvents, LotteryApply, LotteryEventSpace 如有設 cascade）
+	bulletinEventRepository.deleteById(id);
+
+	return true;
+}
+
 
 }

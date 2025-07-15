@@ -114,12 +114,12 @@ public class LotteryEventController {
 		try {
 			LotteryEventUpdateRequest saved = service.create(dto, communityId);
 			if (saved == null) {
-				System.out.println("有進到Controller");
+				System.out.println("有進到Controller null");
 				return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：輸入資料錯誤"));
 			}
 			return ResponseEntity.ok(ApiResponse.success("新增成功", saved));
 		} catch (Exception e) {
-			System.out.println("有進到Controller");
+			System.out.println("有進到Controller Exception");
 			return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：" + e.getMessage()));
 		}
 	}

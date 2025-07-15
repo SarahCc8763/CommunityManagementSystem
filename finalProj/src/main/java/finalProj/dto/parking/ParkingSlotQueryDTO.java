@@ -12,10 +12,10 @@ public class ParkingSlotQueryDTO {
 
 	private Integer typeId;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	private Date eventStart;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
 	private Date eventEnd;
 
 	private Integer limit;
