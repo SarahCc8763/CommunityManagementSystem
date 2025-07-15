@@ -56,8 +56,8 @@ CREATE TABLE users
     create_at DATETIME DEFAULT GETDATE(),
     last_alter_at DATETIME NOT NULL,
     -- ast_alter_at 是否not null?
-    photo NVARCHAR(MAX),  -- 儲存圖片 URL
-    email NVARCHAR(100)UNIQUE,
+    photo NVARCHAR(500),  -- 儲存圖片 URL
+    email NVARCHAR(100) UNIQUE,
     -- 唯一索引
     community_id INT,
     -- 外鍵欄位
