@@ -291,8 +291,6 @@ const menuList = ref([
     children: [
       { label: '待領包裹', routeName: 'packages', key: 'PACKAGEPENDING' },
       { label: '領取紀錄', routeName: 'packages_picked', key: 'PACKAGEHISTORY' },
-      { label: '管理員包裹查詢', routeName: 'packages_security', key: 'PACKAGESEARCH' },
-      { label: '新增包裹', routeName: 'addPackage', key: 'ADDPACKAGE' }
     ]
   },
   {
