@@ -281,7 +281,7 @@
 
 <script setup>
 import { ref, onMounted, computed ,watch} from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -347,12 +347,12 @@ onMounted(() => {
 })
 
 async function fetchUsers() {
-  const res = await axios.get('http://localhost:8080/users/ticket')
+  const res = await axios.get('/users/ticket')
   users.value = res.data.map(u => ({ id: u.usersId, name: u.name }))
 }
 
 async function fetchIssueTypes() {
-  const res = await axios.get('http://localhost:8080/IssueTypes')
+  const res = await axios.get('/IssueTypes')
   issueTypes.value = res.data
 }
 
@@ -413,10 +413,10 @@ async function fetchTickets(searchPayload = null) {
     }
 
     const [ticketRes, assignRes, vendorRes] = await Promise.all([
-    axios.post('http://localhost:8080/ticket/search', payload),
+    axios.post('/ticket/search', payload),
       // axios.get('http://localhost:8080/ticket'),
-      axios.get('http://localhost:8080/TicketToAdministrator'),
-      axios.get('http://localhost:8080/vendors')
+      axios.get('/TicketToAdministrator'),
+      axios.get('/vendors')
     ])
 
     vendors.value = vendorRes.data
@@ -478,7 +478,7 @@ async function confirmAssign(ticket) {
       vendorIds: ticket.selectedVendorIds
     }
     console.log('🚀 準備送出指派資料：', payload)
-    await axios.post('http://localhost:8080/TicketToAdministrator/assign', payload)
+    await axios.post('/TicketToAdministrator/assign', payload)
  // ✅ 再補送 PUT 更新 assignerId
  const putPayload = {
       reporterId: ticket.reporter?.usersId || ticket.reporterId || 1,  // 避免 undefined，預設 1
@@ -492,7 +492,7 @@ async function confirmAssign(ticket) {
     }
     console.log('🚀 準備送出 PUT 資料：', putPayload)
 
-    await axios.put(`http://localhost:8080/ticket/${ticket.id}`, putPayload)
+    await axios.put(`/ticket/${ticket.id}`, putPayload)
 
     await fetchTickets()
 
