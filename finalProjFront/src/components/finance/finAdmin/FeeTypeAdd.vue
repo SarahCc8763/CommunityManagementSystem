@@ -1,6 +1,6 @@
 <template>
 
-  <div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;">
+  <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
     <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
   </div>
 
@@ -8,13 +8,14 @@
 
 
   <!-- 新增費用類別 Modal -->
-  <div class="modal fade" id="feeTypeModal" tabindex="-1" aria-labelledby="feeTypeModalLabel" aria-hidden="true">
+  <div class="modal fade" id="feeTypeModal" tabindex="-1" aria-labelledby="feeTypeModalLabel" aria-hidden="true"
+    ref="addModalRef">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <form @submit.prevent="submitForm">
           <div class="modal-header">
             <h5 class="modal-title" id="feeTypeModalLabel">新增費用類別</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            <button type="button" class="btn-close" data-bs-dismiss="modal" @click="closeAddModal"></button>
           </div>
           <div class="modal-body">
             <div class="container-fluid">
@@ -37,6 +38,7 @@
                     <option value="每戶">每戶</option>
                     <option value="每坪">每坪</option>
                     <option value="每住戶">每住戶</option>
+                    <option value="每住戶">每人</option>
                     <option value="其他">其他</option>
                   </select>
                   <input v-if="form.unit === '其他'" v-model="customUnit" @input="form.unit = customUnit"
@@ -96,7 +98,7 @@
         <form @submit.prevent="submitEditForm">
           <div class="modal-header">
             <h5 class="modal-title" id="editFeeTypeModalLabel">修改費用類別</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="container-fluid">
@@ -153,7 +155,7 @@
       <div class="tag-style px-4 py-2" :class="{ 'dark-mode': isDarkMode }">
         <h4 class="mb-0 fw-bold text-primary section-title">費用類別列表</h4>
       </div>
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#feeTypeModal">
+      <button class="btn btn-success" @click="openAddModal">
         新增費用類別
       </button>
     </div>
@@ -182,7 +184,7 @@
             <td>{{ item.frequency }}</td>
             <td>{{ item.note }}</td>
             <td class="text-center">
-              <span class="badge" :class="item.status ? 'badge-success' : 'badge-secondary'">
+              <span class="badge" :class="item.status ? 'badge-success' : 'badge-danger'">
                 {{ item.status ? '啟用' : '停用' }}
               </span>
             </td>
@@ -256,9 +258,10 @@ const submitForm = async () => {
       communityId: null,
       status: true
     }
-    const modalEl = document.getElementById('feeTypeModal')
-    const modal = bootstrap.Modal.getInstance(modalEl)
-    modal?.hide()
+
+    // modal?.hide()
+    addModalInstance.hide()
+    // closeAddModal()
     await fetchFeeTypes()
   } catch (e) {
     if (e.response?.status === 409) {
@@ -308,4 +311,33 @@ const deleteFeeType = async (id) => {
 }
 
 onMounted(fetchFeeTypes)
+
+
+
+
+
+// 開 Modal 公式
+const addModalRef = ref(null) // 綁在Modal的ref上
+let addModalInstance = null // 定義一個變數來存 bootstrap.Modal 的實例
+
+onMounted(() => {
+  addModalInstance = new bootstrap.Modal(addModalRef.value)
+})
+
+const openAddModal = () => {
+  addModalInstance.show()
+}
+
+const closeAddModal = () => {
+  addModalInstance.hide()
+}
+
 </script>
+
+<style scoped>
+.container {
+  max-width: 1150px;
+  padding-top: 30px;
+  border-radius: 15px;
+}
+</style>

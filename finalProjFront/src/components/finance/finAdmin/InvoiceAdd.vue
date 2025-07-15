@@ -1,6 +1,6 @@
 <template>
 
-<div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;">
+  <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
     <BannerImage :imageSrc="OO" heading="繳款單設定" subtext="您可以在此新增繳款單, 透過簡易生成器一鍵生成下月繳款單, 或是自訂繳款單。" textAlign="left" />
   </div>
 
@@ -21,7 +21,8 @@
                 </option>
               </select>
               <div v-if="selectedFeeType">
-                <div class="mt-2 small text-secondary">單位：{{ selectedFeeType.unit }}　每單位費用：{{ selectedFeeType.amountPerUnit }}
+                <div class="mt-2 small text-secondary">單位：{{ selectedFeeType.unit }}　每單位費用：{{
+                  selectedFeeType.amountPerUnit }}
                 </div>
               </div>
             </div>
@@ -52,7 +53,8 @@
           </div>
           <div v-if="showConfirm" class="alert alert-info mt-3">
             <div>
-              將以每 <b>{{ confirmData.unit }}</b> 新台幣 <b>{{ confirmData.amountPerUnit }}</b> 元整產生 <b>{{ confirmData.periodName }}</b> 繳費通知<br>
+              將以每 <b>{{ confirmData.unit }}</b> 新台幣 <b>{{ confirmData.amountPerUnit }}</b> 元整產生 <b>{{
+                confirmData.periodName }}</b> 繳費通知<br>
               期別開始日: {{ formatDate(confirmData.startDate) }}<br>
               期別結束日: {{ formatDate(confirmData.endDate) }}<br>
               繳款期限: {{ formatDateTime(confirmData.dueDate) }}
@@ -74,7 +76,7 @@
                 <label class="form-label">期別 <span class="text-danger">*</span></label>
                 <select v-model="fullForm.billingPeriodId" class="form-select bg-dark text-light border-info" required>
                   <option disabled value="">請選擇期別</option>
-                  <option v-for="bp in billingPeriods" :key="bp.billingPeriodId" :value="bp.billingPeriodId">
+                  <option v-for="bp in latestBillingPeriods" :key="bp.billingPeriodId" :value="bp.billingPeriodId">
                     {{ bp.periodName }}
                   </option>
                 </select>
@@ -91,8 +93,10 @@
               <div class="col-12">
                 <label class="form-label">對象搜尋 <span class="text-danger">*</span></label>
                 <small class="text-secondary d-block mb-1">可輸入姓名、ID、UnitId、Email、電話等關鍵字</small>
-                <input v-model="userSearch" class="form-control bg-dark text-light border-info mb-2" placeholder="ex: 王小明、1001、A101、john@email.com、0912xxxxxx">
-                <div class="user-list-scroll border rounded p-2 bg-secondary" style="max-height: 260px; overflow-y: auto;">
+                <input v-model="userSearch" class="form-control bg-dark text-light border-info mb-2"
+                  placeholder="ex: 王小明、1001、A101、john@email.com、0912xxxxxx">
+                <div class="user-list-scroll border rounded p-2 bg-secondary"
+                  style="max-height: 260px; overflow-y: auto;">
                   <table class="table table-dark table-hover table-sm mb-0">
                     <thead>
                       <tr>
@@ -107,7 +111,8 @@
                     <tbody>
                       <tr v-for="user in filteredUsers" :key="user.usersId">
                         <td>
-                          <input class="form-check-input" type="checkbox" :id="'user-'+user.usersId" :value="user.usersId" v-model="fullForm.userIds">
+                          <input class="form-check-input" type="checkbox" :id="'user-' + user.usersId"
+                            :value="user.usersId" v-model="fullForm.userIds">
                         </td>
                         <td>{{ user.usersId }}</td>
                         <td>{{ user.name }}</td>
@@ -141,6 +146,7 @@ import axiosapi from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
+import { useUserStore } from '@/stores/UserStore'
 const feeTypes = ref([])
 const billingPeriods = ref([])
 const selectedFeeTypeDesc = ref('')
@@ -166,7 +172,7 @@ const fullForm = ref({
 const userSearch = ref('')
 const fullSuccessMsg = ref('')
 const fullErrorMsg = ref('')
-// mock user 資料（請串接真實 API）
+
 const allUsers = ref([])
 const filteredUsers = computed(() => {
   if (!userSearch.value) return allUsers.value
@@ -187,19 +193,21 @@ onMounted(async () => {
     feeTypes.value = res1.data
     const res2 = await axiosapi.get('/finance/billing-periods')
     billingPeriods.value = res2.data
-    // 取得所有 user 資料
-    const res3 = await axiosapi.get('/users/all')
-    allUsers.value = res3.data
+    const userRes = await axiosapi.get('/users/by-community', {
+      params: { communityId: 1 } // 或 userStore.communityId
+    })
+    allUsers.value = userRes.data
+
   } catch (e) {
     errorMsg.value = '載入資料失敗：' + (e.response?.data?.message || e.message)
   }
 })
 
 const latestBillingPeriods = computed(() => {
-  // 依 endDate 倒序取最新10筆
+  // 依 endDate 倒序取最新7筆
   return [...billingPeriods.value]
     .sort((a, b) => new Date(b.endDate) - new Date(a.endDate))
-    .slice(0, 10)
+    .slice(0, 7)
 })
 
 const onFeeTypeChange = () => {
@@ -225,31 +233,34 @@ function formatDateTime(dateStr) {
 
 // 一鍵產生下月管理費
 const prepareNextMonthManagementFee = () => {
-  // 1. 找管理費的feeType
+  const userStore = useUserStore()
+  console.log('🧪 userStore:', userStore)
+  console.log('🧪 userId:', userStore.userId)
+  // 1. 找 feeTypes 裡描述含「管理費」的那一筆
   const mgmt = feeTypes.value.find(ft => ft.description.includes('管理費'))
   if (!mgmt) {
     errorMsg.value = '找不到管理費費用類型'
     return
   }
-  // 2. 找下個月的期別（管理費）
+
+  // 2. 推算下個月的 periodCode：例如 2025-08 → 25M8
   const now = new Date()
-  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-  // 期別名稱/代碼可能格式：2025年8月/25M8/2025-08...，這裡用最接近下月的管理費
-  const mgmtPeriods = billingPeriods.value.filter(bp => bp.feeType && bp.feeType.feeTypeId === mgmt.feeTypeId)
-  let targetPeriod = null
-  let minDiff = Infinity
-  for (const bp of mgmtPeriods) {
-    const start = new Date(bp.startDate)
-    const diff = Math.abs(start.getFullYear() * 12 + start.getMonth() - (nextMonth.getFullYear() * 12 + nextMonth.getMonth()))
-    if (diff < minDiff) {
-      minDiff = diff
-      targetPeriod = bp
-    }
-  }
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1)
+  const year = nextMonth.getFullYear().toString().slice(-2)  // 25
+  const month = (nextMonth.getMonth() + 1).toString()        // 8
+  const expectedPeriodCode = `${year}M${month}`              // 25M8
+
+  // 3. 在 billingPeriods 中找出符合 periodCode 的那一筆
+  const targetPeriod = billingPeriods.value.find(bp =>
+    bp.periodCode === expectedPeriodCode
+  )
+
   if (!targetPeriod) {
-    errorMsg.value = '找不到下月管理費期別，請先建立期別'
+    errorMsg.value = `找不到下月管理費期別（${expectedPeriodCode}），請先建立期別`
     return
   }
+
+  // 4. 設定確認資料並顯示確認視窗
   confirmData.value = {
     unit: mgmt.unit,
     amountPerUnit: mgmt.amountPerUnit,
@@ -260,14 +271,19 @@ const prepareNextMonthManagementFee = () => {
     feeTypeId: mgmt.feeTypeId,
     billingPeriodId: targetPeriod.billingPeriodId
   }
+
   showConfirm.value = true
 }
 
+
 const confirmGenerate = async () => {
   try {
+    const userStore = useUserStore()
     await axiosapi.post('/finance/invoice-generator/generate', {
-      feeTypeId: confirmData.value.feeTypeId,
-      billingPeriodId: confirmData.value.billingPeriodId
+      feeType: { feeTypeId: confirmData.value.feeTypeId },
+      billingPeriod: { billingPeriodId: confirmData.value.billingPeriodId },
+      periodName: confirmData.value.periodName,
+      createdBy: userStore.userId
     })
     showConfirm.value = false
     successMsg.value = '新增成功！將導向審核頁面...'
@@ -318,18 +334,22 @@ const submitForm = async () => {
 const submitFullForm = async () => {
   fullSuccessMsg.value = ''
   fullErrorMsg.value = ''
+
   if (!fullForm.value.billingPeriodId || !fullForm.value.feeTypeId || fullForm.value.userIds.length === 0) {
     fullErrorMsg.value = '請選擇期別、費用類型與至少一位對象'
     return
   }
+
   try {
-    // 請串接真實 API
-    // await axiosapi.post('/finance/invoice-generator/batch-generate', {
-    //   billingPeriodId: fullForm.value.billingPeriodId,
-    //   feeTypeId: fullForm.value.feeTypeId,
-    //   userIds: fullForm.value.userIds
-    // })
-    fullSuccessMsg.value = '批次產生成功！（此為 mock 成功訊息）'
+    const userStore = useUserStore()
+    await axiosapi.post('/finance/invoice-generator/batch-generate', {
+      billingPeriodId: fullForm.value.billingPeriodId,
+      feeTypeId: fullForm.value.feeTypeId,
+      userIds: fullForm.value.userIds,
+      createdBy: userStore.userId
+    })
+
+    fullSuccessMsg.value = '批次產生成功！'
     fullForm.value.billingPeriodId = ''
     fullForm.value.feeTypeId = ''
     fullForm.value.userIds = []
@@ -338,30 +358,36 @@ const submitFullForm = async () => {
     fullErrorMsg.value = '批次產生失敗：' + (e.response?.data?.message || e.message)
   }
 }
+
 </script>
 
 <style scoped>
 .container-xl {
-  max-width: 1300px;
+  max-width: 1200px;
 }
+
 .card-unified {
   border-radius: 18px;
   box-shadow: 0 4px 24px rgba(60, 60, 60, 0.10);
   padding: 2rem 2rem 2.5rem 2rem;
   margin-bottom: 0;
-  margin-left: 10%;
+  margin-left: 5%;
 }
+
 .card-title-unified {
   font-size: 1.7rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
   letter-spacing: 1px;
 }
+
 .user-list-scroll {
   min-height: 60px;
   background: #23272b;
 }
-.table-dark th, .table-dark td {
+
+.table-dark th,
+.table-dark td {
   vertical-align: middle;
 }
 </style>

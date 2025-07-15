@@ -133,4 +133,10 @@ public class UsersController {
 		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
 	}
+
+	@GetMapping("/by-community")
+	public ResponseEntity<List<Users>> getUsersByCommunity(@RequestParam Integer communityId) {
+		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
+		return ResponseEntity.ok(users);
+	}
 }

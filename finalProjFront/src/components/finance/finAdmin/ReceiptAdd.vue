@@ -1,117 +1,121 @@
 <template>
+
+  <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
+  </div>
+
   <div class="container mt-4 dark-bg">
-    <h3>新增收據</h3>
-    <!-- 搜尋區塊 -->
-    <transition name="expand-search">
-      <div class="search-bar mb-3" :class="{ 'expanded': showAdvanced }">
-        <div class="row g-2 align-items-end">
-          <div class="col-12 col-md-6 mb-2 mb-md-0">
-            <input v-model="search.keyword" class="form-control main-search-input" placeholder="請輸入住戶姓名/ID/期別/費用類型" />
-          </div>
-          <div class="col-12 col-md-auto d-flex gap-2">
-            <button class="btn btn-outline-primary" @click="toggleAdvanced">{{ showAdvanced ? '收合進階搜尋' : '進階搜尋' }}</button>
-            <button class="btn btn-primary" @click="searchInvoices">查詢</button>
-            <button class="btn btn-secondary" @click="clearSearch">清除</button>
-          </div>
-        </div>
-        <transition name="fade">
-          <div v-if="showAdvanced" class="advanced-search mt-3">
-            <div class="row g-2">
-              <div class="col-12 col-md-4">
-                <input v-model="search.userName" class="form-control" placeholder="請輸入住戶姓名" />
+    <h3 class="mb-4">新增收據</h3>
+    <div class="row gx-4">
+      <!-- 左側：搜尋區塊 -->
+      <div class="col-md-6">
+        <div class="search-panel">
+          <transition name="expand-search">
+            <div class="search-bar mb-3" :class="{ 'expanded': showAdvanced }">
+              <!-- 原搜尋欄位與按鈕 -->
+              <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <input v-model="search.keyword" class="form-control main-search-input"
+                    placeholder="請輸入住戶姓名/ID/期別/費用類型" />
+                </div>
+                <div class="col-12 col-md-auto d-flex gap-2">
+                  <button class="btn btn-outline-primary" @click="toggleAdvanced">{{ showAdvanced ? '收合進階搜尋' : '進階搜尋'
+                  }}</button>
+                  <button class="btn btn-primary" @click="searchInvoices">查詢</button>
+                  <button class="btn btn-secondary" @click="clearSearch">清除</button>
+                </div>
               </div>
-              <div class="col-12 col-md-4">
-                <input v-model="search.userId" class="form-control" placeholder="請輸入住戶ID" />
-              </div>
-              <div class="col-12 col-md-4">
-                <select v-model="search.feeType" class="form-select">
-                  <option value="">全部費用類型</option>
-                  <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">{{ type.description }}</option>
-                </select>
-              </div>
-              <div class="col-12 col-md-4">
-                <select v-model="search.periodName" class="form-select">
-                  <option value="">全部期別</option>
-                  <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">{{ period.periodName }}</option>
-                </select>
-              </div>
-              <div class="col-12 col-md-4">
-                <select v-model="search.status" class="form-select">
-                  <option value="">全部狀態</option>
-                  <option value="unpaid">未繳</option>
-                  <option value="pending">待審核</option>
-                </select>
+              <transition name="fade">
+                <div v-if="showAdvanced" class="advanced-search mt-3">
+                  <!-- 原進階搜尋欄位 -->
+                  <div class="row g-2">
+                    <div class="col-12 col-md-4"><input v-model="search.userName" class="form-control"
+                        placeholder="住戶姓名" /></div>
+                    <div class="col-12 col-md-4"><input v-model="search.userId" class="form-control"
+                        placeholder="住戶ID" /></div>
+                    <div class="col-12 col-md-4">
+                      <select v-model="search.feeType" class="form-select">
+                        <option value="">全部費用類型</option>
+                        <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">{{
+                          type.description }}</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <select v-model="search.periodName" class="form-select">
+                        <option value="">全部期別</option>
+                        <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">{{
+                          period.periodName }}</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <select v-model="search.status" class="form-select">
+                        <option value="">全部狀態</option>
+                        <option value="unpaid">未繳</option>
+                        <option value="pending">待審核</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </transition>
+
+          <!-- 搜尋結果 -->
+          <div v-if="searchResults.length > 0" class="search-results mb-4">
+            <div class="result-card mb-3" v-for="inv in searchResults" :key="inv.invoiceId">
+              <div class="row g-1 align-items-center">
+                <div class="col-12 col-md-10">
+                  <div><b>發票ID：</b>{{ inv.invoiceId }}</div>
+                  <div><b>住戶：</b>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
+                  <div><b>期別：</b>{{ inv.billingPeriod?.periodName }}　<b>費用類型：</b>{{ inv.feeType?.description }}</div>
+                  <div><b>金額：</b>{{ inv.amountDue }}　<b>狀態：</b>{{ inv.paymentStatus }}</div>
+                </div>
+                <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
+                  <button class="btn btn-outline-success btn-sm w-100" @click="openConfirmModal(inv)">產生收據</button>
+                </div>
               </div>
             </div>
           </div>
-        </transition>
-      </div>
-    </transition>
-    <!-- 搜尋結果列表 -->
-    <div v-if="searchResults.length > 0" class="search-results mb-4">
-      <div class="result-card mb-3" v-for="inv in searchResults" :key="inv.invoiceId">
-        <div class="row g-1 align-items-center">
-          <div class="col-12 col-md-10">
-            <div><b>發票ID：</b>{{ inv.invoiceId }}</div>
-            <div><b>住戶：</b>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
-            <div><b>期別：</b>{{ inv.billingPeriod?.periodName }}　<b>費用類型：</b>{{ inv.feeType?.description }}</div>
-            <div><b>金額：</b>{{ inv.amountDue }}　<b>狀態：</b>{{ inv.paymentStatus }}</div>
-          </div>
-          <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
-            <button class="btn btn-outline-success btn-sm w-100" @click="openConfirmModal(inv)">產生收據</button>
-          </div>
         </div>
       </div>
-    </div>
-    <!-- 產生收據確認 Modal -->
-    <div v-if="showConfirmModal" class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container dark-modal-card">
-          <h4 class="mb-3">確認產生收據</h4>
-          <div class="mb-2"><b>發票ID：</b>{{ confirmInvoice?.invoiceId }}</div>
-          <div class="mb-2"><b>住戶：</b>{{ confirmInvoice?.user?.name }} (ID: {{ confirmInvoice?.user?.usersId }})</div>
-          <div class="mb-2"><b>期別：</b>{{ confirmInvoice?.billingPeriod?.periodName }}</div>
-          <div class="mb-2"><b>費用類型：</b>{{ confirmInvoice?.feeType?.description }}</div>
-          <div class="mb-2"><b>金額：</b>{{ confirmInvoice?.amountDue }}</div>
-          <div class="mb-2"><b>狀態：</b>{{ confirmInvoice?.paymentStatus }}</div>
-          <div class="d-flex justify-content-end mt-4">
-            <button class="btn btn-primary me-2" @click="createReceiptFromInvoice">確認產生</button>
-            <button class="btn btn-secondary" @click="closeConfirmModal">取消</button>
+
+      <!-- 右側：收據表單 -->
+      <div class="col-md-6">
+        <form @submit.prevent="submitForm" class="dark-form receipt-form">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">發票ID</label>
+              <input v-model.number="form.invoiceId" type="number" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">付款方式</label>
+              <input v-model="form.paymentMethod" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">付款時間</label>
+              <input v-model="form.paidAt" type="datetime-local" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">入帳時間</label>
+              <input v-model="form.debitAt" type="datetime-local" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">實付金額</label>
+              <input v-model.number="form.amountPay" type="number" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">備註</label>
+              <input v-model="form.note" class="form-control" />
+            </div>
           </div>
-        </div>
+          <button type="submit" class="btn btn-primary w-100">送出</button>
+          <div v-if="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
+          <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
+        </form>
       </div>
     </div>
-    <!-- 收據表單 -->
-    <form @submit.prevent="submitForm" class="dark-form">
-      <div class="mb-3">
-        <label class="form-label">發票ID</label>
-        <input v-model.number="form.invoiceId" type="number" class="form-control" required />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">付款方式</label>
-        <input v-model="form.paymentMethod" class="form-control" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">付款時間</label>
-        <input v-model="form.paidAt" type="datetime-local" class="form-control" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">入帳時間</label>
-        <input v-model="form.debitAt" type="datetime-local" class="form-control" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">實付金額</label>
-        <input v-model.number="form.amountPay" type="number" class="form-control" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">備註</label>
-        <input v-model="form.note" class="form-control" />
-      </div>
-      <button type="submit" class="btn btn-primary w-100">送出</button>
-      <div v-if="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
-      <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
-    </form>
   </div>
+
 </template>
 
 <script setup>
@@ -120,7 +124,8 @@ import { useRoute } from 'vue-router'
 import axiosapi from '@/plugins/axios'
 import html2pdf from 'html2pdf.js'
 import Swal from 'sweetalert2'
-
+import BannerImage from '@/components/forAll/BannerImage.vue'
+import OO from '@/assets/images/main/adminBanner.jpg'
 const route = useRoute()
 const form = ref({
   invoiceId: null,
@@ -299,7 +304,9 @@ function downloadPDF() {
   background: #181a1b;
   color: #e0e0e0;
 }
-.search-bar, .advanced-search {
+
+.search-bar,
+.advanced-search {
   background: #23272b;
   border-radius: 18px;
   border: 1.5px solid #444;
@@ -307,60 +314,80 @@ function downloadPDF() {
   color: #e0e0e0;
   margin-bottom: 12px;
 }
-.form-control, .form-select {
+
+.form-control,
+.form-select {
   background: #181a1b;
   color: #e0e0e0;
   border: 1px solid #444;
 }
-.form-control:focus, .form-select:focus {
+
+.form-control:focus,
+.form-select:focus {
   background: #23272b;
   color: #fff;
   border-color: #888;
 }
-.btn, .btn:focus, .btn:active {
+
+.btn,
+.btn:focus,
+.btn:active {
   color: #e0e0e0;
   background: #23272b;
   border: 1px solid #444;
 }
+
 .btn-primary {
   background: #1976d2;
   border-color: #1976d2;
   color: #fff;
 }
-.btn-primary:hover, .btn-primary:active {
+
+.btn-primary:hover,
+.btn-primary:active {
   background: #1565c0;
   border-color: #1565c0;
   color: #fff;
 }
+
 .btn-outline-primary {
   color: #90caf9;
   border-color: #90caf9;
   background: transparent;
 }
-.btn-outline-primary:hover, .btn-outline-primary:active {
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
 }
+
 .btn-outline-success {
   color: #b9f6ca;
   border-color: #43a047;
   background: transparent;
 }
-.btn-outline-success:hover, .btn-outline-success:active {
+
+.btn-outline-success:hover,
+.btn-outline-success:active {
   background: #388e3c;
   color: #fff;
   border-color: #388e3c;
 }
+
 .btn-secondary {
   background: #23272b;
   color: #b0b0b0;
   border: 1px solid #444;
 }
-.btn-secondary:hover, .btn-secondary:active {
+
+.btn-secondary:hover,
+.btn-secondary:active {
   background: #181a1b;
   color: #fff;
 }
+
 .result-card {
   background: #23272b;
   color: #e0e0e0;
@@ -369,11 +396,15 @@ function downloadPDF() {
   padding: 14px 18px;
   margin-bottom: 12px;
 }
-.dark-form label, .dark-form input, .dark-form select {
+
+.dark-form label,
+.dark-form input,
+.dark-form select {
   color: #e0e0e0;
 }
+
 .container {
-  max-width: 720px;
+  max-width: 800%;
   background: none;
 }
 
@@ -427,14 +458,19 @@ function downloadPDF() {
     box-shadow: none;
   }
 }
+
 @media (max-width: 768px) {
-  .search-bar, .advanced-search {
+
+  .search-bar,
+  .advanced-search {
     padding: 12px 8px 8px 8px;
   }
+
   .result-card {
     padding: 10px 8px;
   }
 }
+
 .search-bar {
   background: #23272b;
   border-radius: 18px;
@@ -443,37 +479,52 @@ function downloadPDF() {
   margin-bottom: 12px;
   padding: 18px 22px 12px 22px;
   max-width: 100%;
-  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s, padding 0.3s;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, padding 0.3s;
   overflow: hidden;
   box-shadow: 0 2px 16px #0002;
 }
+
 .search-bar.expanded {
   padding-bottom: 32px;
   box-shadow: 0 4px 32px #0004;
 }
-.fade-enter-active, .fade-leave-active {
+
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s;
 }
-.fade-enter-from, .fade-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
-.fade-enter-to, .fade-leave-from {
+
+.fade-enter-to,
+.fade-leave-from {
   opacity: 1;
 }
-.expand-search-enter-active, .expand-search-leave-active {
-  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s, padding 0.3s;
+
+.expand-search-enter-active,
+.expand-search-leave-active {
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, padding 0.3s;
 }
-.expand-search-enter-from, .expand-search-leave-to {
+
+.expand-search-enter-from,
+.expand-search-leave-to {
   max-height: 80px;
 }
-.expand-search-enter-to, .expand-search-leave-from {
+
+.expand-search-enter-to,
+.expand-search-leave-from {
   max-height: 400px;
 }
+
 .advanced-search input.form-control::placeholder {
   color: #b0b0b0;
   opacity: 1;
   font-style: italic;
 }
+
 .modal-mask {
   position: fixed;
   z-index: 9999;
@@ -481,11 +532,12 @@ function downloadPDF() {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .modal-wrapper {
   min-width: 320px;
   max-width: 420px;
@@ -494,6 +546,7 @@ function downloadPDF() {
   align-items: center;
   justify-content: center;
 }
+
 .dark-modal-card {
   background: #23272b;
   color: #e0e0e0;
@@ -504,6 +557,7 @@ function downloadPDF() {
   box-shadow: 0 4px 32px #000a;
   z-index: 10000;
 }
+
 .main-search-input::placeholder {
   color: #b0b0b0;
   opacity: 1;

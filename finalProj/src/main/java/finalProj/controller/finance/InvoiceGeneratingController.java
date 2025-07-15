@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import finalProj.domain.finance.Invoice;
-import finalProj.dto.finance.FeeGenerationRequest;
+
 import finalProj.service.finance.baseServiceInterfaces.InvoiceGeneratingService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -20,26 +20,15 @@ public class InvoiceGeneratingController {
     @Autowired
     private InvoiceGeneratingService invoiceGeneratingService;
 
-    // @PostMapping("/generate")
-    // public ResponseEntity<?> generateInvoices(@RequestBody FeeGenerationRequest
-    // request) {
-    // try {
-    // invoiceGeneratingService.generateInvoices(
-    // request.getFeeTypeId(),
-    // request.getBillingPeriodId());
-    // return ResponseEntity.ok("已成功產生帳單");
-    // } catch (Exception e) {
-    // return ResponseEntity.badRequest().body("產生失敗：" + e.getMessage());
-    // }
-    // }
-
     @PostMapping("/generate")
     public String generateInvoices(@RequestBody Invoice request) {
         try {
-            Boolean result = invoiceGeneratingService.generateInvoices(request.getFeeType().getFeeTypeId(),
-                    request.getBillingPeriod().getBillingPeriodId(), request.getCreatedBy());
-            if (result) {
+            Boolean result = invoiceGeneratingService.generateInvoices(
+                    request.getFeeType().getFeeTypeId(),
+                    request.getBillingPeriod().getBillingPeriodId(),
+                    request.getCreatedBy());
 
+            if (result) {
                 return "繳費單產生成功";
             }
             return "繳費單產生失敗";

@@ -266,6 +266,11 @@ const router = createRouter({
       name: 'resetPassword',
       component: resetPassword
     },
+    {
+      path: '/CommunityList',
+      name: 'CommunityList',
+      component: CommunityList
+    },
   ],
 
   scrollBehavior(to, from, savedPosition) {

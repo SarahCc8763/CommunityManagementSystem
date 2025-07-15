@@ -31,9 +31,6 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
     @Autowired
     private UnitsUsersRepository unitsUsersRepository;
 
-    // @Autowired
-    // private ParkingRepository parkingRepository;
-
     @Autowired
     private FeeTypeRepository feeTypeRepository;
 
@@ -54,25 +51,21 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
         BillingPeriod billingPeriod = billingPeriodRepository.findById(billingPeriodId)
                 .orElseThrow(() -> new IllegalArgumentException("無效的期別ID: " + billingPeriodId));
 
-        // 只抓該社區的戶
-        List<Units> units = unitsRepository.findAll(); // 若有findByCommunityId可改用
+        List<Units> units = unitsRepository.findAll();
         System.out.println(units.size());
         for (Units unit : units) {
-            // 若有社區過濾
             if (feeType.getCommunityId() != null && unit.getCommunity() != null &&
                     !feeType.getCommunityId().equals(unit.getCommunity().getCommunityId())) {
                 System.out.println(">>> 忽略單位：" + unit.getUnit() + " 社區不符");
                 continue;
-
             }
 
             System.out.println(">>> 准備新增繳費單 for unit " + unit.getUnit());
             List<UnitsUsers> unitUsers = unitsUsersRepository.findByUnitOrderByUser_UsersIdAsc(unit);
-
             if (unitUsers == null || unitUsers.isEmpty())
                 continue;
-            System.out.println("111111111111111111111");
-            Users user = unitUsers.get(0).getUser(); // 主用戶
+
+            Users user = unitUsers.get(0).getUser();
             java.math.BigDecimal unitCount;
             if ("每坪".equals(feeType.getUnit())) {
                 unitCount = unit.getPing();
@@ -82,6 +75,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             java.math.BigDecimal unitPrice = feeType.getAmountPerUnit();
             if (unitPrice == null || unitCount == null)
                 continue;
+
             java.math.BigDecimal totalAmount = unitCount.multiply(unitPrice);
 
             Invoice invoice = new Invoice();
@@ -89,7 +83,7 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setUsers(user);
             invoice.setFeeType(feeType);
             invoice.setBillingPeriod(billingPeriod);
-
+            invoice.setPeriodName(billingPeriod.getPeriodName());
             invoice.setDeadline(billingPeriod.getDueDate());
             invoice.setUnitCount(unitCount);
             invoice.setUnitPrice(unitPrice);
@@ -101,18 +95,15 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setNote("system generated");
             invoice.setCreatedAt(LocalDateTime.now());
             try {
-                Invoice result = invoiceRepository.save(invoice);
+                invoiceRepository.save(invoice);
                 System.out.println(">>> 儲存 invoice 給 unit: " + unit.getUnit());
-
             } catch (Exception e) {
                 return false;
             }
-
         }
         return true;
     }
 
-    // 新增：批次產生請款單
     @Override
     @Transactional
     public void batchGenerateInvoices(Integer billingPeriodId, Integer feeTypeId, List<Integer> userIds,
@@ -121,13 +112,27 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
                 .orElseThrow(() -> new IllegalArgumentException("無效的費用類別ID: " + feeTypeId));
         BillingPeriod billingPeriod = billingPeriodRepository.findById(billingPeriodId)
                 .orElseThrow(() -> new IllegalArgumentException("無效的期別ID: " + billingPeriodId));
+
         for (Integer userId : userIds) {
             Users user = usersRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("無效的用戶ID: " + userId));
-            // 這裡可根據費用類型決定單位數
+
             java.math.BigDecimal unitCount = java.math.BigDecimal.ONE;
+
+            // 處理不同單位的邏輯：每坪 / 每戶 / 每人
+            if ("每坪".equals(feeType.getUnit())) {
+                List<UnitsUsers> unitsUsersList = unitsUsersRepository.findByUser_UsersId(user.getUsersId());
+                if (!unitsUsersList.isEmpty()) {
+                    Units unit = unitsUsersList.get(0).getUnit();
+                    unitCount = unit.getPing();
+                }
+            }
+
             java.math.BigDecimal unitPrice = feeType.getAmountPerUnit();
-            java.math.BigDecimal totalAmount = unitCount.multiply(unitPrice);
+            if (unitPrice == null || unitCount == null)
+                continue;
+
+            java.math.BigDecimal totalAmount = unitPrice.multiply(unitCount);
 
             Invoice invoice = new Invoice();
             invoice.setCreatedBy(createdBy);
@@ -135,16 +140,18 @@ public class InvoiceGeneratingServiceImpl implements InvoiceGeneratingService {
             invoice.setFeeType(feeType);
             invoice.setBillingPeriod(billingPeriod);
             invoice.setDeadline(billingPeriod.getDueDate());
+            invoice.setPeriodName(billingPeriod.getPeriodName());
             invoice.setUnitCount(unitCount);
             invoice.setUnitPrice(unitPrice);
             invoice.setTotalAmount(totalAmount);
             invoice.setAmountDue(totalAmount);
             invoice.setPaymentStatus("unpaid");
-            invoice.setCommunityId(feeType.getCommunityId());
             invoice.setStatus(false);
+            invoice.setCommunityId(feeType.getCommunityId());
             invoice.setNote("batch generated");
             invoice.setCreatedAt(LocalDateTime.now());
             invoiceRepository.save(invoice);
+            System.out.println(">>> 已儲存 invoice 給 user: " + user.getName());
         }
     }
 }

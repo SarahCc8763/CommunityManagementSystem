@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div style="width: 60vw; max-width: 1200px; margin-left: 2rem; margin-right: 2rem; margin: auto;">
+    <BannerImage :imageSrc="bannerImg" heading="審核繳費管理" subtext="您可以在此審核繳款, 為使用者開立收款證明。" textAlign="left" />
+  </div>
+  <div class="center-wrapper">
     <!-- 查詢區塊 -->
     <div class="filter-bar mb-3">
       <label class="me-2">期別：</label>
@@ -101,6 +104,10 @@
 </template>
 
 <script setup>
+
+import BannerImage from '@/components/forAll/BannerImage.vue'
+import bannerImg from '@/assets/images/main/adminBanner.jpg'
+
 import axiosapi from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import html2pdf from 'html2pdf.js'
@@ -356,6 +363,23 @@ async function batchCreateReceipts() {
 
 
 <style scoped>
+.center-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  justify-content: center;
+  /* ✅ 將內容物整體置中 */
+  align-items: flex-start;
+  width: 62%;
+  /* ❗讓整個容器填滿畫面寬度 */
+  gap: 24px;
+  /* 卡片間距 */
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+
+
 body,
 .dark-bg {
   background: #181a1b;
@@ -363,6 +387,8 @@ body,
 }
 
 .invoice-card {
+  width: 48%;
+  box-sizing: border-box;
   border: 1px solid #333;
   border-radius: 8px;
   padding: 16px;
@@ -381,14 +407,24 @@ body,
 }
 
 .filter-bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  /* ✅ 讓內容換行 */
+  gap: 12px;
+  margin-bottom: 0;
+  /* 自己控制 margin，不交給 Bootstrap 的 mb-3 */
+  align-items: center;
   background: #23272b;
   border-radius: 6px;
   padding: 10px 16px;
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   color: #e0e0e0;
+}
+
+.d-flex.align-items-center.mb-2 {
+  width: 100%;
+  margin-top: 12px;
+  /* ✅ 替代剛剛 filter-bar 的 margin-bottom */
 }
 
 input.form-control,

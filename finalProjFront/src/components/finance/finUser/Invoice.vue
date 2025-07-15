@@ -201,6 +201,8 @@ const submitRemit = async () => {
     console.log(payload)
     await axiosapi.post(`/finance/invoice-responses`, payload)
 
+    await closePayModal()
+
     // ✅ SweetAlert 成功提示
     await Swal.fire({
       icon: 'success',

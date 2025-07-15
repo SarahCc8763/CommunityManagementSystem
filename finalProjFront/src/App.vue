@@ -150,7 +150,7 @@ Swal.mixin({
   min-height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   justify-content: flex-start;
   background: #fff;
   max-width: 100%;

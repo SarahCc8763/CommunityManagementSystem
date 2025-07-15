@@ -13,7 +13,8 @@
             <span class="moc-card-title">　{{ group.title }}</span>
           </div>
           <div class="moc-card-links">
-            <div class="moc-card-link" v-for="item in group.children" :key="item.routeName" @click="goTo(item.routeName)">
+            <div class="moc-card-link" v-for="item in group.children" :key="item.routeName"
+              @click="goTo(item.routeName)">
               <span class="moc-link-icon">◆</span>{{ item.label }}
             </div>
           </div>
@@ -21,6 +22,7 @@
       </div>
     </div>
   </div>
+  <router-link to='/CommunityList'>功能設定</router-link>
 </template>
 
 <script setup>
@@ -30,6 +32,7 @@ import { useUserStore } from '@/stores/UserStore'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import adminBanner from '@/assets/images/main/adminBanner.jpg'
 import AdminRightInfoNav from '@/components/forAll/main/admin/AdminRightInfoNav.vue'
+import axios from 'axios'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -85,7 +88,7 @@ const menuList = [
       { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
       { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
       { label: '指派報修', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      { label: '社區報修', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
+      // { label: '社區報修', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -146,12 +149,14 @@ function goTo(name) {
   margin: 0 auto 32px auto;
   max-width: 1200px;
 }
+
 .dashboard-title-bar {
   display: flex;
   align-items: center;
   margin-bottom: 32px;
   margin-left: 8px;
 }
+
 .title-bar-line {
   display: inline-block;
   width: 6px;
@@ -160,6 +165,7 @@ function goTo(name) {
   border-radius: 3px;
   margin-right: 18px;
 }
+
 .dashboard-title {
   font-size: 2.4rem;
   font-weight: 900;
@@ -168,11 +174,13 @@ function goTo(name) {
   font-family: 'Noto Serif TC', 'Noto Sans TC', 'Segoe UI', 'Arial', serif;
   text-shadow: 0 2px 8px #232a36;
 }
+
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
+
 .masonry-grid {
   column-count: 3;
   column-gap: 32px;
@@ -180,6 +188,7 @@ function goTo(name) {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .masonry-card {
   display: inline-block;
   width: 100%;
@@ -187,18 +196,20 @@ function goTo(name) {
   background: linear-gradient(135deg, #232a36 0%, #323a4d 100%);
   color: #f3f6fa;
   border-radius: 0;
-  box-shadow: 0 4px 18px rgba(80,120,255,0.10);
+  box-shadow: 0 4px 18px rgba(80, 120, 255, 0.10);
   border: 2px solid #4a5670;
   min-height: 140px;
   padding: 24px 20px 18px 20px;
   transition: box-shadow 0.18s, border 0.18s, transform 0.18s;
   cursor: pointer;
 }
+
 .masonry-card:hover {
   box-shadow: 0 8px 32px #a3bffa22;
   border: 2px solid #a3bffa;
   transform: translateY(-3px) scale(1.03);
 }
+
 .moc-card-header {
   display: flex;
   align-items: center;
@@ -209,6 +220,7 @@ function goTo(name) {
   border-left: 6px solid #a3bffa;
   box-shadow: 0 2px 8px #232a3640;
 }
+
 .moc-card-title {
   font-size: 1.25rem;
   font-weight: 900;
@@ -218,12 +230,14 @@ function goTo(name) {
   text-shadow: 0 2px 8px #232a36;
   padding-left: 2px;
 }
+
 .moc-card-links {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
+
 .moc-card-link {
   color: #f3f6fa;
   font-size: 1.08rem;
@@ -238,10 +252,12 @@ function goTo(name) {
   align-items: center;
   letter-spacing: 0.5px;
 }
+
 .moc-card-link:hover {
   color: #a3bffa;
   text-decoration: underline;
 }
+
 .moc-link-icon {
   color: #a3bffa;
   font-size: 0.95em;
