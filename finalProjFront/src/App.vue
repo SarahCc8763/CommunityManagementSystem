@@ -1,7 +1,10 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
-    <!-- <BeforeLogIn /> -->
-    <HeaderAll :isDarkMode="isDarkMode" />
+  
+     <!--  <BeforeLogIn /> -->
+
+
+ <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
         <LeftSideNav :isDarkMode="isDarkMode" />

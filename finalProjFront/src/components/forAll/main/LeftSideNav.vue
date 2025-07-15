@@ -733,4 +733,32 @@ onUnmounted(() => {
 .quick-action-card span {
   display: inline;
 }
+
+.quick-action-card.no-border-action {
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  color: #444;
+  background: transparent;
+  border-radius: 12px;
+  padding: 12px 0 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 500;
+}
+.quick-action-card.no-border-action:hover {
+  background: #f0f4ff;
+  color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+  font-weight: 700;
+}
+.quick-action-card.no-border-action:hover i {
+  color: #667eea;
+  transform: scale(1.12);
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+.quick-action-card.no-border-action i {
+  font-size: 1.7rem;
+  margin-bottom: 4px;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
 </style>

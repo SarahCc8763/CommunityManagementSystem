@@ -76,7 +76,11 @@ import BeforeLogIn from '@/views/BeforeLogIn.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
+    {
+      path: '/beforeLogIn',
+      name: 'beforeLogIn',
+      component: BeforeLogIn,
+    },
     {
       path: '/adminDashboard',
       name: 'AdminDashboard',
