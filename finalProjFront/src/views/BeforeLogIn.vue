@@ -1,109 +1,193 @@
-<!-- 這個我還沒改好 先當個靜態網頁到時候截圖用 -->
-<!-- 登入前看到的頁面 -->
-
-
-
-
-
-
-
-
 <template>
+
     <div class="before-login-layout">
-        <!-- 橫向 Header -->
-        <header class="before-login-header">
-            <div class="header-content">
-                <img src="@/assets/images/main/Logo.png" alt="建商LOGO" class="header-logo" />
-                <span class="header-title">OO建設</span>
-            </div>
-        </header>
+        <div class="login-mask">
 
-        <!-- 左側 Nav（fixed） -->
-        <aside class="before-login-left-nav">
-            <div class="nav-card">
-                <div class="logo-block">
-                    <img src="@/assets/images/main/Logo.png" alt="建商LOGO" class="logo-img" />
-                    <div class="brand-title">OO建設</div>
-                </div>
-                <nav class="nav-list">
-                    <div class="nav-item">關於我們</div>
-                    <div class="nav-item">建案特色</div>
-                    <div class="nav-item">聯絡資訊</div>
-                    <div class="nav-item">常見問題</div>
-                </nav>
-                <button class="login-btn" @click="handleLogin">
-                    <i class="bi bi-box-arrow-in-right"></i> 立即登入
-                </button>
-            </div>
-        </aside>
 
-        <!-- 主內容區塊 -->
-        <main class="before-login-main">
-            <div class="main-content-wrapper">
-                <div class="hero-section">
-                    <div class="hero-carousel wide-carousel">
-                        <SlideShow :images="slideshowImages" :captions="slideshowCaptions" carousel-id="main-hero" />
-                    </div>
-                    <div class="hero-text">
-                        <h1>用心築夢・共創永續</h1>
-                        <div class="hero-divider"></div>
-                        <p class="hero-desc">OO建設秉持信念，推動人本與自然融合的建築價值，打造台灣最值得信賴的建築品牌。</p>
-                        <ul class="feature-list">
-                            <li><i class="bi bi-house-door"></i> 智慧門禁與安全管理</li>
-                            <li><i class="bi bi-lightning"></i> 綠能節能設計</li>
-                            <li><i class="bi bi-people"></i> 社區活動豐富多元</li>
-                            <li><i class="bi bi-phone"></i> 一站式住戶服務 App</li>
-                        </ul>
-                        <button class="login-btn main-login-btn" @click="handleLogin">
-                            <i class="bi bi-box-arrow-in-right"></i> 立即登入體驗
-                        </button>
-                    </div>
-                </div>
-                <!-- 建案介紹區塊 -->
-                <section class="projects-section">
-                    <h2 class="text-center mb-4">熱門建案介紹</h2>
-                    <div class="row g-4">
-                        <div class="col-md-4" v-for="project in projects" :key="project.name">
-                            <div class="card h-100 shadow-sm">
-                                <img :src="project.image" class="card-img-top" :alt="project.name">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ project.name }}</h5>
-                                    <p class="card-text">{{ project.description }}</p>
-                                    <a :href="project.link" target="_blank"
-                                        class="btn btn-outline-primary btn-sm">查看更多</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
 
-        <!-- 右側廣告/介紹卡片（fixed） -->
-        <aside class="before-login-right-ad">
-            <div class="nav-card">
-                <div class="ad-card">
-                    <div class="ad-title">新住戶專屬優惠</div>
-                    <div class="ad-desc">立即預約賞屋，享受專屬好禮！</div>
-                    <button class="ad-btn">
-                        <i class="bi bi-arrow-right"></i> 了解更多
+
+
+            <!-- 左側 Nav（fixed） -->
+            <aside class="before-login-left-nav">
+                <div class="nav-card">
+                    <div class="logo-block">
+                        <img src="@/assets/images/main/ZhLogo.jpg" alt="建商LOGO" class="logo-img" />
+                        <div>智匯建設 </div>
+                    </div>
+                    <nav class="nav-list">
+                        <div class="nav-item">關於我們</div>
+                        <div class="nav-item">建案特色</div>
+                        <div class="nav-item">聯絡資訊</div>
+                        <div class="nav-item">常見問題</div>
+                    </nav>
+                    <button class="login-btn" @click="showLoginModal">
+                        <i class="bi bi-box-arrow-in-right"></i> 立即登入
                     </button>
                 </div>
-                <div class="ad-card">
-                    <div class="ad-title">建案熱銷中</div>
-                    <div class="ad-desc">智慧宅、綠建築、全齡社區，歡迎參觀！</div>
+            </aside>
+
+
+            <main>
+
+
+                <div
+                    style="width: 100vw; height: 60vh; margin-top: 50%; padding: 0; overflow: hidden; position: relative;">
+                    <img :src="bigBuilding" alt="智匯建設"
+                        style="width: 100vw; height: 100vh; object-fit: cover; display: block;" />
+                    <div
+                        style="position: absolute; left: 5%; top: 60%; transform: translateY(-50%); color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); max-width: 600px;">
+                        <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem;">智匯建設 你的新生活選擇</h2>
+                        <p style="font-size: 1.25rem;">智匯建設以「誠信、服務、創新、永續」為經營理念，數十年來從建築精緻家園，到提升服務品質；從提供優質生活空間，到創新生活方式。
+                        </p>
+                    </div>
                 </div>
-                <div class="ad-card">
-                    <div class="ad-title">聯絡我們</div>
-                    <div class="ad-desc">客服專線：02-1234-5678<br />Email: info@riverbank.com</div>
+
+
+                <div class="before-login-main">
+
+
+                    <div class="main-content-wrapper">
+                        <div class="hero-section">
+                            <div class="hero-carousel wide-carousel">
+                                <SlideShow :images="slideshowImages" :captions="slideshowCaptions"
+                                    carousel-id="main-hero" />
+                            </div>
+                            <div class="hero-text">
+                                <h1>用心築夢・共創永續</h1>
+                                <div class="hero-divider"></div>
+                                <p class="hero-desc">智匯建設秉持信念，推動人本與自然融合的建築價值，打造台灣最值得信賴的建築品牌。</p>
+                                <ul class="feature-list">
+                                    <li><i class="bi bi-house-door"></i> 智慧門禁與安全管理</li>
+                                    <li><i class="bi bi-lightning"></i> 綠能節能設計</li>
+                                    <li><i class="bi bi-people"></i> 社區活動豐富多元</li>
+                                    <li><i class="bi bi-phone"></i> 一站式住戶服務 App</li>
+                                </ul>
+                                <button class="login-btn main-login-btn" @click="showLoginModal">
+                                    <i class="bi bi-box-arrow-in-right"></i> 立即登入體驗
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 建案介紹區塊 -->
+                        <section class="projects-section">
+                            <h2 class="text-center mb-4">熱門建案介紹</h2>
+                            <div class="row g-4">
+                                <div class="col-md-4" v-for="project in projects" :key="project.name">
+                                    <div class="card h-100 shadow-sm">
+                                        <img :src="project.image" class="card-img-top" :alt="project.name">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ project.name }}</h5>
+                                            <p class="card-text">{{ project.description }}</p>
+                                            <a :href="project.link" target="_blank"
+                                                class="btn btn-outline-primary btn-sm">查看更多</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+            <!-- 右側廣告/介紹卡片（fixed） -->
+            <aside class="before-login-right-ad">
+                <div class="nav-card">
+                    <div class="ad-card">
+                        <div class="ad-title">新住戶專屬優惠</div>
+                        <div class="ad-desc">立即預約賞屋，享受專屬好禮！</div>
+                        <button class="ad-btn">
+                            <i class="bi bi-arrow-right"></i> 了解更多
+                        </button>
+                    </div>
+                    <div class="ad-card">
+                        <div class="ad-title">建案熱銷中</div>
+                        <div class="ad-desc">智慧宅、綠建築、全齡社區，歡迎參觀！</div>
+                    </div>
+                    <div class="ad-card">
+                        <div class="ad-title">聯絡我們</div>
+                        <div class="ad-desc">客服專線：02-1234-5678<br />Email: info@riverbank.com</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <div class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <!-- 上排：Logo + 簡介 + 快速連結 -->
+            <div class="row">
+
+                <!-- Logo & 公司介紹 -->
+                <div class="col-md-4 mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="https://img.freepik.com/premium-vector/building-logo-design-vector_67715-609.jpg"
+                            alt="Logo" style="width: 50px; height: 50px; border-radius: 8px;" />
+                        <h5 class="mb-0 mt-1">智匯建設</h5>
+                    </div>
+                    <p class="mb-2 small">打造智慧生活的每一磚一瓦</p>
+                    <div class="small lh-sm">
+                        <div>Email：<a href="mailto:OO123@gmail.com"
+                                class="text-white text-decoration-underline">OO123@gmail.com</a>
+                        </div>
+                        <div>電話：02-1234-5678</div>
+                        <div>地址：12345 假地址市 建設路100號</div>
+                    </div>
+                </div>
+
+                <!-- 快速導覽 -->
+                <div class="col-md-2 mb-4">
+                    <h6 class="text-uppercase fw-bold border-bottom pb-1 mb-3">快速導覽</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white text-decoration-none">首頁</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">最新消息</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">工程案例</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">聯絡我們</a></li>
+                    </ul>
+                </div>
+
+                <!-- 法律資訊 -->
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-uppercase fw-bold border-bottom pb-1 mb-3">法務資訊</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white text-decoration-none">隱私權政策</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">使用者條款</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">網站安全聲明</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Cookie 政策</a></li>
+                    </ul>
+                </div>
+
+                <!-- 電子報訂閱 -->
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-uppercase fw-bold text-light mb-3">訂閱電子報</h6>
+                    <p class="small mb-2">不定期寄送最新優惠與消息</p>
+                    <form>
+                        <div class="mb-2">
+                            <input type="email" class="form-control form-control-sm" placeholder="輸入您的 Email" />
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-outline-light">訂閱</button>
+                    </form>
                 </div>
             </div>
-        </aside>
+
+            <hr class="border-secondary my-4" />
+
+            <!-- 底部：社群圖示與版權 -->
+            <div class="row justify-content-between align-items-center">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-line"></i></a>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-secondary">&copy; 2025 智匯建設. 保留所有權利。</small>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import SlideShow from '@/components/forAll/SlideShow.vue'
+import bigBuilding from '@/assets/images/main/bigBuilding.jpg'
+
+
 
 const slideshowImages = [
     new URL('@/assets/images/forSlideShow/indoorDeco.webp', import.meta.url).href,
@@ -156,14 +240,28 @@ const projects = [
     }
 ]
 
-function handleLogin() {
-    console.log('emit login')
-
-    emit('show-login')
+function showLoginModal() {
+    window.dispatchEvent(new CustomEvent('show-login-modal'))
 }
 </script>
 
 <style scoped>
+.login-mask {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(240, 243, 244);
+    flex-direction: column;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
 .before-login-header {
     position: fixed;
     top: 0;
@@ -208,6 +306,7 @@ function handleLogin() {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
+
 .nav-card {
     background: #fff;
     border-radius: 24px;
@@ -225,7 +324,7 @@ function handleLogin() {
     width: 260px;
     flex-shrink: 0;
     position: fixed;
-    top: 50%;
+    top: 55%;
     left: 0;
     transform: translateY(-50%);
     z-index: 2000;
@@ -239,7 +338,7 @@ function handleLogin() {
     width: 260px;
     flex-shrink: 0;
     position: fixed;
-    top: 50%;
+    top: 55%;
     right: 0;
     transform: translateY(-50%);
     z-index: 2000;
@@ -257,21 +356,22 @@ function handleLogin() {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 64px 0 48px 0;
+    padding: 48px 0 48px 0;
     min-height: 100vh;
 }
 
 .main-content-wrapper {
+    border-radius: 15px;
     width: 100%;
-    max-width: 1000px;
+    max-width: 2000px;
     margin: 0 auto;
     background: #fff;
 
     box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10);
-    padding: 48px 40px 40px 40px;
+    padding: 10px 40px 40px 40px;
     display: flex;
     flex-direction: column;
-    gap: 56px;
+    gap: 20px;
     margin-left: 280px;
     margin-right: 280px;
 }
@@ -461,5 +561,18 @@ function handleLogin() {
 .nav-item:hover {
     background: #f0f4f8;
     color: #667eea;
+}
+
+/* 加大 SlideShow 區塊高度 */
+.hero-carousel.wide-carousel {
+    height: 350px;
+    max-width: 600px;
+    margin-bottom: 24px;
+}
+
+.hero-carousel.wide-carousel :deep(img),
+.hero-carousel.wide-carousel :deep(.slide-image) {
+    height: 100%;
+    object-fit: cover;
 }
 </style>

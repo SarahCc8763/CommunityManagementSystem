@@ -2,54 +2,78 @@
   <div class="container py-4">
     <h2 class="mb-4">📋 全部報修單列表</h2>
     <!-- 🔍 搜尋列 -->
-    <div class="d-flex align-items-center mb-3">
-      <input v-model="searchText" type="text" class="form-control" placeholder="輸入標題關鍵字" />
-      <!-- <input
-    v-model="searchText"
-    type="text"
-    class="form-control me-2"
-    placeholder="輸入標題關鍵字"
-    @keyup.enter="applySearch"
-  /> -->
-      <!-- <button class="btn btn-secondary" @click="applySearch">搜尋</button> -->
+<div class="d-flex align-items-center mb-3">
+  <input
+        v-model="searchText"
+        type="text"
+        class="form-control"
+        placeholder="輸入標題關鍵字"
+      />
+</div>
+
+<!-- 篩選條件 -->
+<div class="card p-3 mb-3 shadow-sm">
+  <div class="row">
+    <div class="col-md-3">
+      <label class="form-label">狀態</label>
+      <select class="form-select" v-model="filter.status">
+        <option value="">全部</option>
+        <option value="to do">待處理</option>
+        <option value="doing">處理中</option>
+        <option value="done">已完成</option>
+      </select>
     </div>
+    <div class="col-md-3">
+      <label class="form-label">通報人</label>
+      <select class="form-select" v-model="filter.reporter">
+        <option value="">全部</option>
+        <option v-for="u in users" :key="u.id" :value="u.name">
+          {{ u.name }}
+        </option>
+      </select>
+    </div>
+    <div class="mb-3 position-relative">
+      <label class="form-label">問題種類</label>
+      <div class="selected-tags mb-1">
+        <span
+          v-for="(name, idx) in filter.issueTypeNames"
+          :key="idx"
+          class="tag"
+        >
+          {{ name }}
+          <i class="bi bi-x-circle-fill ms-1" @click.stop="removeIssueType(name)"></i>
+        </span>
+      </div>
 
-    <!-- 篩選條件 -->
-    <div class="card p-3 mb-3 shadow-sm">
-      <div class="row">
-        <div class="col-md-3">
-          <label class="form-label">狀態</label>
-          <select class="form-select" v-model="filter.status">
-            <option value="">全部</option>
-            <option value="to do">待處理</option>
-            <option value="doing">處理中</option>
-            <option value="done">已完成</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">通報人</label>
-          <select class="form-select" v-model="filter.reporter">
-            <option value="">全部</option>
-            <option v-for="u in users" :key="u.id" :value="u.name">
-              {{ u.name }}
-            </option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">問題種類</label>
-          <select class="form-select" multiple v-model="filter.issueTypeNames">
-            <option v-for="type in issueTypes" :key="type.id" :value="type.issueTypeName">
-              {{ type.issueTypeName }}
-            </option>
-          </select>
+      <div class="custom-multiselect" @click.stop="toggleDropdown">
+        <div class="select-box">
+          <span class="text-muted">請選擇問題種類（可複選）</span>
+          <i class="bi bi-chevron-down float-end"></i>
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">建立時間</label>
-          <input type="date" class="form-control" v-model="filter.startDate" />
-        </div>
+        <ul
+          v-if="showDropdown"
+          class="dropdown-list"
+          @click.stop
+        >
+          <li
+            v-for="type in issueTypes"
+            :key="type.id"
+            @click="toggleIssueType(type.issueTypeName)"
+            :class="{ selected: filter.issueTypeNames.includes(type.issueTypeName) }"
+          >
+            {{ type.issueTypeName }}
+            <i v-if="filter.issueTypeNames.includes(type.issueTypeName)" class="bi bi-check2 ms-2"></i>
+          </li>
+        </ul>
       </div>
     </div>
+    <div class="col-md-3">
+  <label class="form-label">建立時間</label>
+  <input type="date" class="form-control" v-model="filter.startDate" />
+</div>
+  </div>
+</div>
 
 
     <!-- ✅ 已指派 -->
@@ -60,20 +84,23 @@
         shadow-sm" @click="openDetail(ticket)">
 
 
-          <span class="badge position-absolute top-0 end-0 m-2" :class="{
-            'bg-secondary': ticket.status === 'to do',
-            'bg-warning text-dark': ticket.status === 'In Progress',
-            'bg-success': ticket.status === 'Done'
-          }">
-            {{ formatStatus(ticket.status) }}
-          </span>
+        <span
+        class="badge position-absolute top-0 end-0 m-2"
+        :class="{
+          'bg-secondary': ticket.status === 'to do',
+          'bg-warning text-dark': ticket.status === 'In Progress',
+          'bg-success': ticket.status === 'Done'
+        }"
+      >
+      {{ formatStatus(ticket.status) }}
+        </span>
 
 
 
 
           <h5>{{ ticket.title }}</h5>
           <p>通報人：{{ ticket.name }}</p>
-          <p>指派人：{{ ticket.assigneeName ?? '（未知）' }}</p>
+          <p>指派人：{{ ticket.assigneeName  ?? '（未知）' }}</p>
           <p>廠商：{{ ticket.vendorName ?? '（尚未指派）' }}</p>
 
           <!-- <p>狀態:{{ticket.status}}</p> -->
@@ -89,8 +116,13 @@
             <div v-if="ticket.attachments?.length">
               <p><strong>附件：</strong></p>
               <div class="d-flex flex-wrap gap-2">
-                <img v-for="(img, idx) in ticket.attachments" :key="idx" :src="img.url" class="rounded border"
-                  style="width: 100px; height: auto;" />
+                <img
+                  v-for="(img, idx) in ticket.attachments"
+                  :key="idx"
+                  :src="img.url"
+                  class="rounded border"
+                  style="width: 100px; height: auto;"
+                />
               </div>
             </div>
           </div>
@@ -98,118 +130,158 @@
       </div>
       <div v-else class="text-muted">目前沒有已指派的報修單</div>
     </div>
-    <AssignedTicketDetail v-if="showDetailModal" :ticket="selectedTicket" :vendor-list="vendors"
-      @close="showDetailModal = false" @update-ticket="selectedTicket = $event" />
+    <AssignedTicketDetail
+  v-if="showDetailModal"
+  :ticket="selectedTicket"
+  :vendor-list="vendors"
+  @close="showDetailModal = false"
+  @update-ticket="selectedTicket = $event"
+/>
 
 
 
     <!-- ❌ 未指派 -->
-    <div>
-      <h4 class="text-danger">❌ 未指派報修單</h4>
-      <div v-if="unassignedTickets.length">
-        <div v-for="(ticket, index) in unassignedTickets" :key="ticket.id"
-          class="card mb-3 p-3 border border-warning position-relative" @click="toggleExpanded(index)"
-          style="cursor: pointer">
-          <span class="badge position-absolute top-0 end-0 m-2" :class="{
-            'bg-secondary': ticket.status === 'to do',
-            'bg-warning text-dark': ticket.status === 'In Progress',
-            'bg-success': ticket.status === 'Done'
-          }">
-            {{ formatStatus(ticket.status) }}
-          </span>
+<div>
+  <h4 class="text-danger">❌ 未指派報修單</h4>
+  <div v-if="unassignedTickets.length">
+    <div
+      v-for="(ticket, index) in unassignedTickets"
+      :key="ticket.id"
+      class="card mb-3 p-3 border border-warning position-relative"
+      @click="toggleExpanded(index)"
+      style="cursor: pointer"
+    >
+    <span
+        class="badge position-absolute top-0 end-0 m-2"
+        :class="{
+          'bg-secondary': ticket.status === 'to do',
+          'bg-warning text-dark': ticket.status === 'In Progress',
+          'bg-success': ticket.status === 'Done'
+        }"
+      >
+      {{ formatStatus(ticket.status) }}
+        </span>
 
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h5 class="mb-1">{{ ticket.title }}</h5>
-              <p class="mb-1">通報人：{{ ticket.name }}</p>
-              <p class="text-muted mb-1">尚未指派</p>
-              <p class="mb-1">建立時間：{{ formatDate(ticket.startDate) }}</p>
-            </div>
-          </div>
-
-          <transition name="fade">
-            <div v-show="expanded.includes(index)" class="mt-3 border-top pt-2 text-secondary small">
-              <!-- 問題種類 -->
-              <div class="mb-2">
-                <p><strong>問題種類：</strong></p>
-                <div v-if="ticket.issueTypes?.length">
-                  <span v-for="(rel, i) in ticket.issueTypes" :key="i" class="badge bg-info me-2">
-                    {{ rel.issueType?.issueTypeName }}
-                  </span>
-                </div>
-                <p v-else class="text-muted">無</p>
-              </div>
-
-              <!-- 問題描述 -->
-              <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
-
-              <!-- ✅ ⬇️ 插入這區塊（附件圖片）⬇️ -->
-              <div class="mb-2" v-if="ticket.attachments?.length">
-                <p><strong>附件圖片：</strong></p>
-                <div class="d-flex flex-wrap gap-2">
-                  <img v-for="(img, i) in ticket.attachments" :key="i" :src="img.url" class="rounded border"
-                    style="width: 100px; height: 100px; object-fit: cover;" @click.stop="openPreview(img)" />
-                </div>
-              </div>
-              <div v-if="previewImageUrl" class="image-preview-overlay" @click.stop="closePreview">
-                <img :src="previewImageUrl" class="image-preview" @click.stop />
-              </div>
-              <!-- ✅ ⬆️ 附件區結束 ⬆️ -->
-
-              <!-- 工程商選擇區 -->
-              <div class="row mt-3">
-                <!-- 左欄：下拉選單 -->
-                <div class="col-md-6">
-                  <label class="form-label">選擇工程商（可複選）</label>
-                  <div class="border rounded p-2">
-                    <select class="form-select" @change="handleVendorSelect($event, ticket)" @mousedown.stop
-                      @click.stop>
-                      <option disabled selected>請選擇工程商</option>
-                      <option v-for="vendor in vendors" :key="vendor.vendorID" :value="vendor.vendorID"
-                        :disabled="ticket.selectedVendorIds.includes(vendor.vendorID)">
-                        {{ vendor.vendorName }} - {{ vendor.contactPerson }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- 右欄：顯示已選與按鈕 -->
-                <div class="col-md-6 d-flex flex-column justify-content-between">
-                  <!-- ✅ 顯示已選項目 -->
-                  <div class="mb-2">
-                    <label class="form-label">已選擇的工程商</label>
-                    <div class="d-flex flex-wrap gap-2">
-                      <span v-for="id in ticket.selectedVendorIds" :key="id" class="badge bg-success">
-                        {{vendors.find(v => v.vendorID === id)?.vendorName}}
-                        <span class="ms-1 text-white" style="cursor: pointer"
-                          @click.stop="removeVendor(ticket, id)">&times;</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- ✅ 接收按鈕靠右 -->
-                  <div class="text-end mt-auto">
-                    <button class="btn btn-primary" @click.stop="confirmAssign(ticket)">
-                      ✅ 接收此報修單
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </transition>
-
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-1">{{ ticket.title }}</h5>
+          <p class="mb-1">通報人：{{ ticket.name }}</p>
+          <p class="text-muted mb-1">尚未指派</p>
+          <p class="mb-1">建立時間：{{ formatDate(ticket.startDate) }}</p>
         </div>
       </div>
-      <div v-else class="text-muted">目前沒有未指派的報修單</div>
+
+      <transition name="fade">
+  <div v-show="expanded.includes(index)" class="mt-3 border-top pt-2 text-secondary small">
+    <!-- 問題種類 -->
+    <div class="mb-2">
+      <p><strong>問題種類：</strong></p>
+      <div v-if="ticket.issueTypes?.length">
+        <span
+          v-for="(rel, i) in ticket.issueTypes"
+          :key="i"
+          class="badge bg-info me-2"
+        >
+          {{ rel.issueType?.issueTypeName }}
+        </span>
+      </div>
+      <p v-else class="text-muted">無</p>
     </div>
+
+    <!-- 問題描述 -->
+    <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
+
+       <!-- ✅ ⬇️ 插入這區塊（附件圖片）⬇️ -->
+       <div class="mb-2" v-if="ticket.attachments?.length">
+      <p><strong>附件圖片：</strong></p>
+      <div class="d-flex flex-wrap gap-2">
+        <img
+          v-for="(img, i) in ticket.attachments"
+          :key="i"
+          :src="img.url"
+          class="rounded border"
+          style="width: 100px; height: 100px; object-fit: cover;"
+          @click.stop="openPreview(img)"
+        />
+      </div>
+    </div>
+    <div v-if="previewImageUrl" class="image-preview-overlay" @click.stop="closePreview">
+        <img :src="previewImageUrl" class="image-preview" @click.stop />
+      </div>
+    <!-- ✅ ⬆️ 附件區結束 ⬆️ -->
+
+    <!-- 工程商選擇區 -->
+    <div class="row mt-3">
+      <!-- 左欄：下拉選單 -->
+      <div class="col-md-6">
+        <label class="form-label">選擇工程商（可複選）</label>
+        <div class="border rounded p-2">
+          <select
+            class="form-select"
+            @change="handleVendorSelect($event, ticket)"
+            @mousedown.stop
+            @click.stop
+          >
+            <option disabled selected>請選擇工程商</option>
+            <option
+              v-for="vendor in vendors"
+              :key="vendor.vendorID"
+              :value="vendor.vendorID"
+              :disabled="ticket.selectedVendorIds.includes(vendor.vendorID)"
+            >
+              {{ vendor.vendorName }} - {{ vendor.contactPerson }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 右欄：顯示已選與按鈕 -->
+      <div class="col-md-6 d-flex flex-column justify-content-between">
+        <!-- ✅ 顯示已選項目 -->
+        <div class="mb-2">
+          <label class="form-label">已選擇的工程商</label>
+          <div class="d-flex flex-wrap gap-2">
+            <span
+              v-for="id in ticket.selectedVendorIds"
+              :key="id"
+              class="badge bg-success"
+            >
+              {{ vendors.find(v => v.vendorID === id)?.vendorName }}
+              <span
+                class="ms-1 text-white"
+                style="cursor: pointer"
+                @click.stop="removeVendor(ticket, id)"
+              >&times;</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- ✅ 接收按鈕靠右 -->
+        <div class="text-end mt-auto">
+          <button
+            class="btn btn-primary"
+            @click.stop="confirmAssign(ticket)"
+          >
+            ✅ 接收此報修單
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</transition>
+
+    </div>
+  </div>
+  <div v-else class="text-muted">目前沒有未指派的報修單</div>
+</div>
 
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-import axios from '@/plugins/axios'
+import { ref, onMounted, computed ,watch} from 'vue'
+import axios from 'axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -235,6 +307,24 @@ const users = ref([])
 const issueTypes = ref([])
 
 
+const showDropdown = ref(false)
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function toggleIssueType(name) {
+  const list = filter.value.issueTypeNames
+  const index = list.indexOf(name)
+  if (index === -1) list.push(name)
+  else list.splice(index, 1)
+}
+
+function removeIssueType(name) {
+  filter.value.issueTypeNames = filter.value.issueTypeNames.filter(n => n !== name)
+}
+
+
 watch([searchText, filter], async () => {
   await applySearch()
 }, { deep: true })
@@ -257,12 +347,12 @@ onMounted(() => {
 })
 
 async function fetchUsers() {
-  const res = await axios.get('/users/ticket')
+  const res = await axios.get('http://localhost:8080/users/ticket')
   users.value = res.data.map(u => ({ id: u.usersId, name: u.name }))
 }
 
 async function fetchIssueTypes() {
-  const res = await axios.get('/IssueTypes')
+  const res = await axios.get('http://localhost:8080/IssueTypes')
   issueTypes.value = res.data
 }
 
@@ -323,10 +413,10 @@ async function fetchTickets(searchPayload = null) {
     }
 
     const [ticketRes, assignRes, vendorRes] = await Promise.all([
-      axios.post('/ticket/search', payload),
-      // axios.get('/ticket'),
-      axios.get('/TicketToAdministrator'),
-      axios.get('/vendors')
+    axios.post('http://localhost:8080/ticket/search', payload),
+      // axios.get('http://localhost:8080/ticket'),
+      axios.get('http://localhost:8080/TicketToAdministrator'),
+      axios.get('http://localhost:8080/vendors')
     ])
 
     vendors.value = vendorRes.data
@@ -352,10 +442,10 @@ async function fetchTickets(searchPayload = null) {
       // console.log('Ticket ID:', ticket.id, 'assignedVendorIds:', assignedVendorIds)
 
       const attachments = (ticket.attachments || []).map(a => ({
-        url: `data:image/png;base64,${a.file}`,
-        file: a.file,
-        fileName: a.fileName
-      }))
+    url: `data:image/png;base64,${a.file}`,
+    file: a.file,
+    fileName: a.fileName
+  }))
       return {
         ...ticket,
         assignedVendorIds,
@@ -365,9 +455,9 @@ async function fetchTickets(searchPayload = null) {
         selectedVendorIds: [],
         attachments
       }
-
+      
     })
-
+ 
   } catch (err) {
     console.error('❌ 載入報修單失敗', err)
   }
@@ -388,9 +478,9 @@ async function confirmAssign(ticket) {
       vendorIds: ticket.selectedVendorIds
     }
     console.log('🚀 準備送出指派資料：', payload)
-    await axios.post('/TicketToAdministrator/assign', payload)
-    // ✅ 再補送 PUT 更新 assignerId
-    const putPayload = {
+    await axios.post('http://localhost:8080/TicketToAdministrator/assign', payload)
+ // ✅ 再補送 PUT 更新 assignerId
+ const putPayload = {
       reporterId: ticket.reporter?.usersId || ticket.reporterId || 1,  // 避免 undefined，預設 1
       title: ticket.title,
       assignerId: userStore.userId,
@@ -398,11 +488,11 @@ async function confirmAssign(ticket) {
       issueDescription: ticket.issueDescription,
       notes: ticket.notes || '',
       communityId: userStore.communityId,
-      actionBy: userStore.userId,
+      actionBy: userStore.userId, 
     }
     console.log('🚀 準備送出 PUT 資料：', putPayload)
 
-    await axios.put(`/ticket/${ticket.id}`, putPayload)
+    await axios.put(`http://localhost:8080/ticket/${ticket.id}`, putPayload)
 
     await fetchTickets()
 
@@ -440,20 +530,16 @@ function formatDate(dateString) {
 h2 {
   font-weight: bold;
 }
-
 .card {
   border-radius: 10px;
 }
-
 img {
   object-fit: cover;
 }
-
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

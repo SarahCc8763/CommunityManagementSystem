@@ -40,11 +40,6 @@
       description: '由管理員指派報修案件給負責人員。',
       route: 'AllTicketsByAssignment',
     },
-    {
-      title: '統計與報表',
-      description: '查看各類報修統計、分類與處理效率。',
-      route: 'TicketReport',
-    },
   ]
   
   const goTo = (routeName) => {

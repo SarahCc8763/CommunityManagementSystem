@@ -2,27 +2,28 @@ package finalProj.service.packages;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import finalProj.domain.community.Community;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
+import finalProj.domain.notifications.UsersNotifications;
 import finalProj.domain.packages.Packages;
 import finalProj.domain.users.Units;
+import finalProj.domain.users.UnitsUsers;
+import finalProj.domain.users.Users;
 import finalProj.dto.packages.PackagesDTO;
 import finalProj.dto.packages.PackagesSearchDTO;
 import finalProj.enumCommunity.CommunityFunction;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.notifications.NotificationsRepository;
 import finalProj.repository.notifications.UnitsNotificationsRepository;
+import finalProj.repository.notifications.UsersNotificationsRepository;
 import finalProj.repository.packages.PackagesRepository;
 import finalProj.repository.users.UnitsRepository;
-import finalProj.service.notifications.NotificationsService;
 import finalProj.util.CommunityFunctionUtils;
 
 @Service
@@ -40,64 +41,74 @@ public class PackagesService {
 
 	@Autowired
 	private NotificationsRepository notificationsRepository;
-
+	
 	@Autowired
 	private UnitsNotificationsRepository unitsNotificationsRepository;
 
 	@Autowired
-	private NotificationsService notificationsService;
+	private UsersNotificationsRepository usersNotificationsRepository;
 
 	// 新增包裹
-	public Packages addPackages(Map<String, String> body) {
-
-		// 拿 communityId 並轉成 Integer
-		Integer communityId = Integer.parseInt(body.get("communityId"));
-		Community community = communityRepository.findById(communityId)
-				.orElseThrow(() -> new IllegalArgumentException("社區 ID 不存在：" + communityId));
+	public Packages addPackages(PackagesDTO dto) {
+		Community community = communityRepository.findById(dto.getCommunityId())
+				.orElseThrow(() -> new IllegalArgumentException("社區 ID 不存在：" + dto.getCommunityId()));
 
 		if (!CommunityFunctionUtils.hasFunction(community.getFunction(), CommunityFunction.PACKAGE)) {
 			throw new IllegalArgumentException("此社區未啟用『包裹』功能，無法建立包裹紀錄");
 		}
 
-		// 組合 unit + floor
-		String unit = body.get("unit"); // 前端組合好的 "10-1"
-		String floor = body.get("floor"); // 例如 "3F"
-
-		Units foundUnit = unitsRepository.findByUnitAndFloor(unit, floor)
-				.orElseThrow(() -> new IllegalArgumentException("找不到對應的門牌，unit=" + unit + ", floor=" + floor));
-
-		// 種類
-		String type = body.get("type");
-
-		// 件數
-		String pieceStr = body.get("piece");
-		int piece = pieceStr != null ? Integer.parseInt(pieceStr) : 1;
-
-		// 地點
-		String place = body.get("place");
-
-		// 狀態
-		String status = body.get("status");
+		Units unit = unitsRepository.findById(dto.getUnitId())
+				.orElseThrow(() -> new IllegalArgumentException("單位 ID 不存在：" + dto.getUnitId()));
 
 		Packages packages = new Packages();
 		packages.setCommunity(community);
-		packages.setUnit(foundUnit);
-		packages.setPiece(piece);
+		packages.setUnit(unit);
+		packages.setPiece(dto.getPiece());
 		packages.setArrivalTime(LocalDateTime.now());
-		packages.setPickupTime(null);
-		if (status == null || status.isBlank()) {
+		packages.setPickupTime(dto.getPickupTime());
+		if (dto.getStatus() == null || dto.getStatus().isBlank()) {
 			packages.setStatus("未領取");
+		} else {
+			packages.setStatus(dto.getStatus());
 		}
-		packages.setType(type);
-		packages.setSign(null);
-		packages.setPlace(place);
+		packages.setType(dto.getType());
+		packages.setSign(dto.getSign());
+		packages.setPlace(dto.getPlace());
 
-		packages.setPhoto(null);
+		if (dto.getPhoto() != null) {
+			packages.setPhoto(dto.getPhoto());
+		}
 
 		Packages savedPackage = PackagesRepository.save(packages);
+		
+		// === 建立一筆 Notifications ===
+	    Notifications notification = new Notifications();
+	    notification.setTitle("您有包裹待領取");
+	    notification.setDescription("門牌號：" + unit.getUnit() + " 有新包裹，請盡快領取！");
+	    notification.setCreatedTime(LocalDateTime.now());
+	    notification.setCommunity(community);
+	    notificationsRepository.save(notification);
 
-		notificationsService.createPackageNotification(savedPackage);
+	    // === 建立 UnitsNotifications ===
+	    UnitsNotifications unitsNotifications = new UnitsNotifications();
+	    unitsNotifications.setNotifications(notification);
+	    unitsNotifications.setUnits(unit);
+	    unitsNotificationsRepository.save(unitsNotifications);
 
+	    // === 建立 UsersNotifications 給該 Unit 下所有住戶 ===
+	    List<UnitsUsers> unitsUsersList = unit.getUnitsUsersList();
+	    if (unitsUsersList != null && !unitsUsersList.isEmpty()) {
+	        for (UnitsUsers unitsUsers : unitsUsersList) {
+	            Users user = unitsUsers.getUser();
+
+	            UsersNotifications usersNotifications = new UsersNotifications();
+	            usersNotifications.setNotifications(notification);
+	            usersNotifications.setUser(user);
+	            usersNotifications.setIsRead(0);  // 預設未讀
+	            usersNotificationsRepository.save(usersNotifications);
+	        }
+	    }
+		
 		return savedPackage;
 	}
 
@@ -107,13 +118,6 @@ public class PackagesService {
 				.orElseThrow(() -> new IllegalArgumentException("找不到該 unitId：" + unitId));
 
 		return PackagesRepository.findByUnit(unit);
-	}
-
-	// 查詢包裹(管理員)
-	public List<Packages> findPackagesByUnitIdSecurity(String unit, String floor) {
-		Optional<Units> units = unitsRepository.findByUnitAndFloor(unit, floor);
-		Units foundUnits = units.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "找不到 units"));
-		return PackagesRepository.findByUnit(foundUnits);
 	}
 
 	// 多條件查詢
@@ -128,11 +132,10 @@ public class PackagesService {
 	}
 
 	// 修改
-	public Packages update(Integer id, PackagesDTO dto) {
+	public Packages update(Integer id,PackagesDTO dto) {
 		Packages packages = PackagesRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("找不到對應的包裹 ID：" + id));
-		;
-
+				.orElseThrow(() -> new IllegalArgumentException("找不到對應的包裹 ID：" + id));;
+				
 		if (dto.getCommunityId() != null) {
 			Community community = communityRepository.findById(dto.getCommunityId())
 					.orElseThrow(() -> new IllegalArgumentException("找不到對應的 communityId：" + dto.getCommunityId()));
