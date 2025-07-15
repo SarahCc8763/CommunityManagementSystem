@@ -1,6 +1,6 @@
-
-import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore'
+
 
 // 📌 首頁
 import Home from '../views/Home.vue'
@@ -51,6 +51,12 @@ import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
 
+// 包裹
+import packages_picked from '@/components/package/packages_picked.vue';
+import packages_security from '@/components/package/packages_security.vue';
+import addPackage from '@/components/package/addPackage.vue';
+
+
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
 import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
@@ -60,6 +66,7 @@ import PointHistoryView from '../views/facilities/PointHistoryView.vue'
 import PointTransferView from '../views/facilities/PointTransferView.vue'
 import PointTopupView from '../views/facilities/PointTopupView.vue'
 import PointTopupResultView from '../views/facilities/PointTopupResultView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -157,6 +164,40 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: profile,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/notification',
+      name: 'notification',
+      component: notification
+    },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/packages_picked',
+      name: 'packages_picked',
+      component: packages_picked,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/packages_security',
+      name: 'packages_security',
+      component: packages_security,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/addPackage',
+      name: 'addPackage',
+      component: addPackage,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
       path: '/TicketDashboard',
       name: 'TicketDashboard',
       component: TicketDashboard,
@@ -165,9 +206,9 @@ const router = createRouter({
       path: '/Vendor',
       name: 'Vendor',
       component: Vendor,
-    },{
-      
-    path: '/finance/invoice',
+    }, {
+
+      path: '/finance/invoice',
       name: 'Invoice',
       component: Invoice
     },
@@ -255,7 +296,9 @@ const router = createRouter({
       name: 'faq',
       component: Faq
 
-    },{
+    },
+
+    {
       path: '/feedback',
       name: 'feedback',
       component: MyFeedback
@@ -267,17 +310,6 @@ const router = createRouter({
       component: BulletinAdmin,
       meta: { dark: true }
 
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: profile,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/notification',
-      name: 'notification',
-      component: notification
     },
     {
       path: '/facilities',

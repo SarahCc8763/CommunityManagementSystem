@@ -216,22 +216,25 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
-import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import axios from '@/plugins/axios'
+// import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
 
+
+const userStore = useUserStore()
+const userId = userStore.id || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const defaultImage = noImage
 const feedbackList = ref([])
 const categoryList = ref([])
 const loading = ref(false)
 const error = ref(null)
-const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
-const communityId = localStorage.getItem('communityId') || 1
 const selectedStatus = ref('')
 const selectedCategory = ref('')
 const selectedFeedback = ref(null)
@@ -281,7 +284,7 @@ const submitReply = async (feedback) => {
 
     try {
         const res = await axios.post(
-            `http://localhost:8080/api/feedback/${feedback.id}/reply`,
+            `/api/feedback/${feedback.id}/reply`,
             payload
         )
 
@@ -355,7 +358,7 @@ const formatDateTime = (datetime) => {
 
 const openEditModal = async (feedbackId) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
+        const res = await axios.get(`/api/feedback/${feedbackId}`)
         const feedback = res.data
         //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
@@ -386,7 +389,7 @@ const deleteReply = async (replyId) => {
     if (!result.isConfirmed) return;
 
     try {
-        const res = await axios.delete(`http://localhost:8080/api/feedback/reply/${replyId}`);
+        const res = await axios.delete(`/api/feedback/reply/${replyId}`);
 
         if (res.data?.result !== '刪除成功') {
             throw new Error('伺服器回應非預期');
@@ -421,7 +424,7 @@ const deleteReply = async (replyId) => {
 
 
 const fetchData = async () => {
-    const userId = 1 // localStorage.getItem('userId')
+
     if (!userId) {
         error.value = '找不到使用者資訊，請重新登入。'
         return
@@ -429,7 +432,7 @@ const fetchData = async () => {
 
     loading.value = true
     await axios
-        .get(`http://localhost:8080/api/feedback/community/${communityId}`)
+        .get(`/api/feedback/community/${communityId}`)
         .then((res) => {
             feedbackList.value = res.data.list.map((f) => ({
                 ...f,
@@ -446,7 +449,7 @@ const fetchData = async () => {
             loading.value = false
         })
 
-    axios.get(`http://localhost:8080/api/feedback/${communityId}/category`)
+    axios.get(`/api/feedback/${communityId}/category`)
         .then((res) => {
             categoryList.value = res.data.data
             //console.log(res);

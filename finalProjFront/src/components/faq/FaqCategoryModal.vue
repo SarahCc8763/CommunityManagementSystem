@@ -23,7 +23,7 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 
@@ -42,13 +42,13 @@ watch(() => props.visible, (val) => {
 })
 
 const fetchCategories = async () => {
-    const res = await axios.get(`http://localhost:8080/api/faq/${props.communityId}/category/list`)
+    const res = await axios.get(`/api/faq/${props.communityId}/category/list`)
     categoryList.value = res.data
 }
 
 const addCategory = async () => {
     if (!newCategory.value.trim()) return
-    await axios.post('http://localhost:8080/api/faq/category', {
+    await axios.post('/api/faq/category', {
         name: newCategory.value.trim(),
         community: { communityId: props.communityId },
     })
@@ -58,7 +58,7 @@ const addCategory = async () => {
 }
 
 const updateCategory = async (cat) => {
-    await axios.put(`http://localhost:8080/api/faq/category/${cat.id}`, {
+    await axios.put(`/api/faq/category/${cat.id}`, {
         name: cat.name,
         community: { communityId: props.communityId },
     })
@@ -79,7 +79,7 @@ const deleteCategory = async (id) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`http://localhost:8080/api/faq/category/${id}`)
+            await axios.delete(`/api/faq/category/${id}`)
             await fetchCategories()
             emit('updated')
             Swal.fire({ title: '刪除成功', icon: 'success', timer: 1500, showConfirmButton: false })

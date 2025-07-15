@@ -20,15 +20,17 @@
 
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
-          <RouterView />
+        <RouterView />
+        <FeedbackModal />
+
       </div>
     </main>
-  
-  <FooterAll />
 
-  <!-- 登入模態框 -->
-  <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
-</div>
+    <FooterAll />
+
+    <!-- 登入模態框 -->
+    <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
+  </div>
 </template>
 
 
@@ -41,7 +43,7 @@
 
 <script setup>
 //功能類import
-import { RouterLink,RouterView} from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
@@ -52,6 +54,9 @@ import LoginModal from './components/forAll/main/LoginModal.vue';
 import HeaderAll from './components/forAll/main/HeaderAll.vue';
 import RightSideNav from './components/forAll/main/RightSideNav.vue';
 import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
+// Yu
+import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
+// Yu
 
 import { useRoute } from 'vue-router'  // ✅ 加上這行
 const route = useRoute()
@@ -95,7 +100,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('show-login-modal', handleShowLoginModal)
   window.removeEventListener('logout', handleLogout)
-const route = useRoute()})
+  const route = useRoute()
+})
 
 
 

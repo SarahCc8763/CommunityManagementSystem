@@ -154,7 +154,12 @@ function goTo(name) {
 const router = useRouter();
 
 const navigate = (link) => {
-    if (link) router.push(link);
+    // 有改---------------------------------
+    // if (link) router.push(link);
+    if(userStore.roleId == 2 && feature.linkSecurity){
+        router.push(feature.linkSecurity)
+    }else if (feature.link) router.push(feature.link);
+    // 有改---------------------------------
 };
 
 const features = [
@@ -163,7 +168,8 @@ const features = [
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
         link: '/package',
-        key:'PACKAGE'
+        key:'PACKAGE',
+        linkSecurity:'/packages_security'
     },
     {
         icon: 'bi-car-front-fill',
@@ -196,9 +202,8 @@ const features = [
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
-        description: '線上預約健身房、交誼廳等公設，避免重複與衝突。',
-        link: '/reservation',
-        key:'BOOKING'
+        description: '線上預約健身房、交誼廳等公設，點數管理。',
+        link: '/facilities'
     },
     {
         icon: 'bi-tools',

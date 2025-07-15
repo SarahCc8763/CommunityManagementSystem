@@ -41,7 +41,7 @@ public class UsersController {
 		String password = body.get("newPassword");
 		if (usersService.isValidUser(email)) {
 			usersService.resetPassword(email, password);
-			return ResponseEntity.ok(Map.of("message", "密碼更改成功"));
+			return ResponseEntity.ok(Map.of("message", "密碼更改成功", "success", "true"));
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "密碼更改失敗"));
 	}

@@ -60,7 +60,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import swal from 'sweetalert2'
 
@@ -78,7 +78,7 @@ const attachments = ref([])
 
 const fetchCategories = async () => {
     try {
-        const res = await axios.get('http://localhost:8080/api/feedback/1/category')
+        const res = await axios.get('/api/feedback/1/category')
         if (res.data && res.data.data) {
             categories.value = Object.entries(res.data.data).map(([id, name]) => ({ id: Number(id), name }))
         }
@@ -129,7 +129,7 @@ const submitFeedback = async () => {
     }
 
     try {
-        const url = form.id ? `http://localhost:8080/api/feedback/${form.id}` : 'http://localhost:8080/api/feedback'
+        const url = form.id ? `/api/feedback/${form.id}` : '/api/feedback'
         const method = form.id ? 'put' : 'post'
 
         const res = await axios[method](url, payload)
@@ -139,7 +139,7 @@ const submitFeedback = async () => {
             swal.fire({ icon: 'success', title: '成功', text: form.id ? '意見更新成功' : '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
                 resetForm()
-                location.reload();
+                // location.reload();
 
             })
         } else {

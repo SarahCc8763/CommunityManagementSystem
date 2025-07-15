@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import ModalWrapper from '@/components/bulletin/ModalWrapper.vue'
 
@@ -108,8 +108,8 @@ const submitForm = async () => {
     try {
         const payload = { ...form.value }
         const url = mode.value === 'edit'
-            ? `http://localhost:8080/api/faq/${props.faqData.id}`
-            : 'http://localhost:8080/api/faq'
+            ? `/api/faq/${props.faqData.id}`
+            : '/api/faq'
 
         const method = mode.value === 'edit' ? 'put' : 'post'
         const res = await axios[method](url, payload)

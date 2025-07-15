@@ -29,9 +29,8 @@
             <div class="accordion" id="feedbackAccordion" style="width: 90%;">
                 <div class="accordion-item" v-for="(feedback, index) in feedbackList" :key="feedback.id">
                     <h2 class="accordion-header" :id="'heading-' + index">
-                        <button class="accordion-button collapsed w-100" type="button" data-bs-toggle="collapse"
-                            :data-bs-target="'#collapse-' + index" aria-expanded="false"
-                            :aria-controls="'collapse-' + index">
+                        <button class="accordion-button w-100" type="button"
+                            :class="{ 'collapsed': !feedback.isExpanded }" @click="toggleAccordion(feedback)">
 
                             <div class="d-flex justify-content-between align-items-center w-100">
                                 <!-- 左側：狀態 + 標題 -->
@@ -50,7 +49,8 @@
 
                     </h2>
                     <div :id="'collapse-' + index" class="accordion-collapse collapse"
-                        :aria-labelledby="'heading-' + index" data-bs-parent="#feedbackAccordion">
+                        :class="{ 'show': feedback.isExpanded }" :aria-labelledby="'heading-' + index">
+
                         <div class="accordion-body">
                             <div class="card h-100 flex-row">
                                 <img :src="getFirstImage(feedback)" class="img-fluid rounded-start" alt="Feedback Image"
@@ -156,17 +156,22 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
+const userId = userStore.userId || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const defaultImage = noImage
 const feedbackList = ref([])
 const loading = ref(false)
 const error = ref(null)
-const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
 
@@ -201,10 +206,10 @@ const submitReply = async (feedback) => {
         preFeedBackStatus: feedback.status, // 從 feedback 中取原本狀態
         newFeedBackStatus: null              // 使用者自行留言不變更狀態
     }
-
+    console.log(payload);
     try {
         const res = await axios.post(
-            `http://localhost:8080/api/feedback/${feedback.id}/reply`,
+            `/api/feedback/${feedback.id}/reply`,
             payload
         )
 
@@ -266,7 +271,7 @@ const formatDateTime = (datetime) => {
 
 const openEditModal = async (feedbackId) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/feedback/${feedbackId}`)
+        const res = await axios.get(`/api/feedback/${feedbackId}`)
         const feedback = res.data
         //console.log(feedback);
         const modalEl = document.getElementById('feedbackModal')
@@ -307,7 +312,7 @@ const submitRating = async (feedback) => {
             confirmButtonText: '確定'
         })
         if (result.isConfirmed) {
-            const res = await axios.put(`http://localhost:8080/api/feedback/rating/${feedback.id}`, payload)
+            const res = await axios.put(`/api/feedback/rating/${feedback.id}`, payload)
 
             if (res.data?.success) {
                 // 更新本地畫面資料
@@ -349,10 +354,11 @@ const fetchData = () => {
 
     loading.value = true
     axios
-        .get(`http://localhost:8080/api/feedback/findbyuser/${userId}`)
+        .get(`/api/feedback/findbyuser/${userId}`)
         .then((res) => {
             feedbackList.value = res.data.map((f) => ({
                 ...f,
+                isExpanded: false, // <-- Add this line
                 showReplies: false,
                 newReplyText: '',
                 tempRating: null
@@ -367,7 +373,19 @@ const fetchData = () => {
             loading.value = false
         })
 }
+const toggleAccordion = (clickedFeedback) => {
+    const wasExpanded = clickedFeedback.isExpanded;
 
+    // Close all other items
+    feedbackList.value.forEach(item => {
+        item.isExpanded = false;
+    });
+
+    // Toggle the clicked item
+    if (!wasExpanded) {
+        clickedFeedback.isExpanded = true;
+    }
+};
 onMounted(() => {
     fetchData()
 })

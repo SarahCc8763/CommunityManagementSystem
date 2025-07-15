@@ -34,9 +34,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { jsPDF } from 'jspdf'
-import '@/assets/fonts/msjh-normal.js'
+// import '@/assets/fonts/msjh-normal.js'
 
 //這段來抓User跟Community ID
 import { useUserStore } from '@/stores/UserStore'
@@ -59,7 +59,9 @@ const fetchReceipts = async () => {
 
 onMounted(fetchReceipts)
 
-const downloadPDF = (r) => {
+const downloadPDF = async (r) => {
+  // 延後載入字型檔
+  await import('@/assets/fonts/msjh-normal.js') // ✅ 只有在需要 PDF 時才載入
   const doc = new jsPDF()
   doc.setFont('msjh')
   doc.setFontSize(16)

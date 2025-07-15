@@ -4,7 +4,8 @@
       <!-- 關閉按鈕 -->
       <button class="close-button" @click="closeModal">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </button>
 
@@ -14,9 +15,12 @@
           <div class="logo-container">
             <div class="logo-circle">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
               </svg>
             </div>
           </div>
@@ -28,18 +32,16 @@
           <!-- 帳號輸入框 -->
           <div class="input-group">
             <div class="input-wrapper">
-              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
               </svg>
-              <input 
-                type="text" 
-                v-model="form.username" 
-                placeholder="請輸入帳號"
-                class="form-input"
-                :class="{ 'error': errors.username }"
-                @focus="clearError('username')"
-              />
+              <input type="text" v-model="form.username" placeholder="請輸入帳號" class="form-input"
+                :class="{ 'error': errors.username }" @focus="clearError('username')" />
             </div>
             <span class="error-message" v-if="errors.username">{{ errors.username }}</span>
           </div>
@@ -47,32 +49,35 @@
           <!-- 密碼輸入框 -->
           <div class="input-group">
             <div class="input-wrapper">
-              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path
+                  d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-              <input 
-                :type="showPassword ? 'text' : 'password'" 
-                v-model="form.password" 
-                placeholder="請輸入密碼"
-                class="form-input"
-                :class="{ 'error': errors.password }"
-                @focus="clearError('password')"
-              />
-              <button 
-                type="button" 
-                class="password-toggle"
-                @click="showPassword = !showPassword"
-              >
-                <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <input :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="請輸入密碼"
+                class="form-input" :class="{ 'error': errors.password }" @focus="clearError('password')" />
+              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+                <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
                 </svg>
                 <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C7 20 2 16 2 12C2 7 7 2 12 2C16 2 20 7 20 12C20 16 17.94 17.94 17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C7 4 2 8 2 12C2 16 7 20 12 20C16 20 20 16 20 12C20 9.9 19.76 9.9 19.76 9.9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20C7 20 2 16 2 12C2 7 7 2 12 2C16 2 20 7 20 12C20 16 17.94 17.94 17.94 17.94Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path
+                    d="M9.9 4.24A9.12 9.12 0 0 1 12 4C7 4 2 8 2 12C2 16 7 20 12 20C16 20 20 16 20 12C20 9.9 19.76 9.9 19.76 9.9"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
                 </svg>
               </button>
             </div>
@@ -135,7 +140,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 import { useRouter } from 'vue-router'
@@ -178,7 +183,6 @@ const captchaText = ref('')
 const closeModal = () => {
   emit('close')
   // resetForm()
-  resetForm()
 }
 
 // 重置表單
@@ -204,26 +208,26 @@ const clearError = (field) => {
 const generateCaptcha = () => {
   const canvas = captchaCanvas.value
   if (!canvas) return
-  
+
   const ctx = canvas.getContext('2d')
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   let text = ''
-  
+
   // 清空畫布
   ctx.fillStyle = '#f8f9fa'
   ctx.fillRect(0, 0, 120, 40)
-  
+
   // 生成文字
   for (let i = 0; i < 4; i++) {
     text += chars.charAt(Math.floor(Math.random() * chars.length))
   }
   captchaText.value = text
-  
+
   // 繪製文字
   ctx.font = 'bold 20px Arial'
   ctx.fillStyle = '#2d3748'
   ctx.textAlign = 'center'
-  
+
   for (let i = 0; i < text.length; i++) {
     ctx.save()
     ctx.translate(30 + i * 20, 20)
@@ -231,7 +235,7 @@ const generateCaptcha = () => {
     ctx.fillText(text[i], 0, 0)
     ctx.restore()
   }
-  
+
   // 添加干擾線
   for (let i = 0; i < 3; i++) {
     ctx.strokeStyle = `rgba(102, 126, 234, ${Math.random() * 0.3})`
@@ -263,15 +267,15 @@ const handleLogin = async () => {
   if (!form.value.password.trim()) {
     errors.value.password = '請輸入密碼'
   }
-  
+
   if (form.value.password.trim() === 'P@ssw0rd') {
-  router.push({name:'resetPassword'})
-  closeModal()
-  Swal.fire({
-                    text: '首次登入請變更密碼',
-                    icon: "warning",
-                });
-  return
+    router.push({ name: 'resetPassword' })
+    closeModal()
+    Swal.fire({
+      text: '首次登入請變更密碼',
+      icon: "warning",
+    });
+    return
   }
 
   // if (!form.value.captcha.trim()) {
@@ -289,11 +293,11 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    const response = await axios.post('http://localhost:8080/users/login', {
+    const response = await axios.post('/users/login', {
       "email": form.value.username,
       "password": form.value.password
     })
-  
+
     // 後端成功回傳
     if (response.data.success) {
       // remember me
@@ -301,8 +305,8 @@ const handleLogin = async () => {
         localStorage.setItem('rememberedUsername', form.value.username)
       } else {
         localStorage.removeItem('rememberedUsername')
-      }  
-      
+      }
+
       userStore.login(response.data)
       console.log(response.data);
       // emit('login-success', {
@@ -313,25 +317,25 @@ const handleLogin = async () => {
       closeModal()
       router.push({ name: 'home' })
       await Swal.fire({
-                    text: response.data.message,
-                    icon: "success",
-                });
+        text: response.data.message,
+        icon: "success",
+      });
     } else {
       // 後端回傳失敗訊息
       Swal.fire({
-                    text: response.data.message,
-                    icon: "warning",
-                });
+        text: response.data.message,
+        icon: "warning",
+      });
       errors.value.general = response.data.message || '登入失敗'
     }
   } catch (error) {
     closeModal()
     Swal.fire({
-    text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
-    icon: "error",
-  });
-  console.error('登入失敗:', error)
-  errors.value.general = '伺服器錯誤，請稍後再試' 
+      text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
+      icon: "error",
+    });
+    console.error('登入失敗:', error)
+    errors.value.general = '伺服器錯誤，請稍後再試'
   } finally {
     isLoading.value = false
   }
@@ -586,12 +590,12 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-.checkbox-input:checked + .checkmark {
+.checkbox-input:checked+.checkmark {
   background: #667eea;
   border-color: #667eea;
 }
 
-.checkbox-input:checked + .checkmark::after {
+.checkbox-input:checked+.checkmark::after {
   content: '';
   position: absolute;
   left: 4px;
@@ -677,8 +681,13 @@ onMounted(() => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -686,6 +695,7 @@ onMounted(() => {
     opacity: 0;
     transform: translateY(30px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -707,45 +717,57 @@ onMounted(() => {
     width: 100vw;
     border-radius: 10px;
   }
+
   .form-header {
     margin-bottom: 12px;
   }
+
   .title {
     font-size: 17px;
   }
+
   .subtitle {
     font-size: 12px;
   }
+
   .form {
     gap: 8px;
   }
+
   .input-group {
     gap: 2px;
   }
+
   .form-input {
     font-size: 12px;
     padding: 10px 10px 10px 36px;
   }
+
   .captcha-container {
     flex-direction: column;
     gap: 4px;
   }
+
   .captcha-image {
     max-width: 100%;
     height: auto;
   }
+
   .form-options {
     flex-direction: column;
     gap: 4px;
     align-items: flex-start;
   }
-  .checkbox-label, .forgot-password {
+
+  .checkbox-label,
+  .forgot-password {
     font-size: 11px;
   }
+
   .login-button {
     font-size: 13px;
     padding: 10px;
     margin-top: 4px;
   }
 }
-</style> 
+</style>

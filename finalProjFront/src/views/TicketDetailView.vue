@@ -9,13 +9,8 @@
 
       <div class="section">
         <h3>Description</h3>
-        <QuillEditor
-          style="min-height:300px"
-          v-model:content="edited.issueDescription"
-          contentType="html"
-          @focus="isEditing.issueDescription = true"
-          class="custom-quill"
-        />
+        <QuillEditor style="min-height:300px" v-model:content="edited.issueDescription" contentType="html"
+          @focus="isEditing.issueDescription = true" class="custom-quill" />
         <div v-if="isEditing.issueDescription" class="edit-controls">
           <button @click="cancelEdit('issueDescription')">取消</button>
           <button @click="saveEdit('issueDescription')">儲存</button>
@@ -25,15 +20,9 @@
       <div class="section" v-if="ticket.attachments?.length">
         <h3>Attachments</h3>
         <div class="d-flex flex-wrap gap-2">
-          <img
-            v-for="(attachment, index) in ticket.attachments"
-            :key="index"
-            :src="`data:image/png;base64,${attachment.file}`"
-            :alt="attachment.fileName"
-            class="rounded border"
-            style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
-            @click="openPreview(attachment)"
-          />
+          <img v-for="(attachment, index) in ticket.attachments" :key="index"
+            :src="`data:image/png;base64,${attachment.file}`" :alt="attachment.fileName" class="rounded border"
+            style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" @click="openPreview(attachment)" />
         </div>
       </div>
 
@@ -55,20 +44,14 @@
               </div>
             </div>
             <div class="comment-body">
-  <p>{{ comment.text }}</p>
+              <p>{{ comment.text }}</p>
 
-  <div class="d-flex flex-wrap gap-2 mt-2" v-if="comment.attachments.length">
-    <img
-      v-for="(img, j) in comment.attachments"
-      :key="j"
-      :src="`data:image/png;base64,${img.file}`"
-      :alt="img.fileName"
-      class="rounded border"
-      style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
-      @click="openPreview(img)"
-    />
-  </div>
-</div>
+              <div class="d-flex flex-wrap gap-2 mt-2" v-if="comment.attachments.length">
+                <img v-for="(img, j) in comment.attachments" :key="j" :src="`data:image/png;base64,${img.file}`"
+                  :alt="img.fileName" class="rounded border"
+                  style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" @click="openPreview(img)" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -85,26 +68,17 @@
         </select>
       </div>
       <div class="mb-3">
-  <label class="label">指派人</label>
-  <div class="form-control bg-white">
-    {{ ticket.assigner?.name || '未指派' }}
-  </div>
-</div>
+        <label class="label">指派人</label>
+        <div class="form-control bg-white">
+          {{ ticket.assigner?.name || '未指派' }}
+        </div>
+      </div>
 
       <div class="mb-3">
         <label class="label">問題種類</label>
-        <Multiselect
-          v-model="selectedIssueTypes"
-          :options="allIssueTypes"
-          :multiple="true"
-          :taggable="true"
-          tag-placeholder="新增..."
-          placeholder="請選擇或輸入問題種類"
-          track-by="id"
-          label="issueTypeName"
-          @tag="addNewIssueType"
-          @update:modelValue="saveIssueTypes"
-        />
+        <Multiselect v-model="selectedIssueTypes" :options="allIssueTypes" :multiple="true" :taggable="true"
+          tag-placeholder="新增..." placeholder="請選擇或輸入問題種類" track-by="id" label="issueTypeName" @tag="addNewIssueType"
+          @update:modelValue="saveIssueTypes" />
       </div>
 
       <div class="mb-3">
@@ -120,7 +94,7 @@ import { ref, onMounted, computed } from 'vue'
 import Multiselect from 'vue-multiselect'
 import { QuillEditor } from '@vueup/vue-quill'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import CommentInput from '@/views/CommentInput.vue'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
@@ -148,7 +122,7 @@ function convertStatusFromBackend(s) {
 onMounted(loadTicket)
 async function loadTicket() {
   try {
-    const res = await axios.get(`http://localhost:8080/ticket/${ticketId}`)
+    const res = await axios.get(`/ticket/${ticketId}`)
     const data = res.data
 
     // 設定 ticket 主要資料
@@ -156,15 +130,15 @@ async function loadTicket() {
     edited.value.issueDescription = data.issueDescription
 
     if (!data.assigner) {
-  ticket.value.assigner = { name: userStore.name } // 補上目前登入者名稱
-}
+      ticket.value.assigner = { name: userStore.name } // 補上目前登入者名稱
+    }
 
     // 設定留言（其實 data.comments 就有了）
     ticket.value.comments = data.comments
 
     // 所有問題種類選項（你若需要載入全部類型供選擇）
     ticket.value.status = convertStatusFromBackend(data.status)
-    const allTypesRes = await axios.get('http://localhost:8080/IssueTypes')
+    const allTypesRes = await axios.get('/IssueTypes')
     allIssueTypes.value = allTypesRes.data
 
     // 處理多對多的 issueTypes => 提取 issueType 欄位
@@ -196,7 +170,7 @@ function formatDate(datetime) {
 
 async function saveStatus() {
   try {
-    await axios.put(`http://localhost:8080/ticket/status/${ticket.value.id}`, {
+    await axios.put(`/ticket/status/${ticket.value.id}`, {
       status: ticket.value.status // 只送出 status 欄位即可
     })
     console.log('✅ 狀態更新成功')
@@ -209,14 +183,14 @@ async function saveStatus() {
 async function saveIssueTypes() {
   try {
     const ids = selectedIssueTypes.value.map(t => t.id)
-    await axios.put(`http://localhost:8080/ticket-issue/update/${ticketId}`, ids)
+    await axios.put(`/ticket-issue/update/${ticketId}`, ids)
   } catch (err) {
     console.error('❌ 儲存失敗', err)
   }
 }
 
 async function addNewIssueType(newName) {
-  const res = await axios.post('http://localhost:8080/IssueTypes', { issueTypeName: newName })
+  const res = await axios.post('/IssueTypes', { issueTypeName: newName })
   allIssueTypes.value.push(res.data)
   selectedIssueTypes.value.push(res.data)
   saveIssueTypes()
@@ -235,7 +209,7 @@ async function saveEdit(field) {
         communityId: 1,
         actionBy: 1
       }
-      await axios.put(`http://localhost:8080/ticket/${ticketId}`, payload)
+      await axios.put(`/ticket/${ticketId}`, payload)
       ticket.value.issueDescription = edited.value.issueDescription
     }
     isEditing.value[field] = false
@@ -271,26 +245,31 @@ const reversedComments = computed(() =>
   overflow: hidden;
   background-color: #f8f9fa;
 }
+
 .ticket-main {
   flex: 1;
   padding: 32px;
   overflow-y: auto;
   background: white;
 }
+
 .ticket-title {
   font-size: 24px;
   font-weight: 700;
 }
+
 .section h3 {
   font-size: 16px;
   margin-top: 24px;
   margin-bottom: 8px;
 }
+
 .label {
   font-weight: 600;
   margin-bottom: 4px;
   display: inline-block;
 }
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -303,26 +282,31 @@ const reversedComments = computed(() =>
   justify-content: center;
   font-size: 14px;
 }
+
 .ql-editor {
   min-height: 600px;
 }
+
 .custom-quill {
   height: 1000px;
   border-radius: 10px;
   border: 1px solid #ccc;
   overflow: auto;
 }
+
 .image-preview-overlay {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   z-index: 9999;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .image-preview {
   max-width: 90vw;
   max-height: 90vh;

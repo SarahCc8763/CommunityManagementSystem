@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>付款結果</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .result-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .success {
+            color: #2ecc71;
+        }
+
+        .fail {
+            color: #e74c3c;
+        }
+
+        p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .button {
+            margin-top: 1.5rem;
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h2 th:text="${rtnCode == '1'} ? '付款成功' : '付款失敗'"
+            th:class="${rtnCode == '1'} ? 'success' : 'fail'">付款結果</h2>
+
+        <p><strong>訂單編號：</strong> <span th:text="${merchantTradeNo}">N/A</span></p>
+        <p><strong>金額：</strong> <span th:text="${amount}">N/A</span> 元</p>
+        <p><strong>付款方式：</strong> <span th:text="${paymentType}">N/A</span></p>
+        <p><strong>付款時間：</strong> <span th:text="${paymentDate}">N/A</span></p>
+        <p><strong>狀態訊息：</strong> <span th:text="${rtnMsg}">N/A</span></p>
+
+        <a class="button" href="http://localhost:5173/points/history">查看交易紀錄</a>
+    </div>
+</body>
+</html>
