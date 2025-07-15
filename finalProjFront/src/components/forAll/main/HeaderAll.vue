@@ -246,13 +246,9 @@ const menuList = ref([
     title: '繳費資訊',
     key: 'INVOICE',
     children: [
+      { label: '繳費總覽', routeName: 'FinUser', key: 'FINUSER' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
-      { label: '繳費紀錄', routeName: 'InvoiceHistory', key: 'INVOICEHISTORY' },
-      { label: '新增費用類型', routeName: 'FeeTypeAdd', key: 'INVOICETYPEADD' },
-      { label: '新增繳費期別', routeName: 'BillingPeriodAdd', key: 'INVOICEPERIODADD' },
-      { label: '新增發票', routeName: 'InvoiceAdd', key: 'INVOICEINVOICEADD' },
-      { label: '新增收據', routeName: 'ReceiptAdd', key: 'INVOICERECEIPTADD' },
-      { label: '發票回覆', routeName: 'InvoiceResponseAdd', key: 'INVOICEREPLY' }
+      { label: '繳費紀錄', routeName: 'Receipt', key: 'RECEIPT' },
     ]
   },
   {

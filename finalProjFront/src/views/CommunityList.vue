@@ -82,7 +82,6 @@ const allFunctionOptions = [
       { label: '維修進度查詢', key: 'TICKETLIST' },
       { label: '報修內容', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      { label: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -99,7 +98,9 @@ const allFunctionOptions = [
     value: 'PACKAGE',
     children: [
       { label: '待領包裹', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', key: 'PACKAGEHISTORY' }
+      { label: '領取紀錄', key: 'PACKAGEHISTORY' },
+      { label: '管理員包裹查詢', key: 'PACKAGESEARCH' },
+      { label: '新增包裹',  key: 'ADDPACKAGE' },
     ]
   },
   {
@@ -135,13 +136,15 @@ const allFunctionOptions = [
     label: '財務報表',
     value: 'INVOICE',
     children: [
-      { label: '待繳帳單', key: 'INVOICEBILL' },
-      { label: '繳費紀錄', key: 'INVOICEHISTORY' },
-      { label: '新增費用類型', key: 'INVOICETYPEADD' },
-      { label: '新增繳費期別', key: 'INVOICEPERIODADD' },
-      { label: '新增發票', key: 'INVOICEINVOICEADD' },
-      { label: '新增收據', key: 'INVOICERECEIPTADD' },
-      { label: '發票回覆', key: 'INVOICEREPLY' }
+    { label: '繳費總覽',  key: 'FINUSER' },
+      { label: '待繳帳單',  key: 'INVOICEBILL' },
+      { label: '繳費紀錄',  key: 'RECEIPT' },
+      { label: 'A新增費用類型',  key: 'FEETYPEADD' },
+      { label: 'A新增繳費期別',  key: 'BILLINGPERIODADD' },
+      { label: 'A新增繳款單',  key: 'INVOICEADD' },
+      { label: 'A新增收據',  key: 'RECEIPTADD' },
+      { label: 'A請款單審核',  key: 'INVOICEVALIDATE' },
+      { label: 'A審核帳單回覆',  key: 'INVOICEWITHRESPONSE' },
     ]
   },
   {

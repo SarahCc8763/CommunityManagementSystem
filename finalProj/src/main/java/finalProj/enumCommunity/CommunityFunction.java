@@ -3,7 +3,7 @@ package finalProj.enumCommunity;
 public enum CommunityFunction {
 // 主功能（2^0 ~ 2^7）
  // 主功能
- PACKAGE(1L),                // 2^0
+ PACKAGE(1L),          // 2^0
  BOOKING(1L << 1),           // 2^1
  INVOICE(1L << 2),           // 2^2
  MANBERSERVICE(1L << 3),     // 2^3
@@ -13,61 +13,66 @@ public enum CommunityFunction {
  NOTICE(1L << 7),            // 2^7
 
  // 包裹子功能
- PACKAGEPENDING(1L << 8),    // 2^8
- PACKAGEHISTORY(1L << 9),    // 2^9
+ PACKAGEPENDING(1L << 8),    
+ PACKAGEHISTORY(1L << 9),    
+ PACKAGESEARCH(1L << 10),
+ ADDPACKAGE(1L << 11),
+
 
  // 預約子功能
- FHV(1L << 10),              // 2^10
- FFAV(1L << 11),             // 2^11
- RHV(1L << 12),              // 2^12
- PTV(1L << 13),              // 2^13
- PTUV(1L << 14),             // 2^14
- PHV(1L << 15),              // 2^15
+ FHV(1L << 12),             
+ FFAV(1L << 13),             
+ RHV(1L << 14),             
+ PTV(1L << 15),             
+ PTUV(1L << 16),            
+ PHV(1L << 17),             
 
  // 繳費子功能
- INVOICEBILL(1L << 16),          // 2^16
- INVOICEHISTORY(1L << 17),       // 2^17
- INVOICETYPEADD(1L << 18),       // 2^18
- INVOICEPERIODADD(1L << 19),     // 2^19
- INVOICEINVOICEADD(1L << 20),    // 2^20
- INVOICERECEIPTADD(1L << 21),    // 2^21
- INVOICEREPLY(1L << 22),         // 2^22
+ FINUSER(1L << 18),         
+ INVOICEBILL(1L << 19),      
+ RECEIPT(1L << 20),       
+ FEETYPEADD(1L << 21),     
+ INVOICEADD(1L << 22),    
+ RECEIPTADD(1L << 23),    
+ INVOICEVALIDATE(1L << 23),         
+ INVOICEWITHRESPONSE(1L<<24),       
+ BILLINGPERIODADD(1L << 25),      
 
  // 會員服務子功能
- MANBERSERVICEEDIT(1L << 23),        // 2^23
- MANBERSERVICETRANSFER(1L << 24),    // 2^24
+ MANBERSERVICEEDIT(1L << 26),        
+ MANBERSERVICETRANSFER(1L << 27),    
 
  // 報修子功能
- TICKETFORM(1L << 25),           // 2^25
- TICKETLIST(1L << 26),           // 2^26
- TICKETASSIGN(1L << 27),         // 2^27
- TICKETCOMMUNITY(1L << 28),      // 2^28
+ TICKETFORM(1L << 29),          
+ TICKETLIST(1L << 30),          
+ TICKETASSIGN(1L << 31),         
+ TICKETDETAIL(1L << 32),     
 
  // FAQ 子功能
- FAQQANDA(1L << 29),             // 2^29
- FQACONTACT(1L << 30),           // 2^30
- FQAFEEDBACK(1L << 31),          // 2^31
- FAQADMIN(1L << 32),             // 2^32
- FEEDBACKADMIN(1L << 33),        // 2^33
+ FAQQANDA(1L << 33),           
+ FQACONTACT(1L << 34),           
+ FQAFEEDBACK(1L << 35),          
+ FAQADMIN(1L << 36),             
+ FEEDBACKADMIN(1L << 37),        
 
  // 停車子功能
- PARKFRONT(1L << 34),            // 2^34
- MYPARK(1L << 35),               // 2^35
- PARKRENT(1L << 36),             // 2^36
- PARKAPP(1L << 37),              // 2^37
- PARKBACK(1L << 38),             // 2^38
- PARKINIT(1L << 39),             // 2^39
- PARKSLOT(1L << 40),             // 2^40
- PARKREC(1L << 41),              // 2^41
- PARKEVE(1L << 42),              // 2^42
+ PARKFRONT(1L << 38),            
+ MYPARK(1L << 39),               
+ PARKRENT(1L << 40),            
+ PARKAPP(1L << 41),             
+ PARKBACK(1L << 42),            
+ PARKINIT(1L << 43),           
+ PARKSLOT(1L << 44),          
+ PARKREC(1L << 45),             
+ PARKEVE(1L << 46),            
 
  // 公告子功能
- NOTICEIMPORTANT(1L << 43),      // 2^43
- NOTICELATEST(1L << 44),         // 2^44
- BULLETINADMIN(1L << 45),       // 2^45
+ NOTICEIMPORTANT(1L << 47),     
+ NOTICELATEST(1L << 48),         
+ BULLETINADMIN(1L << 49),
 
  //廠商
- VENDOR(1L << 46);                // 2^46
+ VENDOR(1L << 50);                          
 
     private final Long value;
 

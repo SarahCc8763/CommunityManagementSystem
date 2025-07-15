@@ -148,6 +148,7 @@ const router = createRouter({
       path: '/AdminDashboard',
       name: 'AdminDashboard',
       component: AdminDashboard,
+      meta: { dark: true },
     },
     {
       path: '/packages',
