@@ -103,6 +103,13 @@ const menuList = [
     children: [
     { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
+  },
+  {
+    title: '配合廠商',
+    key: 'VENDOR',
+    children: [
+    { label: '後臺 - 配合廠商', routeName: 'Vendor', key: 'VENDOR' },
+    ]
   }
 ]
 

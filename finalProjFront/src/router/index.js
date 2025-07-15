@@ -139,6 +139,7 @@ const router = createRouter({
       path: '/AllTicketsByAssignment',
       name: 'AllTicketsByAssignment',
       component: AllTicketsByAssignment,
+      meta: { dark: true },
     },
     {
       path: '/CommunityList',
@@ -206,6 +207,7 @@ const router = createRouter({
       path: '/Vendor',
       name: 'Vendor',
       component: Vendor,
+      meta: { dark: true },
     }, {
 
       path: '/finance/invoice',
