@@ -143,6 +143,13 @@ const allFunctionOptions = [
       { label: '前端停車主頁', key: 'PARKFRONT'},
       { label: '後端停車主頁', key: 'PARKBACK'},
     ]
+  },
+  {
+    label: '配合廠商',
+    value: 'VENDOR',
+    children: [
+      { label: '配合廠商', key: 'VENDOR' },
+    ]
   }
 ]
 

@@ -98,7 +98,7 @@
         <div class="container">
             <h2 class="serif-title text-center mb-4 fw-bold">社區功能導覽</h2>
             <div class="row g-4">
-                <div class="col-md-4" v-for="feature in features" :key="feature.title">
+                <div class="col-md-4" v-for="feature in filteredFeatures" :key="feature.title">
                     <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature)">
                         <div class="card-body text-center">
                             <i :class="['bi', feature.icon, 'animated-icon']" class="display-4 text-success mb-3"></i>
@@ -124,31 +124,24 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import axios from '@/plugins/axios'
 import {useUserStore} from '@/stores/UserStore'
 
 const userStore = useUserStore()
 const groupedCards = ref([])
+const filteredFeatures = ref([])
 onMounted(async () => {
   try {
     const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.communityId}`)
-    const allowed = res.data
+    const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
 
-    // 根據社區權限過濾主功能與子功能
-    groupedCards.value = menuList
-      .filter(m => allowed.includes(m.key)) // 主功能有啟用
-      .map(m => ({
-        title: m.title,
-        key: m.key,
-        children: m.children.filter(child => allowed.includes(child.key)) // 子功能也需有啟用
-      }))
-      .filter(group => group.children.length > 0) // 避免空的群組顯示
+    // 只保留被允許的功能卡片
+    filteredFeatures.value = features.filter(f => allowed.includes(f.key))
+
   } catch (err) {
     console.error('❌ 載入社區功能失敗', err)
   }
 })
-function goTo(name) {
-  router.push({ name })
-}
 
 
 const router = useRouter();
@@ -203,7 +196,8 @@ const features = [
         icon: 'bi-calendar-check',
         title: '公設預約',
         description: '線上預約健身房、交誼廳等公設，點數管理。',
-        link: '/facilities'
+        link: '/facilities',
+        key:'BOOKING'
     },
     {
         icon: 'bi-tools',
@@ -211,13 +205,6 @@ const features = [
         description: '設備損壞通報即時送達，快速安排維修處理。',
         link: '/TicketDashboard',
         key:'TICKET'
-    },    
-    {
-        icon: 'bi-tools',
-        title: '廠商',
-        description: '廠商',
-        link: '/Vendor',
-        key:'VENDOR'
     }
 ];
 
