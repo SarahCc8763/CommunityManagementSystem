@@ -80,7 +80,7 @@ public class Ticket {
 	@Column(name = "[status]") // 保留字加中括號
 	private String status; // 問題狀態
 
-	@Column(name = "issue_description")
+	@Column(name = "issue_description",columnDefinition = "TEXT")
 	private String issueDescription; // 問題敘述
 
 	@Column(name = "Cost")
@@ -120,6 +120,7 @@ public class Ticket {
 		return assignerName;
 	}
 
+	
 	public List<IssueTypeAndTicket> getIssueTypes() {
 		return issueTypes;
 	}
@@ -277,5 +278,10 @@ public class Ticket {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+
+
+
+
 
 }

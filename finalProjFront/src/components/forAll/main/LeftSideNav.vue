@@ -704,7 +704,7 @@
             <div class="user-name">{{ UserStore.name }}</div>
             <div class="user-row">
               <span class="user-username">@{{ UserStore.username }}</span>
-              <span class="user-badge">管理員</span>
+              <span class="user-badge">{{ UserStore.roleId === 2 ? '管理員' : '一般會員' }}</span>
             </div>
           </div>
         </div>
@@ -715,7 +715,7 @@
             <i class="bi bi-person-circle"></i>
             <span>檔案</span>
           </router-link>
-          <router-link to="/notifications" class="quick-action-card no-border-action">
+          <router-link to="/notification" class="quick-action-card no-border-action">
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>
@@ -753,6 +753,13 @@
     <!-- 功能選單 -->
     <div class="menu-section">
       <h5 class="menu-title">功能選單</h5>
+
+      <div class="map-section">
+        <div class="map-title">RiverBank社區</div>
+        <iframe class="google-map" src="https://www.google.com/maps?q=103台北市大同區環河北路一段113號&output=embed"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+
       <nav class="menu-nav">
         <ul class="menu-list">
           <li v-for="(item, idx) in menuItems" :key="idx" class="menu-item">
@@ -784,6 +791,7 @@
         </ul>
       </nav>
     </div>
+
   </aside>
 </template>
 
@@ -818,7 +826,7 @@ function logout() {
   UserStore.logout()
   // 觸發全局登出事件
   window.dispatchEvent(new CustomEvent('logout'))
-  router.push('/login')
+  router.push('/BeforeLogIn')
 }
 
 function showLoginModal() {
@@ -842,18 +850,16 @@ onUnmounted(() => {
   // 移除事件監聽器
   window.removeEventListener('logout', handleGlobalLogout)
 })
-
-const props = defineProps({
-  isDarkMode: { type: Boolean, default: false }
-})
 </script>
 
 <style scoped>
-/* 僅保留 layout/spacing/animation，移除 .user-profile-card、.placeholder-card 的背景、border、box-shadow，這些交由 custom-bootstrap.scss 控制 */
 .left-side-nav {
   min-width: 320px;
   max-width: 320px;
   width: 320px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   padding: 24px;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
   animation: slideInLeft 0.6s ease-out;
@@ -869,16 +875,12 @@ const props = defineProps({
   align-items: stretch;
   padding: 36px 24px 28px 24px;
   border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+  background: linear-gradient(135deg, #fff 60%, #f8fafc 100%);
+  border: 1.5px solid #e2e8f0;
   margin-bottom: 12px;
   position: relative;
   min-height: 320px;
-}
-
-.placeholder-card {
-  border-radius: 24px;
-  padding: 36px 24px 28px 24px;
-  margin-bottom: 12px;
-  position: relative;
 }
 
 .member-avatar-block {
@@ -947,11 +949,8 @@ const props = defineProps({
 .user-badge {
   font-size: 11px;
   padding: 2px 8px;
-  background: linear-gradient(135deg, #1feec5 0%, #5670b8 100%);
-  color: #074253;
-  /* color: #38b2ac;   */
-  /* background: linear-gradient(135deg, #e6fffa 0%, #c6f6d5 100%); */
-
+  background: linear-gradient(135deg, #e6fffa 0%, #c6f6d5 100%);
+  color: #38b2ac;
   border-radius: 20px;
   font-weight: 600;
   margin-bottom: 0;
@@ -1024,8 +1023,24 @@ const props = defineProps({
   border-color: #5a67d8;
 }
 
+/* 登入前placeholder樣式 */
 .login-placeholder {
   margin-bottom: 32px;
+}
+
+.placeholder-card {
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.8) 0%, rgba(203, 213, 224, 0.8) 100%);
+  border-radius: 20px;
+  padding: 24px;
+  border: 2px dashed rgba(160, 174, 192, 0.3);
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.placeholder-card:hover {
+  border-color: rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.9) 0%, rgba(203, 213, 224, 0.9) 100%);
+  transform: translateY(-2px);
 }
 
 .placeholder-avatar {
@@ -1225,6 +1240,28 @@ const props = defineProps({
   opacity: 1;
   max-height: 200px;
   transform: translateY(0);
+}
+
+.map-section {
+  margin-top: 18px;
+  margin-bottom: 18px;
+
+  width: 100%;
+}
+
+.map-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #a3bffa;
+  margin-bottom: 4px;
+}
+
+.google-map {
+  width: 100%;
+  height: 140px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #232a3640;
 }
 
 @keyframes slideInLeft {

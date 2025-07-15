@@ -48,12 +48,31 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="isLoggedIn" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }"></div>
+      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }" @click="toggleNotificationCenter"></div>
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
         </button>
       </div>
+      
+      <!-- 通知中心彈出 -->
+      <div v-if="isNotificationCenterOpen" class="notification-center" ref="notificationCenterRef" >
+        <!-- 你可以放列表、已讀未讀、捲軸等 -->
+        <div class="notification-header">
+          <h3>通知中心</h3>
+        </div>  
+        <ul v-if="notifications.length > 0" class="notification-list">
+          <li v-for="notice in notifications" :key="notice.unitsNotificationsId" class="notification-item">
+            <p class="title">{{ notice.title }}</p>
+            <!-- <small>{{ notice.description }}</small> -->
+          </li>
+        </ul>
+      <!-- 沒有通知時 -->
+        <div v-else class="notification-empty">
+          尚無新通知
+        </div>
+      </div>
+
       <button @click.stop="userStore.isAuthenticated ? logout() : triggerLogin()" class="auth-button">
         {{ userStore.isAuthenticated ? '登出' : '登入' }}
       </button>
@@ -68,11 +87,11 @@ import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'v
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
+import Logo from '@/assets/images/main/Logo.jpg'
 import { useFacilitiesStore } from '@/stores/FacilitiesStore'
-import Logo from '@/assets/images/main/Logo.png'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
-
+const path = import.meta.env.VITE_API_URL
 const isAdmin = computed(() => userStore.roleId === 2)
 const router = useRouter()
 const userStore = useUserStore()
@@ -87,10 +106,6 @@ const finalMenuList = ref([])
 // 控制目前滑鼠停留的分類 index
 const activeIndex = ref(null)
 
-
-const isNotificationCenterOpen = ref(false)
-const notificationCenterRef = ref(null)
-
 watch(
   () => userStore.communityId,
   (newVal) => {
@@ -102,13 +117,36 @@ watch(
   },
   { immediate: true }
 )
+// 通知中心--------------------------------------------------------------------------
+const isNotificationCenterOpen = ref(false)
+const notificationCenterRef = ref(null)
+// 模擬通知資料
+const notifications = ref([])   // ⬅️ 全局通知陣列
 
-function toggleNotificationCenter() {
-  isNotificationCenterOpen.value = !isNotificationCenterOpen.value
-  if (isNotificationCenterOpen.value) {
-    fetchNotifications()
+// 輪詢邏輯
+const unitId = userStore.unitId
+
+async function pollNotifications() {
+  try {
+    const res = await axios.get(`/notifications/unit/${unitId}`)
+    console.log('📬 收到通知', res.data.data)
+    notifications.value = res.data.data.filter(i => i.isRead === 0 || i.isRead === '0') // 只顯示未讀通知
+      .slice(0, 10)
+  } catch (error) {
+    console.error('❌ 輪詢失敗', error)
   }
 }
+// 點擊頭像時執行
+async function toggleNotificationCenter() {
+  isNotificationCenterOpen.value = !isNotificationCenterOpen.value
+
+  if (isNotificationCenterOpen.value) {
+    console.log('🔔 開啟通知中心，開始取得最新通知')
+    await pollNotifications()
+  }
+}
+// 通知中心--------------------------------------------------------------------------
+
 function handleClickOutside(event) {
   if (
     notificationCenterRef.value &&
@@ -159,7 +197,7 @@ const logout = () => {
   finalMenuList.value = []
 
 
-  router.push('/')
+  router.push('/BeforeLogIn')
   // 觸發全局登出事件（可有可無）
   window.dispatchEvent(new CustomEvent('logout'))
 
@@ -179,6 +217,13 @@ const keepDropdown = () => {
 // 點擊子功能導頁
 const handleNavigate = (item) => {
   // 特殊處理：若是要開啟 Bootstrap Modal
+  // 有改--------------------------------------------------------
+  // if(userStore.roleId == 2 && item.label ==='待領包裹'){
+  //   router.push({ name:'packages_security' })
+  // }else if(userStore.roleId == 2 && item.label === '領取紀錄'){
+  //   router.push({ name:'addPackage' })
+  // }
+  // 有改--------------------------------------------------------
   if (item.routeName === 'contact-us') {
     const modalEl = document.getElementById('feedbackModal')
     if (modalEl) {
@@ -244,8 +289,8 @@ const menuList = ref([
     title: '包裹管理',
     key: 'PACKAGE',
     children: [
-      { label: '待領包裹', routeName: 'parcel-pending', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', routeName: 'parcel-history', key: 'PACKAGEHISTORY' }
+      { label: '待領包裹', routeName: 'packages', key: 'PACKAGEPENDING' },
+      { label: '領取紀錄', routeName: 'packages_picked', key: 'PACKAGEHISTORY' },
     ]
   },
   {
@@ -264,13 +309,9 @@ const menuList = ref([
     title: '繳費資訊',
     key: 'INVOICE',
     children: [
+      { label: '繳費總覽', routeName: 'FinUser', key: 'FINUSER' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
-      { label: '繳費紀錄', routeName: 'InvoiceHistory', key: 'INVOICEHISTORY' },
-      { label: '新增費用類型', routeName: 'FeeTypeAdd', key: 'INVOICETYPEADD' },
-      { label: '新增繳費期別', routeName: 'BillingPeriodAdd', key: 'INVOICEPERIODADD' },
-      { label: '新增發票', routeName: 'InvoiceAdd', key: 'INVOICEINVOICEADD' },
-      { label: '新增收據', routeName: 'ReceiptAdd', key: 'INVOICERECEIPTADD' },
-      { label: '發票回覆', routeName: 'InvoiceResponseAdd', key: 'INVOICEREPLY' }
+      { label: '繳費紀錄', routeName: 'Receipt', key: 'RECEIPT' },
     ]
   },
   {
@@ -287,9 +328,6 @@ const menuList = ref([
     children: [
       { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
       { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
-      { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
-      { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -297,25 +335,20 @@ const menuList = ref([
     key: 'FQA',
     children: [
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
+      { label: '聯絡客服', routeName: 'feedback', key: 'FQACONTACT' },
       { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進
-      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
-      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
     title: '車位管理',
     key: 'PARK',
     children: [
-      { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
-      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },  // 共用同個路徑去韋韋那頁
+      // 這邊是前台
+      { label: '前台停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' }, // 希望可以當成title的<a>
+      { label: '我的車位', key: 'MYPARK', routeName: 'mySlots' },
       { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
-      { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
-      { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
       { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
-      { label: '臨時停車', key: 'PARKTEM', routeName: 'temporaryParking' },
-      { label: '前端停車主頁', key: 'PARKFRONT', routeName: 'parkingFront' },
-      { label: '後端停車主頁', key: 'PARKBACK', routeName: 'parkingBack' },
+
     ]
   },
   {
@@ -324,7 +357,6 @@ const menuList = ref([
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
-      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ])
@@ -369,6 +401,85 @@ const props = defineProps({
 
 <style scoped>
 /* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
+/* 通知中心---------------------------------------------------------------- */
+.notification-center {
+  position: absolute;
+  top: 60px; /* 根據頭像位置調整 */
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 16px;
+  z-index: 1000;
+}
+
+
+/* 標題區塊 */
+.notification-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 25px;
+  color: #333;
+}
+
+/* 列表 */
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 每一項 */
+.notification-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: #f9f9f9;
+}
+
+.notification-item .title {
+  margin: 0;
+  font-size: 20px;
+  color: black;
+}
+
+/* 如果有未讀 */
+.notification-item.unread {
+  background: #f5faff;
+}
+
+.notification-item:not(.unread) {
+  opacity: 0.7;
+}
+
+/* 捲軸美化（可選） */
+.notification-center::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-center::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+/* 通知中心---------------------------------------------------------------- */
+
 .header {
   width: 100vw;
   height: 72px;

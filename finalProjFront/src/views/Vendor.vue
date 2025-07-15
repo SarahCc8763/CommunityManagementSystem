@@ -48,26 +48,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="vendor in vendors" :key="vendor.vendorID">
+          <tr v-for="vendor in vendors" :key="vendor.vendorID" @click="startEditing(vendor.vendorID)">
             <td>{{ vendor.vendorID }}</td>
+            <td><input v-model="vendor.vendorName" class="form-control form-control-sm" :readonly="editingId !== vendor.vendorID" /></td>
+            <td><input v-model="vendor.contactPerson" class="form-control form-control-sm" :readonly="editingId !== vendor.vendorID" /></td>
+            <td><input v-model="vendor.phoneNumber" class="form-control form-control-sm" :readonly="editingId !== vendor.vendorID" /></td>
+            <td><input v-model="vendor.address" class="form-control form-control-sm" :readonly="editingId !== vendor.vendorID" /></td>
+            <td><input v-model="vendor.note" class="form-control form-control-sm" :readonly="editingId !== vendor.vendorID" /></td>
             <td>
-              <input v-model="vendor.vendorName" class="form-control form-control-sm" />
-            </td>
-            <td>
-              <input v-model="vendor.contactPerson" class="form-control form-control-sm" />
-            </td>
-            <td>
-              <input v-model="vendor.phoneNumber" class="form-control form-control-sm" />
-            </td>
-            <td>
-              <input v-model="vendor.address" class="form-control form-control-sm" />
-            </td>
-            <td>
-              <input v-model="vendor.notes" class="form-control form-control-sm" />
-            </td>
-            <td>
-              <button class="btn btn-sm btn-success me-1" @click="updateVendor(vendor)">儲存</button>
-              <button class="btn btn-sm btn-danger" @click="deleteVendor(vendor.vendorID)">刪除</button>
+              <div v-if="editingId === vendor.vendorID">
+                <button class="btn btn-sm btn-success me-1" @click.stop="updateVendor(vendor)">Save</button>
+                <button class="btn btn-sm btn-secondary" @click.stop="cancelEdit">Cancel</button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -78,9 +70,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from '@/plugins/axios'
+import axios from 'axios'
 
 const vendors = ref([])
+const editingId = ref(null)
 const newVendor = ref({
   vendorName: '',
   contactPerson: '',
@@ -91,7 +84,7 @@ const newVendor = ref({
 
 async function fetchVendors() {
   try {
-    const res = await axios.get('/vendors')
+    const res = await axios.get('http://localhost:8080/vendors')
     vendors.value = res.data
   } catch (err) {
     console.error('❌ 載入廠商失敗', err)
@@ -100,7 +93,7 @@ async function fetchVendors() {
 
 async function createVendor() {
   try {
-    await axios.post('/vendors', newVendor.value)
+    await axios.post('http://localhost:8080/vendors', newVendor.value)
     await fetchVendors()
     Object.assign(newVendor.value, {
       vendorName: '',
@@ -116,20 +109,21 @@ async function createVendor() {
 
 async function updateVendor(vendor) {
   try {
-    await axios.put(`/vendors/${vendor.vendorID}`, vendor)
+    await axios.put(`http://localhost:8080/vendors/${vendor.vendorID}`, vendor)
+    editingId.value = null
     await fetchVendors()
   } catch (err) {
     console.error('❌ 更新廠商失敗', err)
   }
 }
 
-async function deleteVendor(id) {
-  try {
-    await axios.delete(`/vendors/${id}`)
-    await fetchVendors()
-  } catch (err) {
-    console.error('❌ 刪除廠商失敗', err)
-  }
+function startEditing(id) {
+  editingId.value = id
+}
+
+function cancelEdit() {
+  editingId.value = null
+  fetchVendors()
 }
 
 onMounted(() => {
@@ -138,8 +132,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-th,
-td {
+th, td {
   vertical-align: middle;
 }
 </style>

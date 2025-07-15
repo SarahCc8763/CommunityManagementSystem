@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
+
 // 📌 首頁
 import Home from '../views/Home.vue'
+
+import BeforeLogIn from '../views/BeforeLogIn.vue'
 
 import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
 import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
 import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
 import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+//Johnson start
 import TicketDetailView from '../views/TicketDetailView.vue'
 import TicketForm from '../views/TicketForm.vue'
 import TicketList from '../views/TicketList.vue'
@@ -17,7 +21,7 @@ import CommunityList from '../views/CommunityList.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import TicketDashboard from '../views/TicketDashboard.vue'
 import Vendor from '../views/Vendor.vue'
-
+//Johnson end
 import finUser from '@/components/finance/finUser/finUser.vue'
 import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
 import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
@@ -47,6 +51,12 @@ import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
 
+// 包裹
+import packages_picked from '@/components/package/packages_picked.vue';
+import packages_security from '@/components/package/packages_security.vue';
+import addPackage from '@/components/package/addPackage.vue';
+
+
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
 import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
@@ -65,6 +75,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
     },
     {
       path: '/finance/fee-type/add',
@@ -140,6 +155,7 @@ const router = createRouter({
       path: '/AdminDashboard',
       name: 'AdminDashboard',
       component: AdminDashboard,
+      meta: { dark: true },
     },
     {
       path: '/packages',
@@ -157,6 +173,29 @@ const router = createRouter({
       path: '/notification',
       name: 'notification',
       component: notification
+    },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/packages_picked',
+      name: 'packages_picked',
+      component: packages_picked,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/packages_security',
+      name: 'packages_security',
+      component: packages_security,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/addPackage',
+      name: 'addPackage',
+      component: addPackage,
+      meta: { requiresAuth: true, dark: true }
     },
     {
       path: '/TicketDashboard',
@@ -233,7 +272,26 @@ const router = createRouter({
       path: '/pages/park/my-slots',
       name: 'mySlots',
       component: MySlots,
-    }, {
+    },
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
+
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/feebackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
       path: '/faq',
       name: 'faq',
       component: Faq
@@ -246,13 +304,6 @@ const router = createRouter({
       component: MyFeedback
 
     },
-
-    {
-      path: '/announcement-latest',
-      name: 'announcement-latest',
-      component: AnnouncementLatest
-
-    },
     {
       path: '/bulletin-admin',
       name: 'bulletin-admin',
@@ -260,21 +311,6 @@ const router = createRouter({
       meta: { dark: true }
 
     },
-
-    {
-      path: '/feebackAdmin',
-      name: 'feedbackAdmin',
-      component: FeedbackAdmin,
-      meta: { dark: true }
-    },
-    {
-      path: '/faqAdmin',
-      name: 'faqAdmin',
-      component: FaqAdmin,
-      meta: { dark: true }
-    },
-
-
     {
       path: '/facilities',
       name: 'FacilityHomepageView',
