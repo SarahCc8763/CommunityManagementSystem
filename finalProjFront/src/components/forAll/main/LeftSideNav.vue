@@ -715,7 +715,7 @@
             <i class="bi bi-person-circle"></i>
             <span>檔案</span>
           </router-link>
-          <router-link to="/notifications" class="quick-action-card no-border-action">
+          <router-link to="/notification" class="quick-action-card no-border-action">
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>

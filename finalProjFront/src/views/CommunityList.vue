@@ -64,7 +64,6 @@ const allFunctionOptions = [
       { label: '維修進度查詢', key: 'TICKETLIST' },
       { label: '報修內容', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      { label: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -80,7 +79,9 @@ const allFunctionOptions = [
     value: 'PACKAGE',
     children: [
       { label: '待領包裹', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', key: 'PACKAGEHISTORY' }
+      { label: '領取紀錄', key: 'PACKAGEHISTORY' },
+      { label: '管理員包裹查詢', key: 'PACKAGESEARCH' },
+      { label: '新增包裹', key: 'ADDPACKAGE' }
     ]
   },
   {

@@ -24,10 +24,10 @@ const userStore = useUserStore();
 const path = import.meta.env.VITE_API_URL
 const unitId = userStore.unitId
 const notifications = ref([])
-
+console.log('111' + unitId);
 async function pollNotifications() {
     try {
-        const res = await axios.get(`${path}/notifications/unit/${unitId}`)
+        const res = await axios.get(`/notifications/unit/${unitId}`)
         console.log('📬 收到通知', res.data.data)
         // 寫入陣列並按未讀、已讀排序、顯示10筆
         notifications.value = res.data.data.sort((a,b)=>Number(a.isRead) - Number(b.isRead)).slice(0,10) 

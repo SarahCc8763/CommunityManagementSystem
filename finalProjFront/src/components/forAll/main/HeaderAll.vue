@@ -26,12 +26,7 @@
             <!-- 子功能清單 -->
             <div class="dropdown-item" v-for="item in category.children" :key="item.label"
               @click="handleNavigate(item)">
-              <!-- {{ item.label }} -->
-              {{
-                userStore.roleId === 2 && item.label === '領取紀錄'
-                  ? '新增包裹'
-                  : item.label
-              }}
+              {{ item.label }}
             </div>
           </div>
         </div>
@@ -222,6 +217,13 @@ const keepDropdown = () => {
 // 點擊子功能導頁
 const handleNavigate = (item) => {
   // 特殊處理：若是要開啟 Bootstrap Modal
+  // 有改--------------------------------------------------------
+  // if(userStore.roleId == 2 && item.label ==='待領包裹'){
+  //   router.push({ name:'packages_security' })
+  // }else if(userStore.roleId == 2 && item.label === '領取紀錄'){
+  //   router.push({ name:'addPackage' })
+  // }
+  // 有改--------------------------------------------------------
   if (item.routeName === 'contact-us') {
     const modalEl = document.getElementById('feedbackModal')
     if (modalEl) {
@@ -288,7 +290,9 @@ const menuList = ref([
     key: 'PACKAGE',
     children: [
       { label: '待領包裹', routeName: 'packages', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', routeName: 'packages_picked', key: 'PACKAGEHISTORY' }
+      { label: '領取紀錄', routeName: 'packages_picked', key: 'PACKAGEHISTORY' },
+      { label: '管理員包裹查詢', routeName: 'packages_security', key: 'PACKAGESEARCH' },
+      { label: '新增包裹', routeName: 'addPackage', key: 'ADDPACKAGE' }
     ]
   },
   {

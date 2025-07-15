@@ -1,7 +1,7 @@
 <!-- src/views/AdminDashboard.vue -->
 <template>
   <div class="p-4">
-    <h2 class="mb-4">🛠 管理員後台</h2>
+    <h2 class="mb-4">🛠 管理員後台</h2><router-link to="/CommunityList">功能設定</router-link>
     <div class="group" v-for="group in groupedCards" :key="group.key">
       <h4 class="group-title">{{ group.title }}</h4>
       <div class="card-grid">
@@ -14,7 +14,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import axios from '@/plugins/axios'
 
@@ -73,7 +73,7 @@ const menuList = [
       { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
       { label: '報修內容', routeName: 'TicketDetailView', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      { label: 'CommunityList', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
+      
     ]
   },
   {
