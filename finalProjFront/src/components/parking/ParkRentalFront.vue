@@ -134,26 +134,46 @@
   </div>
   <!-- 我要承租 Modal -->
   <div class="modal fade" id="rentalModal" tabindex="-1" aria-hidden="true" ref="modalElement">
-    <div class="modal-dialog">
-      <div class="modal-content p-3">
-        <div class="modal-header">
-          <h5 class="modal-title">承租車位</h5>
-          <button type="button" class="btn-close" @click="handleClose"></button>
+  <div class="modal-dialog">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold text-primary">承租車位</h5>
+        <button type="button" class="btn-close" @click="handleClose"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 資訊區 -->
+        <ul class="list-unstyled mb-3">
+          <li><strong>承租者：</strong>{{ userName }}</li>
+          <li><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</li>
+          <li><strong>車位區域：</strong>{{ rentalSlot.location }}</li>
+        </ul>
+
+        <!-- 表單欄位 -->
+        <div class="mb-3">
+          <label class="form-label">承租起始年月：</label>
+          <input type="month" class="form-control" v-model="rentStartMonth" :min="minMonth" />
         </div>
-        <p><strong>承租者：</strong>{{ userName }}</p>
-        <p><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</p>
-        <p><strong>車位區域：</strong>{{ rentalSlot.location }}</p>
-        <label class="form-label mt-2">承租起始年月：</label>
-        <input type="month" class="form-control" v-model="rentStartMonth" :min="minMonth" />
-        <input type="month" class="form-control" v-model="rentEndMonth" :min="rentStartMonth" />
-        <label class="form-label mt-2">登記車牌：</label>
-        <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" />
-        <div class="text-end mt-3">
-          <button class="btn btn-success" @click="submitRental">送出承租</button>
+
+        <div class="mb-3">
+          <label class="form-label">承租結束年月：</label>
+          <input type="month" class="form-control" v-model="rentEndMonth" :min="rentStartMonth" />
         </div>
+
+        <div class="mb-3">
+          <label class="form-label">登記車牌：</label>
+          <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" @blur="licensePlate = cleanInvalidChars(licensePlate)" maxlength="10"/>
+        </div>
+      </div>
+
+      <!-- 按鈕區 -->
+      <div class="modal-footer">
+        <button class="btn btn-primary px-4" @click="submitRental">送出承租</button>
       </div>
     </div>
   </div>
+</div>
+
   <!-- 續租 Modal -->
   <div class="modal fade" id="extendModal" tabindex="-1" ref="extendModalRef">
     <div class="modal-dialog">
@@ -647,7 +667,11 @@ onMounted(async () => {
   fetchUserOptions()
 })
 
-
+// 清除非法字元（例如貼上或有預設值）
+const cleanInvalidChars = (value) => {
+  console.log("觸發blur");
+  return (value || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
+}
 </script>
   
 <style scoped>
@@ -816,5 +840,38 @@ td .btn-sm {
 .btn-sm {
   border-radius: 999px !important;
   padding: 4px 12px !important;
+}
+
+.container .input-box .form-control {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+.modal-body ul {
+  font-size: 1.05rem;       /* 比預設略大 */
+  line-height: 1.6;         /* 增加行距 */
+}
+
+.modal-footer {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.form-select {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.form-select {
+  appearance: none; /* Chrome, Safari, Edge */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M0 0l2 2 2-2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 8px 10px;
+}
+.form-control {
+  background-color: #fff !important;
+  color: #000 !important;
 }
 </style>

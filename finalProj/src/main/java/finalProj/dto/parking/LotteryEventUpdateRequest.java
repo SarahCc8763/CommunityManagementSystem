@@ -21,6 +21,14 @@ public class LotteryEventUpdateRequest {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	private Date endedAt;
 
+	// 承租開始時間
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
+	private Date rentalStart;
+
+	// 承租結束時間
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
+	private Date rentalEnd;
+
 	private Integer usersId;
 
 	private String usersName;
@@ -31,6 +39,22 @@ public class LotteryEventUpdateRequest {
 	private Set<LotteryEventSpaceDTO> parkingSlotIds;
 
 	private Boolean status;
+
+	public Date getRentalStart() {
+		return rentalStart;
+	}
+
+	public void setRentalStart(Date rentalStart) {
+		this.rentalStart = rentalStart;
+	}
+
+	public Date getRentalEnd() {
+		return rentalEnd;
+	}
+
+	public void setRentalEnd(Date rentalEnd) {
+		this.rentalEnd = rentalEnd;
+	}
 
 	public String getTypeName() {
 		return typeName;

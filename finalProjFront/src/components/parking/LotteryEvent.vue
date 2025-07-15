@@ -9,7 +9,7 @@
     </button>
     <div class="row">
       <div class="col-md-4 mb-4" v-for="event in lotteryEvents" :key="event.id">
-        <div class="card h-100 shadow-sm bg-dark text-light rounded-4 border-0 custom-card">
+        <div class="card h-100 shadow-sm bg-dark text-light custom-card">
           <div class="text-center pt-3">
             <i :class="getIcon(event.typeName)" style="font-size: 3rem;"></i>
           </div>
@@ -61,7 +61,10 @@
           
           <!-- 想要抽的數量 -->
           <label class="form-label fw-semibold">想要抽的車位數量：</label>
-          <input type="number" class="form-control" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length" />
+          <input type="number" class="form-control" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length" :class="{ 'is-invalid': touched && desiredSlotCount < 1 }" @blur="validateInput" />
+          <div v-if="touched && desiredSlotCount < 1" class="invalid-feedback">
+            車位數量不得小於 1
+          </div>
           
           <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
             <div v-if="parkingSlots.length" class="fw-semibold">已選擇車位：</div>
@@ -435,6 +438,7 @@ async function deleteEvent(id) {
 // 關閉新增修改 Modal
 function handleClose() {
   modalInstance?.hide()
+  touched.value = false
 }
 
 // 設定種類對應的 icon
@@ -523,6 +527,18 @@ onMounted(() => {
 
   fetchType()
   fetchEvents()
+})
+
+const touched = ref(false)
+
+function validateInput() {
+  touched.value = true
+}
+
+watch(desiredSlotCount, (newVal) => {
+  if (!newVal || newVal < 1) {
+    rawSlotIds.value = [] // ⬅️ 清空已選車位
+  }
 })
 </script>
 

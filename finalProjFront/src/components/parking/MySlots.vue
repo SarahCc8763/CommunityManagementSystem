@@ -21,7 +21,7 @@
             <p class="mb-1"><strong>登記車牌：</strong>{{ slot.licensePlate || '未登記' }}</p>
             <template v-if="slot.isRented">
               <p class="mb-0" v-if="slot.rentBuyStart">
-                <strong>承租期間：</strong>{{ formatDate(slot.rentBuyStart) }} ~ {{ formatDate(slot.rentEnd) }}
+                <strong>承租期間：</strong>{{ getFirstDayOfMonth(slot.rentBuyStart) }} ~ {{ getLastDayOfMonth(slot.rentEnd) }}
               </p>
               <p class="mb-0"><strong>審核狀態：</strong>{{ getApprovalText(slot.approved) }}</p>
               <p class="mb-0"><strong>繳費狀態：</strong>{{ getStatusText(slot.status) }}</p>
@@ -41,7 +41,7 @@
           </div>
           <div class="modal-body">
             <label class="form-label">車牌號碼：</label>
-            <input type="text" class="form-control" v-model="selectedSlot.licensePlate" placeholder="請輸入新車牌" />
+            <input type="text" class="form-control" v-model="selectedSlot.licensePlate" @blur="cleanInvalidChars(selectedSlot, 'licensePlate')" placeholder="請輸入新車牌" maxlength="10"/>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
@@ -64,8 +64,8 @@
             <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
             <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
             <p><strong>登記車牌：</strong>{{ selectedSlot.licensePlate || '未登記' }}</p>
-            <p><strong>承租起始：</strong>{{ formatDate(selectedSlot.rentBuyStart) }}</p>
-            <p><strong>承租截止：</strong>{{ formatDate(selectedSlot.rentEnd) }}</p>
+            <p><strong>承租起始：</strong>{{ getFirstDayOfMonth(selectedSlot.rentBuyStart) }}</p>
+            <p><strong>承租截止：</strong>{{ getLastDayOfMonth(selectedSlot.rentEnd) }}</p>
             <p><strong>審核狀態：</strong>{{ getApprovalText(selectedSlot.approved) }}</p>
             <p><strong>繳費狀態：</strong>{{ getStatusText(selectedSlot.status) }}</p>
           </div>
@@ -92,12 +92,12 @@
             <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
             <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
             <label class="form-label">登記車牌：</label>
-            <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" />
+            <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" @blur="cleanInvalidChars(selectedSlot, 'licensePlate')" placeholder="請輸入新車牌" maxlength="10"/>
             <p><strong>承租起始：</strong>{{ extendStart }}</p>
             <p><strong>承租截止：</strong>{{ extendEnd }}</p>
             <label class="form-label">續租月數</label>
             <select class="form-select" v-model="extendMonths">
-              <option v-for="m in 6" :value="m">{{ m }} 個月</option>
+              <option v-for="m in 12" :value="m">{{ m }} 個月</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -154,21 +154,61 @@ onMounted(async () => {
   fetchUserSlots()
 })
 
+// 補足日期為每月 1 號
+function getFirstDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1
+  } else {
+    return '-'
+  }
+
+  const yyyy = year
+  const mm = String(month).padStart(2, '0')
+  return `${yyyy}-${mm}-01`
+}
+
+
+// 補足日期為每月最後一天
+function getLastDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1 // getMonth() 是 0-based，要補回來
+  } else {
+    return '-'
+  }
+
+  const date = new Date(year, month, 0) // 該月最後一天
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+// 轉換日期格式 (年月日)
+function formatDateOnly(dateStr) {
+  const d = new Date(dateStr)
+  return d.toISOString().slice(0, 10) // yyyy-MM-dd
+}
+
+// 即時修正續租月份
 watch(extendMonths, () => {
   if (!selectedSlot.value.rentEnd) return
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
   const end = new Date(start)
-  end.setMonth(end.getMonth() + extendMonths.value)
-  extendStart.value = formatDate(start)
-  extendEnd.value = formatDate(end)
+  end.setMonth(end.getMonth() + extendMonths.value - 1)
+  extendStart.value = getFirstDayOfMonth(start)
+  extendEnd.value = getLastDayOfMonth(end)
 })
-
-const formatDate = (strOrDate) => {
-  if (!strOrDate) return '-'
-  const d = typeof strOrDate === 'string' ? new Date(strOrDate) : strOrDate
-  return d.toLocaleDateString('zh-TW')
-}
 
 const getApprovalText = (value) => value === null ? '待審核' : value ? '已審核' : '未通過'
 const getStatusText = (value) => value ? '已繳費' : '未繳費'
@@ -183,6 +223,16 @@ const openModal = (slot) => {
 
 
 const updatePlate = async () => {
+  if (!plateOK(selectedSlot.value.licensePlate)) {
+    await Swal.fire({
+      icon: 'warning',
+      title: '車牌格式錯誤',
+      text: '車牌不可含中文，僅能輸入英數字與 -',
+      confirmButtonText: '關閉'
+    });
+    return;
+  }
+
   try {
     const payload = {
       ...selectedSlot.value,
@@ -253,17 +303,21 @@ const cancelRental = async () => {
   rentalModalInstance.hide()
 }
 
+// 開啟續租 Modal
 const openExtendModal = () => {
+  initialSlotBackup = { ...selectedSlot.value }
   extendMonths.value = 1
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
   const end = new Date(start)
-  end.setMonth(end.getMonth() + extendMonths.value)
-  extendStart.value = formatDate(start)
-  extendEnd.value = formatDate(end)
+  end.setMonth(end.getMonth() + extendMonths.value - 1)
+  extendStart.value = getFirstDayOfMonth(start)
+  extendEnd.value = getLastDayOfMonth(end)
   extendModalInstance.show()
 }
 
+let initialSlotBackup = null
+// 送出續租申請
 const submitExtend = async () => {
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
@@ -272,8 +326,8 @@ const submitExtend = async () => {
 
   const payload = {
     ...selectedSlot.value,
-    rentBuyStart: start.toISOString().slice(0, 10),
-    rentEnd: end.toISOString().slice(0, 10),
+    rentBuyStart: formatDateOnly(start),
+    rentEnd: formatDateOnly(end),
     approved: false,
     status: false,
     approverName: null,
@@ -288,11 +342,38 @@ const submitExtend = async () => {
     cancelButtonText: '否'
   })
   if (!result.isConfirmed) return
-console.log(payload)
-  await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
-  await Swal.fire('續租成功', '', 'success')
-  extendModalInstance.hide()
-  rentalModalInstance.hide()
+  console.log(payload)
+  try {
+    await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
+    await Swal.fire('續租成功', '', 'success')
+    extendModalInstance.hide()
+    if (initialSlotBackup) {
+      initialSlotBackup = null
+    }
+    // rentalModalInstance.hide()
+  } catch (e) {
+    console.error('續租失敗', e)
+    await Swal.fire({
+      icon: 'error',
+      title: '續租失敗',
+      text: e?.response?.data?.message || '請稍後再試'
+    })
+    if (initialSlotBackup) {
+      selectedSlot.value = { ...initialSlotBackup }
+    }
+    return;
+  }
+}
+
+// 清除非法字元（例如貼上或有預設值）
+function cleanInvalidChars(slot, field) {
+    const cleaned = (slot[field] || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
+    slot[field] = cleaned
+}
+
+// 驗證車牌格式
+function plateOK(plate) {
+    return /^[A-Za-z0-9-]+$/.test(plate)
 }
 </script>
 
@@ -311,4 +392,24 @@ console.log(payload)
   padding: 0.4em 0.6em;
   vertical-align: middle;
 }
+
+/* .container .input-box  */
+.form-control {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.form-select {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.form-select {
+  appearance: none; /* Chrome, Safari, Edge */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M0 0l2 2 2-2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 8px 10px;
+}
+
 </style>

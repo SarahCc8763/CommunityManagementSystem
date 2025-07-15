@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.parking.ParkingType;
 
 public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Integer> {
 
@@ -64,5 +65,7 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 	ParkingSlot findBySlotNumberAndCommunity_CommunityId(String slotNumber, Integer communityId);
 
 	List<ParkingSlot> findByUsers_UsersId(Integer usersId);
+
+	boolean existsByParkingType(ParkingType pt);
 
 }

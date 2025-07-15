@@ -81,6 +81,8 @@ public class LotteryEventService {
 		Integer typeId = event.getTypeId();
 		Date startedAt = event.getStartedAt();
 		Date endedAt = event.getEndedAt();
+		Date rentalStart = event.getRentalStart();
+		Date rentalEnd = event.getRentalEnd();
 		Integer usersId = event.getUsersId();
 		Set<LotteryEventSpaceDTO> parkingSlots = event.getParkingSlotIds();
 
@@ -92,7 +94,7 @@ public class LotteryEventService {
 			return null;
 		}
 
-		if (startedAt == null || endedAt == null) {
+		if (startedAt == null || endedAt == null || rentalStart == null || rentalEnd == null) {
 			return null;
 		}
 
@@ -126,6 +128,8 @@ public class LotteryEventService {
 				.setParkingType(parkingTypeRepository.findById(typeId).get());
 		eventEntity.setStartedAt(startedAt);
 		eventEntity.setEndedAt(endedAt);
+		eventEntity.setRentalStart(rentalStart);
+		eventEntity.setRentalEnd(rentalEnd);
 		eventEntity.setUsers(user);
 		eventEntity.setCreatedAt(new Date());
 		eventEntity.setStatus(false); // 初始設定為未抽籤
@@ -152,6 +156,8 @@ public class LotteryEventService {
 		response.setTitle(eventEntity.getTitle());
 		response.setStartedAt(eventEntity.getStartedAt());
 		response.setEndedAt(eventEntity.getEndedAt());
+		response.setRentalStart(eventEntity.getRentalStart());
+		response.setRentalEnd(eventEntity.getRentalEnd());
 		response.setUsersId(eventEntity.getUsers().getUsersId());
 		response.setCreatedAt(eventEntity.getCreatedAt());
 		response.setTypeName(eventEntity.getParkingType().getType());
@@ -182,6 +188,8 @@ public class LotteryEventService {
 		Date createdAt = event.getCreatedAt();
 		Date startedAt = event.getStartedAt();
 		Date endedAt = event.getEndedAt();
+		Date rentalStart = event.getRentalStart();
+		Date rentalEnd = event.getRentalEnd();
 		Integer id = event.getId();
 		Integer usersId = event.getUsersId();
 		Boolean status = event.getStatus();
@@ -195,7 +203,7 @@ public class LotteryEventService {
 			return null;
 		}
 
-		if (startedAt == null || endedAt == null || createdAt == null) {
+		if (startedAt == null || endedAt == null || createdAt == null || rentalStart == null || rentalEnd == null) {
 			return null;
 		}
 
@@ -228,6 +236,8 @@ public class LotteryEventService {
 		existing.setTitle(title);
 		existing.setStartedAt(startedAt);
 		existing.setEndedAt(endedAt);
+		existing.setRentalStart(rentalStart);
+		existing.setRentalEnd(rentalEnd);
 		existing.setUsers(user);
 		existing.setStatus(status);
 		existing.setCreatedAt(new Date());
@@ -263,6 +273,8 @@ public class LotteryEventService {
 		response.setStatus(existing.getStatus());
 		response.setStartedAt(existing.getStartedAt());
 		response.setEndedAt(existing.getEndedAt());
+		response.setRentalStart(existing.getRentalStart());
+		response.setRentalEnd(existing.getRentalEnd());
 		response.setUsersId(existing.getUsers().getUsersId());
 		response.setCreatedAt(existing.getCreatedAt());
 

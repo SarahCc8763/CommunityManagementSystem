@@ -235,10 +235,11 @@ public class ParkingRentalsController {
 			// ✅ 儲存資料
 			ParkingRentals saved = service.create(rental);
 			if (saved == null) {
-				return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：輸入格式錯誤或時段重疊"));
+				return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：資料庫錯誤"));
 			}
 			return ResponseEntity.ok(ApiResponse.success("新增成功", saved));
-
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：" + e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(ApiResponse.failure("新增失敗：" + e.getMessage()));
 		}

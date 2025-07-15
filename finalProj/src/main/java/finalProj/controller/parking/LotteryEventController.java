@@ -51,6 +51,8 @@ public class LotteryEventController {
 		dto.setTitle(event.getTitle());
 		dto.setStartedAt(event.getStartedAt());
 		dto.setEndedAt(event.getEndedAt());
+		dto.setRentalStart(event.getRentalStart());
+		dto.setRentalEnd(event.getRentalEnd());
 		dto.setUsersId(event.getUsers().getUsersId());
 		dto.setCreatedAt(event.getCreatedAt());
 		dto.setTypeId(event.getParkingType().getId());
@@ -83,6 +85,8 @@ public class LotteryEventController {
 			dto.setTitle(event.getTitle());
 			dto.setStartedAt(event.getStartedAt());
 			dto.setEndedAt(event.getEndedAt());
+			dto.setRentalStart(event.getRentalStart());
+			dto.setRentalEnd(event.getRentalEnd());
 			dto.setUsersId(event.getUsers().getUsersId());
 			dto.setCreatedAt(event.getCreatedAt());
 			dto.setTypeId(event.getParkingType().getId());

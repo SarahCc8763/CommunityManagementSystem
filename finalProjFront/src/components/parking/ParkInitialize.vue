@@ -28,7 +28,7 @@
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-file-earmark-arrow-down-fill text-primary fs-5"></i>
                     <span class="fw-semibold me-1">範例下載：</span>
-                    <a href="#" @click.prevent="downloadSampleCSV" class="text-decoration-underline text-primary">下載範例 CSV</a>
+                    <a href="#" @click.prevent="downloadSampleExcel" class="text-decoration-underline text-primary">下載範例 Excel</a>
                 </div>
                 
                 <!-- 檔案上傳 -->
@@ -38,7 +38,7 @@
                     
                     <label class="btn btn-gradient px-3 py-2">
                         選擇檔案
-                        <input type="file" accept=".csv" @change="handleFileUpload" class="d-none" />
+                        <input type="file" accept=".xlsx" @change="handleFileUpload" class="d-none" />
                     </label>
                     
                     <small class="text-muted" v-if="fileName"> {{ fileName }}</small>
@@ -128,6 +128,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import Swal from 'sweetalert2'
 import axios from '@/plugins/axios.js';
 import { useUserStore } from '@/stores/UserStore'
+import * as XLSX from 'xlsx'
 
 // 從UserStore取出登入資訊
 const userStore = useUserStore()
@@ -284,104 +285,111 @@ function onUserChange(index) {
     }
 }
 
-// 範例CSV下載
-function downloadSampleCSV() {
-    const headers = ['車位編號', '區域', '車位種類', '擁有人戶號', '車位擁有人', '登記車牌號', '是否可承租']
-    const example = ['B1-001', 'B1 A區', '汽車', 'B棟-5F-10', '陳小芳', 'ABC-1234', '否']
+function downloadSampleExcel() {
+  const headers = ['車位編號', '區域', '車位種類', '擁有人戶號', '車位擁有人', '登記車牌號', '是否可承租']
+  const data = [
+    headers,
+    ['B1-001', 'B1 A區', '汽車', 'B棟-5F-10', '陳小芳', 'ABC-1234', '否']
+  ]
 
-    const csvContent = '\uFEFF' + [headers.join(','), example.join(',')].join('\n') // 加入 BOM
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
+  const worksheet = XLSX.utils.aoa_to_sheet(data)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, '範例車位')
 
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'parking-slot-sample.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'parking-slot-sample.xlsx'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
-
 
 // 車位資料陣列
 const parkingSlots = ref([])
 
 const fileName = ref("未選擇檔案");
-// 上傳並解析 CSV 檔案
+
 function handleFileUpload(event) {
-    const file = event.target.files[0]
-    if (!file) return
-    fileName.value = file.name;
-    const reader = new FileReader()
-    reader.onload = (e) => {
-        const lines = e.target.result
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line)
-        
-        const result = []
-        
-        for (let i = 1; i < lines.length; i++) {
-            const parts = lines[i].split(',').map(p => p.trim())
-            if (parts.length < 6) continue
-            
-            const [
-                slot_number,
-                location,
-                parking_type_label,
-                unit_info,
-                user_name,
-                license_plate,
-                is_rentable_text
-            ] = parts
-            
-            const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
-            
-            let building = null, floor = null, unit = null
-            if (unit_info) {
-                const segments = unit_info.split('-')
-                if (segments.length === 3) {
-                    [building, floor, unit] = segments.map(s => s.trim())
-                }
-            }
-            const user = users.value.find(u => 
-                u.name.trim().replace(/\s/g, '').toLowerCase() === 
-                user_name.trim().replace(/\s/g, '').toLowerCase()
-            )
-            
-            let unitsId = null
-if (building && floor && unit) {
-    const matchedUnit = units.value.find(u =>
-        u.building === building && u.floor === floor && u.unit === unit
-    )
-    unitsId = matchedUnit?.unitsId ?? null
+  const file = event.target.files[0]
+  if (!file) return
+  fileName.value = file.name
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const data = new Uint8Array(e.target.result)
+    const workbook = XLSX.read(data, { type: 'array' })
+    const sheetName = workbook.SheetNames[0]
+    const worksheet = workbook.Sheets[sheetName]
+
+    // 將 worksheet 轉為 JSON 陣列（每列是物件）
+    const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) // defval 空白補空欄位
+
+    const result = []
+    json.forEach(row => {
+      const slot_number = row['車位編號']?.trim()
+      const location = row['區域']?.trim()
+      const parking_type_label = row['車位種類']?.trim()
+      const unit_info = row['擁有人戶號']?.trim()
+      const user_name = row['車位擁有人']?.trim()
+      const license_plate = row['登記車牌號']?.trim()
+      const is_rentable_text = row['是否可承租']?.trim()
+      
+      const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
+
+      let building = null, floor = null, unit = null
+      if (unit_info) {
+        const segments = unit_info.split('-')
+        if (segments.length === 3) {
+          [building, floor, unit] = segments.map(s => s.trim())
+        }
+      }
+
+      const user = users.value.find(u =>
+        u.name.trim().replace(/\s/g, '').toLowerCase() ===
+        user_name?.trim().replace(/\s/g, '').toLowerCase()
+      )
+
+      let unitsId = null
+      if (building && floor && unit) {
+        const matchedUnit = units.value.find(u =>
+          u.building === building && u.floor === floor && u.unit === unit
+        )
+        unitsId = matchedUnit?.unitsId ?? null
+      }
+
+      const isRentable = is_rentable_text === '是'
+
+      result.push({
+        slotNumber: slot_number,
+        location,
+        licensePlate: license_plate,
+        isRentable,
+        parkingTypeId: parkingType?.id ?? null,
+        parkingTypeLabel: parkingType?.label ?? null,
+        usersId: user?.usersId ?? null,
+        building,
+        floor,
+        unit,
+        unitsId
+      })
+    })
+
+    parkingSlots.value = result
+
+    result.forEach((slot, index) => {
+      filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
+      filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)
+    })
+  }
+
+  reader.readAsArrayBuffer(file) // ✅ 注意：xlsx 檔案需用 ArrayBuffer 讀取
 }
 
-            const isRentable = is_rentable_text === '是'
-            
-            result.push({
-                slotNumber: slot_number,
-                location,
-                licensePlate: license_plate,
-                isRentable: isRentable,
-                parkingTypeId: parkingType?.id ?? null,
-                parkingTypeLabel: parkingType?.label ?? null,
-                usersId: user ? user.usersId : null,
-                building,
-                floor,
-                unit,
-                unitsId: unitsId,
-            })
-        }
-        parkingSlots.value = result
-        
-        result.forEach((slot, index) => {
-            filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
-            filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)
-        })
-    }  
-    reader.readAsText(file)
-}
 
 const selectedIndexes = ref([])
 function toggleSelectAll(event) {

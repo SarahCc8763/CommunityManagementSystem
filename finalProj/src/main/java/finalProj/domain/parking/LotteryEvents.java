@@ -52,15 +52,25 @@ public class LotteryEvents {
 	@Column(name = "title", nullable = false, length = 50)
 	private String title;
 
-	// 開始時間
+	// 活動開始時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	@Column(name = "started_at", nullable = false)
 	private Date startedAt;
 
-	// 結束時間
+	// 活動結束時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
 	@Column(name = "ended_at", nullable = false)
 	private Date endedAt;
+
+	// 承租開始時間
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
+	@Column(name = "rental_start", nullable = false)
+	private Date rentalStart;
+
+	// 承租結束時間
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Taipei")
+	@Column(name = "rental_end", nullable = false)
+	private Date rentalEnd;
 
 	// 創建時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
@@ -84,15 +94,24 @@ public class LotteryEvents {
 
 	// ---------------------------------------------------------------------------------------
 
-	@Override
-	public String toString() {
-		return "LotteryEvents [bulletinId=" + bulletinId + ", bulletin=" + bulletin + ", users=" + users
-				+ ", parkingType=" + parkingType + ", title=" + title + ", startedAt=" + startedAt + ", endedAt="
-				+ endedAt + ", createdAt=" + createdAt + ", status=" + status + "]";
-	}
-
 	public Integer getBulletinId() {
 		return bulletinId;
+	}
+
+	public Date getRentalStart() {
+		return rentalStart;
+	}
+
+	public void setRentalStart(Date rentalStart) {
+		this.rentalStart = rentalStart;
+	}
+
+	public Date getRentalEnd() {
+		return rentalEnd;
+	}
+
+	public void setRentalEnd(Date rentalEnd) {
+		this.rentalEnd = rentalEnd;
 	}
 
 	public void setBulletinId(Integer bulletinId) {

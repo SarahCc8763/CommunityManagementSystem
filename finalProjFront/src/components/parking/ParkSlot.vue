@@ -378,11 +378,7 @@ const deleteSlot = async (id) => {
 
 // 初始化 Modal
 onMounted(() => {
-  modalInstance = new Modal(modalRef.value, {
-    backdrop: 'static',
-    keyboard: false,
-  }
-)
+  modalInstance = new Modal(modalRef.value)
 
   collapseInstance = new Collapse(collapseRef.value, {
     toggle: false // 預設不要自動展開

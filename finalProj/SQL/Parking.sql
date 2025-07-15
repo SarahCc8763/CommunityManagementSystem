@@ -1,3 +1,6 @@
+-- Julie 停車場的部分
+
+-- 要放在振宇哥的社區公告後面 !!
 
 INSERT INTO [finalProj].[dbo].[bulletin_category] (
     bulletin_category_name,
@@ -5,6 +8,7 @@ INSERT INTO [finalProj].[dbo].[bulletin_category] (
 )
 VALUES ( N'抽籤', 1);
 
+-- 這邊 IDENTITY 的 id 出來之後要跟車位抽籤的 id 對應
 SET IDENTITY_INSERT bulletin ON;
 INSERT INTO bulletin (
     bulletin_id, bulletin_description, bulletin_is_pinned, bulletin_modify_time,
@@ -12,10 +16,10 @@ INSERT INTO bulletin (
     bulletin_title, bulletin_category_id, community_id, user_id
 )
 VALUES
-(10, '請參考車位抽籤活動頁面：AAA', NULL, '2025-07-14 18:03:33.223', NULL, NULL, '2025-07-14 14:25:00.000', N'AAA', NULL, 1, 1),
-(11, NULL, NULL, '2025-07-14 17:37:44.226', NULL, NULL, '2025-07-15 14:37:00.000', N'BEBEB', 1, 1, 1),
-(13, '請參考車位抽籤活動頁面：DDDDDd', NULL, '2025-07-14 17:20:11.798', NULL, NULL, '2025-07-06 15:06:00.000', N'DDDDDd', 1, 1, 1),
-(14, '請參考車位抽籤活動頁面：ZZZZZ', NULL, '2025-07-14 17:24:05.818', NULL, NULL, '2025-07-16 17:20:00.000', N'ZZZZZ', 1, 1, 1);
+(20, '請參考車位抽籤活動頁面：112年電動車位抽籤', NULL, '2025-07-14 18:03:33', 0, NULL, '2025-07-14 14:25:00', N'112年汽車位抽籤', 1, 1, 1),
+(21, '請參考車位抽籤活動頁面：114年機車位抽籤', NULL, '2025-07-14 17:37:44', 1, '2025-07-15 12:37:00', '2025-07-15 14:37:00', N'114年機車位抽籤', 1, 1, 1),
+(22, '請參考車位抽籤活動頁面：113年汽車位抽籤', NULL, '2025-07-14 17:20:11', 0, NULL, '2025-07-06 15:06:00', N'113年機車位抽籤', 1, 1, 1),
+(23, '請參考車位抽籤活動頁面：114年殘障車位抽籤', NULL, '2025-07-14 17:24:05', 1, '2025-07-16 14:20:00', '2025-07-16 17:20:00', N'114年電動車位抽籤', 1, 1, 1);
 SET IDENTITY_INSERT bulletin OFF;
 
 
@@ -64,7 +68,7 @@ CREATE TABLE parking_slot (
 );
 
 INSERT INTO parking_slot (
-    slot_number, location, parking_type_id,
+    slot_number, [location], parking_type_id,
     users_id, license_plate, is_rentable, community_id
 )
 VALUES
@@ -82,7 +86,7 @@ VALUES
 (N'B1-012', N'B1 B區', 1, 4, NULL, 1, 1),
 (N'B1-013', N'B1 B區', 1, 4, NULL, 0, 1),
 (N'B1-014', N'B1 B區', 2, 4, NULL, 1, 1),
-(N'B1-015', N'B1 B區', 2, NULL, N'KFC-179', 0, 1),
+(N'B1-015', N'B1 B區', 2, 3, N'KFC-179', 0, 1),
 (N'B1-016', N'B1 B區', 2, 4, NULL, 1, 1),
 (N'B1-017', N'B1 B區', 3, 4, NULL, 0, 1),
 (N'B1-018', N'B1 B區', 3, 4, NULL, 1, 1),
@@ -104,11 +108,11 @@ VALUES
 (N'B2-004', N'B2 A區', 2, 4, NULL, 1, 1),
 (N'B2-005', N'B2 A區', 2, 4, NULL, 0, 1),
 (N'B2-006', N'B2 A區', 2, 4, NULL, 1, 1),
-(N'B2-007', N'B2 A區', 3, NULL, N'LHP-99', 0, 1),
+(N'B2-007', N'B2 A區', 3, 3, N'LHP-99', 0, 1),
 (N'B2-008', N'B2 A區', 3, 4, NULL, 1, 1),
 (N'B2-009', N'B2 A區', 4, 4, NULL, 0, 1),
 (N'B2-010', N'B2 A區', 4, 4, NULL, 1, 1),
-(N'B2-011', N'B2 B區', 1, NULL, N'999-KG', 0, 1),
+(N'B2-011', N'B2 B區', 1, 3, N'999-KG', 0, 1),
 (N'B2-012', N'B2 B區', 1, 4, NULL, 1, 1),
 (N'B2-013', N'B2 B區', 1, 4, NULL, 0, 1),
 (N'B2-014', N'B2 B區', 2, 4, NULL, 1, 1),
@@ -160,17 +164,15 @@ CREATE TABLE parking_rentals (
         REFERENCES users(users_id)
 );
 
-SET IDENTITY_INSERT parking_rentals ON;
 INSERT INTO parking_rentals (
-    id, approved, created_at, license_plate,
-    rent_buy_start, rent_end, status, updated_at,
+    approved, created_at, license_plate,
+    rent_buy_start, rent_end, [status], updated_at,
     approved_id, community_id, parking_slot_id, users_id
 )
 VALUES
-(1, 0, NULL, N'111222', '2025-07-01 00:00:00.000', '2025-07-31 00:00:00.000', 0, '2025-07-12 15:41:26.983', NULL, 1, 42, 1),
-(3, 0, '2025-07-12 15:36:21.000', N'1234', '2025-07-01 00:00:00.000', '2025-07-31 00:00:00.000', 0, '2025-07-12 15:36:46.905', NULL, 1, 2, 1),
-(5, 1, '2025-07-12 15:36:27.000', N'111', '2025-08-01 00:00:00.000', '2025-09-30 00:00:00.000', 0, '2025-07-12 15:36:44.372', NULL, 1, 42, 1);
-SET IDENTITY_INSERT parking_rentals OFF;
+(0, '2025-07-12 14:36:21.000', N'UFO-88', '2025-07-01 00:00:00', '2025-07-31 00:00:00', 0, '2025-07-12 15:41:26', NULL, 1, 42, 1),
+(0, '2025-07-12 15:36:21.000', N'KFC-99', '2025-07-01 00:00:00', '2025-07-31 00:00:00', 1, '2025-07-12 15:36:46', NULL, 1, 2, 1),
+(1, '2025-07-12 15:36:27.000', N'MCD-66', '2025-08-01 00:00:00', '2025-09-30 00:00:00', 0, '2025-07-12 15:36:44', 4, 1, 42, 1);
 
 
 CREATE TABLE lottery_events (
@@ -196,17 +198,15 @@ CREATE TABLE lottery_events (
         REFERENCES parking_type(id)
 );
 
-SET IDENTITY_INSERT lottery_events ON;
 INSERT INTO lottery_events (
     bulletin_id, created_at, ended_at, started_at,
-    status, title, parking_type_id, users_id
+    [status], title, parking_type_id, users_id
 )
 VALUES
-(10, '2025-07-14 18:03:33.223', '2025-07-14 14:25:00.000', '2025-07-14 14:24:00.000', 1, N'AAA', 3, 1),
-(11, '2025-07-14 17:37:44.226', '2025-07-15 14:37:00.000', '2025-07-15 14:37:00.000', 0, N'BEBEB', 2, 1),
-(13, '2025-07-14 17:20:11.798', '2025-07-06 15:06:00.000', '2025-07-06 15:06:00.000', 0, N'DDDDDd', 1, 1),
-(14, '2025-07-14 17:24:05.818', '2025-07-16 17:20:00.000', '2025-07-15 17:20:00.000', 0, N'ZZZZZ', 4, 1);
-SET IDENTITY_INSERT lottery_events OFF;
+(20, '2025-07-14 18:03:33', '2025-07-14 14:25:00', '2025-07-14 14:24:00', 1, N'112年電動車位抽籤', 3, 1),
+(21, '2025-07-14 17:37:44', '2025-07-15 14:37:00', '2025-07-15 14:37:00', 0, N'114年機車位抽籤', 2, 1),
+(22, '2025-07-14 17:20:11', '2025-07-06 15:06:00', '2025-07-06 15:06:00', 0, N'113年汽車位抽籤', 1, 1),
+(23, '2025-07-14 17:24:05', '2025-07-16 17:20:00', '2025-07-15 17:20:00', 0, N'114年殘障車位抽籤', 4, 1);
 
 CREATE TABLE lottery_event_spaces (
     id INT IDENTITY(1,1) PRIMARY KEY,               -- 流水號
@@ -222,28 +222,27 @@ CREATE TABLE lottery_event_spaces (
         REFERENCES parking_slot(id)
 );
 
-SET IDENTITY_INSERT lottery_event_spaces ON;
 INSERT INTO lottery_event_spaces (
-    id, lottery_events_id, parking_slot_id
+    lottery_events_id, parking_slot_id
 )
 VALUES
-(4, 11, 16),
-(5, 11, 4),
-(6, 11, 6),
-(7, 11, 24),
-(8, 11, 14),
-(89, 13, 32),
-(90, 13, 22),
-(91, 13, 12),
-(92, 13, 50),
-(98, 14, 20),
-(99, 14, 40),
-(100, 14, 10),
-(101, 14, 60),
-(102, 14, 30),
-(103, 10, 18),
-(104, 10, 8);
-SET IDENTITY_INSERT lottery_event_spaces OFF;
+(20, 17),
+(20, 7),
+(20, 8),
+(20, 27),
+(20, 18),
+(21, 34),
+(21, 24),
+(21, 14),
+(21, 25),
+(22, 21),
+(22, 31),
+(22, 11),
+(22, 1),
+(22, 31),
+(23, 19),
+(23, 9);
+
 
 CREATE TABLE lottery_apply (
     id INT IDENTITY(1,1) PRIMARY KEY,               -- 流水號
@@ -265,11 +264,15 @@ CREATE TABLE lottery_apply (
         REFERENCES lottery_event_space(id)
 );
 
-SET IDENTITY_INSERT lottery_apply ON;
+
 INSERT INTO lottery_apply (
-    id, applied_at, lottery_event_spaces_id,
+    applied_at, lottery_event_spaces_id,
     lottery_events_id, users_id
 )
 VALUES
-(4, '2025-07-14 18:02:56.737', 109, 10, 1);
-SET IDENTITY_INSERT lottery_apply OFF;
+('2025-07-14 18:02:56', NULL, 20, 1),
+('2025-07-14 18:02:56', 7, 21, 2),
+('2025-07-14 18:02:56', 12, 22, 3),
+('2025-07-14 18:02:56', NULL, 20, 1),
+('2025-07-14 18:02:56', 8, 21, 2),
+('2025-07-14 18:02:56', 13, 22, 3);
