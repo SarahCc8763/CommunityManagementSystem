@@ -1,6 +1,25 @@
 <template>
 
+
+
+
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('financeBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">費用項目管理</li>
+      </ol>
+    </nav>
     <BannerImage :imageSrc="OO" heading="費用項目管理" subtext="管理所有收費項目，可以查看現有費用類別、編輯項目資訊，或新增新的收費項目。" textAlign="left" />
   </div>
 
@@ -22,15 +41,16 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">費用代碼</label>
-                  <input v-model="form.feeCode" class="form-control" required />
+                  <input v-model="form.feeCode" class="form-control" required placeholder="ex: MGMT2024" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">名稱/描述</label>
-                  <input v-model="form.description" class="form-control" required />
+                  <input v-model="form.description" class="form-control" required placeholder="ex: 管理費" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">單價</label>
-                  <input v-model.number="form.amountPerUnit" type="number" class="form-control" required />
+                  <input v-model.number="form.amountPerUnit" type="number" class="form-control" required
+                    placeholder="每單位價格" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">單位</label>
@@ -57,11 +77,11 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">備註</label>
-                  <input v-model="form.note" class="form-control" />
+                  <input v-model="form.note" class="form-control" placeholder="ex: 限定現金交易" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">社區ID</label>
-                  <input v-model.number="form.communityId" type="number" class="form-control" />
+                  <input v-model.number="form.communityId" type="number" class="form-control" disabled />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">狀態</label>
@@ -209,6 +229,7 @@ import axios from '@/plugins/axios.js'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
+import { useUserStore } from '@/stores/UserStore'
 
 const successMsg = ref('')
 const errorMsg = ref('')
@@ -217,7 +238,7 @@ const customFrequency = ref('')
 const editItem = ref({})
 const deleteTarget = ref(null)
 const feeTypes = ref([])
-
+const userStore = useUserStore()
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
 
@@ -310,10 +331,22 @@ const deleteFeeType = async (id) => {
   }
 }
 
-onMounted(fetchFeeTypes)
-
-
-
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'parkingBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
+}
 
 
 // 開 Modal 公式
@@ -322,6 +355,7 @@ let addModalInstance = null // 定義一個變數來存 bootstrap.Modal 的實�
 
 onMounted(() => {
   addModalInstance = new bootstrap.Modal(addModalRef.value)
+  form.value.communityId = userStore.communityId
 })
 
 const openAddModal = () => {
@@ -339,5 +373,16 @@ const closeAddModal = () => {
   max-width: 1150px;
   padding-top: 30px;
   border-radius: 15px;
+}
+
+input::placeholder {
+  color: #6b7074;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

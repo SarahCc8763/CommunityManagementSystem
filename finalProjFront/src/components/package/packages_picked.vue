@@ -70,56 +70,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* .resident-packages-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1 {
-    margin-bottom: 20px;
-}
-
-.search-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.no-data {
-    margin-top: 20px;
-    color: #888;
-}
-
-.search-bar input {
-    flex: 1;
-    min-width: 150px;
-    padding: 10px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.search-bar input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-}
-
-.search-bar button {
-    padding: 10px 20px;
-    background: #4a90e2;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.search-bar button:hover {
-    background: #357ab7;
-}*/
 
 .packages-table {
   width: 100%;

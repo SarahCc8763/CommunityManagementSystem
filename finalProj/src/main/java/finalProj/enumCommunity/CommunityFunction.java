@@ -36,6 +36,7 @@ public enum CommunityFunction {
     INVOICEVALIDATE(1L << 23),
     INVOICEWITHRESPONSE(1L << 24),
     BILLINGPERIODADD(1L << 25),
+    FINADMIN(1L << 50),
 
     // 會員服務子功能
     MANBERSERVICEEDIT(1L << 26),

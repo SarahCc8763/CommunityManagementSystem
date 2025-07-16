@@ -48,8 +48,7 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="userStore.isAuthenticated" class="avatar"
-        :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }" @click="toggleNotificationCenter"></div>
+      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + imagePath + ')' }" @click="toggleNotificationCenter"></div>
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
@@ -100,6 +99,7 @@ const userStore = useUserStore()
 const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
+const imagePath = computed(() => `/images/users/user${userStore.userId}.png?v=${Date.now()}`)
 
 //存放社區功能
 const communityFunctions = ref([])
@@ -323,13 +323,6 @@ const menuList = ref([
       { label: '繳費總覽', routeName: 'FinUser', key: 'FINUSER' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
       { label: '繳費紀錄', routeName: 'Receipt', key: 'RECEIPT' },
-      { label: 'A新增費用類型', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
-      { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
-      { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
-
     ]
   },
   {
