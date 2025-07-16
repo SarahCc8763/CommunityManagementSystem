@@ -226,7 +226,7 @@ style="width: 24px; height: 24px; cursor: pointer;"
 <script setup>
 import { ref, onMounted ,computed,onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import TicketPage from './TicketPage.vue'
 import { watch } from 'vue'
 import DOMPurify from 'dompurify'
@@ -322,7 +322,7 @@ fetchUsers()
 
 const fetchUsers = async () => {
 try {
-  const res = await axios.get('http://localhost:8080/users/ticket') // 或用你剛剛設的 /users/simple
+  const res = await axios.get('/users/ticket') // 或用你剛剛設的 /users/simple
   console.log(res.data)
   users.value = res.data.map(user => ({
     id: user.usersId,
@@ -336,7 +336,7 @@ try {
 
 const fetchIssueTypes = async () => {
 try {
-  const res = await axios.get('http://localhost:8080/IssueTypes')
+  const res = await axios.get('/IssueTypes')
   issueTypes.value = res.data
 } catch (err) {
   console.error('❌ 載入問題種類失敗', err)
@@ -386,7 +386,7 @@ if (isEmpty) {
 }
 
 try {
-  const ticketRes = await axios.post('http://localhost:8080/ticket/search', payload)
+  const ticketRes = await axios.post('/ticket/search', payload)
   tickets.value = ticketRes.data
 } catch (err) {
   console.error('搜尋失敗 ❌', err)
@@ -444,8 +444,8 @@ function fetchTickets() {
 async function callTicketSearch() {
   try {
     const [ticketRes, relationRes] = await Promise.all([
-      axios.get('http://localhost:8080/ticket'),              // ✅ 改這裡
-      axios.get('http://localhost:8080/ticket-issue'),
+      axios.get('/ticket'),              // ✅ 改這裡
+      axios.get('/ticket-issue'),
     ])
     // console.log(ticketRes.data)
     const issueMap = {}
@@ -594,6 +594,7 @@ font-size: 13px;
 display: flex;
 align-items: center;
 }
+
 
 </style>
 

@@ -22,6 +22,7 @@ import finalProj.domain.parking.ParkingRentals;
 import finalProj.domain.parking.ParkingSlot;
 import finalProj.domain.poll.PollVote;
 import finalProj.domain.ticket.Ticket;
+import finalProj.domain.ticket.TicketComment;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -110,6 +111,7 @@ public class Users {
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
 	private Community community;
 
+	// --- 小昀的關聯 START ---
 	// 這個 user 曾報修過的 tickets
 	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("reporterUser")
@@ -120,6 +122,12 @@ public class Users {
 	@JsonManagedReference("assignerIdTicket")
 	@OneToMany(mappedBy = "assignerId", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Ticket> assignedTickets;
+
+	@JsonManagedReference("commenterTickets")
+	@OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TicketComment> commenterTickets;
+
+	// --- 小昀的關聯 end ---
 
 	// --- 政宇的關聯 START ---
 

@@ -132,7 +132,7 @@ const groupedCards = ref([])
 const filteredFeatures = ref([])
 onMounted(async () => {
   try {
-    const res = await axios.get(`http://localhost:8080/communitys/functions/${userStore.communityId}`)
+    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
     const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
 
     // 只保留被允許的功能卡片
