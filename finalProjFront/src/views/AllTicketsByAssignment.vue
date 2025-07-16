@@ -195,7 +195,7 @@
         <div
           v-for="(ticket, index) in paginatedUnassignedTickets"
           :key="ticket.id"
-          class="card mb-3 p-3 border border-warning position-relative"
+          class="card mb-3 p-3  position-relative bg-dark text-light"
           @click="toggleExpanded(index)"
           style="cursor: pointer"
         >
@@ -228,7 +228,7 @@
             >
               <!-- 問題種類 -->
               <div class="mb-2">
-                <p><strong>問題種類：</strong></p>
+                <p class="text-light"><strong>問題種類：</strong></p>
                 <div v-if="ticket.issueTypes?.length">
                   <span
                     v-for="(rel, i) in ticket.issueTypes"
@@ -242,7 +242,7 @@
               </div>
 
               <!-- 描述 -->
-              <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
+              <p class="text-light"><strong>描述：</strong><span v-html="ticket.issueDescription || '無'"></span></p>
 
               <!-- 附件圖片 -->
               <div class="mb-2" v-if="ticket.attachments?.length">

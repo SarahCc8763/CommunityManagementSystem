@@ -34,11 +34,9 @@
                 <span class="ms-1" style="cursor: pointer;" @click.stop="removeIssueType(id)">×</span>
               </span>
             </div>
-            <button class="btn btn-outline-primary dropdown-toggle" type="button"
-              @click="showIssueTypeDropdown = !showIssueTypeDropdown">
-              選擇問題種類
-            </button>
-
+            <button class="btn custom-select-btn" type="button" @click="showIssueTypeDropdown = !showIssueTypeDropdown">
+  選擇問題種類
+</button>
             <div class="dropdown-menu show" v-if="showIssueTypeDropdown">
               <div v-for="type in issueTypeOptions" :key="type.id" class="dropdown-item"
                 @click="toggleIssueType(type.id)">
@@ -74,10 +72,9 @@
                 {{ vendorMap[id] || '未知廠商' }}
               </span>
             </div>
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-              @click="showVendorDropdown = !showVendorDropdown">
-              選擇廠商
-            </button>
+            <button class="btn custom-select-btn" type="button" @click="showVendorDropdown = !showVendorDropdown">
+  選擇廠商
+</button>
             <div class="dropdown-menu show" v-if="showVendorDropdown">
               <div v-for="vendor in vendorList" :key="vendor.vendorID" class="dropdown-item">
                 <input type="checkbox" :id="'vendor-' + vendor.vendorID" :value="vendor.vendorID"
@@ -113,9 +110,10 @@
 
       <!-- ✅ 控制按鈕 -->
       <div class="text-end">
-        <button v-if="!editMode" class="btn btn-warning me-2" @click="editMode = true">✏️ 編輯</button>
-        <button v-else class="btn btn-success me-2" @click="submitUpdate">💾 儲存</button>
-        <button class="btn btn-secondary" @click="$emit('close')">關閉</button>
+        <button
+  v-if="!editMode" class="animated-btn custom-edit-btn" @click="editMode = true">✏️ 編輯</button>
+        <button v-else class="btn custom-save-btn" @click="submitUpdate">💾 儲存</button>
+        <button class="btn custom-close-btn" @click="$emit('close')">關閉</button>
       </div>
     </div>
   </div>
@@ -306,5 +304,65 @@ function formatDate(dateString) {
   max-height: 90vh;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+.custom-select-btn {
+  background: linear-gradient(to right, #6fb1fc, #4364f7);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.custom-select-btn:hover {
+  background: linear-gradient(to right, #5aa0f2, #3659e3);
+  color: white;
+}
+.custom-close-btn {
+  background-color: #2c2f36; /* 深灰藍色 */
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.custom-close-btn:hover {
+  background-color: #1f2127;
+  color: white;
+}
+.custom-save-btn {
+  background: linear-gradient(to right, #00c9a7, #007d77);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+}
+
+.custom-save-btn:hover {
+  background: linear-gradient(to right, #00b297, #006c67);
+  color: white;
+}
+.custom-edit-btn{
+  background-color: #2c2f36; /* 深灰藍色 */
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+.custom-edit-btn:hover {
+  background-color: #1f2127;
+  color: white;
 }
 </style>
