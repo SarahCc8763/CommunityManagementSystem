@@ -13,7 +13,8 @@
             <span class="moc-card-title">　{{ group.title }}</span>
           </div>
           <div class="moc-card-links">
-            <div class="moc-card-link" v-for="item in group.children" :key="item.routeName" @click="goTo(item.routeName)">
+            <div class="moc-card-link" v-for="item in group.children" :key="item.routeName"
+              @click="goTo(item.routeName)">
               <span class="moc-link-icon">◆</span>{{ item.label }}
             </div>
           </div>
@@ -24,10 +25,11 @@
 
 
   <router-link to="/CommunityList" class="btn btn-light">
-  功能設定頁面
-</router-link>
+    功能設定頁面
+  </router-link>
 
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -41,14 +43,14 @@ const router = useRouter()
 const userStore = useUserStore()
 const groupedCards = ref([])
 
-// 原始功能清單（僅保留你希望放進後台卡片的主功能）
+// 原始功能清單
 const menuList = [
- {
+  {
     title: '包裹管理',
     key: 'PACKAGE',
     children: [
-    { label: '管理員包裹查詢', routeName: 'packages_security', key: 'PACKAGESEARCH' },
-    { label: '新增包裹', routeName: 'addPackage', key: 'ADDPACKAGE' },
+      { label: '管理員包裹查詢', routeName: 'packages_security', key: 'PACKAGESEARCH' },
+      { label: '新增包裹', routeName: 'addPackage', key: 'ADDPACKAGE' },
     ]
   },
   {
@@ -82,8 +84,8 @@ const menuList = [
     title: '常見問題',
     key: 'FQA',
     children: [
-    { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
-    { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
+      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -101,14 +103,14 @@ const menuList = [
     title: '公告',
     key: 'NOTICE',
     children: [
-    { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
+      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   },
   {
     title: '配合廠商',
     key: 'VENDOR',
     children: [
-    { label: '後臺 - 配合廠商', routeName: 'Vendor', key: 'VENDOR' },
+      { label: '後臺 - 配合廠商', routeName: 'Vendor', key: 'VENDOR' },
     ]
   }
 ]
@@ -131,6 +133,7 @@ onMounted(async () => {
     console.error('❌ 載入社區功能失敗', err)
   }
 })
+
 function goTo(name) {
   router.push({ name })
 }
@@ -142,12 +145,14 @@ function goTo(name) {
   margin: 0 auto 32px auto;
   max-width: 1200px;
 }
+
 .dashboard-title-bar {
   display: flex;
   align-items: center;
   margin-bottom: 32px;
   margin-left: 8px;
 }
+
 .title-bar-line {
   display: inline-block;
   width: 6px;
@@ -156,6 +161,7 @@ function goTo(name) {
   border-radius: 3px;
   margin-right: 18px;
 }
+
 .dashboard-title {
   font-size: 2.4rem;
   font-weight: 900;
@@ -164,11 +170,13 @@ function goTo(name) {
   font-family: 'Noto Serif TC', 'Noto Sans TC', 'Segoe UI', 'Arial', serif;
   text-shadow: 0 2px 8px #232a36;
 }
+
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
+
 .masonry-grid {
   column-count: 3;
   column-gap: 32px;
@@ -176,6 +184,7 @@ function goTo(name) {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .masonry-card {
   display: inline-block;
   width: 100%;
@@ -183,18 +192,20 @@ function goTo(name) {
   background: linear-gradient(135deg, #232a36 0%, #323a4d 100%);
   color: #f3f6fa;
   border-radius: 0;
-  box-shadow: 0 4px 18px rgba(80,120,255,0.10);
+  box-shadow: 0 4px 18px rgba(80, 120, 255, 0.10);
   border: 2px solid #4a5670;
   min-height: 140px;
   padding: 24px 20px 18px 20px;
   transition: box-shadow 0.18s, border 0.18s, transform 0.18s;
   cursor: pointer;
 }
+
 .masonry-card:hover {
   box-shadow: 0 8px 32px #a3bffa22;
   border: 2px solid #a3bffa;
   transform: translateY(-3px) scale(1.03);
 }
+
 .moc-card-header {
   display: flex;
   align-items: center;
@@ -205,6 +216,7 @@ function goTo(name) {
   border-left: 6px solid #a3bffa;
   box-shadow: 0 2px 8px #232a3640;
 }
+
 .moc-card-title {
   font-size: 1.25rem;
   font-weight: 900;
@@ -214,12 +226,14 @@ function goTo(name) {
   text-shadow: 0 2px 8px #232a36;
   padding-left: 2px;
 }
+
 .moc-card-links {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
+
 .moc-card-link {
   color: #f3f6fa;
   font-size: 1.08rem;
@@ -234,10 +248,12 @@ function goTo(name) {
   align-items: center;
   letter-spacing: 0.5px;
 }
+
 .moc-card-link:hover {
   color: #a3bffa;
   text-decoration: underline;
 }
+
 .moc-link-icon {
   color: #a3bffa;
   font-size: 0.95em;

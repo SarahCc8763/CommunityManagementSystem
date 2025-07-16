@@ -5,6 +5,10 @@
                 <input type="checkbox" id="postStatus" class="form-check-input " v-model="form.postStatus">
                 <label for="postStatus" class="form-check-label text-dark ">對外發布</label>
             </div>
+            <div class="form-check form-switch my-3">
+                <input type="checkbox" id="isPinned" class="form-check-input " v-model="form.isPinned">
+                <label for="isPinned" class="form-check-label text-dark ">是否置頂</label>
+            </div>
             <div class="mb-3">
                 <label class="form-label ">標題</label>
                 <input v-model="form.title" class="form-control " required />
@@ -12,7 +16,7 @@
 
             <div class="mb-3">
                 <label class="form-label">內容</label>
-                <textarea v-model="form.description" class="form-control" rows="10" required></textarea>
+                <textarea v-model="form.description" class="form-control" rows="10"></textarea>
             </div>
 
             <div class="mb-3">
@@ -23,7 +27,10 @@
                     </option>
                 </select>
             </div>
-
+            <div class="mb-3">
+                <label class="form-label">發布時間</label>
+                <input type="datetime-local" v-model="form.postTime" class="form-control" />
+            </div>
             <div class="mb-3">
                 <label class="form-label">下架時間</label>
                 <input type="datetime-local" v-model="form.removeTime" class="form-control" required />
@@ -99,11 +106,13 @@ const form = ref({
     title: '',
     description: '',
     categoryName: '',
+    postTime: '',
     removeTime: '',
     existingAttachments: [],
     newAttachments: [],
     postStatus: false,
-    poll: null
+    poll: null,
+    isPinned: false
 })
 
 watch(() => props.bulletin, (val) => {
@@ -111,11 +120,13 @@ watch(() => props.bulletin, (val) => {
         form.value.title = val.title
         form.value.description = val.description
         form.value.categoryName = props.categoryList.find(c => c.name === val.categoryName)?.name || null
+        form.value.postTime = val.postTime?.slice(0, 16) || ''
         form.value.removeTime = val.removeTime?.slice(0, 16) || ''
         form.value.existingAttachments = val.attachments || []
         form.value.newAttachments = []
         form.value.postStatus = val.postStatus
         form.value.poll = val.poll
+        form.value.isPinned = val.isPinned
     }
 }, { immediate: true })
 
@@ -151,6 +162,14 @@ function removeExistingAttachment(index) {
 
 
 function submitEdit() {
+    if (form.value.postTime >= form.value.removeTime) {
+        Swal.fire({
+            icon: 'error',
+            title: '失敗',
+            text: '發佈時間必須早於下架時間'
+        })
+        return
+    }
     // 對所有有 file 的附件轉 base64
     const fileReads = form.value.existingAttachments
         .filter(att => att.file)
@@ -179,6 +198,7 @@ function submitEdit() {
             user: {
                 usersId: props.usersId
             },
+            postTime: form.value.postTime,
             removeTime: form.value.removeTime,
             attachments: form.value.existingAttachments.map(att => ({
                 fileName: att.fileName,
@@ -188,7 +208,8 @@ function submitEdit() {
 
             })),
             poll: form.value.poll || null,
-            postStatus: form.value.postStatus
+            postStatus: form.value.postStatus,
+            isPinned: form.value.isPinned
         }
 
         //console.log('送出資料', data)
@@ -206,7 +227,7 @@ function submitEdit() {
                 })
             })
             .catch(error => {
-                console.error(error)
+                //console.error(error)
                 Swal.fire({
                     title: '失敗',
                     text: '修改失敗',

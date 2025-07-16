@@ -1,7 +1,5 @@
 package finalProj.dto.ticket;
 
-
-
 public class CommentDTO {
 
 	private Integer id;// ticket_comment流水號
@@ -10,7 +8,7 @@ public class CommentDTO {
 
 	private java.util.Date commentTime;// 留言時間
 
-	private Integer commenterId;// 留言ID
+	private Integer commenter;// 留言ID
 
 	private String comment;// 留言
 
@@ -38,14 +36,6 @@ public class CommentDTO {
 		this.commentTime = commentTime;
 	}
 
-	public Integer getCommenterId() {
-		return commenterId;
-	}
-
-	public void setCommenterId(Integer commenterId) {
-		this.commenterId = commenterId;
-	}
-
 	public String getComment() {
 		return comment;
 	}
@@ -53,7 +43,13 @@ public class CommentDTO {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
-	
+
+	public Integer getCommenter() {
+		return commenter;
+	}
+
+	public void setCommenter(Integer commenter) {
+		this.commenter = commenter;
+	}
 
 }

@@ -13,11 +13,11 @@
       <div class="row g-4">
         <!-- 社區車位初始化 -->
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
+          <div class="card bg-dark text-light h-100 shadow-sm">
             <div class="card-body d-flex align-items-center">
-              <i class="bi bi-person-badge fs-1 me-3 text-secondary"></i>
+              <i class="bi bi-gear fs-1 me-3 text-light"></i>
               <div>
-                <h5 class="card-title mb-1">社區車位建置</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">社區車位建置</h5>
                 <p class="card-text text-muted">新社區建立社區車位資料。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('initialize')">前往</button>
               </div>
@@ -26,11 +26,11 @@
         </div>
         <!-- 1. 查看自己車位與車牌 -->
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
+          <div class="card bg-dark text-light h-100 shadow-sm">
             <div class="card-body d-flex align-items-center">
-              <i class="bi bi-person-badge fs-1 me-3 text-secondary"></i>
+              <i class="bi bi-car-front fs-1 me-3 text-white"></i>
               <div>
-                <h5 class="card-title mb-1">社區停車位管理</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">社區停車位管理</h5>
                 <p class="card-text text-muted">查看社區所有車位，管理車位資料。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('slots')">前往</button>
               </div>
@@ -40,11 +40,11 @@
   
         <!-- 2. 承租車位與歷史 -->
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
+          <div class="card bg-dark text-light h-100 shadow-sm">
             <div class="card-body d-flex align-items-center">
-              <i class="bi bi-calendar-check fs-1 me-3 text-secondary"></i>
+              <i class="bi bi-calendar-check fs-1 me-3 text-white"></i>
               <div>
-                <h5 class="card-title mb-1">車位承租紀錄管理</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">車位承租紀錄管理</h5>
                 <p class="card-text text-muted">社區承租車位歷史紀錄與管理。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('rental')">前往</button>
               </div>
@@ -54,32 +54,17 @@
   
         <!-- 3. 車位抽籤 -->
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
+          <div class="card bg-dark text-light h-100 shadow-sm">
             <div class="card-body d-flex align-items-center">
-              <i class="bi bi-box2-heart fs-1 me-3 text-secondary"></i>
+              <i class="bi bi-box2-heart fs-1 me-3 text-white"></i>
               <div>
-                <h5 class="card-title mb-1">抽籤活動管理</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">抽籤活動管理</h5>
                 <p class="card-text text-muted">建立車位抽籤活動，查看申請人，抽籤公告。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('lottery')">前往</button>
               </div>
             </div>
           </div>
         </div>
-  
-        <!-- 4. 外賓臨時停車 -->
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-              <i class="bi bi-person-walking fs-1 me-3 text-secondary"></i>
-              <div>
-                <h5 class="card-title mb-1">臨時停車管理</h5>
-                <p class="card-text text-muted">管理訪客申請臨時停車車位。</p>
-                <button class="btn btn-outline-primary btn-sm" @click="goTo('temporary')">前往</button>
-              </div>
-            </div>
-          </div>
-        </div>
-  
       </div>
     </div>
   </template>
@@ -101,9 +86,6 @@
         break
       case 'lottery':
         router.push('/pages/park/lottery-event')
-        break
-      case 'temporary':
-        router.push('/pages/park/temporary-parking')
         break
     }
   }

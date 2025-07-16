@@ -72,7 +72,7 @@ const allFunctionOptions = [
     children: [
       { label: '重要通知', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', key: 'NOTICELATEST' },
-      { label: '後臺 - 公告管理',key: 'BULLETINADMIN' },
+      { label: '後臺 - 公告管理', key: 'BULLETINADMIN' },
     ]
   },
   {
@@ -82,14 +82,14 @@ const allFunctionOptions = [
       { label: '待領包裹', key: 'PACKAGEPENDING' },
       { label: '領取紀錄', key: 'PACKAGEHISTORY' },
       { label: '管理員包裹查詢', key: 'PACKAGESEARCH' },
-      { label: '新增包裹',  key: 'ADDPACKAGE' },
+      { label: '新增包裹', key: 'ADDPACKAGE' },
     ]
   },
   {
     label: '公設預約',
     value: 'BOOKING',
     children: [
-    { label: '公設與點數系統', key: 'FHV' },
+      { label: '公設與點數系統', key: 'FHV' },
       { label: '查詢公設', key: 'FFAV' },
       { label: '我的預約紀錄', key: 'RHV' },
       { label: '點數轉移', key: 'PTV' },
@@ -118,30 +118,30 @@ const allFunctionOptions = [
     label: '財務報表',
     value: 'INVOICE',
     children: [
-    { label: '繳費總覽',  key: 'FINUSER' },
-      { label: '待繳帳單',  key: 'INVOICEBILL' },
-      { label: '繳費紀錄',  key: 'RECEIPT' },
-      { label: 'A新增費用類型',  key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別',  key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單',  key: 'INVOICEADD' },
-      { label: 'A新增收據',  key: 'RECEIPTADD' },
-      { label: 'A請款單審核',  key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆',  key: 'INVOICEWITHRESPONSE' },
+      { label: '繳費總覽', key: 'FINUSER' },
+      { label: '待繳帳單', key: 'INVOICEBILL' },
+      { label: '繳費紀錄', key: 'RECEIPT' },
+      { label: 'A新增費用類型', key: 'FEETYPEADD' },
+      { label: 'A新增繳費期別', key: 'BILLINGPERIODADD' },
+      { label: 'A新增繳款單', key: 'INVOICEADD' },
+      { label: 'A新增收據', key: 'RECEIPTADD' },
+      { label: 'A請款單審核', key: 'INVOICEVALIDATE' },
+      { label: 'A審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
     ]
   },
   {
     label: '停車管理',
     value: 'PARK',
     children: [
-    { label: '社區停車場建置', key: 'PARKINIT'},
-      { label: '所有車位查詢', key: 'PARKSLOT'},  // 共用同個路徑去韋韋那頁
-      { label: '使用者承租車位', key: 'PARKRENT'},
-      { label: '承租記錄查詢', key: 'PARKREC'},
-      { label: '抽籤活動', key: 'PARKEVE'},
-      { label: '抽籤申請', key: 'PARKAPP'},
-      { label: '我的車位', key: 'MYPARK'},
-      { label: '前端停車主頁', key: 'PARKFRONT'},
-      { label: '後端停車主頁', key: 'PARKBACK'},
+      { label: '社區停車場建置', key: 'PARKINIT' },
+      { label: '所有車位查詢', key: 'PARKSLOT' },  // 共用同個路徑去韋韋那頁
+      { label: '使用者承租車位', key: 'PARKRENT' },
+      { label: '承租記錄查詢', key: 'PARKREC' },
+      { label: '抽籤活動', key: 'PARKEVE' },
+      { label: '抽籤申請', key: 'PARKAPP' },
+      { label: '我的車位', key: 'MYPARK' },
+      { label: '前端停車主頁', key: 'PARKFRONT' },
+      { label: '後端停車主頁', key: 'PARKBACK' },
     ]
   },
   {

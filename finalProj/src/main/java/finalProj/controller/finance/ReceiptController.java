@@ -28,8 +28,10 @@ public class ReceiptController {
     // 【功能】建立收據（繳費後由系統產生）
     @PostMapping
     public ResponseEntity<ReceiptDTO> createReceipt(@RequestBody ReceiptDTO dto) {
+
         try {
             ReceiptDTO saved = receiptService.createReceipt(dto);
+
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build(); // 或可客製錯誤訊息

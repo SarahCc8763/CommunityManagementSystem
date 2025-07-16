@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import finalProj.domain.users.Users;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
-@Table(name = "Invoice")
+@Table(name = "finance_invoice")
 public class Invoice extends BaseEntity {
 
     @Id
@@ -56,6 +60,12 @@ public class Invoice extends BaseEntity {
 
     @Column(name = "paymentStatus", length = 20)
     private String paymentStatus;// UNPAID, PENDING, PAID
+
+    @OneToMany(mappedBy = "invoice")
+    @JsonManagedReference
+    @JsonIgnoreProperties({ "users" })
+
+    private List<InvoiceResponse> invoiceResponses;
 
     public Integer getInvoiceId() {
         return invoiceId;
@@ -151,6 +161,14 @@ public class Invoice extends BaseEntity {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public List<InvoiceResponse> getInvoiceResponses() {
+        return invoiceResponses;
+    }
+
+    public void setInvoiceResponses(List<InvoiceResponse> invoiceResponses) {
+        this.invoiceResponses = invoiceResponses;
     }
 
     // ----------------------------------------

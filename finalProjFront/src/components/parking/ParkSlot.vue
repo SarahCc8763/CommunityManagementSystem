@@ -8,7 +8,8 @@
       <button class="btn btn-icon btn-purple" @click="toggleCollapse">
         <i class="bi bi-search text-white me-2"></i>進階搜尋
       </button>
-      <button class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm" @click="openAddModal">
+      <button class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm"
+        @click="openAddModal">
         <i class="bi bi-plus-lg text-white me-2"></i>
         <span class="fw-semibold">新增車位</span>
       </button>
@@ -20,11 +21,12 @@
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">車位代碼</label>
-            <input class="form-control" v-model="filter.slotNumber" @blur="cleanInvalidChars(filter, 'slotNumber')" maxlength="10" placeholder="例如：B1-001"/>
+            <input class="form-control" v-model="filter.slotNumber" @blur="cleanInvalidChars(filter, 'slotNumber')"
+              maxlength="10" placeholder="例如：B1-001" />
           </div>
           <div class="col-md-4">
             <label class="form-label">位置</label>
-            <input class="form-control" v-model="filter.location" maxlength="10" placeholder="例如：A區"/>
+            <input class="form-control" v-model="filter.location" maxlength="10" placeholder="例如：A區" />
           </div>
           <div class="col-md-4">
             <label class="form-label">車位種類</label>
@@ -42,7 +44,8 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">登記車牌</label>
-            <input class="form-control" v-model="filter.licensePlate" @blur="cleanInvalidChars(filter, 'licensePlate')" maxlength="10" placeholder="例如：ABC-123"/>
+            <input class="form-control" v-model="filter.licensePlate" @blur="cleanInvalidChars(filter, 'licensePlate')"
+              maxlength="10" placeholder="例如：ABC-123" />
           </div>
           <div class="col-md-4">
             <label class="form-label">是否可承租</label>
@@ -95,44 +98,42 @@
       </div>
     </div>
   </div>
-  
+
   <!-- 共用 Modal（新增/編輯） -->
-  <div class="modal fade" id="slotModal" tabindex="-1" aria-labelledby="slotModalLabel" aria-hidden="true" ref="modalRef">
+  <div class="modal fade" id="slotModal" tabindex="-1" aria-labelledby="slotModalLabel" aria-hidden="true"
+    ref="modalRef">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
         <div class="modal-header d-flex justify-content-between align-items-center">
-  <h5 class="modal-title modal-title-colored mb-0">
-    {{ isEditMode ? '編輯車位' : '新增車位' }}
-  </h5>
-  <button
-    type="button"
-    class="btn-close btn-close-custom"
-    @click="modalInstance?.hide()"
-    aria-label="Close"
-  >
-    <i class="bi bi-x-lg"></i>
-  </button>
-</div>
+          <h5 class="modal-title modal-title-colored mb-0">
+            {{ isEditMode ? '編輯車位' : '新增車位' }}
+          </h5>
+          <button type="button" class="btn-close btn-close-custom" @click="modalInstance?.hide()" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
         <div class="form-group">
           <label>車位代碼</label>
-          <input v-model="form.slotNumber" class="form-control" @blur="cleanInvalidChars(form, 'slotNumber')" maxlength="10" placeholder="例如：B1-001"/>
-          
+          <input v-model="form.slotNumber" class="form-control" @blur="cleanInvalidChars(form, 'slotNumber')"
+            maxlength="10" placeholder="例如：B1-001" />
+
           <label class="mt-2">位置</label>
-          <input v-model="form.location" class="form-control" maxlength="10" placeholder="例如：B1 A區"/>
-          
+          <input v-model="form.location" class="form-control" maxlength="10" placeholder="例如：B1 A區" />
+
           <label class="mt-2">車位種類</label>
           <select v-model="form.parkingTypeId" class="form-select">
             <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
           </select>
-          
+
           <label class="mt-2">車位擁有人</label>
           <select v-model="form.usersId" class="form-select">
             <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
           </select>
 
           <label class="mt-2">登記車牌</label>
-          <input v-model="form.licensePlate" class="form-control"  @blur="cleanInvalidChars(form, 'licensePlate')" maxlength="10" placeholder="例如：ABC-123"/>
-          
+          <input v-model="form.licensePlate" class="form-control" @blur="cleanInvalidChars(form, 'licensePlate')"
+            maxlength="10" placeholder="例如：ABC-123" />
+
           <label class="mt-2">是否可承租</label>
           <select v-model="form.isRentable" class="form-select">
             <option :value="true">是</option>
@@ -157,7 +158,7 @@ import axios from '@/plugins/axios.js'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore();
-const communityId = userStore.community
+const communityId = userStore.communityId
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])
@@ -217,19 +218,19 @@ async function openAddModal() {
 
 // 開啟修改 modal
 async function openEditModal(slot) {
-    isEditMode.value = true
-    form.value = {
-        id: slot.id,
-        slotNumber: slot.slotNumber,
-        location: slot.location,
-        parkingTypeId: slot.parkingTypeId,
-        usersId: slot.usersId,
-        licensePlate: slot.licensePlate,
-        isRentable: slot.isRentable
-    }
+  isEditMode.value = true
+  form.value = {
+    id: slot.id,
+    slotNumber: slot.slotNumber,
+    location: slot.location,
+    parkingTypeId: slot.parkingTypeId,
+    usersId: slot.usersId,
+    licensePlate: slot.licensePlate,
+    isRentable: slot.isRentable
+  }
 
-    await nextTick()
-    modalInstance?.show()
+  await nextTick()
+  modalInstance?.show()
 }
 
 // 送出新增
@@ -289,7 +290,7 @@ async function saveEdit() {
       title: '修改成功',
       confirmButtonText: '確定',
     })
-    
+
     console.log(res.data)
     fetchSlots()
 
@@ -316,20 +317,20 @@ function toggleCollapse() {
 
 // 篩選器
 const filter = ref({
-    slotNumber: '',
-    location: '',
-    parkingTypeId: '',
-    usersId: '',
-    licensePlate: '',
-    isRentable: ''
-  })
-  
+  slotNumber: '',
+  location: '',
+  parkingTypeId: '',
+  usersId: '',
+  licensePlate: '',
+  isRentable: ''
+})
+
 // 顯示篩選後的slot
 const filteredSlots = computed(() => {
   return slots.value.filter(slot => {
     const filterUserId = filter.value.usersId !== null && filter.value.usersId !== '' ? Number(filter.value.usersId) : null
     const filterTypeId = filter.value.parkingTypeId !== null && filter.value.parkingTypeId !== '' ? Number(filter.value.parkingTypeId) : null
-    
+
     return (
       (!filter.value.slotNumber || slot.slotNumber.includes(filter.value.slotNumber)) &&
       (!filter.value.location || slot.location.includes(filter.value.location)) &&
@@ -378,11 +379,7 @@ const deleteSlot = async (id) => {
 
 // 初始化 Modal
 onMounted(() => {
-  modalInstance = new Modal(modalRef.value, {
-    backdrop: 'static',
-    keyboard: false,
-  }
-)
+  modalInstance = new Modal(modalRef.value)
 
   collapseInstance = new Collapse(collapseRef.value, {
     toggle: false // 預設不要自動展開
@@ -395,8 +392,8 @@ onMounted(() => {
 
 // 清除非法字元（例如貼上或有預設值）
 function cleanInvalidChars(slot, field) {
-    const cleaned = (slot[field] || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
-    slot[field] = cleaned
+  const cleaned = (slot[field] || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
+  slot[field] = cleaned
 }
 </script>
 
@@ -406,6 +403,7 @@ function cleanInvalidChars(slot, field) {
   position: relative;
   z-index: 0;
 }
+
 /* 滾動表格 */
 .table-container {
   max-height: 500px;
@@ -415,6 +413,7 @@ function cleanInvalidChars(slot, field) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 0;
 }
+
 /* 固定表頭 */
 .fixed-header-table {
   border-collapse: separate !important;
@@ -422,6 +421,7 @@ function cleanInvalidChars(slot, field) {
   margin: 0 !important;
   width: 100%;
 }
+
 /* 表頭 sticky 並美化背景 */
 .fixed-header-table thead th {
   position: sticky;
@@ -434,10 +434,12 @@ function cleanInvalidChars(slot, field) {
   border-bottom: 2px solid #dee2e6;
   padding: 12px;
 }
+
 /* 表格列 hover 效果 */
 .fixed-header-table tbody tr:hover {
   background-color: #f9fcff;
 }
+
 /* 表格儲存格 padding 微調 */
 .fixed-header-table td {
   padding: 10px;
@@ -445,6 +447,7 @@ function cleanInvalidChars(slot, field) {
   color: #333;
   font-size: 15px;
 }
+
 /* 狀態標籤 */
 .status-badge {
   font-size: 0.85em;
@@ -454,17 +457,20 @@ function cleanInvalidChars(slot, field) {
   display: inline-block;
   min-width: 80px;
 }
+
 /* 承租狀態顏色 */
 .status-yes {
   background-color: #e6f4ea;
   color: #2e7d32;
   border: 1px solid #c1e1c1;
 }
+
 .status-no {
   background-color: #fdecea;
   color: #c62828;
   border: 1px solid #f5c6cb;
 }
+
 /* 操作按鈕一致風格 */
 .btn-sm {
   border-radius: 20px;
@@ -473,26 +479,32 @@ function cleanInvalidChars(slot, field) {
   padding: 6px 16px;
   transition: all 0.2s ease;
 }
+
 /* 刪除按鈕 */
 .btn-danger {
   background: linear-gradient(to right, #ff6b6b, #ff8e8e);
   color: white;
   border: none;
 }
+
 .btn-danger:hover {
   background: #e05a5a;
 }
+
 /* Modal圓角 */
 .modal-content {
   border-radius: 1rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+
 /* Modal標題 */
 .modal-title {
   font-weight: 700;
   font-size: 1.25rem;
-  color: #4b3cc4; /* 或你主色 */
+  color: #4b3cc4;
+  /* 或你主色 */
 }
+
 /* Modal input */
 .form-control,
 .form-select {
@@ -500,11 +512,13 @@ function cleanInvalidChars(slot, field) {
   padding: 0.6rem 1rem;
   font-size: 0.95rem;
 }
+
 /* 欄位上下間距 */
 .form-group label {
   margin-top: 0.75rem;
   font-weight: 600;
 }
+
 /* 底部儲存按鈕強化 */
 .btn-primary {
   background: linear-gradient(90deg, #7b5cff, #8e87ff);
@@ -514,22 +528,29 @@ function cleanInvalidChars(slot, field) {
   border-radius: 0.6rem;
   box-shadow: 0 4px 12px rgba(123, 92, 255, 0.4);
 }
+
 .btn-primary:hover {
   background: #6d56e6;
 }
+
 input::placeholder,
 select::placeholder,
 textarea::placeholder {
-  color: #cbd5e1; /* 比 #888 更亮，更適合深色背景 */
+  color: #cbd5e1;
+  /* 比 #888 更亮，更適合深色背景 */
   opacity: 0.9;
 }
+
 .form-control::placeholder {
   color: #cbd5e1;
 }
+
 /* Modal title */
 .modal-title-colored {
-  color: #aebaff; /* 淡藍或你指定的主題紫/藍色系 */
+  color: #aebaff;
+  /* 淡藍或你指定的主題紫/藍色系 */
 }
+
 /* 標題字顏色 */
 .modal-title-colored {
   color: #aebaff;
@@ -545,6 +566,7 @@ textarea::placeholder {
   line-height: 1;
   transition: color 0.2s ease;
 }
+
 .btn-close-custom:hover {
   color: #ffffff;
 }
@@ -558,17 +580,18 @@ textarea::placeholder {
 .dark-select,
 input.form-control,
 select.form-select {
-    background-color: #2e2e3e !important;
-    color: #f8f9fa !important;
-    border: 1px solid #555;
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.9rem;
-    height: auto;
-    appearance: auto;
-    -webkit-appearance: auto;
-    -moz-appearance: auto;
+  background-color: #2e2e3e !important;
+  color: #f8f9fa !important;
+  border: 1px solid #555;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  height: auto;
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
 }
+
 .swal2-popup.swal2-toast,
 .swal2-popup.swal2-modal {
   background: #1e1e2f !important;
@@ -610,6 +633,4 @@ select.form-select {
   border-radius: 0.5rem;
   padding: 0.5rem 1.5rem;
 }
-
-
 </style>

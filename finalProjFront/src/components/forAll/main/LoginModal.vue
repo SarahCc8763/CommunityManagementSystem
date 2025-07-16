@@ -297,7 +297,7 @@ const handleLogin = async () => {
       "email": form.value.username,
       "password": form.value.password
     })
-
+    console.log(response);
     // 後端成功回傳
     if (response.data.success) {
       // remember me

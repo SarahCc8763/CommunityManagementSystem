@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinCategory;
+import finalProj.domain.facilities.FacilitiesBean;
+import finalProj.domain.facilities.FacilityReservationsBean;
+import finalProj.domain.facilities.PointAccountsBean;
+import finalProj.domain.facilities.PointTransactionsBean;
 import finalProj.domain.faq.Faq;
 import finalProj.domain.faq.FaqCategory;
 import finalProj.domain.faq.FaqKeyword;
@@ -23,6 +27,7 @@ import finalProj.domain.users.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -123,6 +128,25 @@ public class Community {
 	private List<ParkingRentals> parkingRentals;
 
 	// --- Julie的關聯 END ---
+
+	// --- javert關聯 start ---
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference("facilities")
+	private List<FacilitiesBean> facilities;
+
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference("faciliy-reservation")
+	private List<FacilityReservationsBean> reservations;
+
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference("point-accounts")
+	private List<PointAccountsBean> pointAccounts;
+
+	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference("point-transactionsC")
+	private List<PointTransactionsBean> pointTransactions;
+
+	// --- javert關聯 end ---
 
 	@Override
 	public String toString() {
