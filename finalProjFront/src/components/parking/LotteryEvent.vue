@@ -16,9 +16,11 @@
           <div class="card-body">
             <h5 class="card-title">{{ event.title }}</h5>
             <p class="card-text">
-              <strong>起始：</strong> {{ formatDate(event.startedAt) }}
+              <strong>活動開始申請：</strong> {{ formatDate(event.startedAt) }}
               <br />
-              <strong>結束：</strong> {{ formatDate(event.endedAt) }}
+              <strong>活動結束申請：</strong> {{ formatDate(event.endedAt) }}
+              <br />
+              <strong>可承租月份：</strong> {{ formatYearMonth(event.rentalStart) }} ~ {{ formatYearMonth(event.rentalEnd) }}
             </p>
           </div>
           <div class="card-footer d-flex justify-content-between flex-wrap gap-1">
@@ -208,7 +210,22 @@ const fetchParkingSlots = async () => {
       eventEnd: getLastDayOfMonth(form.value.rentalEnd),
       limit: 50
   })
-  parkingSlots.value = res.data.data
+  let availableSlots = res.data.data || []
+
+  // 若為編輯模式 ➜ 將原本該活動的 slot 一併加入
+  if (isEditing.value && editingReservedSlotIds.value.length) {
+    const alreadySelected = availableSlots.map(s => s.id)
+    const missingSlots = editingReservedSlotIds.value.filter(id => !alreadySelected.includes(id))
+
+    // 補齊缺失的 slot 資料
+    const missingSlotData = await Promise.all(
+      missingSlots.map(id => axios.get(`/park/parking-slots/${id}`).then(res => res.data.data))
+    )
+
+    availableSlots = [...availableSlots, ...missingSlotData]
+  }
+
+  parkingSlots.value = availableSlots
   console.log(parkingSlots.value);
 }
 
@@ -295,11 +312,13 @@ function openCreateModal() {
   modalInstance.show()
 }
 
+const editingReservedSlotIds = ref([])
+
 // 開啟編輯 Modal
 const ignoreFormWatch = ref(false)
 async function openEditModal(event) {
   isEditing.value = true
-  editingSlots.value = true
+  editingSlots.value = false
   ignoreFormWatch.value = true
 
   // 設定 form 與 slots
@@ -316,11 +335,14 @@ async function openEditModal(event) {
     parkingSlotIds: event.parkingSlotIds,
     status: event.status
   }
+  console.log(form.value);
 
   // ⚠️ 車位先清空，等抓回來後再比對
   rawSlotIds.value = event.parkingSlotIds.map(p => p.parkingSlotId)
   desiredSlotCount.value = rawSlotIds.value.length
   tempSlotIds.value = [...rawSlotIds.value]
+
+  editingReservedSlotIds.value = [...rawSlotIds.value]
 
   // 先取得當前時段的可用車位（關鍵）
   await fetchParkingSlots()
@@ -372,7 +394,7 @@ watch(() => [form.value.typeId, form.value.rentalStart, form.value.rentalEnd], (
 })
 
 watch(desiredSlotCount, async (count) => {
-  if (!count || parkingSlots.value.length === 0 || editingSlots.value || disableAutoSelection.value || ignoreFormWatch.value) {
+  if (!count || parkingSlots.value.length === 0 || disableAutoSelection.value || ignoreFormWatch.value) {
     disableAutoSelection.value = false // 重置為預設 false（只跳過這一次）
     return
   }
@@ -397,6 +419,7 @@ watch(desiredSlotCount, async (count) => {
 })
 
 function getSlotLabel(id) {
+  console.log(parkingSlots.value);
   const slot = parkingSlots.value.find(s => s.id === id)
   return slot ? `${slot.slotNumber} - ${slot.location}` : `#${id}`
 }
@@ -411,6 +434,7 @@ function confirmSlotEdit() {
   rawSlotIds.value = [...tempSlotIds.value]
   desiredSlotCount.value = rawSlotIds.value.length
   editingSlots.value = false
+  disableAutoSelection.value = false
 }
 
 
@@ -527,6 +551,16 @@ function getIcon(typeName) {
     default: return 'bi bi-question-circle'
   }
 }
+
+// 轉為年月格式
+function formatYearMonth(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}/${month}`;
+}
+
 
 // 格式化日期
 function formatDate(date) {

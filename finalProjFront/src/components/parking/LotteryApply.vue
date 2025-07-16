@@ -13,9 +13,11 @@
           <div class="card-body">
             <h5 class="card-title">{{ event.title }}</h5>
             <p class="card-text">
-              <strong>起始：</strong> {{ formatDate(event.startedAt) }}
+              <strong>活動開始申請：</strong> {{ formatDate(event.startedAt) }}
               <br />
-              <strong>結束：</strong> {{ formatDate(event.endedAt) }}
+              <strong>活動結束申請：</strong> {{ formatDate(event.endedAt) }}
+              <br />
+              <strong>可承租月份：</strong> {{ formatYearMonth(event.rentalStart) }} ~ {{ formatYearMonth(event.rentalEnd) }}
             </p>
           </div>
           <div class="card-footer d-flex flex-column gap-2">
@@ -68,6 +70,15 @@ function getIcon(typeName) {
 // 格式化時間
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleString()
+}
+
+// 轉為年月格式
+function formatYearMonth(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}/${month}`;
 }
 
 // 取得已申請的抽籤活動
@@ -200,7 +211,7 @@ onMounted(() => {
 
 <style scoped>
 .card-title {
-  font-size: 1.25rem;
+  font-weight: bold;
 }
 .card-footer {
   padding: 0.75rem;

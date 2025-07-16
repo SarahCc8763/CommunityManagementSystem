@@ -263,7 +263,7 @@ CREATE TABLE lottery_apply (
         REFERENCES lottery_events(bulletin_id),
 
     CONSTRAINT FK_lottery_apply_space FOREIGN KEY (lottery_event_spaces_id)
-        REFERENCES lottery_event_space(id)
+        REFERENCES lottery_event_spaces(id)
 );
 
 

@@ -170,9 +170,8 @@ public class LotteryEventService {
 			rental.setUpdatedAt(new Date());
 			return rental;
 		}).toList();
-		
-		parkingRentalsRepository.saveAll(reservedRentals);
 
+		parkingRentalsRepository.saveAll(reservedRentals);
 
 		// 組裝回傳 DTO
 		LotteryEventUpdateRequest response = new LotteryEventUpdateRequest();
@@ -290,23 +289,22 @@ public class LotteryEventService {
 
 		// ✅ 活動建立者先預約保留的新車位 ID
 		List<Integer> slotIds = savedSpaces.stream()
-			.map(space -> space.getParkingSlot().getId())
-			.toList();
+				.map(space -> space.getParkingSlot().getId())
+				.toList();
 
 		// ✅ 查詢有時間重疊的承租紀錄（用車位與時間判斷）
 		List<ParkingRentals> conflictingRentals = parkingRentalsRepository.findConflictingRentals(
-			slotIds, rentalStart, rentalEnd
-			);
+				slotIds, rentalStart, rentalEnd);
 
 		// ✅ 篩選掉不是本活動建立者或非系統預留的紀錄（避免誤刪）
 		List<ParkingRentals> toDelete = conflictingRentals.stream()
-			.filter(r -> r.getUsers().getUsersId().equals(usersId) &&
-			"抽籤車位".equals(r.getLicensePlate()) &&
-			Boolean.TRUE.equals(r.getApproved()) &&
-			Boolean.FALSE.equals(r.getStatus()))
-			.toList();
+				.filter(r -> r.getUsers().getUsersId().equals(usersId) &&
+						"抽籤車位".equals(r.getLicensePlate()) &&
+						Boolean.TRUE.equals(r.getApproved()) &&
+						Boolean.FALSE.equals(r.getStatus()))
+				.toList();
 
-			// ✅ 執行刪除
+		// ✅ 執行刪除
 		parkingRentalsRepository.deleteAll(toDelete);
 
 		// ✅ 重新新增這次活動車位的保留紀錄
@@ -324,9 +322,8 @@ public class LotteryEventService {
 			rental.setUpdatedAt(new Date());
 			return rental;
 		}).toList();
-		
-		parkingRentalsRepository.saveAll(reservedRentals);
 
+		parkingRentalsRepository.saveAll(reservedRentals);
 
 		// 組裝回傳 DTO
 		LotteryEventUpdateRequest response = new LotteryEventUpdateRequest();
@@ -406,45 +403,51 @@ public class LotteryEventService {
 
 		// 1️⃣ 找出所有該活動預約的租用紀錄（抽籤活動建立時預留的）
 		List<Integer> slotIds = spaces.stream()
-        .map(space -> space.getParkingSlot().getId())
-        .toList();
+				.map(space -> space.getParkingSlot().getId())
+				.toList();
 
 		List<ParkingRentals> reservedRentals = parkingRentalsRepository.findConflictingRentals(
-			slotIds, event.getRentalStart(), event.getRentalEnd()
-			);
+				slotIds, event.getRentalStart(), event.getRentalEnd());
 
 		// 2️⃣ 將中籤的租用紀錄改成中籤者的名義
 		for (int i = 0; i < winnersCount; i++) {
 			LotteryApply apply = applies.get(i);
 			LotteryEventSpace space = spaces.get(i);
 			ParkingRentals reserved = reservedRentals.stream()
-			.filter(r -> r.getParkingSlot().getId().equals(space.getParkingSlot().getId()))
-			.findFirst()
-			.orElse(null);
-			
+					.filter(r -> r.getParkingSlot().getId().equals(space.getParkingSlot().getId()))
+					.findFirst()
+					.orElse(null);
+
 			if (reserved != null) {
 				reserved.setUsers(apply.getUsers());
 				reserved.setLicensePlate(""); // ✅ 清除原本的 "抽籤車位"
 				reserved.setUpdatedAt(new Date());
 			}
 		}
-				
+
 		// 3️⃣ 將未中籤對應的車位預約紀錄刪除（超過中籤人數的部分）
 		if (spaces.size() > winnersCount) {
 			List<Integer> unclaimedSlotIds = spaces.subList(winnersCount, spaces.size()).stream()
-			.map(space -> space.getParkingSlot().getId())
-			.toList();
-			
+					.map(space -> space.getParkingSlot().getId())
+					.toList();
+
 			List<ParkingRentals> toDelete = reservedRentals.stream()
-			.filter(r -> unclaimedSlotIds.contains(r.getParkingSlot().getId()))
-			.toList();
+					.filter(r -> unclaimedSlotIds.contains(r.getParkingSlot().getId()))
+					.toList();
 
 			parkingRentalsRepository.deleteAll(toDelete);
 		}
 
-		// 4️⃣ 儲存更新後的租用紀錄
-		parkingRentalsRepository.saveAll(reservedRentals);
+		// 4️⃣ 儲存更新後的租用紀錄 → 過濾掉已經被刪除的項目
+		Set<Integer> deletedSlotIds = spaces.subList(winnersCount, spaces.size()).stream()
+				.map(space -> space.getParkingSlot().getId())
+				.collect(Collectors.toSet());
 
+		List<ParkingRentals> toUpdate = reservedRentals.stream()
+				.filter(r -> !deletedSlotIds.contains(r.getParkingSlot().getId()))
+				.toList();
+
+		parkingRentalsRepository.saveAll(toUpdate);
 
 		repository.save(event);
 
@@ -466,27 +469,25 @@ public class LotteryEventService {
 		// 2️⃣ 找出所有抽籤車位
 		List<LotteryEventSpace> spaces = lotteryEventSpaceRepository.findByLotteryEvents_BulletinId(id);
 		List<Integer> slotIds = spaces.stream()
-		.map(s -> s.getParkingSlot().getId())
-		.toList();
+				.map(s -> s.getParkingSlot().getId())
+				.toList();
 
 		// 3️⃣ 刪除該活動期間的預留租用紀錄（用時間+車位查）
 		List<ParkingRentals> reservedRentals = parkingRentalsRepository.findConflictingRentals(
-			slotIds, event.getRentalStart(), event.getRentalEnd()
-			);
+				slotIds, event.getRentalStart(), event.getRentalEnd());
 
 		List<ParkingRentals> toDelete = reservedRentals.stream()
-			.filter(r -> "抽籤車位".equals(r.getLicensePlate()) &&
-			Boolean.TRUE.equals(r.getApproved()) &&
-			Boolean.FALSE.equals(r.getStatus()))
-			.toList();
-			
+				.filter(r -> "抽籤車位".equals(r.getLicensePlate()) &&
+						Boolean.TRUE.equals(r.getApproved()) &&
+						Boolean.FALSE.equals(r.getStatus()))
+				.toList();
+
 		parkingRentalsRepository.deleteAll(toDelete);
-			
-	// 4️⃣ 刪除公告（連帶 LotteryEvents, LotteryApply, LotteryEventSpace 如有設 cascade）
-	bulletinEventRepository.deleteById(id);
 
-	return true;
-}
+		// 4️⃣ 刪除公告（連帶 LotteryEvents, LotteryApply, LotteryEventSpace 如有設 cascade）
+		bulletinEventRepository.deleteById(id);
 
+		return true;
+	}
 
 }

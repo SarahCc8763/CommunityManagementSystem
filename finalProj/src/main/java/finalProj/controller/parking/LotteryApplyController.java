@@ -96,8 +96,19 @@ public class LotteryApplyController {
 	@DeleteMapping("/{applyId}")
 	public ResponseEntity<ApiResponse<Boolean>> deleteApply(@PathVariable Integer applyId) {
 		if (!repository.existsById(applyId)) {
-			return ResponseEntity.badRequest().body(ApiResponse.failure("資料不存在"));
+			return ResponseEntity.badRequest().body(ApiResponse.failure("未提供申請序號"));
 		}
+
+		LotteryApply apply = repository.findById(applyId).orElse(null);
+		if (apply == null) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("無申請紀錄"));
+		}
+
+		LotteryEvents event = apply.getLotteryEvents();
+		if (event == null || Boolean.TRUE.equals(event.getStatus())) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("該活動已抽籤，無法取消申請"));
+		}
+
 		repository.deleteById(applyId);
 		return ResponseEntity.ok(ApiResponse.success("已移除申請", true));
 	}
