@@ -154,7 +154,7 @@ style="width: 24px; height: 24px; cursor: pointer;"
                 </span>
               </td>
               <td>
-                <div class="avatar">{{ getInitials(ticket.assigner) }}</div> {{ ticket.assigner ??'未指派'}}
+                <div class="avatar">{{ getInitials(ticket.assignerName) }}</div> {{ ticket.assignerName ??'未指派'}}
               </td>
                 <td>
                 <div class="avatar">{{ getInitials(ticket.name) }}</div>

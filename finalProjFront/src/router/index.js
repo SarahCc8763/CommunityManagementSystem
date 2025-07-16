@@ -72,12 +72,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home,
     },
     {
-      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
+      path: '/',                // 你要把 BeforeLogin 當首頁的話
       name: 'BeforeLogIn',
       component: BeforeLogIn
     },

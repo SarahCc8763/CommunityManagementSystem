@@ -197,7 +197,7 @@ const logout = () => {
   finalMenuList.value = []
 
 
-  router.push('/BeforeLogIn')
+  router.push('/')
   // 觸發全局登出事件（可有可無）
   window.dispatchEvent(new CustomEvent('logout'))
 

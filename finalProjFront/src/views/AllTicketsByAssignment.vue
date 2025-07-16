@@ -89,201 +89,256 @@
 
 
 
-    <!-- ✅ 已指派 -->
-    <div class="mb-5 " >
-      <h4 class="text-success ">✅ 已指派報修單</h4>
-      <div v-if="assignedTickets.length">
-        <div v-for="ticket in assignedTickets" :key="ticket.id" class="card mb-3 p-3 
-        shadow-sm bg-dark text-light" @click="openDetail(ticket)">
+<ul class="nav nav-tabs mb-4" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link"
+       :class="{ active: selectedTab === 'unassigned' }"
+       href="#"
+       @click.prevent="selectedTab = 'unassigned'"
+    >❌ 未指派報修單</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       :class="{ active: selectedTab === 'assigned' }"
+       href="#"
+       @click.prevent="selectedTab = 'assigned'"
+    >✅ 已指派報修單</a>
+  </li>
+</ul>
 
 
-        <span
-        class="badge position-absolute top-0 end-0 m-2"
-        :class="{
-          'bg-secondary': ticket.status === 'to do',
-          'bg-warning text-dark': ticket.status === 'In Progress',
-          'bg-success': ticket.status === 'Done'
-        }"
-      >
-      {{ formatStatus(ticket.status) }}
-        </span>
+<div v-if="selectedTab === 'assigned'">
+  <!-- ✅ 已指派 -->
+  <div class="mb-5">
+    <h4 class="text-success">✅ 已指派報修單</h4>
+    <div v-if="assignedTickets.length">
+      <div class="d-flex">
+        <!-- 左側：報修單卡片列表 -->
+        <div class="flex-grow-1">
+          <div
+            v-for="ticket in paginatedAssignedTickets"
+            :key="ticket.id"
+            class="card mb-3 p-3 shadow-sm bg-dark text-light"
+            @click="openDetail(ticket)"
+          >
+            <span
+              class="badge position-absolute top-0 end-0 m-2"
+              :class="{
+                'bg-secondary': ticket.status === 'to do',
+                'bg-warning text-dark': ticket.status === 'In Progress',
+                'bg-success': ticket.status === 'Done'
+              }"
+            >
+              {{ formatStatus(ticket.status) }}
+            </span>
 
+            <h5>{{ ticket.title }}</h5>
+            <p>通報人：{{ ticket.name }}</p>
+            <p>指派人：{{ ticket.assigneeName ?? '（未知）' }}</p>
+            <p>廠商：{{ ticket.vendorName ?? '（尚未指派）' }}</p>
+            <p>建立時間：{{ formatDate(ticket.startDate) }}</p>
 
-
-
-          <h5>{{ ticket.title }}</h5>
-          <p>通報人：{{ ticket.name }}</p>
-          <p>指派人：{{ ticket.assigneeName  ?? '（未知）' }}</p>
-          <p>廠商：{{ ticket.vendorName ?? '（尚未指派）' }}</p>
-
-          <!-- <p>狀態:{{ticket.status}}</p> -->
-
-          <p>建立時間：{{ formatDate(ticket.startDate) }}</p>
-
-
-
-
-
-          <div class="mt-3 border-top pt-2 text-secondary small">
-            <p><strong>描述：</strong>{{ ticket.issueDescription || '（無）' }}</p>
-            <div v-if="ticket.attachments?.length">
-              <p><strong>附件：</strong></p>
-              <div class="d-flex flex-wrap gap-2">
-                <img
-                  v-for="(img, idx) in ticket.attachments"
-                  :key="idx"
-                  :src="img.url"
-                  class="rounded border"
-                  style="width: 100px; height: auto;"
-                />
+            <div class="mt-3 border-top pt-2 text-light small">
+              <p><strong>描述：</strong> <span v-html="ticket.issueDescription || '（無）'"></span></p>
+              <div v-if="ticket.attachments?.length">
+                <p><strong>附件：</strong></p>
+                <div class="d-flex flex-wrap gap-2">
+                  <img
+                    v-for="(img, idx) in ticket.attachments"
+                    :key="idx"
+                    :src="img.url"
+                    class="rounded border"
+                    style="width: 100px; height: auto;"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- 右側：垂直分頁 -->
+        <ul class="pagination flex-column ms-3">
+          <li
+            class="page-item"
+            v-for="page in assignedTotalPages"
+            :key="page"
+            :class="{ active: assignedPage === page }"
+            @click="assignedPage = page"
+            style="cursor: pointer"
+          >
+            <a class="page-link">{{ page }}</a>
+          </li>
+        </ul>
       </div>
-      <div v-else class="text-muted">目前沒有已指派的報修單</div>
     </div>
+    <div v-else class="text-muted">目前沒有已指派的報修單</div>
+  </div>
+</div>
+
     <AssignedTicketDetail
   v-if="showDetailModal"
+  :key="selectedTicket.id"
   :ticket="selectedTicket"
   :vendor-list="vendors"
   @close="showDetailModal = false"
-  @update-ticket="selectedTicket = $event"
+  @update-ticket="updateTicket"
 />
 
 
-
-    <!-- ❌ 未指派 -->
-<div>
+<div v-if="selectedTab === 'unassigned'">
   <h4 class="text-danger">❌ 未指派報修單</h4>
-  <div v-if="unassignedTickets.length">
-    <div
-      v-for="(ticket, index) in unassignedTickets"
-      :key="ticket.id"
-      class="card mb-3 p-3 border border-warning position-relative"
-      @click="toggleExpanded(index)"
-      style="cursor: pointer"
-    >
-    <span
-        class="badge position-absolute top-0 end-0 m-2"
-        :class="{
-          'bg-secondary': ticket.status === 'to do',
-          'bg-warning text-dark': ticket.status === 'In Progress',
-          'bg-success': ticket.status === 'Done'
-        }"
-      >
-      {{ formatStatus(ticket.status) }}
-        </span>
 
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <h5 class="mb-1">{{ ticket.title }}</h5>
-          <p class="mb-1">通報人：{{ ticket.name }}</p>
-          <p class="text-muted mb-1">尚未指派</p>
-          <p class="mb-1">建立時間：{{ formatDate(ticket.startDate) }}</p>
-        </div>
-      </div>
-
-      <transition name="fade">
-  <div v-show="expanded.includes(index)" class="mt-3 border-top pt-2 text-secondary small">
-    <!-- 問題種類 -->
-    <div class="mb-2">
-      <p><strong>問題種類：</strong></p>
-      <div v-if="ticket.issueTypes?.length">
-        <span
-          v-for="(rel, i) in ticket.issueTypes"
-          :key="i"
-          class="badge bg-info me-2"
+  <div v-if="paginatedUnassignedTickets.length">
+    <div class="d-flex">
+      <!-- 左側：未指派卡片列表 -->
+      <div class="flex-grow-1">
+        <div
+          v-for="(ticket, index) in paginatedUnassignedTickets"
+          :key="ticket.id"
+          class="card mb-3 p-3 border border-warning position-relative"
+          @click="toggleExpanded(index)"
+          style="cursor: pointer"
         >
-          {{ rel.issueType?.issueTypeName }}
-        </span>
-      </div>
-      <p v-else class="text-muted">無</p>
-    </div>
-
-    <!-- 問題描述 -->
-    <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
-
-       <!-- ✅ ⬇️ 插入這區塊（附件圖片）⬇️ -->
-       <div class="mb-2" v-if="ticket.attachments?.length">
-      <p><strong>附件圖片：</strong></p>
-      <div class="d-flex flex-wrap gap-2">
-        <img
-          v-for="(img, i) in ticket.attachments"
-          :key="i"
-          :src="img.url"
-          class="rounded border"
-          style="width: 100px; height: 100px; object-fit: cover;"
-          @click.stop="openPreview(img)"
-        />
-      </div>
-    </div>
-    <div v-if="previewImageUrl" class="image-preview-overlay" @click.stop="closePreview">
-        <img :src="previewImageUrl" class="image-preview" @click.stop />
-      </div>
-    <!-- ✅ ⬆️ 附件區結束 ⬆️ -->
-
-    <!-- 工程商選擇區 -->
-    <div class="row mt-3">
-      <!-- 左欄：下拉選單 -->
-      <div class="col-md-6">
-        <label class="form-label">選擇工程商（可複選）</label>
-        <div class="border rounded p-2">
-          <select
-            class="form-select"
-            @change="handleVendorSelect($event, ticket)"
-            @mousedown.stop
-            @click.stop
+          <!-- 狀態標籤 -->
+          <span
+            class="badge position-absolute top-0 end-0 m-2"
+            :class="{
+              'bg-secondary': ticket.status === 'to do',
+              'bg-warning text-dark': ticket.status === 'In Progress',
+              'bg-success': ticket.status === 'Done'
+            }"
           >
-            <option disabled selected>請選擇工程商</option>
-            <option
-              v-for="vendor in vendors"
-              :key="vendor.vendorID"
-              :value="vendor.vendorID"
-              :disabled="ticket.selectedVendorIds.includes(vendor.vendorID)"
-            >
-              {{ vendor.vendorName }} - {{ vendor.contactPerson }}
-            </option>
-          </select>
-        </div>
-      </div>
+            {{ formatStatus(ticket.status) }}
+          </span>
 
-      <!-- 右欄：顯示已選與按鈕 -->
-      <div class="col-md-6 d-flex flex-column justify-content-between">
-        <!-- ✅ 顯示已選項目 -->
-        <div class="mb-2">
-          <label class="form-label">已選擇的工程商</label>
-          <div class="d-flex flex-wrap gap-2">
-            <span
-              v-for="id in ticket.selectedVendorIds"
-              :key="id"
-              class="badge bg-success"
-            >
-              {{ vendors.find(v => v.vendorID === id)?.vendorName }}
-              <span
-                class="ms-1 text-white"
-                style="cursor: pointer"
-                @click.stop="removeVendor(ticket, id)"
-              >&times;</span>
-            </span>
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="mb-1">{{ ticket.title }}</h5>
+              <p class="mb-1">通報人：{{ ticket.name }}</p>
+              <p class="text-muted mb-1">尚未指派</p>
+              <p class="mb-1">建立時間：{{ formatDate(ticket.startDate) }}</p>
+            </div>
           </div>
-        </div>
 
-        <!-- ✅ 接收按鈕靠右 -->
-        <div class="text-end mt-auto">
-          <button
-            class="btn btn-primary"
-            @click.stop="confirmAssign(ticket)"
-          >
-            ✅ 接收此報修單
-          </button>
+          <!-- 展開詳細 -->
+          <transition name="fade">
+            <div
+              v-show="expanded.includes(index)"
+              class="mt-3 border-top pt-2 text-secondary small"
+            >
+              <!-- 問題種類 -->
+              <div class="mb-2">
+                <p><strong>問題種類：</strong></p>
+                <div v-if="ticket.issueTypes?.length">
+                  <span
+                    v-for="(rel, i) in ticket.issueTypes"
+                    :key="i"
+                    class="badge bg-info me-2"
+                  >
+                    {{ rel.issueType?.issueTypeName }}
+                  </span>
+                </div>
+                <p v-else class="text-muted">無</p>
+              </div>
+
+              <!-- 描述 -->
+              <p><strong>描述：</strong>{{ ticket.issueDescription || '無' }}</p>
+
+              <!-- 附件圖片 -->
+              <div class="mb-2" v-if="ticket.attachments?.length">
+                <p><strong>附件圖片：</strong></p>
+                <div class="d-flex flex-wrap gap-2">
+                  <img
+                    v-for="(img, i) in ticket.attachments"
+                    :key="i"
+                    :src="img.url"
+                    class="rounded border"
+                    style="width: 100px; height: 100px; object-fit: cover"
+                    @click.stop="openPreview(img)"
+                  />
+                </div>
+              </div>
+              <div
+                v-if="previewImageUrl"
+                class="image-preview-overlay"
+                @click.stop="closePreview"
+              >
+                <img :src="previewImageUrl" class="image-preview" @click.stop />
+              </div>
+
+              <!-- 工程商選擇 -->
+              <div class="row mt-3">
+                <!-- 左欄 -->
+                <div class="col-md-6">
+                  <label class="form-label">選擇工程商（可複選）</label>
+                  <div class="border rounded p-2">
+                    <select
+                      class="form-select"
+                      @change="handleVendorSelect($event, ticket)"
+                      @mousedown.stop
+                      @click.stop
+                    >
+                      <option disabled selected>請選擇工程商</option>
+                      <option
+                        v-for="vendor in vendors"
+                        :key="vendor.vendorID"
+                        :value="vendor.vendorID"
+                        :disabled="ticket.selectedVendorIds.includes(vendor.vendorID)"
+                      >
+                        {{ vendor.vendorName }} - {{ vendor.contactPerson }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 右欄 -->
+                <div class="col-md-6 d-flex flex-column justify-content-between">
+                  <div class="mb-2">
+                    <label class="form-label">已選擇的工程商</label>
+                    <div class="d-flex flex-wrap gap-2">
+                      <span
+                        v-for="id in ticket.selectedVendorIds"
+                        :key="id"
+                        class="badge bg-success"
+                      >
+                        {{ vendors.find(v => v.vendorID === id)?.vendorName }}
+                        <span
+                          class="ms-1 text-white"
+                          style="cursor: pointer"
+                          @click.stop="removeVendor(ticket, id)"
+                          >&times;</span
+                        >
+                      </span>
+                    </div>
+                  </div>
+                  <div class="text-end mt-auto">
+                    <button
+                      class="btn btn-primary"
+                      @click.stop="confirmAssign(ticket)"
+                    >
+                      ✅ 接收此報修單
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
       </div>
-    </div>
-  </div>
-  
-</transition>
 
+      <!-- 右側分頁 -->
+      <ul class="pagination flex-column ms-3">
+        <li
+          class="page-item"
+          v-for="page in unassignedTotalPages"
+          :key="'unassigned-' + page"
+          :class="{ active: unassignedPage === page }"
+          @click="unassignedPage = page"
+          style="cursor: pointer"
+        >
+          <a class="page-link">{{ page }}</a>
+        </li>
+      </ul>
     </div>
   </div>
   <div v-else class="text-muted">目前沒有未指派的報修單</div>
@@ -301,7 +356,7 @@ import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore()
 
-
+const selectedTab=ref('未指派')
 const tickets = ref([])
 const vendors = ref([])
 const expanded = ref([])
@@ -318,9 +373,30 @@ const filter = ref({
 
 const users = ref([])
 const issueTypes = ref([])
-
-
 const showDropdown = ref(false)
+
+const assignedTotalPages = computed(() => Math.ceil(assignedTickets.value.length / pageSize))
+const unassignedTotalPages = computed(() => Math.ceil(unassignedTickets.value.length / pageSize))
+
+const assignedPage = ref(1)
+const assignedItemsPerPage = 5
+
+const unassignedPage = ref(1)
+const unassignedItemsPerPage = 5
+
+
+const pageSize = 5
+
+const paginatedAssignedTickets = computed(() => {
+  const start = (assignedPage.value - 1) * assignedItemsPerPage
+  return assignedTickets.value.slice(start, start + assignedItemsPerPage)
+})
+
+const paginatedUnassignedTickets = computed(() => {
+  const start = (unassignedPage.value - 1) * unassignedItemsPerPage
+  return unassignedTickets.value.slice(start, start + unassignedItemsPerPage)
+})
+
 
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value
@@ -346,7 +422,7 @@ function formatStatus(status) {
   switch (status) {
     case "to do": return 'TO DO'
     case "In Progress": return 'IN PROGRESS'
-    case "Done": return ''
+    case "Done": return 'Done'
     default: return '未知'
   }
 }
@@ -354,6 +430,7 @@ function formatStatus(status) {
 
 
 onMounted(() => {
+  selectedTab.value = 'unassigned'
   fetchTickets()
   fetchUsers()
   fetchIssueTypes()
@@ -537,6 +614,20 @@ function formatDate(dateString) {
   const date = new Date(dateString)
   return date.toLocaleString()
 }
+
+function updateTicket(updatedTicket) {
+  const index = tickets.value.findIndex(t => t.id === updatedTicket.id)
+  if (index !== -1) {
+    // 保留原本的 assigned 狀態
+    updatedTicket.assigned = tickets.value[index].assigned
+    tickets.value[index] = { ...updatedTicket }
+  }
+
+  if (selectedTicket.value?.id === updatedTicket.id) {
+    selectedTicket.value = { ...updatedTicket }
+  }
+}
+
 </script>
 
 <style scoped>
