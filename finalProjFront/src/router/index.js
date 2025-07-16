@@ -156,11 +156,8 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
-      path: '/AdminDashboard',
-      name: 'AdminDashboard',
-      component: AdminDashboard,
-      meta: { dark: true },
     },
+
     {
       path: '/finance/admin-dashboard',
       name: 'FinAdminDashboard',
