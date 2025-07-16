@@ -697,7 +697,7 @@
       <div class="user-profile-card new-member-card no-border-card">
         <div class="member-avatar-block">
           <div class="avatar-container">
-            <img :src="UserStore.avatarUrl" alt="頭像" class="user-avatar" />
+            <img :src="imagePath" alt="頭像" class="user-avatar" />
             <div class="status-indicator"></div>
           </div>
           <div class="member-info-texts">
@@ -796,12 +796,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
 const UserStore = useUserStore()
 const router = useRouter()
+const imagePath = computed(() => `/images/users/user${UserStore.userId}.png?v=${Date.now()}`)
 
 const menuItems = [
   {

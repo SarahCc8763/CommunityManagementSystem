@@ -2,10 +2,10 @@
     <div class="profile-wrapper">
         <div class="profile-card">
             <div class="profile-left">
-                <img :src="userStore.avatarUrl" alt="Avatar" class="avatar" />
+                <img :src="imagePath" alt="Avatar" class="avatar" />
                 <!-- <img :src="profilePhoto" alt="Avatar" class="avatar" /> -->
                 <h2>{{ userStore.name }}</h2>
-                <p class="unit">門牌號：{{ }} </p>
+                <p class="unit">門牌號：{{ userStore.unit }}號 {{ userStore.floor }}</p>
                 <p class="email">{{ userStore.username }}</p>
                 <button @click="uploadPhoto">上傳大頭貼</button>
             </div>
@@ -42,19 +42,7 @@ import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const router = useRouter();
-// const user = ref({
-//     name: '王小明',
-//     unit: 'A101',
-//     email: 'xiaoming@example.com',
-//     phone: '0912345678',
-//     lineId: 'xiaomingline',
-//     state: '啟用',
-//     emergencyContact: '王媽媽',
-//     emergencyContactNum: '0923456789',
-//     emergencyRelation: '母親',
-// })
-
-// const profilePhoto = ref('https://png.pngtree.com/png-clipart/20201224/ourmid/pngtree-childrens-illustration-cute-boy-cute-hand-painted-q-version-character-original-png-image_2605661.jpg')
+const imagePath = `/images/users/user${userStore.userId}.png?v=${Date.now()}`
 
 function uploadPhoto() {
     alert('上傳大頭貼功能開發中...')

@@ -48,7 +48,7 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }" @click="toggleNotificationCenter"></div>
+      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + imagePath + ')' }" @click="toggleNotificationCenter"></div>
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
@@ -98,6 +98,7 @@ const userStore = useUserStore()
 const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
+const imagePath = computed(() => `/images/users/user${userStore.userId}.png?v=${Date.now()}`)
 
 //存放社區功能
 const communityFunctions = ref([])
