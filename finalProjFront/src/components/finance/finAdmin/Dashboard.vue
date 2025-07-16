@@ -406,6 +406,7 @@ onMounted(() => {
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   transition: transform 0.15s, box-shadow 0.15s;
   border: 1.5px solid #23272b;
+  margin-bottom: 1.5rem;
 }
 
 .admin-card:hover {
@@ -429,7 +430,7 @@ onMounted(() => {
   border: 1px solid #495057;
   border-radius: 18px;
   transition: all 0.3s ease;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .tutorial-card:hover {
@@ -473,7 +474,74 @@ onMounted(() => {
 }
 
 .tutorial-content-inner {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 2.5rem;
+}
 
+h2, .main-title {
+  color: #90caf9 !important;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 2.5rem;
+}
+
+h4, .section-title {
+  color: #b39ddb !important;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 1.5rem;
+}
+
+h5, .admin-card .fw-bold {
+  color: #e3e3fa !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 0.8rem;
+  text-align: left;
+}
+
+h6, .step-item h6 {
+  color: #b39ddb !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.text-info {
+  color: #90caf9 !important;
+}
+
+.text-secondary, .admin-card p, .tip-card p, .tutorial-card p, .step-item p {
+  color: #b0b0b0 !important;
+}
+
+.text-light {
+  color: #e0e0e0 !important;
+}
+
+.admin-card .admin-card-icon {
+  font-size: 2.5rem;
+  color: #b39ddb;
+  margin-bottom: 0.5rem;
+}
+
+.admin-card .btn-outline-info {
+  border-color: #90caf9;
+  color: #90caf9;
+}
+.admin-card .btn-outline-info:hover {
+  background: #90caf9;
+  color: #23272b;
+}
+
+.admin-card p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #b0b0b0;
+}
+
+.tip-card .tip-icon {
+  font-size: 2rem;
+  color: #90caf9;
+  margin-bottom: 1rem;
 }
 </style>

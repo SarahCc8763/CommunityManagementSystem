@@ -1,78 +1,89 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+      <!-- 麵包屑導航 -->
+      <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">收據管理中心</li>
+      </ol>
+    </nav>
     <BannerImage :imageSrc="OO" heading="收據管理中心" subtext="開立各類收據，快速查找特定繳費記錄及其處理狀態。" textAlign="left" />
   </div>
 
   <div class="container mt-4 dark-bg">
     <h3 class="mb-4">新增收據</h3>
-    <div class="row gx-4">
+    <div class="receipt-flex-wrap">
       <!-- 左側：搜尋區塊 -->
-      <div class="col-md-6">
-        <div class="search-panel">
-          <transition name="expand-search">
-            <div class="search-bar mb-3" :class="{ 'expanded': showAdvanced }">
-              <!-- 原搜尋欄位與按鈕 -->
-              <div class="row g-2 align-items-end">
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <input v-model="search.keyword" class="form-control main-search-input"
-                    placeholder="請輸入住戶姓名/ID/期別/費用類型" />
-                </div>
-                <div class="col-12 col-md-auto d-flex gap-2">
-                  <button class="btn btn-outline-primary" @click="toggleAdvanced">{{ showAdvanced ? '收合進階搜尋' : '進階搜尋'
-                  }}</button>
-                  <button class="btn btn-primary" @click="searchInvoices">查詢</button>
-                  <button class="btn btn-secondary" @click="clearSearch">清除</button>
-                </div>
+      <div class="receipt-panel search-panel">
+        <transition name="expand-search">
+          <div class="search-bar mb-3" :class="{ 'expanded': showAdvanced }">
+            <!-- 原搜尋欄位與按鈕 -->
+            <div class="search-row">
+              <input v-model="search.keyword" class="form-control main-search-input search-keyword-input"
+                placeholder="請輸入住戶姓名/ID/期別/費用類型" />
+              <div class="search-btn-group">
+                <button class="btn btn-outline-primary" @click="toggleAdvanced">{{ showAdvanced ? '收合進階搜尋' : '進階搜尋' }}</button>
+                <button class="btn btn-primary" @click="searchInvoices">查詢</button>
+                <button class="btn btn-secondary" @click="clearSearch">清除</button>
               </div>
-              <transition name="fade">
-                <div v-if="showAdvanced" class="advanced-search mt-3">
-                  <!-- 原進階搜尋欄位 -->
-                  <div class="row g-2">
-                    <div class="col-12 col-md-4"><input v-model="search.userName" class="form-control"
-                        placeholder="住戶姓名" /></div>
-                    <div class="col-12 col-md-4"><input v-model="search.userId" class="form-control"
-                        placeholder="住戶ID" /></div>
-                    <div class="col-12 col-md-4">
-                      <select v-model="search.feeType" class="form-select">
-                        <option value="">全部費用類型</option>
-                        <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">{{
-                          type.description }}</option>
-                      </select>
-                    </div>
-                    <div class="col-12 col-md-4">
-                      <select v-model="search.periodName" class="form-select">
-                        <option value="">全部期別</option>
-                        <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">{{
-                          period.periodName }}</option>
-                      </select>
-                    </div>
-                    <div class="col-12 col-md-4">
-                      <select v-model="search.status" class="form-select">
-                        <option value="">全部狀態</option>
-                        <option value="unpaid">未繳</option>
-                        <option value="pending">待審核</option>
-                      </select>
-                    </div>
+            </div>
+            <transition name="fade">
+              <div v-if="showAdvanced" class="advanced-search mt-3">
+                <!-- 原進階搜尋欄位 -->
+                <div class="row g-2">
+                  <div class="col-12 col-md-4"><input v-model="search.userName" class="form-control"
+                      placeholder="住戶姓名" /></div>
+                  <div class="col-12 col-md-4"><input v-model="search.userId" class="form-control"
+                      placeholder="住戶ID" /></div>
+                  <div class="col-12 col-md-4">
+                    <select v-model="search.feeType" class="form-select">
+                      <option value="">全部費用類型</option>
+                      <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">{{
+                        type.description }}</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <select v-model="search.periodName" class="form-select">
+                      <option value="">全部期別</option>
+                      <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">{{
+                        period.periodName }}</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <select v-model="search.status" class="form-select">
+                      <option value="">全部狀態</option>
+                      <option value="unpaid">未繳</option>
+                      <option value="pending">待審核</option>
+                    </select>
                   </div>
                 </div>
-              </transition>
-            </div>
-          </transition>
+              </div>
+            </transition>
+          </div>
+        </transition>
 
-          <!-- 搜尋結果 -->
-          <div v-if="searchResults.length > 0" class="search-results mb-4">
-            <div class="result-card mb-3" v-for="inv in searchResults" :key="inv.invoiceId">
-              <div class="row g-1 align-items-center">
-                <div class="col-12 col-md-10">
-                  <div><b>發票ID：</b>{{ inv.invoiceId }}</div>
-                  <div><b>住戶：</b>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
-                  <div><b>期別：</b>{{ inv.billingPeriod?.periodName }}　<b>費用類型：</b>{{ inv.feeType?.description }}</div>
-                  <div><b>金額：</b>{{ inv.amountDue }}　<b>狀態：</b>{{ inv.paymentStatus }}</div>
-                </div>
-                <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
-                  <button class="btn btn-outline-success btn-sm w-100" @click="openConfirmModal(inv)">產生收據</button>
-                </div>
+        <!-- 搜尋結果 -->
+        <div v-if="searchResults.length > 0" class="search-results mb-4">
+          <div class="result-card mb-3" v-for="inv in searchResults" :key="inv.invoiceId">
+            <div class="row g-1 align-items-center">
+              <div class="col-12 col-md-10">
+                <div><b>發票ID：</b>{{ inv.invoiceId }}</div>
+                <div><b>住戶：</b>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
+                <div><b>期別：</b>{{ inv.billingPeriod?.periodName }}　<b>費用類型：</b>{{ inv.feeType?.description }}</div>
+                <div><b>金額：</b>{{ inv.amountDue }}　<b>狀態：</b>{{ inv.paymentStatus }}</div>
+              </div>
+              <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
+                <button class="btn btn-outline-success btn-sm w-100" @click="openConfirmModal(inv)">產生收據</button>
               </div>
             </div>
           </div>
@@ -80,7 +91,7 @@
       </div>
 
       <!-- 右側：收據表單 -->
-      <div class="col-md-6">
+      <div class="receipt-panel">
         <form @submit.prevent="submitForm" class="dark-form receipt-form">
           <div class="row">
             <div class="col-md-6 mb-3">
@@ -296,6 +307,23 @@ function downloadPDF() {
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
   })
+}
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
 }
 </script>
 
@@ -563,4 +591,78 @@ function downloadPDF() {
   opacity: 1;
   font-style: italic;
 }
+
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
+}
+
+.receipt-flex-wrap {
+  display: flex;
+  gap: 2rem;
+  width: 60vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.receipt-panel {
+  flex: 1 1 0;
+  background: #23272b;
+  border-radius: 18px;
+  padding: 24px 18px;
+  min-height: 600px;
+  max-height: 600px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #3a3a3a;
+  box-shadow: 0 4px 24px #0003;
+}
+
+/* 搜尋區塊上方橫向排列 */
+.search-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.search-keyword-input {
+  flex: 2 1 0;
+  min-width: 0;
+  height: 40px;
+}
+.search-btn-group {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1 1 0;
+  align-items: stretch;
+}
+.search-btn-group .btn {
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .search-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .search-btn-group {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* 取消RWD，不再有 flex-direction: column 的切換 */
 </style>

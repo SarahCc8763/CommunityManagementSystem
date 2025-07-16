@@ -433,13 +433,19 @@ const slideshowImages = [
 
 /* 公告區域 */
 .announcements-section {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .section-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 48px;
     margin-bottom: 24px;
 }
 
@@ -478,8 +484,9 @@ const slideshowImages = [
 
 .announcements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    justify-content: center;
 }
 
 .announcement-card {
@@ -706,6 +713,21 @@ const slideshowImages = [
 @media (max-width: 480px) {
     .functions-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .announcements-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .announcements-section {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .section-header {
+        flex-direction: column;
+        gap: 16px;
     }
 }
 </style>
