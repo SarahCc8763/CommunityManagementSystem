@@ -58,6 +58,7 @@ function renderChart() {
             plugins: {
                 legend: {
                     display: false,
+
                 },
             },
             scales: {
@@ -66,8 +67,16 @@ function renderChart() {
                     max: suggestedMax,
                     ticks: {
                         stepSize: 1,
+
                     },
                 },
+                y: {
+                    ticks: {
+                        font: {
+                            size: 16,
+                        }
+                    }
+                }
             },
         },
     })
@@ -85,7 +94,8 @@ watch(() => [props.labels, props.data], renderChart, { deep: true })
 
 canvas {
     display: block;
-    width: 80% !important;
+    width: 75% !important;
     /* height: auto !important; */
+
 }
 </style>

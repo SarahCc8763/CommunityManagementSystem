@@ -81,10 +81,7 @@
                                                 @click="openEditModal(feedback.id)">
                                                 修改
                                             </button>
-                                            <button v-if="feedback.status != '已結案'"
-                                                class="btn btn-outline-secondary btn-sm" @click="delete (feedback.id)">
-                                                撤銷此案
-                                            </button>
+
                                         </div>
                                         <!-- 評分區塊 -->
                                         <div class="mt-3">
@@ -148,7 +145,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="min-width: 180px;">
+                                    <div class="d-flex flex-column align-items-center" style="min-width: 180px;">
+                                        <button v-if="feedback.status != '已結案'" class=" btn btn-delete btn-sm"
+                                            @click="deleteFeedback(feedback.id)">
+                                            我要撤銷此案
+                                        </button>
                                         <FeedbackProgress :feedback="feedback"
                                             @show-history-detail="showFeedbackHistoryDetail" />
                                     </div>
@@ -238,7 +239,7 @@ const submitReply = async (feedback) => {
             alert('送出失敗')
         }
     } catch (err) {
-        console.error('送出回覆失敗', err)
+        //console.error('送出回覆失敗', err)
         alert('無法送出，請稍後再試')
     }
 }
@@ -274,7 +275,7 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
 
 
     } catch (err) {
-        // console.error('載入意見回饋歷史失敗', err);
+        // //console.error('載入意見回饋歷史失敗', err);
         Swal.fire({
             icon: 'error',
             title: '載入失敗',
@@ -334,23 +335,52 @@ const openEditModal = async (feedbackId) => {
         // 傳送完整 feedback 資料到 modal
         window.dispatchEvent(new CustomEvent('load-feedback-for-edit', { detail: feedback }))
     } catch (err) {
-        console.error('載入意見資料失敗', err)
+        //console.error('載入意見資料失敗', err)
     }
 }
 
 
 // delete
-const delete=async () => {
+const deleteFeedback = async () => {
     const confirm = await Swal.fire({
-        title: '確定要刪除嗎？',
+        title: '確定要撤銷嗎？',
+        text: '撤銷後將無法恢復。',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: '確定'
+        confirmButtonText: '確定',
+        cancelButtonText: '取消'
     })
-    if (!confirm.isConfirmed) return
-
+    if (!confirm.isConfirmed) {
+        return
+    }
+    try {
+        const res = await axios.delete(`/api/feedback/${feedbackId}`)
+        if (res.data?.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '刪除成功',
+                text: '意見回饋已刪除',
+                timer: 1500
+            })
+            // 刪除成功後，重新取得資料
+            await fetchFeedbacks()
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: res.data?.result || '刪除失敗',
+                text: '請稍後再試',
+                timer: 1500
+            })
+        }
+    } catch (err) {
+        //console.error('刪除意見回饋失敗', err)
+        Swal.fire({
+            icon: 'error',
+            title: err.data?.result || '刪除失敗',
+        })
+    }
 }
 
 // 設定暫存評分
@@ -376,7 +406,9 @@ const submitRating = async (feedback) => {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: '確定'
+            confirmButtonText: '確定',
+            cancelButtonText: '取消'
+
         })
         if (result.isConfirmed) {
             const res = await axios.put(`/api/feedback/rating/${feedback.id}`, payload)
@@ -401,7 +433,7 @@ const submitRating = async (feedback) => {
             }
         }
     } catch (err) {
-        console.error('送出評分失敗', err)
+        //console.error('送出評分失敗', err)
         Swal.fire({
             icon: 'error',
             title: '送出失敗',
@@ -424,16 +456,21 @@ const fetchData = () => {
         .then((res) => {
             feedbackList.value = res.data.map((f) => ({
                 ...f,
-                isExpanded: false, // <-- Add this line
+                isExpanded: false,
                 showReplies: false,
                 newReplyText: '',
                 tempRating: null
-            }))
-            //console.log(feedbackList.value);
+            })).sort((a, b) => {
+                if (a.status === b.status) {
+                    return new Date(b.submittedAt) - new Date(a.submittedAt) // 狀態相同，按建立時間新到舊排序
+                }
+                return a.status === '已結案' ? 1 : -1 // 已結案排在後面
+            })
+
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'
-            console.error(err)
+            //console.error(err)
         })
         .finally(() => {
             loading.value = false
@@ -606,5 +643,15 @@ ul {
 :deep(.current-status) {
     color: #3429ff;
     font-weight: 600;
+}
+
+.btn-delete {
+
+    font-size: medium;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    background: linear-gradient(0deg, #834444 0%, #c09595 100%);
+    color: rgb(255, 255, 255);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
 </style>

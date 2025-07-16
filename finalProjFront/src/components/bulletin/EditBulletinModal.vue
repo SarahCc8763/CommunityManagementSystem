@@ -227,7 +227,7 @@ function submitEdit() {
                 })
             })
             .catch(error => {
-                console.error(error)
+                //console.error(error)
                 Swal.fire({
                     title: '失敗',
                     text: '修改失敗',

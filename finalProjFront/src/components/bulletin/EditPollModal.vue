@@ -161,7 +161,7 @@ async function deletePoll() {
                 })
             })
             .catch(error => {
-                console.error(error)
+                //console.error(error)
                 Swal.fire({
                     title: '失敗',
                     text: '刪除失敗',
@@ -201,7 +201,7 @@ function submitEdit() {
             })
         })
         .catch(error => {
-            console.error(error)
+            //console.error(error)
             Swal.fire({
                 title: '失敗',
                 text: '修改失敗',
@@ -239,7 +239,7 @@ function submitPost() {
             })
         })
         .catch(error => {
-            console.error(error)
+            //console.error(error)
             Swal.fire({
                 title: '失敗',
                 text: '修改失敗',

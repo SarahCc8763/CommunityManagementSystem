@@ -138,7 +138,7 @@ const submitReply = async () => {
             })
         }
     } catch (err) {
-        console.error('狀態更新失敗', err);
+        //console.error('狀態更新失敗', err);
         alert('更新失敗，請稍後再試');
     }
 }

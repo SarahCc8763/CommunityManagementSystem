@@ -335,7 +335,7 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
 
 
     } catch (err) {
-        // console.error('載入意見回饋歷史失敗', err);
+        // //console.error('載入意見回饋歷史失敗', err);
         Swal.fire({
             icon: 'error',
             title: '載入失敗',
@@ -373,7 +373,7 @@ const submitReply = async (feedback) => {
             alert('送出失敗')
         }
     } catch (err) {
-        console.error('送出回覆失敗', err)
+        //console.error('送出回覆失敗', err)
         alert('無法送出，請稍後再試')
     }
 }
@@ -443,7 +443,7 @@ const openEditModal = async (feedbackId) => {
         //console.log(selectedFeedback.value);
 
     } catch (err) {
-        console.error('載入意見資料失敗', err)
+        //console.error('載入意見資料失敗', err)
     }
 }
 
@@ -485,7 +485,7 @@ const deleteReply = async (replyId) => {
         });
 
     } catch (e) {
-        console.error('刪除發生錯誤', e);
+        //console.error('刪除發生錯誤', e);
         Swal.fire({
             icon: 'error',
             title: '刪除失敗',
@@ -518,7 +518,7 @@ const fetchData = async () => {
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'
-            console.error(err)
+            //console.error(err)
         })
         .finally(() => {
             loading.value = false

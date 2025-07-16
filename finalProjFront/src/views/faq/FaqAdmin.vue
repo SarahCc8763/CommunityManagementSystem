@@ -168,7 +168,7 @@ const confirmDelete = async (faqId) => {
             await fetchFaqs()
             Swal.fire('刪除成功', '', 'success')
         } catch (err) {
-            console.error(err)
+            //console.error(err)
             Swal.fire('刪除失敗', '', 'error')
         }
     }
@@ -224,7 +224,7 @@ const fetchFaqs = async () => {
         }
 
     } catch (error) {
-        console.error('取得FAQ或分類失敗:', error)
+        //console.error('取得FAQ或分類失敗:', error)
     } finally {
         loading.value = false
     }
@@ -268,7 +268,7 @@ const searchFaqs = async () => {
             page.value = 1
         }
     } catch (error) {
-        console.error('查詢 FAQ 失敗:', error)
+        //console.error('查詢 FAQ 失敗:', error)
     } finally {
         loading.value = false
     }

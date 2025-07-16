@@ -280,7 +280,7 @@ async function submitEdit() {
         initPost()
 
     } catch (err) {
-        console.error('送出失敗', err)
+        //console.error('送出失敗', err)
         Swal.fire({
             icon: 'error',
             title: '失敗',

@@ -315,7 +315,7 @@ function fetchAll() {
             categoryList.value = [...cats]
         })
         .catch(err => {
-            console.error('載入公告失敗', err)
+            // //console.error('載入公告失敗', err)
         })
 }
 
@@ -364,11 +364,25 @@ function openBulletin(id) {
 function searchBulletins() {
     axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
-        category: searchCategory.value ? { name: searchCategory.value } : undefined
+        category: searchCategory.value ? { name: searchCategory.value } : undefined,
+        community: { communityId: communityId }
     }).then(res => {
-        const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
+        // console.log(res.data);
+
+        const now = new Date()
+        const sortedList = res.data.list.filter(val => val.postStatus === true &&
+            new Date(val.postTime) <= now &&
+            new Date(val.removeTime) > now).
+            sort((a, b) => {
+                if (a.isPinned === b.isPinned) {
+                    // 同樣都是置頂或都不是 → 用 postTime 新到舊
+                    return new Date(b.postTime) - new Date(a.postTime)
+                }
+                return a.isPinned ? -1 : 1
+            })
+
         bulletins.value = sortedList
-        //console.log(sortedList);
+        // console.log(sortedList);
     })
 }
 async function submitVote() {
@@ -516,7 +530,7 @@ async function deleteComment(bulletinId, comment) {
             }, 200) // 建議等 200ms 讓 backdrop 正常清除
 
         } catch (err) {
-            console.error(err)
+            // //console.error(err)
             Swal.fire('錯誤', '刪除失敗，請稍後再試', 'error')
         }
     }
