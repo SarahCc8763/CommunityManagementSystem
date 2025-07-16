@@ -57,12 +57,13 @@ const menuList = [
     title: '繳費資訊',
     key: 'INVOICE',
     children: [
-      { label: 'A新增費用類型', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
-      { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
-      { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
+      { label: '繳費功能主頁入口', routeName: 'FinAdminDashboard', key: 'FINADMIN' },
+      { label: '費用項目管理', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
+      { label: '繳費期間設定', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
+      { label: '繳費通知製作', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
+      { label: '繳費通知審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
+      { label: '審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
+      { label: '收據管理中心', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
     ]
   },
   {

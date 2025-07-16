@@ -1,6 +1,22 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">費用項目管理</li>
+      </ol>
+    </nav>
     <BannerImage :imageSrc="OO" heading="繳費通知製作" subtext=" 快速製作繳費通知單，使用生成器一鍵產生下月帳單，或依需求自訂個別通知單。" textAlign="left" />
   </div>
 
@@ -359,6 +375,22 @@ const submitFullForm = async () => {
   }
 }
 
+
+// 麵包屑導航
+
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
+}
 </script>
 
 <style scoped>
@@ -389,5 +421,13 @@ const submitFullForm = async () => {
 .table-dark th,
 .table-dark td {
   vertical-align: middle;
+}
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

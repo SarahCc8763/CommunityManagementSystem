@@ -1,6 +1,6 @@
 <template>
   <div class="admin-dashboard-bg py-5">
-    <div class="container-xl">
+    <div class="container-xl" style="margin-left: 20%;">
       <h2 class="fw-bold text-info mb-4">財務管理員專區</h2>
       <!-- 教學/說明區塊 -->
       <div class="card bg-dark text-light shadow p-4 mb-5">
@@ -267,35 +267,42 @@ const expandedTutorial = ref(null)
 
 const cards = [
   {
-    title: '期別管理',
+    title: '繳費期間設定',
     desc: '設定、檢視所有繳費期別，可自動或手動新增。',
     icon: 'bi bi-calendar2-week',
     route: '/finance/billing-period/add'
   },
   {
-    title: '費用類型管理',
+    title: '費用項目管理',
     desc: '設定各類費用（如管理費、水電費等），可自訂金額與單位。',
     icon: 'bi bi-cash-coin',
     route: '/finance/fee-type/add'
   },
   {
-    title: '請款單管理',
-    desc: '查詢、管理所有已產生的請款單，支援多條件篩選。',
+    title: '繳費通知製作',
+    desc: '自訂條件批次產生請款單，支援多選住戶。',
+    icon: 'bi bi-collection',
+    route: '/finance/invoice/add'
+  },
+  {
+    title: '繳費通知審核',
+    desc: '查詢、管理所有已產生的請款單，並核准發送，支援多條件篩選。',
+    icon: 'bi bi-file-earmark-text',
+    route: '/finance//invoice/validate'
+  },
+  {
+    title: '審核帳單回覆',
+    desc: '確認用戶留言，查詢、管理所有已產生的請款單支援多條件篩選。',
     icon: 'bi bi-file-earmark-text',
     route: '/finance/invoice/InvoiceWithResponse'
   },
   {
-    title: '繳款回覆/審核',
+    title: '收據管理中心',
     desc: '審核住戶繳款狀態，手動標記已繳/未繳。',
     icon: 'bi bi-clipboard-check',
-    route: '/finance/invoice/validate'
-  },
-  {
-    title: '批次產生請款單',
-    desc: '自訂條件批次產生請款單，支援多選住戶。',
-    icon: 'bi bi-collection',
-    route: '/finance/invoice/add'
+    route: '/finance/receipt/add'
   }
+
 ]
 
 function go(route) {
@@ -389,6 +396,7 @@ onMounted(() => {
 
 .admin-dashboard-bg {
   min-height: 100vh;
+
   background: linear-gradient(135deg, #23272b 0%, #1a1d20 100%);
 }
 
@@ -454,6 +462,10 @@ onMounted(() => {
   overflow: hidden;
   transition: max-height 0.4s ease;
   background: #1a1d20;
+
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+
 }
 
 .tutorial-content.expanded {
@@ -462,5 +474,6 @@ onMounted(() => {
 
 .tutorial-content-inner {
   padding: 1.5rem;
+
 }
 </style>

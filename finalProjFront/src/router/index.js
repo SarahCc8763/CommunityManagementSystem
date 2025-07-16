@@ -112,20 +112,21 @@ const router = createRouter({
     // Finance相關
     //// Fin-Admin
     {
-      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
-      name: 'BeforeLogIn',
-      component: BeforeLogIn
+      path: '/finance/billing-period/add',
+      name: 'BillingPeriodAdd',
+      component: BillingPeriodAdd,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/admin-dashboard',
+      name: 'FinAdminDashboard',
+      component: Dashboard,
+      meta: { dark: true },
     },
     {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
       component: FeeTypeAdd,
-      meta: { dark: true },
-    },
-    {
-      path: '/finance/billing-period/add',
-      name: 'BillingPeriodAdd',
-      component: BillingPeriodAdd,
       meta: { dark: true },
     },
     {
@@ -135,19 +136,7 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/receipt/add',
-      name: 'ReceiptAdd',
-      component: ReceiptAdd,
-      meta: { dark: true },
-    },
-    {
       path: '/finance/invoice/validate',
-      name: 'InvoiceValidate',
-      component: InvoiceValidate,
-      meta: { dark: true },
-    },
-    {
-      path: '/finance/invoice-review',
       name: 'InvoiceValidate',
       component: InvoiceValidate,
       meta: { dark: true },
@@ -157,19 +146,36 @@ const router = createRouter({
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
     },
-
     {
-      path: '/finance/admin-dashboard',
-      name: 'FinAdminDashboard',
-      component: Dashboard,
+      path: '/finance/receipt/add',
+      name: 'ReceiptAdd',
+      component: ReceiptAdd,
       meta: { dark: true },
     },
+
     ////fin-user
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser,
+    },
+    {
+
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice,
+    },
     {
       path: '/finance/receipt/my',
       name: 'Receipt',
       component: Receipt,
     },
+    //Finance相關 end
+
+
+
+
+
     {
       path: '/profile',
       name: 'profile',
@@ -214,18 +220,7 @@ const router = createRouter({
       name: 'Vendor',
       component: Vendor,
       meta: { dark: true },
-    }, {
-
-      path: '/finance/invoice',
-      name: 'Invoice',
-      component: Invoice,
     },
-    {
-      path: '/finUser',
-      name: 'FinUser',
-      component: finUser,
-    },
-    //Finance相關 end
     {
       path: "/pages/park/initialize",
       name: "parkInitialize",

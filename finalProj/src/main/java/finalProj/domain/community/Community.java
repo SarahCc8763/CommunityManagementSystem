@@ -131,22 +131,54 @@ public class Community {
 
 	// --- javert關聯 start ---
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("facilities")
+	@JsonManagedReference("community-facilities")
 	private List<FacilitiesBean> facilities;
 
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("faciliy-reservation")
+	@JsonManagedReference("community-facilityReservations")
 	private List<FacilityReservationsBean> reservations;
 
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("point-accounts")
+	@JsonManagedReference("community-pointAccounts")
 	private List<PointAccountsBean> pointAccounts;
 
 	@OneToMany(mappedBy = "community", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("point-transactionsC")
+	@JsonManagedReference("community-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
 
 	// --- javert關聯 end ---
+
+	public List<FacilitiesBean> getFacilities() {
+		return facilities;
+	}
+
+	public void setFacilities(List<FacilitiesBean> facilities) {
+		this.facilities = facilities;
+	}
+
+	public List<FacilityReservationsBean> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<FacilityReservationsBean> reservations) {
+		this.reservations = reservations;
+	}
+
+	public List<PointAccountsBean> getPointAccounts() {
+		return pointAccounts;
+	}
+
+	public void setPointAccounts(List<PointAccountsBean> pointAccounts) {
+		this.pointAccounts = pointAccounts;
+	}
+
+	public List<PointTransactionsBean> getPointTransactions() {
+		return pointTransactions;
+	}
+
+	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
+		this.pointTransactions = pointTransactions;
+	}
 
 	@Override
 	public String toString() {
