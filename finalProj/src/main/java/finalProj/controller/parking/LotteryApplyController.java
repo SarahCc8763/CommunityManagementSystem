@@ -19,6 +19,7 @@ import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.ApiResponse;
 import finalProj.dto.parking.LotteryApplyDTO;
+import finalProj.dto.parking.WinnerDTO;
 import finalProj.repository.parking.LotteryApplyRepository;
 import finalProj.repository.parking.LotteryEventRepository;
 import finalProj.repository.users.UsersRepository;
@@ -41,6 +42,14 @@ public class LotteryApplyController {
 	@Autowired
 	private UsersRepository usersRepository;
 
+	// 查詢中獎名單
+	@GetMapping("/winners")
+	public ResponseEntity<ApiResponse<List<WinnerDTO>>> getWinners(@RequestParam Integer eventId) {
+		List<WinnerDTO> winners = repository.findWinnersByEventId(eventId);
+
+		return ResponseEntity.ok(ApiResponse.success("中獎名單查詢成功", winners));
+	}
+
 	// 查詢使用者申請過的所有活動
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<ApiResponse<List<LotteryApply>>> getByUserId(@PathVariable Integer userId) {
@@ -48,7 +57,7 @@ public class LotteryApplyController {
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", records));
 	}
 
-	// 查詢某抽籤活動的所有申請紀錄
+	// 查詢某抽籤活動的所有申請者
 	@GetMapping("/{id}/participants")
 	public ResponseEntity<ApiResponse<List<LotteryApplyDTO>>> getByEvent(@PathVariable("id") Integer id) {
 		List<LotteryApplyDTO> list = service.findByEvent(id);
@@ -83,11 +92,23 @@ public class LotteryApplyController {
 		return ResponseEntity.ok(ApiResponse.success("申請成功"));
 	}
 
+	// 取消申請
 	@DeleteMapping("/{applyId}")
 	public ResponseEntity<ApiResponse<Boolean>> deleteApply(@PathVariable Integer applyId) {
 		if (!repository.existsById(applyId)) {
-			return ResponseEntity.badRequest().body(ApiResponse.failure("資料不存在"));
+			return ResponseEntity.badRequest().body(ApiResponse.failure("未提供申請序號"));
 		}
+
+		LotteryApply apply = repository.findById(applyId).orElse(null);
+		if (apply == null) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("無申請紀錄"));
+		}
+
+		LotteryEvents event = apply.getLotteryEvents();
+		if (event == null || Boolean.TRUE.equals(event.getStatus())) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("該活動已抽籤，無法取消申請"));
+		}
+
 		repository.deleteById(applyId);
 		return ResponseEntity.ok(ApiResponse.success("已移除申請", true));
 	}

@@ -1,27 +1,47 @@
+
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
+
+
+
+
+
+
+// 財務相關-使用者
+import finUser from '@/components/finance/finUser/finUser.vue'
+import Invoice from '@/components/finance/finUser/Invoice.vue'
+import Receipt from '@/components/finance/finUser/Receipt.vue'
+//財務相關-管理員
+import FeeTypeAdd from '@/components/finance/finAdmin/FeeTypeAdd.vue'
+import BillingPeriodAdd from '@/components/finance/finAdmin/BillingPeriodAdd.vue'
+import InvoiceAdd from '@/components/finance/finAdmin/InvoiceAdd.vue'
+import InvoiceValidate from '@/components/finance/finAdmin/InvoiceValidate.vue'
+import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponse.vue'
+import ReceiptAdd from '@/components/finance/finAdmin/ReceiptAdd.vue'
+import Dashboard from '@/components/finance/finAdmin/Dashboard.vue'
+
 
 // 📌 首頁
 import Home from '../views/Home.vue'
 
-import InvoiceAdd from '../components/finance/finAdmin/InvoiceAdd.vue'
-import InvoiceResponseAdd from '../components/finance/finUser/InvoiceResponseAdd.vue'
-import ReceiptAdd from '../components/finance/finAdmin/ReceiptAdd.vue'
-import InvoiceHistory from '../components/finance/finUser/InvoiceHistory.vue'
+
+// Ticket相關
 import TicketDetailView from '../views/TicketDetailView.vue'
 import TicketForm from '../views/TicketForm.vue'
 import TicketList from '../views/TicketList.vue'
 import TicketPage from '../views/TicketPage.vue'
 import AllTicketsByAssignment from '../views/AllTicketsByAssignment.vue'
+
+
 import CommunityList from '../views/CommunityList.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import TicketDashboard from '../views/TicketDashboard.vue'
 import Vendor from '../views/Vendor.vue'
 
-import finUser from '@/components/finance/finUser/finUser.vue'
-import BillingPeriodAdd from '../components/finance/finAdmin/BillingPeriodAdd.vue'
-import FeeTypeAdd from '../components/finance/finAdmin/FeeTypeAdd.vue'
-import Invoice from '../components/finance/finUser/Invoice.vue'
+
+
+
 import LotteryApply from "@/components/parking/LotteryApply.vue"
 import LotteryEvent from "@/components/parking/LotteryEvent.vue"
 import ParkingBack from "@/components/parking/ParkingBack.vue"
@@ -30,8 +50,8 @@ import ParkInitialize from "@/components/parking/ParkInitialize.vue"
 import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
 import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
-import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 import MySlots from '@/components/parking/MySlots.vue'
+//Julie end
 // Yu Start
 import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
 import FaqAdmin from '../views/faq/FaqAdmin.vue'
@@ -47,6 +67,12 @@ import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
 
+// 包裹
+import packages_picked from '@/components/package/packages_picked.vue';
+import packages_security from '@/components/package/packages_security.vue';
+import addPackage from '@/components/package/addPackage.vue';
+
+
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
 import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
@@ -57,14 +83,38 @@ import PointTransferView from '../views/facilities/PointTransferView.vue'
 import PointTopupView from '../views/facilities/PointTopupView.vue'
 import PointTopupResultView from '../views/facilities/PointTopupResultView.vue'
 
+// 新增 BeforeLogIn 頁面路由
+import BeforeLogIn from '@/views/BeforeLogIn.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/beforeLogIn',
+      name: 'beforeLogIn',
+      component: BeforeLogIn,
+    },
+    {
+      path: '/adminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard,
+      meta: { dark: true },
+
+    },
+    {
       path: '/',
       name: 'home',
       component: Home,
+
+    },
+
+    // Finance相關
+    //// Fin-Admin
+    {
+      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
     },
     {
       path: '/finance/fee-type/add',
@@ -85,67 +135,40 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice-response/add',
-      name: 'InvoiceResponseAdd',
-      component: InvoiceResponseAdd,
-
-    },
-    {
       path: '/finance/receipt/add',
       name: 'ReceiptAdd',
       component: ReceiptAdd,
       meta: { dark: true },
     },
     {
-      path: '/finance/invoice/history',
-      name: 'InvoiceHistory',
-      component: InvoiceHistory,
-    },
-    {
-      path: '/ticket/:id',
-      name: 'TicketDetail',
-      component: TicketDetailView,
-    },
-    {
-      path: '/TicketForm',
-      name: 'TicketForm',
-      component: TicketForm,
-    },
-    {
-      path: '/TicketList',
-      name: 'TicketList',
-      component: TicketList,
-    },
-    {
-      path: '/TicketPage',
-      name: 'TicketPage',
-      component: TicketPage,
-    }, {
-      path: '/AllTicketsByAssignment',
-      name: 'AllTicketsByAssignment',
-      component: AllTicketsByAssignment,
-    },
-    {
-      path: '/CommunityList',
-      name: 'CommunityList',
-      component: CommunityList,
+      path: '/finance/invoice/validate',
+      name: 'InvoiceValidate',
+      component: InvoiceValidate,
       meta: { dark: true },
     },
     {
-      path: '/resetPassword',
-      name: 'resetPassword',
-      component: resetPassword,
+      path: '/finance/invoice-review',
+      name: 'InvoiceValidate',
+      component: InvoiceValidate,
+      meta: { dark: true },
     },
     {
-      path: '/AdminDashboard',
-      name: 'AdminDashboard',
-      component: AdminDashboard,
+      path: '/finance/invoice/InvoiceWithResponse',
+      name: 'InvoiceWithResponse',
+      component: InvoiceWithResponse,
     },
+
     {
-      path: '/packages',
-      name: 'packages',
-      component: packages,
-      meta: { requiresAuth: true }
+      path: '/finance/admin-dashboard',
+      name: 'FinAdminDashboard',
+      component: Dashboard,
+      meta: { dark: true },
+    },
+    ////fin-user
+    {
+      path: '/finance/receipt/my',
+      name: 'Receipt',
+      component: Receipt,
     },
     {
       path: '/profile',
@@ -159,6 +182,29 @@ const router = createRouter({
       component: notification
     },
     {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/packages_picked',
+      name: 'packages_picked',
+      component: packages_picked,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/packages_security',
+      name: 'packages_security',
+      component: packages_security,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/addPackage',
+      name: 'addPackage',
+      component: addPackage,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
       path: '/TicketDashboard',
       name: 'TicketDashboard',
       component: TicketDashboard,
@@ -167,17 +213,19 @@ const router = createRouter({
       path: '/Vendor',
       name: 'Vendor',
       component: Vendor,
+      meta: { dark: true },
     }, {
 
       path: '/finance/invoice',
       name: 'Invoice',
-      component: Invoice
+      component: Invoice,
     },
     {
       path: '/finUser',
       name: 'FinUser',
-      component: finUser
+      component: finUser,
     },
+    //Finance相關 end
     {
       path: "/pages/park/initialize",
       name: "parkInitialize",
@@ -213,12 +261,6 @@ const router = createRouter({
       component: LotteryApply,
     },
     {
-      path: "/pages/park/temporary-parking",
-      name: "temporaryParking",
-      component: TemporaryParking,
-      meta: { dark: true },
-    },
-    {
       path: "/pages/park/parking-front",
       name: "parkingFront",
       component: ParkingFront,
@@ -233,7 +275,26 @@ const router = createRouter({
       path: '/pages/park/my-slots',
       name: 'mySlots',
       component: MySlots,
-    }, {
+    },
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
+
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/feedbackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
       path: '/faq',
       name: 'faq',
       component: Faq
@@ -246,13 +307,6 @@ const router = createRouter({
       component: MyFeedback
 
     },
-
-    {
-      path: '/announcement-latest',
-      name: 'announcement-latest',
-      component: AnnouncementLatest
-
-    },
     {
       path: '/bulletin-admin',
       name: 'bulletin-admin',
@@ -260,21 +314,6 @@ const router = createRouter({
       meta: { dark: true }
 
     },
-
-    {
-      path: '/feebackAdmin',
-      name: 'feedbackAdmin',
-      component: FeedbackAdmin,
-      meta: { dark: true }
-    },
-    {
-      path: '/faqAdmin',
-      name: 'faqAdmin',
-      component: FaqAdmin,
-      meta: { dark: true }
-    },
-
-
     {
       path: '/facilities',
       name: 'FacilityHomepageView',
@@ -321,22 +360,24 @@ const router = createRouter({
       component: PointTopupResultView,
       props: true
     },
+
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword
+    },
+    {
+      path: '/CommunityList',
+      name: 'CommunityList',
+      component: CommunityList
+    },
   ],
 
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }
   }
 })
-router.beforeEach((to) => {
-  const userStore = useUserStore()
 
-  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    console.log('尚未登入，導去首頁並觸發登入 modal')
-    window.dispatchEvent(new CustomEvent('show-login-modal'))
-    return { name: 'home' }
-  }
-
-})
 
 
 export default router

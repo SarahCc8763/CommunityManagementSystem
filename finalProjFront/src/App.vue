@@ -1,6 +1,9 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
 
+    <!--  <BeforeLogIn /> -->
+
+
     <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
@@ -28,6 +31,7 @@
 
     <FooterAll />
 
+
     <!-- 登入模態框 -->
     <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
   </div>
@@ -42,6 +46,10 @@
 
 
 <script setup>
+
+import BeforeLogIn from '@/views/BeforeLogIn.vue'
+
+
 //功能類import
 import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
@@ -62,9 +70,12 @@ import { useRoute } from 'vue-router'  // ✅ 加上這行
 const route = useRoute()
 
 
+
+import Swal from 'sweetalert2'
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
+
 
 // ✅ 只判斷 meta.dark
 const isDarkMode = computed(() => route.meta?.dark === true)
@@ -106,16 +117,21 @@ onUnmounted(() => {
 
 
 
-// const handleLoginSuccess = (loginData) => {
-//   user.login({
-//     name: loginData.username,
-//     username: loginData.username,
-//     avatarUrl: 'https://i.pravatar.cc/100?img=13'
-//   })
-//   showLogin.value = false
-//   window.dispatchEvent(new CustomEvent('login-success', { detail: loginData }))
-// }
+onMounted(() => {
+  window.addEventListener('show-login-modal', () => (showLogin.value = true))
+  window.addEventListener('logout', () => console.log('用戶已登出'))
+})
+onUnmounted(() => {
+  window.removeEventListener('show-login-modal', () => (showLogin.value = true))
+  window.removeEventListener('logout', () => console.log('用戶已登出'))
+})
 
+//把sweetAlert放最上面用
+Swal.mixin({
+  customClass: {
+    popup: 'swal-on-top'
+  }
+})
 </script>
 
 
@@ -152,7 +168,7 @@ onUnmounted(() => {
   min-height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   justify-content: flex-start;
   background: #fff;
   max-width: 100%;
@@ -164,6 +180,11 @@ onUnmounted(() => {
 
 .main-area.with-right-nav {
   margin-right: 0px;
+}
+
+.main-area.dark-mode {
+  background: #23272f !important;
+  color: #e0e6ed !important;
 }
 
 /* 左右 SideNav */
@@ -343,5 +364,10 @@ onUnmounted(() => {
   background-color: #35394a;
   color: #f0f0f0;
   border: 1px solid #666;
+}
+
+/* 把swtteAlert放上面 */
+.swal-on-top {
+  z-index: 99999 !important;
 }
 </style>

@@ -20,6 +20,7 @@ public class RentalHistoryDTO {
 
 	// 關聯的部分
 	private String slotNumber;
+	private Integer slotId;
 	private String location;
 	private String parkingType;
 	private String userName;
@@ -145,6 +146,14 @@ public class RentalHistoryDTO {
 
 	public void setApproverName(String approverName) {
 		this.approverName = approverName;
+	}
+
+	public Integer getSlotId() {
+		return slotId;
+	}
+
+	public void setSlotId(Integer slotId) {
+		this.slotId = slotId;
 	}
 
 }

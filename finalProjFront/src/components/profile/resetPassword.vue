@@ -37,7 +37,7 @@ import { ref } from 'vue'
 import Swal from 'sweetalert2'
 import axios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
-
+const path = import.meta.VITE_API_URL
 const router = useRouter();
 
 const form = ref({
@@ -73,11 +73,11 @@ const handleResetPassword = async () => {
   }
 
   try {
-    const response = await axios.post('/users/resetPassword', {
+    const response = await axios.post(`/users/resetPassword`, {
       "email": form.value.email,
       "newPassword": form.value.password
     })
-
+console.log(response);
     // 後端成功回傳
     if (response.data.success) {
       console.log(response.data);
@@ -85,7 +85,7 @@ const handleResetPassword = async () => {
         text: response.data.message,
         icon: "success",
       });
-      router.push({ name: 'home' })
+      router.push({ path: '/BeforeLogIn' })
       window.dispatchEvent(new CustomEvent('show-login-modal'))
     } else {
       // 後端回傳失敗訊息

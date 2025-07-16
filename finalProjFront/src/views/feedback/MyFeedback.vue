@@ -341,7 +341,7 @@ const openEditModal = async (feedbackId) => {
 
 
 // delete
-const deleteFeedback = async () => {
+const deleteFeedback = async (feedbackId) => {
     const confirm = await Swal.fire({
         title: '確定要撤銷嗎？',
         text: '撤銷後將無法恢復。',
@@ -356,7 +356,9 @@ const deleteFeedback = async () => {
         return
     }
     try {
+        console.log(111);
         const res = await axios.delete(`/api/feedback/${feedbackId}`)
+        console.log(res);
         if (res.data?.success) {
             Swal.fire({
                 icon: 'success',
@@ -365,7 +367,7 @@ const deleteFeedback = async () => {
                 timer: 1500
             })
             // 刪除成功後，重新取得資料
-            await fetchFeedbacks()
+            await fetchData()
         } else {
             Swal.fire({
                 icon: 'error',
@@ -375,7 +377,7 @@ const deleteFeedback = async () => {
             })
         }
     } catch (err) {
-        //console.error('刪除意見回饋失敗', err)
+        // console.error('刪除意見回饋失敗', err)
         Swal.fire({
             icon: 'error',
             title: err.data?.result || '刪除失敗',

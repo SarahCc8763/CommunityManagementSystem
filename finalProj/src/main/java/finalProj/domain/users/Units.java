@@ -89,11 +89,34 @@ public class Units {
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("units-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
-
 	// --- javert的關聯 END ---
 
 	public Integer getUnitsId() {
 		return unitsId;
+	}
+
+	public List<FacilityReservationsBean> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<FacilityReservationsBean> reservations) {
+		this.reservations = reservations;
+	}
+
+	public PointAccountsBean getPointAccount() {
+		return pointAccount;
+	}
+
+	public void setPointAccount(PointAccountsBean pointAccount) {
+		this.pointAccount = pointAccount;
+	}
+
+	public List<PointTransactionsBean> getPointTransactions() {
+		return pointTransactions;
+	}
+
+	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
+		this.pointTransactions = pointTransactions;
 	}
 
 	public void setUnitsId(Integer unitsId) {
@@ -162,30 +185,6 @@ public class Units {
 
 	public void setCommunity(Community community) {
 		this.community = community;
-	}
-
-	public List<FacilityReservationsBean> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(List<FacilityReservationsBean> reservations) {
-		this.reservations = reservations;
-	}
-
-	public PointAccountsBean getPointAccount() {
-		return pointAccount;
-	}
-
-	public void setPointAccount(PointAccountsBean pointAccount) {
-		this.pointAccount = pointAccount;
-	}
-
-	public List<PointTransactionsBean> getPointTransactions() {
-		return pointTransactions;
-	}
-
-	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
-		this.pointTransactions = pointTransactions;
 	}
 
 	@Override

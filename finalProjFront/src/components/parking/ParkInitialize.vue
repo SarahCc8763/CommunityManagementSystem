@@ -10,11 +10,12 @@
             <h5 class="fw-bold">請勾選您社區的車位種類：</h5>
             <!-- 種類checkbox -->
             <div class="form-check form-check-inline" v-for="type in parkingTypes" :key="type.id">
-                <input class="form-check-input" type="checkbox" :value="type" v-model="selectedTypes" :id="'type' + type.id" />
+                <input class="form-check-input" type="checkbox" :value="type" v-model="selectedTypes"
+                    :id="'type' + type.id" />
                 <label class="form-check-label" :for="'type' + type.id">{{ type.label }}</label>
             </div>
             <!-- 目前種類選擇 -->
-            <p class="mt-2 text-muted">目前選取的種類：{{ selectedTypes.map(t => t.label).join('、') }}</p>
+            <p class="mt-2 text-muted">目前選取的種類：{{selectedTypes.map(t => t.label).join('、')}}</p>
             <button class="btn btn-sm btn-success mt-2" @click="confirmAndSubmit">確認修改車位種類</button>
         </div>
 
@@ -28,23 +29,24 @@
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-file-earmark-arrow-down-fill text-primary fs-5"></i>
                     <span class="fw-semibold me-1">範例下載：</span>
-                    <a href="#" @click.prevent="downloadSampleCSV" class="text-decoration-underline text-primary">下載範例 CSV</a>
+                    <a href="#" @click.prevent="downloadSampleExcel" class="text-decoration-underline text-primary">下載範例
+                        Excel</a>
                 </div>
-                
+
                 <!-- 檔案上傳 -->
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <i class="bi bi-file-earmark-arrow-up-fill text-danger fs-5"></i>
                     <span class="fw-semibold me-1">上傳檔案：</span>
-                    
+
                     <label class="btn btn-gradient px-3 py-2">
                         選擇檔案
-                        <input type="file" accept=".csv" @change="handleFileUpload" class="d-none" />
+                        <input type="file" accept=".xlsx" @change="handleFileUpload" class="d-none" />
                     </label>
-                    
+
                     <small class="text-muted" v-if="fileName"> {{ fileName }}</small>
                 </div>
             </div>
-            
+
             <!-- 預覽表格 -->
             <div v-if="parkingSlots.length">
                 <h6 class="fw-bold mt-3">預覽資料</h6>
@@ -53,7 +55,7 @@
                         <thead class="table-light">
                             <tr class="text-center">
                                 <th>
-                                    <input type="checkbox" @change="toggleSelectAll($event)"/>
+                                    <input type="checkbox" @change="toggleSelectAll($event)" />
                                 </th>
                                 <th class="slot-code">車位代碼</th>
                                 <th class="location">位置</th>
@@ -67,46 +69,62 @@
                         </thead>
                         <tbody>
                             <tr v-for="(slot, index) in parkingSlots" :key="index">
-                                <td class="text-center no-select" @mousedown="startDrag(index, $event)" @mouseover="dragSelect(index, $event)" @click="toggleCheckbox(index, $event)">
+                                <td class="text-center no-select" @mousedown="startDrag(index, $event)"
+                                    @mouseover="dragSelect(index, $event)" @click="toggleCheckbox(index, $event)">
                                     <label class="d-block m-0 w-100 h-100">
                                         <input type="checkbox" :value="index" v-model="selectedIndexes" @click.stop />
                                     </label>
                                 </td>
                                 <td class="slot-code">
-                                    <input class="form-control dark-input" v-model="slot.slotNumber" @input="updateSelected('slotNumber', slot.slotNumber, index)" @blur="cleanInvalidChars(slot, 'slotNumber')" maxlength="10" />
+                                    <input class="form-control dark-input" v-model="slot.slotNumber"
+                                        @input="updateSelected('slotNumber', slot.slotNumber, index)"
+                                        @blur="cleanInvalidChars(slot, 'slotNumber')" maxlength="10" />
                                 </td>
                                 <td class="location">
-                                    <input class="form-control dark-input" v-model="slot.location" @input="updateSelected('location', slot.location, index)" maxlength="10" />
+                                    <input class="form-control dark-input" v-model="slot.location"
+                                        @input="updateSelected('location', slot.location, index)" maxlength="10" />
                                 </td>
                                 <td class="type">
-                                    <select class="form-select dark-select" v-model="slot.parkingTypeId" @change="updateSelected('parkingTypeId', slot.parkingTypeId, index)">
-                                        <option v-for="type in selectedTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
+                                    <select class="form-select dark-select" v-model="slot.parkingTypeId"
+                                        @change="updateSelected('parkingTypeId', slot.parkingTypeId, index)">
+                                        <option v-for="type in selectedTypes" :key="type.id" :value="type.id">{{
+                                            type.label }}</option>
                                     </select>
                                 </td>
                                 <td class="owner">
-                                    <select class="form-select dark-select" v-model="slot.usersId" @change="() => handleUserChange(index)">
-                                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{ user.name }}</option>
+                                    <select class="form-select dark-select" v-model="slot.usersId"
+                                        @change="() => handleUserChange(index)">
+                                        <option v-for="user in users" :key="user.usersId" :value="user.usersId">{{
+                                            user.name }}</option>
                                     </select>
                                 </td>
                                 <td class="unit">
-                                    <select class="form-select dark-select" v-model="slot.unitsId" :disabled="getAvailableUnits(slot.usersId).length === 0" @change="() => { onUnitChange(index); updateSelected('unitsId', slot.unitsId, index)}">
-                                        <option v-if="getAvailableUnits(slot.usersId).length === 0" disabled>無對應戶號</option>
-                                        <option v-for="unit in getAvailableUnits(slot.usersId)" :key="unit.unitsId" :value="unit.unitsId">
+                                    <select class="form-select dark-select" v-model="slot.unitsId"
+                                        :disabled="getAvailableUnits(slot.usersId).length === 0"
+                                        @change="() => { onUnitChange(index); updateSelected('unitsId', slot.unitsId, index) }">
+                                        <option v-if="getAvailableUnits(slot.usersId).length === 0" disabled>無對應戶號
+                                        </option>
+                                        <option v-for="unit in getAvailableUnits(slot.usersId)" :key="unit.unitsId"
+                                            :value="unit.unitsId">
                                             {{ unit.building + '-' + unit.floor + '-' + unit.unit }}
                                         </option>
                                     </select>
                                 </td>
                                 <td class="plate">
-                                    <input class="form-control dark-input" v-model="slot.licensePlate" @input="updateSelected('licensePlate', slot.licensePlate, index)" @blur="cleanInvalidChars(slot, 'licensePlate')" maxlength="10" />
+                                    <input class="form-control dark-input" v-model="slot.licensePlate"
+                                        @input="updateSelected('licensePlate', slot.licensePlate, index)"
+                                        @blur="cleanInvalidChars(slot, 'licensePlate')" maxlength="10" />
                                 </td>
                                 <td class="rentable">
-                                    <select class="form-select dark-select" v-model="slot.isRentable" @change="updateSelected('isRentable', slot.isRentable, index)">
+                                    <select class="form-select dark-select" v-model="slot.isRentable"
+                                        @change="updateSelected('isRentable', slot.isRentable, index)">
                                         <option :value="true">可承租</option>
                                         <option :value="false">不可承租</option>
                                     </select>
                                 </td>
                                 <td class="text-center align-middle actions">
-                                    <button class="btn btn-outline-danger btn-sm text-nowrap" @click="removeRow(index)">刪除</button>
+                                    <button class="btn btn-outline-danger btn-sm text-nowrap"
+                                        @click="removeRow(index)">刪除</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -122,17 +140,17 @@
         </div>
     </div>
 </template>
-    
+
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import Swal from 'sweetalert2'
 import axios from '@/plugins/axios.js';
 import { useUserStore } from '@/stores/UserStore'
+import * as XLSX from 'xlsx'
 
 // 從UserStore取出登入資訊
 const userStore = useUserStore()
-const communityId = userStore.community
-// const communityId = 2
+const communityId = userStore.communityId
 
 // 車種選項
 const parkingTypes = [
@@ -177,7 +195,7 @@ const fetchSelectedTypes = async () => {
         const fetchedLabels = res.data.data.map(t => t.type)
         const matchedTypes = parkingTypes.filter(t => fetchedLabels.includes(t.label))
         selectedTypes.value = matchedTypes
-        
+
         // 存下原始 id 陣列
         originalTypes.value = matchedTypes.map(t => t.id).sort()
         updateChangeStatus()
@@ -193,11 +211,11 @@ const showTypeWarning = ref(true)
 // 比較現在是否與原始一致
 function updateChangeStatus() {
     const currentIds = selectedTypes.value.map(t => t.id).slice().sort() // 要用 slice() 複製一份
-    
+
     const isSame =
-    currentIds.length === originalTypes.value.length &&
-    currentIds.every((id, i) => id === originalTypes.value[i])
-    
+        currentIds.length === originalTypes.value.length &&
+        currentIds.every((id, i) => id === originalTypes.value[i])
+
     hasChanged.value = !isSame
     showTypeWarning.value = !isSame
 }
@@ -211,21 +229,21 @@ async function confirmAndSubmit() {
         confirmButtonText: '確認',
         cancelButtonText: '取消'
     })
-    
+
     if (!result.isConfirmed) return
-    
+
     try {
         const payload = selectedTypes.value.map(type => ({ type: type.label }))
         console.log("communityId: " + communityId)
         console.log("payload: " + payload)
         const response = await axios.post(`/park/parking-types?communityId=${communityId}`, payload)
-        
+
         await Swal.fire({
             icon: 'success',
             title: response.data.message || '更新成功',
             confirmButtonText: '好的'
         })
-        
+
         hasChanged.value = false
         showTypeWarning.value = false
 
@@ -254,8 +272,8 @@ function getAvailableUnits(usersId) {
 function getAvailableUsers(unitsId) {
     if (!unitsId) return []
     return users.value.filter(user =>
-    Array.isArray(user.unit) && user.unit.some(unit => unit.unitsId === unitsId)
-)
+        Array.isArray(user.unit) && user.unit.some(unit => unit.unitsId === unitsId)
+    )
 }
 
 function getAvailableUsersForUnit(unitsId) {
@@ -284,18 +302,24 @@ function onUserChange(index) {
     }
 }
 
-// 範例CSV下載
-function downloadSampleCSV() {
+function downloadSampleExcel() {
     const headers = ['車位編號', '區域', '車位種類', '擁有人戶號', '車位擁有人', '登記車牌號', '是否可承租']
-    const example = ['B1-001', 'B1 A區', '汽車', 'A棟-7F-A1', 'sa', 'ABC-1234', '是']
+    const data = [
+        headers,
+        ['B1-001', 'B1 A區', '汽車', 'B棟-5F-10', '陳小芳', 'ABC-1234', '否']
+    ]
 
-    const csvContent = [headers.join(','), example.join(',')].join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const worksheet = XLSX.utils.aoa_to_sheet(data)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '範例車位')
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
     const url = URL.createObjectURL(blob)
-
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'parking-slot-sample.csv')
+    link.download = 'parking-slot-sample.xlsx'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -306,36 +330,34 @@ function downloadSampleCSV() {
 const parkingSlots = ref([])
 
 const fileName = ref("未選擇檔案");
-// 上傳並解析 CSV 檔案
+
 function handleFileUpload(event) {
     const file = event.target.files[0]
     if (!file) return
-    fileName.value = file.name;
+    fileName.value = file.name
+
     const reader = new FileReader()
     reader.onload = (e) => {
-        const lines = e.target.result
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line)
-        
+        const data = new Uint8Array(e.target.result)
+        const workbook = XLSX.read(data, { type: 'array' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+
+        // 將 worksheet 轉為 JSON 陣列（每列是物件）
+        const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) // defval 空白補空欄位
+
         const result = []
-        
-        for (let i = 1; i < lines.length; i++) {
-            const parts = lines[i].split(',').map(p => p.trim())
-            if (parts.length < 6) continue
-            
-            const [
-                slot_number,
-                location,
-                parking_type_label,
-                unit_info,
-                user_name,
-                license_plate,
-                is_rentable_text
-            ] = parts
-            
+        json.forEach(row => {
+            const slot_number = row['車位編號']?.trim()
+            const location = row['區域']?.trim()
+            const parking_type_label = row['車位種類']?.trim()
+            const unit_info = row['擁有人戶號']?.trim()
+            const user_name = row['車位擁有人']?.trim()
+            const license_plate = row['登記車牌號']?.trim()
+            const is_rentable_text = row['是否可承租']?.trim()
+
             const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
-            
+
             let building = null, floor = null, unit = null
             if (unit_info) {
                 const segments = unit_info.split('-')
@@ -343,35 +365,48 @@ function handleFileUpload(event) {
                     [building, floor, unit] = segments.map(s => s.trim())
                 }
             }
-            
-            const user = users.value.find(u => 
-                u.name.trim().replace(/\s/g, '').toLowerCase() === 
-                user_name.trim().replace(/\s/g, '').toLowerCase()
+
+            const user = users.value.find(u =>
+                u.name.trim().replace(/\s/g, '').toLowerCase() ===
+                user_name?.trim().replace(/\s/g, '').toLowerCase()
             )
+
+            let unitsId = null
+            if (building && floor && unit) {
+                const matchedUnit = units.value.find(u =>
+                    u.building === building && u.floor === floor && u.unit === unit
+                )
+                unitsId = matchedUnit?.unitsId ?? null
+            }
+
             const isRentable = is_rentable_text === '是'
 
             result.push({
                 slotNumber: slot_number,
                 location,
                 licensePlate: license_plate,
-                isRentable: isRentable,
+                isRentable,
                 parkingTypeId: parkingType?.id ?? null,
                 parkingTypeLabel: parkingType?.label ?? null,
-                usersId: user ? user.usersId : null,
+                usersId: user?.usersId ?? null,
                 building,
                 floor,
-                unit
+                unit,
+                unitsId
             })
-        }
+        })
+
         parkingSlots.value = result
 
         result.forEach((slot, index) => {
             filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
             filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)
         })
-    }  
-    reader.readAsText(file)
+    }
+
+    reader.readAsArrayBuffer(file) // ✅ 注意：xlsx 檔案需用 ArrayBuffer 讀取
 }
+
 
 const selectedIndexes = ref([])
 function toggleSelectAll(event) {
@@ -399,10 +434,10 @@ function startDrag(index, event) {
 function dragSelect(index, event) {
     if (!isDragging) return
     const [start, end] = [dragStartIndex, index].sort((a, b) => a - b)
-    
+
     // 根據 isAdding 判斷是加入還是移除
     const newSelection = [...selectedIndexes.value]
-    
+
     for (let i = start; i <= end; i++) {
         const idx = newSelection.indexOf(i)
         if (isAdding && idx === -1) {
@@ -411,7 +446,7 @@ function dragSelect(index, event) {
             newSelection.splice(idx, 1)
         }
     }
-    
+
     selectedIndexes.value = newSelection
 }
 // 點選checkbox
@@ -419,7 +454,7 @@ function toggleCheckbox(index, event) {
     // 避免重複點選 checkbox 本身
     const tag = event.target.tagName.toLowerCase()
     if (tag === 'input' || tag === 'label') return
-    
+
     const i = selectedIndexes.value.indexOf(index)
     if (i === -1) {
         selectedIndexes.value.push(index)
@@ -440,13 +475,13 @@ function updateSelected(field, newValue, changedIndex) {
 
 function handleUserChange(index) {
     onUserChange(index) // 更新 filteredUnits
-    
+
     const availableUnits = getAvailableUnits(parkingSlots.value[index].usersId)
     const firstUnit = availableUnits[0] || {}
-    
+
     // 設定 slot 中的 unitsId 以避免出現空白
     parkingSlots.value[index].unitsId = firstUnit.unitsId ?? null
-    
+
     // 再觸發同步更新
     updateSelected('usersId', parkingSlots.value[index].usersId, index)
     updateSelected('unitsId', parkingSlots.value[index].unitsId, index)
@@ -472,7 +507,7 @@ async function removeSelected() {
         })
         return
     }
-    
+
     const result = await Swal.fire({
         title: '確定要刪除選取的資料列嗎？',
         icon: 'warning',
@@ -480,9 +515,9 @@ async function removeSelected() {
         confirmButtonText: '刪除',
         cancelButtonText: '取消'
     })
-    
+
     if (!result.isConfirmed) return
-    
+
     // 反向排序後刪除，避免 index 變動影響
     const indexesToRemove = [...selectedIndexes.value].sort((a, b) => b - a)
     indexesToRemove.forEach(index => {
@@ -490,9 +525,9 @@ async function removeSelected() {
         delete filteredUsers.value[index]
         delete filteredUnits.value[index]
     })
-    
+
     selectedIndexes.value = []
-    
+
     await Swal.fire({
         icon: 'success',
         title: '刪除成功',
@@ -539,31 +574,31 @@ function submitData() {
         floor: slot.floor,
         unit: slot.unit
     }))
-    
+
     console.log("送出資料：", JSON.stringify(payload, null, 2))
 
     axios.post(`/park/parking-slots/batch?communityId=${communityId}`, payload)
-    .then(response => {
-        const uploadedCount = Array.isArray(response.data.data) ? response.data.data.length : 0
+        .then(response => {
+            const uploadedCount = Array.isArray(response.data.data) ? response.data.data.length : 0
 
-        Swal.fire({
-            icon: 'success',
-            title: '成功送出車位資料',
-            html: `共成功送出 <strong>${uploadedCount}</strong> 筆資料！`,
-            confirmButtonText: '好的'
-        })
+            Swal.fire({
+                icon: 'success',
+                title: '成功送出車位資料',
+                html: `共成功送出 <strong>${uploadedCount}</strong> 筆資料！`,
+                confirmButtonText: '好的'
+            })
 
-        console.log(response.data.data)
-    })
-    .catch(error => {
-        console.error('送出失敗:', error.response?.data || error)
-        Swal.fire({
-            icon: 'error',
-            title: '送出失敗',
-            text: error.response?.data?.message || '發生未知錯誤，請查看 console log',
-            confirmButtonText: '關閉'
+            console.log(response.data.data)
         })
-    })
+        .catch(error => {
+            console.error('送出失敗:', error.response?.data || error)
+            Swal.fire({
+                icon: 'error',
+                title: '送出失敗',
+                text: error.response?.data?.message || '發生未知錯誤，請查看 console log',
+                confirmButtonText: '關閉'
+            })
+        })
 }
 
 
@@ -572,16 +607,16 @@ function stopDrag() {
     isDragging = false
 }
 
-onMounted(async ()=>{
+onMounted(async () => {
     await fetchUsers()
     await fetchUnits()
     await fetchSelectedTypes()
-    
+
     parkingSlots.value.forEach((slot, index) => {
         filteredUsers.value[index] = getAvailableUsersForUnit(slot.unitsId)
         filteredUnits.value[index] = getAvailableUnitsForUser(slot.usersId)
     })
-    
+
     window.addEventListener('mouseup', stopDrag)
     console.log(selectedTypes.value)
     console.log("hasChanged: " + hasChanged.value)
@@ -615,6 +650,7 @@ table {
     table-layout: fixed;
     width: 100%;
 }
+
 table td,
 table th {
     vertical-align: middle !important;
@@ -627,14 +663,45 @@ table th {
 }
 
 /* 欄寬比例設定 */
-th.slot-code, td.slot-code { width: 10%; }
-th.location, td.location { width: 10%; }
-th.type, td.type { width: 10%; }
-th.owner, td.owner { width: 15%; }
-th.unit, td.unit { width: 15%; }
-th.plate, td.plate { width: 15%; }
-th.rentable, td.rentable { width: 10%; }
-th.actions, td.actions { width: 10%; }
+th.slot-code,
+td.slot-code {
+    width: 10%;
+}
+
+th.location,
+td.location {
+    width: 10%;
+}
+
+th.type,
+td.type {
+    width: 10%;
+}
+
+th.owner,
+td.owner {
+    width: 15%;
+}
+
+th.unit,
+td.unit {
+    width: 15%;
+}
+
+th.plate,
+td.plate {
+    width: 15%;
+}
+
+th.rentable,
+td.rentable {
+    width: 10%;
+}
+
+th.actions,
+td.actions {
+    width: 10%;
+}
 
 /* 表單欄位統一樣式 */
 .dark-input,
@@ -652,6 +719,7 @@ select.form-select {
     -webkit-appearance: auto;
     -moz-appearance: auto;
 }
+
 .dark-input::placeholder {
     color: #aaa;
 }
@@ -686,7 +754,9 @@ table td .btn {
 }
 
 /* 深色背景卡片區塊 */
-.bg-white, .bg-light, .disabled-area {
+.bg-white,
+.bg-light,
+.disabled-area {
     background-color: #1e1e2f !important;
     color: #f8f9fa !important;
     border: 1px solid #444;
@@ -713,12 +783,14 @@ table td .btn {
     border: none;
     transition: background 0.3s;
 }
+
 .btn-gradient:hover {
     background-image: linear-gradient(to right, #2575fc, #6a11cb);
 }
+
 /* 深色背景下調整 .text-muted 顏色 */
 .text-muted {
-  color: #ccc !important; /* 或你要的亮灰色，可調亮一點 */
+    color: #ccc !important;
+    /* 或你要的亮灰色，可調亮一點 */
 }
-
 </style>

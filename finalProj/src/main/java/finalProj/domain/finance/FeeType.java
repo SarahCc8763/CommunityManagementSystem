@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "FeeType")
+@Table(name = "finance_fee_type")
 
 public class FeeType extends BaseEntity {
 
@@ -31,7 +31,7 @@ public class FeeType extends BaseEntity {
     private String feeCode;
 
     // 一單位費用
-    @Column(name = "amountPerUnit", precision = 8, scale = 2)
+    @Column(name = "amount_per_unit", precision = 8, scale = 2)
     private BigDecimal amountPerUnit;
 
     // 費用頻率 以月為單位１／６／１２

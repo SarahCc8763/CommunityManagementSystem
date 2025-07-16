@@ -154,38 +154,6 @@ public class Community {
 				+ address + ", createTime=" + createTime + ", function=" + function + "]";
 	}
 
-	public List<FacilitiesBean> getFacilities() {
-		return facilities;
-	}
-
-	public void setFacilities(List<FacilitiesBean> facilities) {
-		this.facilities = facilities;
-	}
-
-	public List<FacilityReservationsBean> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(List<FacilityReservationsBean> reservations) {
-		this.reservations = reservations;
-	}
-
-	public List<PointAccountsBean> getPointAccounts() {
-		return pointAccounts;
-	}
-
-	public void setPointAccounts(List<PointAccountsBean> pointAccounts) {
-		this.pointAccounts = pointAccounts;
-	}
-
-	public List<PointTransactionsBean> getPointTransactions() {
-		return pointTransactions;
-	}
-
-	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
-		this.pointTransactions = pointTransactions;
-	}
-
 	public List<Units> getUnits() {
 		return units;
 	}
