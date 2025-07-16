@@ -27,7 +27,7 @@
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>
-          <router-link to="/account/settings" class="quick-action-card no-border-action">
+          <router-link to="/profile" class="quick-action-card no-border-action">
             <i class="bi bi-gear"></i>
             <span>設定</span>
           </router-link>

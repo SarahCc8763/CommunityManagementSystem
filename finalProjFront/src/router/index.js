@@ -183,6 +183,12 @@ const router = createRouter({
       component: resetPassword,
     },
     {
+      path: '/packages',
+      name: 'packages',
+      component: packages,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/packages_picked',
       name: 'packages_picked',
       component: packages_picked,
