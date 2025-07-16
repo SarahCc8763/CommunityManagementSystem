@@ -132,8 +132,7 @@ import * as XLSX from 'xlsx'
 
 // 從UserStore取出登入資訊
 const userStore = useUserStore()
-const communityId = userStore.community
-// const communityId = 2
+const communityId = userStore.communityId
 
 // 車種選項
 const parkingTypes = [

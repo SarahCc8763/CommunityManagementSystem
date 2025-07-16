@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import finalProj.domain.ticket.Ticket;
 import finalProj.domain.ticket.TicketComment;
+import finalProj.domain.users.Users;
 import finalProj.dto.ticket.CommentDTO;
 import finalProj.repository.ticket.TicketCommentRepository;
 import finalProj.repository.ticket.TicketRepository;
@@ -33,17 +34,16 @@ public class TicketCommentService {
 			throw new IllegalArgumentException("必須指定報修單 ID");
 		}
 
-		if (!usersRepository.existsById(commentDTO.getCommenterId())) {
-			throw new IllegalArgumentException("使用者 ID 不存在：" + commentDTO.getCommenterId());
-		}
-
 		// 直接查出 Ticket 實體
 		Ticket ticket = ticketRepository.findById(commentDTO.getTicketId())
 				.orElseThrow(() -> new IllegalArgumentException("報修單 ID 不存在：" + commentDTO.getTicketId()));
 
+		Users users = usersRepository.findById(commentDTO.getCommenter())
+				.orElseThrow(() -> new IllegalArgumentException("此人 ID 不存在：" + commentDTO.getCommenter()));
+
 		TicketComment comment = new TicketComment();
 		comment.setTicket(ticket); // ✅ 設定 Ticket 實體
-		comment.setCommenterId(commentDTO.getCommenterId());
+		comment.setCommenter(users);
 		comment.setComment(commentDTO.getComment());
 
 		return ticketCommentRepository.save(comment);
@@ -55,10 +55,6 @@ public class TicketCommentService {
 			throw new IllegalArgumentException("必須指定報修單 ID");
 		}
 
-		if (!usersRepository.existsById(commentDTO.getCommenterId())) {
-			throw new IllegalArgumentException("使用者 ID 不存在：" + commentDTO.getCommenterId());
-		}
-
 		// 查留言本體
 		TicketComment comment = ticketCommentRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("留言 ID 不存在：" + id));
@@ -66,10 +62,11 @@ public class TicketCommentService {
 		// 查 Ticket 實體（只查一次，省掉 existsById + findById 重複）
 		Ticket ticket = ticketRepository.findById(commentDTO.getTicketId())
 				.orElseThrow(() -> new IllegalArgumentException("報修單 ID 不存在：" + commentDTO.getTicketId()));
-
+		Users users = usersRepository.findById(commentDTO.getCommenter())
+				.orElseThrow(() -> new IllegalArgumentException("此人 ID 不存在：" + commentDTO.getCommenter()));
 		// 設定 Ticket 實體
 		comment.setTicket(ticket); // ✅ 改這裡
-		comment.setCommenterId(commentDTO.getCommenterId());
+		comment.setCommenter(users);
 		comment.setComment(commentDTO.getComment());
 
 		return ticketCommentRepository.save(comment);
@@ -92,9 +89,9 @@ public class TicketCommentService {
 
 	// 刪除留言
 	public boolean remove(Integer id) {
-		if (id!=null) {
+		if (id != null) {
 			Optional<TicketComment> opt = ticketCommentRepository.findById(id);
-			if(opt.isPresent()) {
+			if (opt.isPresent()) {
 				ticketCommentRepository.delete(opt.get());
 				return true;
 			}

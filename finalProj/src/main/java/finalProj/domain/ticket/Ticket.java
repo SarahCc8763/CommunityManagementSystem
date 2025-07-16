@@ -68,6 +68,9 @@ public class Ticket {
 	@JoinColumn(name = "assigner_id", nullable = true, referencedColumnName = "users_id")
 	private Users assignerId;
 
+	@Transient
+	private String assignerName;
+
 	// @Transient
 	// private String assignerName;
 
@@ -77,7 +80,7 @@ public class Ticket {
 	@Column(name = "[status]") // 保留字加中括號
 	private String status; // 問題狀態
 
-	@Column(name = "issue_description")
+	@Column(name = "issue_description",columnDefinition = "TEXT")
 	private String issueDescription; // 問題敘述
 
 	@Column(name = "Cost")
@@ -109,6 +112,15 @@ public class Ticket {
 				+ ", startDate=" + startDate + ", endDate=" + endDate + ", notes=" + notes + "]";
 	}
 
+	public String getAssignerName() {
+
+		if (assignerId != null) {
+			assignerName = assignerId.getName();
+		}
+		return assignerName;
+	}
+
+	
 	public List<IssueTypeAndTicket> getIssueTypes() {
 		return issueTypes;
 	}
@@ -266,5 +278,10 @@ public class Ticket {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+
+
+
+
 
 }

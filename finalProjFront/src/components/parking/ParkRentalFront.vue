@@ -212,7 +212,7 @@ import { useUserStore } from '@/stores/UserStore'
 
 // 從 UserStore 取出社區 ID
 const userStore = useUserStore()
-const communityId = userStore.community
+const communityId = userStore.communityId
 
 const userName = userStore.name
 
@@ -225,11 +225,12 @@ const fetchUserOptions = async () => {
 }
 
 // 從資料庫比對userName，取得userId
-const usersId = computed(() => {
-  console.log(userName);
-  const match = allUsers.value.find(user => user.name === userName)
-  return match ? match.usersId : null
-})
+const usersId = userStore.userId
+// computed(() => {
+//   console.log(userName);
+//   const match = allUsers.value.find(user => user.name === userName)
+//   return match ? match.usersId : null
+// })
 
 // ----------------------------我要承租頁籤 -----------------------------
 
@@ -423,7 +424,7 @@ async function submitRental() {
 
   const payload = {
     userName,
-    usersId: usersId.value,
+    usersId,
     slotNumber: rentalSlot.value.slotNumber,
     rentBuyStart: formatDateOnly(getFirstDayOfMonth(rentStartMonth.value)), // yyyy-MM-dd
     rentEnd: formatDateOnly(getLastDayOfMonth(rentEndMonth.value)),       // yyyy-MM-dd
@@ -487,8 +488,8 @@ watch(selectedTab, (tab) => {
 const rentalHistory = ref([])
 
 async function fetchRentalHistory() {
-  console.log("usersId: " + usersId.value)
-  const res = await axios.get(`/park/parking-rentals/user?usersId=${usersId.value}`)
+  console.log("usersId: " + usersId)
+  const res = await axios.get(`/park/parking-rentals/user?usersId=${usersId}`)
   const records = res.data.data || []
   console.log(records)
 
@@ -586,7 +587,7 @@ const submitExtend = async () => {
 
   try {
     console.log(payload)
-    await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
+    await axios.post(`/park/parking-rentals?communityId=${userStore.communityId}`, payload)
     await Swal.fire('續租成功', '', 'success')
     fetchRentalHistory()
     handleCloseExtendModal()

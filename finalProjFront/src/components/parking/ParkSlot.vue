@@ -157,7 +157,7 @@ import axios from '@/plugins/axios.js'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore();
-const communityId = userStore.community
+const communityId = userStore.communityId
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])

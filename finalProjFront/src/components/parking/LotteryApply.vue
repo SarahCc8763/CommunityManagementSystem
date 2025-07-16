@@ -45,8 +45,8 @@ import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore()
-const communityId = userStore.community
-const userId = userStore.id
+const communityId = userStore.communityId
+const userId = userStore.userId
 
 // 從資料庫取得抽籤活動資料
 const lotteryEvents = ref([])

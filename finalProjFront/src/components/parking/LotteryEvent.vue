@@ -176,8 +176,8 @@ import { Modal } from 'bootstrap'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore()
-const communityId = userStore.community
-const usersId = userStore.id
+const communityId = userStore.communityId
+const usersId = userStore.userId
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])

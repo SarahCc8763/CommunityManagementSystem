@@ -127,7 +127,7 @@ const plateModalRef = ref(null)
 const rentalModalRef = ref(null)
 const extendModalRef = ref(null)
 let plateModalInstance, rentalModalInstance, extendModalInstance
-const usersId = userStore.id
+const usersId = userStore.userId
 const today = new Date()
 
 const userSlotsFiltered = computed(() => {
@@ -247,7 +247,7 @@ const updatePlate = async () => {
 
       console.log(payload)
       await axios.put(
-        `/park/parking-rentals/${selectedSlot.value.id}?communityId=${userStore.community}`,
+        `/park/parking-rentals/${selectedSlot.value.id}?communityId=${userStore.communityId}`,
         payload
       )
       await fetchUserSlots()
@@ -344,7 +344,7 @@ const submitExtend = async () => {
   if (!result.isConfirmed) return
   console.log(payload)
   try {
-    await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
+    await axios.post(`/park/parking-rentals?communityId=${userStore.communityId}`, payload)
     await Swal.fire('續租成功', '', 'success')
     extendModalInstance.hide()
     if (initialSlotBackup) {
