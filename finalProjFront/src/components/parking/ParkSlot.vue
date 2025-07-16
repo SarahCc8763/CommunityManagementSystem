@@ -158,7 +158,7 @@ import axios from '@/plugins/axios.js'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore();
-const communityId = userStore.community
+const communityId = userStore.communityId
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])
@@ -379,11 +379,7 @@ const deleteSlot = async (id) => {
 
 // 初始化 Modal
 onMounted(() => {
-  modalInstance = new Modal(modalRef.value, {
-    backdrop: 'static',
-    keyboard: false,
-  }
-  )
+  modalInstance = new Modal(modalRef.value)
 
   collapseInstance = new Collapse(collapseRef.value, {
     toggle: false // 預設不要自動展開

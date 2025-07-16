@@ -27,12 +27,12 @@ public class PointAccountsBean {
 	
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
-	@JsonBackReference("point-accounts")
+	@JsonBackReference("community-pointAccounts")
 	private Community community;
 	
 	@OneToOne
 	@JoinColumn(name = "unit_id", referencedColumnName = "units_id")
-	@JsonBackReference("unit-account")
+	@JsonBackReference("units-pointAccounts")
 	private Units unit;
 
 	@Column(name = "total_balance", nullable = false)

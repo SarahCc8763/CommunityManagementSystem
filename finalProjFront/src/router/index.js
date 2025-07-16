@@ -50,14 +50,28 @@ import ParkInitialize from "@/components/parking/ParkInitialize.vue"
 import ParkRentalBack from "@/components/parking/ParkRentalBack.vue"
 import ParkRentalFront from "@/components/parking/ParkRentalFront.vue"
 import ParkSlot from "@/components/parking/ParkSlot.vue"
-import TemporaryParking from "@/components/parking/TemporaryParking.vue"
 import MySlots from '@/components/parking/MySlots.vue'
+//Julie end
+// Yu Start
+import AnnouncementLatest from '@/views/bulletin/AnnouncementLatest.vue'
+import FaqAdmin from '../views/faq/FaqAdmin.vue'
+import FeedbackAdmin from '../views/feedback/FeedbackAdmin.vue'
+import Faq from '@/views/faq/Faq.vue'
+import MyFeedback from '@/views/feedback/MyFeedback.vue'
+import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
+//Yu End
 
 // 📌 使用者功能頁面
 import packages from '@/components/package/packages.vue'
 import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
+
+// 包裹
+import packages_picked from '@/components/package/packages_picked.vue';
+import packages_security from '@/components/package/packages_security.vue';
+import addPackage from '@/components/package/addPackage.vue';
+
 
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
@@ -98,6 +112,11 @@ const router = createRouter({
     // Finance相關
     //// Fin-Admin
     {
+      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
+    },
+    {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
       component: FeeTypeAdd,
@@ -137,6 +156,9 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
+      path: '/AdminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard,
       meta: { dark: true },
     },
     {
@@ -152,6 +174,51 @@ const router = createRouter({
       component: Receipt,
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: profile,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/notification',
+      name: 'notification',
+      component: notification
+    },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword,
+    },
+    {
+      path: '/packages_picked',
+      name: 'packages_picked',
+      component: packages_picked,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/packages_security',
+      name: 'packages_security',
+      component: packages_security,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/addPackage',
+      name: 'addPackage',
+      component: addPackage,
+      meta: { requiresAuth: true, dark: true }
+    },
+    {
+      path: '/TicketDashboard',
+      name: 'TicketDashboard',
+      component: TicketDashboard,
+    },
+    {
+      path: '/Vendor',
+      name: 'Vendor',
+      component: Vendor,
+      meta: { dark: true },
+    }, {
+
       path: '/finance/invoice',
       name: 'Invoice',
       component: Invoice,
@@ -197,12 +264,6 @@ const router = createRouter({
       component: LotteryApply,
     },
     {
-      path: "/pages/park/temporary-parking",
-      name: "temporaryParking",
-      component: TemporaryParking,
-      meta: { dark: true },
-    },
-    {
       path: "/pages/park/parking-front",
       name: "parkingFront",
       component: ParkingFront,
@@ -217,6 +278,44 @@ const router = createRouter({
       path: '/pages/park/my-slots',
       name: 'mySlots',
       component: MySlots,
+    },
+    {
+      path: '/announcement-latest',
+      name: 'announcement-latest',
+      component: AnnouncementLatest
+
+    },
+    {
+      path: '/faqAdmin',
+      name: 'faqAdmin',
+      component: FaqAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/feedbackAdmin',
+      name: 'feedbackAdmin',
+      component: FeedbackAdmin,
+      meta: { dark: true }
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: Faq
+
+    },
+
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: MyFeedback
+
+    },
+    {
+      path: '/bulletin-admin',
+      name: 'bulletin-admin',
+      component: BulletinAdmin,
+      meta: { dark: true }
+
     },
     {
       path: '/facilities',

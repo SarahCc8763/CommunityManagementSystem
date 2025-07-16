@@ -217,21 +217,24 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios'
-import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+// import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
 
+
+const userStore = useUserStore()
+const userId = userStore.id || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const defaultImage = noImage
 const feedbackList = ref([])
 const categoryList = ref([])
 const loading = ref(false)
 const error = ref(null)
-const userId = Number(localStorage.getItem('userId')) || 1
 const currentUserName = localStorage.getItem('userName') || '我'
 const currentUserInitial = currentUserName.charAt(0)
-const communityId = localStorage.getItem('communityId') || 1
 const selectedStatus = ref('')
 const selectedCategory = ref('')
 const selectedFeedback = ref(null)
@@ -421,7 +424,7 @@ const deleteReply = async (replyId) => {
 
 
 const fetchData = async () => {
-    const userId = 1 // localStorage.getItem('userId')
+
     if (!userId) {
         error.value = '找不到使用者資訊，請重新登入。'
         return

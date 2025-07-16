@@ -31,17 +31,17 @@ public class FacilityReservationsBean {
 	
 	@ManyToOne
 	@JoinColumn(name = "community_id", referencedColumnName = "id")
-	@JsonBackReference("faciliy-reservation")
+	@JsonBackReference("community-facilityReservations")
 	private Community community;
 	
 	@ManyToOne
 	@JoinColumn(name = "unit_id", referencedColumnName = "units_id")
-	@JsonBackReference("unit-reservations")
+	@JsonBackReference("units-facilityReservations")
 	private Units unit;
 
 	@ManyToOne	
 	@JoinColumn(name = "facility_id", referencedColumnName = "facility_id")
-	@JsonBackReference("facility-reservations")
+	@JsonBackReference("facilities-facilityReservations")
 	private FacilitiesBean facility;
 
 	@Column(name = "number_of_users")
@@ -84,7 +84,7 @@ public class FacilityReservationsBean {
 	private String cancelReason;
 	
 	@OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("point-transactions")
+	@JsonManagedReference("facilityReservations-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
 	
 	// ---------- Getters & Setters ----------

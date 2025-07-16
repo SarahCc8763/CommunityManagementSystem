@@ -30,7 +30,7 @@ public class TicketCommentController {
 		if (commentDTO.getTicketId() == null) {
 			return new ApiResponse<>(false, "缺少報修單 ID", null);
 		}
-		if (commentDTO.getCommenterId() == null) {
+		if (commentDTO.getCommenter() == null) {
 			return new ApiResponse<>(false, "此人不存在", null);
 		}
 

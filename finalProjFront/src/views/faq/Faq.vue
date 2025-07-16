@@ -81,6 +81,13 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
+const userId = userStore.userId || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 import axios from '@/plugins/axios'
 
 const fullfaqList = ref([])
@@ -92,8 +99,6 @@ const selectedCategory = ref('全部')
 const page = ref(1)
 const pageSize = 10
 const searchKeyword = ref('')
-const communityId = 1
-const userId = 1
 
 // 計算顯示用 FAQ
 const filteredFaqs = computed(() =>

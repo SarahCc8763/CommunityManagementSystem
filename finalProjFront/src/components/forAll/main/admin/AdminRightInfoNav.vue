@@ -1,14 +1,14 @@
 <template>
-  <aside class="admin-right-info-nav">
+  <aside class="admin-right-info-nav" v-if="selectedCommunity">
     <h3 class="info-title">社區資訊總覽</h3>
     <div class="info-list">
       <div class="info-item">
         <span class="info-label">社區名稱</span>
-        <span class="info-value">River Bank-水岸晴川</span>
+        <span class="info-value">{{ selectedCommunity.name }}</span>
       </div>
       <div class="info-item">
-        <span class="info-label">電話</span>
-        <span class="info-value">02-1234-5678</span>
+        <span class="info-label">地址</span>
+        <span class="info-value">{{ selectedCommunity.address }}</span>
       </div>
       <div class="info-item">
         <span class="info-label">總人數</span>
@@ -45,12 +45,32 @@
         <div class="mini-value">23 / 19</div>
       </div>
     </div>
-
   </aside>
 </template>
 
 <script setup>
 //我可不可以先寫死資料就好 QwQ 
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/UserStore'
+
+
+const userStore = useUserStore()
+const selectedCommunity = ref(null)
+onMounted(async () => {
+  try {
+    const communityId = userStore.rawData?.communityId
+    if (!communityId) {
+      console.error('❌ 無法取得登入者社區 ID')
+      return
+    }
+    const res = await axios.get(`http://localhost:8080/communitys/${communityId}`)
+    selectedCommunity.value = res.data
+  } catch (err) {
+    console.error('❌ 載入失敗', err)
+  }
+}
+)
 </script>
 
 <style scoped>

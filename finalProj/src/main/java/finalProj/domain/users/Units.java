@@ -77,23 +77,46 @@ public class Units {
 
 	// 對應 facility_reservations 單位預約（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-reservations")
+	@JsonManagedReference("units-facilityReservations")
 	private List<FacilityReservationsBean> reservations;
 
 	// 對應 point_accounts 一對一帳戶關聯：
 	@OneToOne(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-account")
+	@JsonManagedReference("units-pointAccounts")
 	private PointAccountsBean pointAccount;
 
 	// 對應 point_transactions 點數異動紀錄（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference("unit-transactions")
+	@JsonManagedReference("units-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
-
 	// --- javert的關聯 END ---
 
 	public Integer getUnitsId() {
 		return unitsId;
+	}
+
+	public List<FacilityReservationsBean> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<FacilityReservationsBean> reservations) {
+		this.reservations = reservations;
+	}
+
+	public PointAccountsBean getPointAccount() {
+		return pointAccount;
+	}
+
+	public void setPointAccount(PointAccountsBean pointAccount) {
+		this.pointAccount = pointAccount;
+	}
+
+	public List<PointTransactionsBean> getPointTransactions() {
+		return pointTransactions;
+	}
+
+	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
+		this.pointTransactions = pointTransactions;
 	}
 
 	public void setUnitsId(Integer unitsId) {
@@ -162,30 +185,6 @@ public class Units {
 
 	public void setCommunity(Community community) {
 		this.community = community;
-	}
-
-	public List<FacilityReservationsBean> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(List<FacilityReservationsBean> reservations) {
-		this.reservations = reservations;
-	}
-
-	public PointAccountsBean getPointAccount() {
-		return pointAccount;
-	}
-
-	public void setPointAccount(PointAccountsBean pointAccount) {
-		this.pointAccount = pointAccount;
-	}
-
-	public List<PointTransactionsBean> getPointTransactions() {
-		return pointTransactions;
-	}
-
-	public void setPointTransactions(List<PointTransactionsBean> pointTransactions) {
-		this.pointTransactions = pointTransactions;
 	}
 
 	@Override

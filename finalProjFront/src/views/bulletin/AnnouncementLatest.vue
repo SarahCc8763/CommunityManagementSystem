@@ -206,7 +206,10 @@ import maleIcon from '@/assets/images/bulletin/male.png'
 import femaleIcon from '@/assets/images/bulletin/female.png'
 import defaultIcon from '@/assets/images/bulletin/default.png'
 import OO from '@/assets/images/bulletin/banner.png';
+import { useUserStore } from '@/stores/UserStore'
 
+
+const userStore = useUserStore()
 const bulletins = ref([])
 const selectedBulletin = ref(null)
 const selectedOptions = ref([])
@@ -216,8 +219,10 @@ const replyingToId = ref(null)
 const searchTitle = ref('')
 const searchCategory = ref('')
 const categoryList = ref([])
-const userId = 3 // 假設當前使用者 id
-const communityId = 1 // 假設當前社區 ID
+const userId = userStore.userId || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
+
+console.log(userId, communityId);
 
 const pollLabels = ref([])
 const pollVotes = ref([])

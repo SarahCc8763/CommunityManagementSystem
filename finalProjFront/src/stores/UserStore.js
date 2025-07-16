@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
 import axios from '@/plugins/axios'
 import { useFacilitiesStore } from '../stores/FacilitiesStore'
-import Swal from 'sweetalert2'
 
 export const useUserStore = defineStore('user', () => {
     const isAuthenticated = ref(false)

@@ -250,8 +250,8 @@ import { useUserStore } from '@/stores/UserStore'
 import { Modal, Collapse } from 'bootstrap'
 
 const userStore = useUserStore()
-const communityId = userStore.community
-const currentUser = userStore.id
+const communityId = userStore.communityId
+const currentUser = userStore.userId
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])

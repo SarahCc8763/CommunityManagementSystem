@@ -22,7 +22,12 @@
       </div>
     </div>
   </div>
-  <router-link to='/CommunityList'>功能設定</router-link>
+
+
+  <router-link to="/CommunityList" class="btn btn-light">
+    功能設定頁面
+  </router-link>
+
 </template>
 
 <script setup>
@@ -32,7 +37,7 @@ import { useUserStore } from '@/stores/UserStore'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import adminBanner from '@/assets/images/main/adminBanner.jpg'
 import AdminRightInfoNav from '@/components/forAll/main/admin/AdminRightInfoNav.vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -44,33 +49,20 @@ const menuList = [
     title: '包裹管理',
     key: 'PACKAGE',
     children: [
-      { label: '待領包裹', routeName: 'parcel-pending', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', routeName: 'parcel-history', key: 'PACKAGEHISTORY' }
-    ]
-  },
-  {
-    title: '預約系統',
-    key: 'BOOKING',
-    children: [
-      { label: '公設與點數系統', routeName: 'FacilityHomepageView', key: 'FHV' },
-      { label: '查詢公設', routeName: 'FacilityFindAllListView', key: 'FFAV' },
-      { label: '我的預約紀錄', routeName: 'ReservationHistoryView', key: 'RHV' },
-      { label: '點數轉移', routeName: 'PointTransferView', key: 'PTV' },
-      { label: '點數儲值', routeName: 'PointTopupView', key: 'PTUV' },
-      { label: '點數交易紀錄', routeName: 'PointHistoryView', key: 'PHV' },
+      { label: '管理員包裹查詢', routeName: 'packages_security', key: 'PACKAGESEARCH' },
+      { label: '新增包裹', routeName: 'addPackage', key: 'ADDPACKAGE' },
     ]
   },
   {
     title: '繳費資訊',
     key: 'INVOICE',
     children: [
-      { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
-      { label: '繳費紀錄', routeName: 'InvoiceHistory', key: 'INVOICEHISTORY' },
-      { label: '新增費用類型', routeName: 'FeeTypeAdd', key: 'INVOICETYPEADD' },
-      { label: '新增繳費期別', routeName: 'BillingPeriodAdd', key: 'INVOICEPERIODADD' },
-      { label: '新增發票', routeName: 'InvoiceAdd', key: 'INVOICEINVOICEADD' },
-      { label: '新增收據', routeName: 'ReceiptAdd', key: 'INVOICERECEIPTADD' },
-      { label: '發票回覆', routeName: 'InvoiceResponseAdd', key: 'INVOICEREPLY' }
+      { label: 'A新增費用類型', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
+      { label: 'A新增繳費期別', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
+      { label: 'A新增繳款單', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
+      { label: 'A新增收據', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
+      { label: 'A請款單審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
+      { label: 'A審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
     ]
   },
   {
@@ -85,36 +77,40 @@ const menuList = [
     title: '報修服務',
     key: 'TICKET',
     children: [
-      { label: '提交報修', routeName: 'TicketForm', key: 'TICKETFORM' },
-      { label: '維修進度查詢', routeName: 'TicketList', key: 'TICKETLIST' },
-      { label: '指派報修', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      // { label: '社區報修', routeName: 'CommunityList', key: 'TICKETCOMMUNITY' }
+      { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
     ]
   },
   {
     title: '常見問題',
     key: 'FQA',
     children: [
-      { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
-      { label: '回饋與抱怨？', routeName: 'feedback', key: 'FQAFEEDBACK' }
+      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
     title: '車位管理',
-    key: 'PARKING',
+    key: 'PARK',
     children: [
-      { label: '車位資訊維護', routeName: 'parking-info-edit', key: 'PARKINGINFO' },
-      { label: '停車預約', routeName: 'reservation-parking', key: 'PARKINGRESERVE' },
-      { label: '承租車位管理', routeName: 'parking-rent', key: 'PARKINGRENT' }
+      { label: '後台停車主頁', key: 'PARKBACK', routeName: 'parkingBack' }, // 這個看你設計可以不用
+      { label: '社區停車場建置', key: 'PARKINIT', routeName: 'parkInitialize' },
+      { label: '所有車位查詢', key: 'PARKSLOT', routeName: 'parkSlot' },
+      { label: '承租記錄查詢', key: 'PARKREC', routeName: 'parkRentalBack' },
+      { label: '抽籤活動', key: 'PARKEVE', routeName: 'lotteryEvent' },
     ]
   },
   {
     title: '公告',
     key: 'NOTICE',
     children: [
-      { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
-      { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' }
+      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
+    ]
+  },
+  {
+    title: '配合廠商',
+    key: 'VENDOR',
+    children: [
+      { label: '後臺 - 配合廠商', routeName: 'Vendor', key: 'VENDOR' },
     ]
   }
 ]

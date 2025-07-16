@@ -64,7 +64,6 @@ const allFunctionOptions = [
       { label: '維修進度查詢', key: 'TICKETLIST' },
       { label: '報修內容', key: 'TICKETDETAIL' },
       { label: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
-      // { label: 'CommunityList', key: 'TICKETCOMMUNITY' }
     ]
   },
   {
@@ -72,7 +71,8 @@ const allFunctionOptions = [
     value: 'NOTICE',
     children: [
       { label: '重要通知', key: 'NOTICEIMPORTANT' },
-      { label: '最新公告', key: 'NOTICELATEST' }
+      { label: '最新公告', key: 'NOTICELATEST' },
+      { label: '後臺 - 公告管理', key: 'BULLETINADMIN' },
     ]
   },
   {
@@ -80,7 +80,9 @@ const allFunctionOptions = [
     value: 'PACKAGE',
     children: [
       { label: '待領包裹', key: 'PACKAGEPENDING' },
-      { label: '領取紀錄', key: 'PACKAGEHISTORY' }
+      { label: '領取紀錄', key: 'PACKAGEHISTORY' },
+      { label: '管理員包裹查詢', key: 'PACKAGESEARCH' },
+      { label: '新增包裹', key: 'ADDPACKAGE' },
     ]
   },
   {
@@ -129,11 +131,24 @@ const allFunctionOptions = [
   },
   {
     label: '停車管理',
-    value: 'PARKING',
+    value: 'PARK',
     children: [
-      { label: '車位資訊維護', key: 'PARKINGINFO' },
-      { label: '停車預約', key: 'PARKINGRESERVE' },
-      { label: '承租車位管理', key: 'PARKINGRENT' }
+      { label: '社區停車場建置', key: 'PARKINIT' },
+      { label: '所有車位查詢', key: 'PARKSLOT' },  // 共用同個路徑去韋韋那頁
+      { label: '使用者承租車位', key: 'PARKRENT' },
+      { label: '承租記錄查詢', key: 'PARKREC' },
+      { label: '抽籤活動', key: 'PARKEVE' },
+      { label: '抽籤申請', key: 'PARKAPP' },
+      { label: '我的車位', key: 'MYPARK' },
+      { label: '前端停車主頁', key: 'PARKFRONT' },
+      { label: '後端停車主頁', key: 'PARKBACK' },
+    ]
+  },
+  {
+    label: '配合廠商',
+    value: 'VENDOR',
+    children: [
+      { label: '配合廠商', key: 'VENDOR' },
     ]
   }
 ]

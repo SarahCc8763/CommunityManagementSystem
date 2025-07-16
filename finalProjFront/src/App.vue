@@ -1,10 +1,10 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
-  
-     <!--  <BeforeLogIn /> -->
+
+    <!--  <BeforeLogIn /> -->
 
 
- <HeaderAll :isDarkMode="isDarkMode" />
+    <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
         <LeftSideNav :isDarkMode="isDarkMode" />
@@ -24,12 +24,15 @@
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
         <RouterView />
+        <FeedbackModal />
+
       </div>
     </main>
 
     <FooterAll />
 
 
+    <!-- 登入模態框 -->
     <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
   </div>
 </template>
@@ -46,9 +49,25 @@
 
 import BeforeLogIn from '@/views/BeforeLogIn.vue'
 
+
+//功能類import
+import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { RouterView, useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
+
+//固定的頁首頁尾以及側邊欄位
+import FooterAll from './components/forAll/main/FooterAll.vue';
+import LoginModal from './components/forAll/main/LoginModal.vue';
+import HeaderAll from './components/forAll/main/HeaderAll.vue';
+import RightSideNav from './components/forAll/main/RightSideNav.vue';
+import LeftSideNav from './components/forAll/main/LeftSideNav.vue';
+// Yu
+import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
+// Yu
+
+import { useRoute } from 'vue-router'  // ✅ 加上這行
+const route = useRoute()
 
 import FooterAll from './components/forAll/main/FooterAll.vue'
 import HeaderAll from './components/forAll/main/HeaderAll.vue'
@@ -60,7 +79,7 @@ import Swal from 'sweetalert2'
 const user = useUserStore()
 const showLogin = ref(false)
 const showRightNav = ref(false)
-const route = useRoute()
+
 
 // ✅ 只判斷 meta.dark
 const isDarkMode = computed(() => route.meta?.dark === true)

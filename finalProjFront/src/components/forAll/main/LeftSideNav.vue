@@ -11,9 +11,8 @@
           <div class="member-info-texts">
             <div class="user-name">{{ UserStore.name }}</div>
             <div class="user-row">
-              <span class="user-username">{{ UserStore.username }}</span>
-
-              <span class="user-badge">一般會員</span>
+              <span class="user-username">@{{ UserStore.username }}</span>
+              <span class="user-badge">{{ UserStore.roleId === 2 ? '管理員' : '一般會員' }}</span>
             </div>
           </div>
         </div>
@@ -24,7 +23,7 @@
             <i class="bi bi-person-circle"></i>
             <span>檔案</span>
           </router-link>
-          <router-link to="/notifications" class="quick-action-card no-border-action">
+          <router-link to="/notification" class="quick-action-card no-border-action">
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>
@@ -135,7 +134,7 @@ function logout() {
   UserStore.logout()
   // 觸發全局登出事件
   window.dispatchEvent(new CustomEvent('logout'))
-  router.push('/login')
+  router.push('/BeforeLogIn')
 }
 
 function showLoginModal() {
@@ -735,7 +734,7 @@ onUnmounted(() => {
 }
 
 .quick-action-card.no-border-action {
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: #444;
   background: transparent;
   border-radius: 12px;
@@ -745,20 +744,23 @@ onUnmounted(() => {
   align-items: center;
   font-weight: 500;
 }
+
 .quick-action-card.no-border-action:hover {
   background: #f0f4ff;
   color: #667eea;
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
   font-weight: 700;
 }
+
 .quick-action-card.no-border-action:hover i {
   color: #667eea;
   transform: scale(1.12);
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .quick-action-card.no-border-action i {
   font-size: 1.7rem;
   margin-bottom: 4px;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
