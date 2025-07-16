@@ -368,7 +368,15 @@ function searchBulletins() {
         community: { communityId: communityId }
     }).then(res => {
         // console.log(res.data);
-
+        if (!res.data.success) {
+            Swal.fire({
+                title: '查無資料',
+                icon: 'error',
+                confirmButtonText: '確定',
+                timer: 1500
+            })
+            return
+        }
         const now = new Date()
         const sortedList = res.data.list.filter(val => val.postStatus === true &&
             new Date(val.postTime) <= now &&

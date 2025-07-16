@@ -51,10 +51,10 @@
                         :aria-labelledby="`heading-${faq.id}`" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
                             <p class="mb-2">{{ faq.answer }}</p>
-                            <p class="small text-muted">
+                            <p class="small text-secondary">
                                 分類：{{ faq.category }} | 更新時間：{{ formatDate(faq.lastModified) }}
                             </p>
-                            <p class="small text-muted">關鍵字：{{ faq.keywords.join(', ') }}</p>
+                            <p class="small text-secondary">關鍵字：{{ faq.keywords.join(', ') }}</p>
                         </div>
                     </div>
                 </div>

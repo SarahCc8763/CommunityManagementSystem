@@ -227,6 +227,7 @@ const handleNavigate = (item) => {
   // }
   // 有改--------------------------------------------------------
   if (item.routeName === 'contact-us') {
+    console.log("77777");
     const modalEl = document.getElementById('feedbackModal')
     if (modalEl) {
       const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
@@ -352,8 +353,10 @@ const menuList = ref([
     key: 'FQA',
     children: [
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'feedback', key: 'FQACONTACT' },
-      { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進
+      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
+      { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進, //問題的進度跟進
+      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -373,6 +376,7 @@ const menuList = ref([
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
+      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ])

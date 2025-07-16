@@ -294,7 +294,7 @@ public class BulletinController {
         List<Bulletin> list = bulletinService.findByCategoryAndTitle(body)
                 .stream().filter(a -> a.getCommunity().getCommunityId() == body.getCommunity().getCommunityId())
                 .collect(Collectors.toList());
-        System.out.println(list.get(0).getCommunity().getCommunityId());
+        // System.out.println(list.get(0).getCommunity().getCommunityId());
 
         if (list.isEmpty()) {
             response.setMessage("查無資料");

@@ -459,6 +459,7 @@ public class feedbackController {
             response.put("result", "未提供刪除意見所需資料");
             response.put("success", false);
             log.warn("未提供刪除意見所需資料");
+            return ResponseEntity.badRequest().body(response); // HTTP 400
         }
         boolean deleted = feedbackService.deleteFeedback(id);
 

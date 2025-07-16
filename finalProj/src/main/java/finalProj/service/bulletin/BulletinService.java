@@ -173,6 +173,7 @@ public class BulletinService {
             existing.setPostStatus(entity.getPostStatus() != null ? entity.getPostStatus() : existing.getPostStatus());
 
             existing.setModifyTime(LocalDateTime.now());
+            existing.setIsPinned(entity.getIsPinned() != null ? entity.getIsPinned() : existing.getIsPinned());
             log.debug("公告基本資訊已更新");
 
             // 更新分類（若有）
