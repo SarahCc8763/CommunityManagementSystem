@@ -1,6 +1,6 @@
 <template>
   <div style="width: 60vw; max-width: 1200px; margin-left: 2rem; margin-right: 2rem; margin: auto;">
-    <BannerImage :imageSrc="bannerImg" heading="審核繳費管理" subtext="您可以在此審核繳款, 為使用者開立收款證明。" textAlign="left" />
+    <BannerImage :imageSrc="bannerImg" heading="收款確認處理" subtext=" 確認住戶繳費狀況，審核收款記錄並為已繳費用戶開立收款證明。" textAlign="left" />
   </div>
   <div class="center-wrapper">
     <!-- 查詢區塊 -->

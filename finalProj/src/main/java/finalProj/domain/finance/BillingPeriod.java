@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "finance_BillingPeriod")
+@Table(name = "finance_billing_period")
 public class BillingPeriod extends BaseEntity {
 
     // 繳交期別流水號

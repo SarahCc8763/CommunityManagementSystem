@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Table(name = "finance_Invoice_Response")
+@Table(name = "finance_invoice_response")
 public class InvoiceResponse {
 
     @Id

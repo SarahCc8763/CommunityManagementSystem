@@ -1,6 +1,6 @@
 <template>
 
-    <div class="d-flex">
+    <div class="d-flex justify-content-center">
 
         <main>
             <BannerImage :imageSrc="OO" heading="財務管理區" subtext="快速查帳、繳費與明細查詢，提醒您 : 別忘了定期查看帳單與費用明細" textAlign="left" />

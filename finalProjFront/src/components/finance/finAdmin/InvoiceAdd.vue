@@ -1,7 +1,7 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
-    <BannerImage :imageSrc="OO" heading="繳款單設定" subtext="您可以在此新增繳款單, 透過簡易生成器一鍵生成下月繳款單, 或是自訂繳款單。" textAlign="left" />
+    <BannerImage :imageSrc="OO" heading="繳費通知製作" subtext=" 快速製作繳費通知單，使用生成器一鍵產生下月帳單，或依需求自訂個別通知單。" textAlign="left" />
   </div>
 
   <div class="container-xl mt-4">

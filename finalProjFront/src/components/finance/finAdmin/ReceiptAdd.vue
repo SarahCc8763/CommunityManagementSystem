@@ -1,7 +1,7 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
-    <BannerImage :imageSrc="OO" heading="費用類別設定" subtext="您可以在此管理所有費用類別，包括檢視現有項目、修改資料，或新增新費用類別。" textAlign="left" />
+    <BannerImage :imageSrc="OO" heading="收據管理中心" subtext="開立各類收據，快速查找特定繳費記錄及其處理狀態。" textAlign="left" />
   </div>
 
   <div class="container mt-4 dark-bg">

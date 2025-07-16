@@ -1,4 +1,10 @@
 <template>
+
+  <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <BannerImage :imageSrc="OO" heading="繳費通知審核" subtext="審核並核准繳費通知的發送申請，確認無誤後即可寄送給住戶。" textAlign="left" />
+  </div>
+
+
   <div class="container mt-4">
     <h3 class="mb-4 fw-bold text-primary">請款單審核</h3>
     <!-- 查詢區塊 -->
@@ -63,6 +69,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axiosapi from '@/plugins/axios'
+import BannerImage from '@/components/forAll/BannerImage.vue'
+import OO from '@/assets/images/main/adminBanner.jpg'
 
 const pendingInvoices = ref([])
 const checkedIds = ref([])

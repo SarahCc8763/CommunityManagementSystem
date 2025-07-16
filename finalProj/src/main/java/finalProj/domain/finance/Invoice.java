@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name = "finance_Invoice")
+@Table(name = "finance_invoice")
 public class Invoice extends BaseEntity {
 
     @Id

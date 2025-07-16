@@ -1,6 +1,7 @@
 <template>
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
-    <BannerImage :imageSrc="bannerImg" heading="繳費期別管理" subtext="您可以在此檢視、管理所有繳費期別，或新增新期別。" textAlign="left" />
+    <BannerImage :imageSrc="bannerImg" heading="繳費期間設定" subtext=" 輕鬆管理各期繳費時間，包括查看現有期別、調整設定，或新增新的繳費期間。"
+      textAlign="left" />
   </div>
 
 
