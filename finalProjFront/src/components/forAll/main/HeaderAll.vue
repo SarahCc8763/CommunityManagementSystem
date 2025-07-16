@@ -90,7 +90,7 @@ import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import Logo from '@/assets/images/main/Logo.jpg'
 import { useFacilitiesStore } from '@/stores/FacilitiesStore'
-import Logo from '@/assets/images/main/Logo.jpg'
+
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const path = import.meta.env.VITE_API_URL

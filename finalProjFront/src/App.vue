@@ -69,11 +69,7 @@ import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
 import { useRoute } from 'vue-router'  // ✅ 加上這行
 const route = useRoute()
 
-import FooterAll from './components/forAll/main/FooterAll.vue'
-import HeaderAll from './components/forAll/main/HeaderAll.vue'
-import LeftSideNav from './components/forAll/main/LeftSideNav.vue'
-import LoginModal from './components/forAll/main/LoginModal.vue'
-import RightSideNav from './components/forAll/main/RightSideNav.vue'
+
 
 import Swal from 'sweetalert2'
 const user = useUserStore()
