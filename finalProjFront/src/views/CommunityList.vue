@@ -103,7 +103,9 @@ const allFunctionOptions = [
     children: [
       { label: 'FAQ 問答集', key: 'FAQQANDA' },
       { label: '聯絡客服', key: 'FQACONTACT' },
-      { label: '回饋與抱怨？', key: 'FQAFEEDBACK' }
+      { label: '回饋與抱怨？', key: 'FQAFEEDBACK' }, //問題的進度跟進
+      { label: '後臺 - FAQ 管理', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
