@@ -1,7 +1,23 @@
 <template>
     <div class="container mt-4">
+        <!-- 麵包屑導航 -->
+        <nav aria-label="breadcrumb" class="mb-3 ms-1">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('parkingBack')" class="text-decoration-none text-light">停車場</a>
+                </li>
+                <li class="breadcrumb-item active text-white" aria-current="page">承租紀錄管理</li>
+            </ol>
+        </nav>
+
         <div class="tag-style px-4 py-2 mb-4">
-            <h2 class="mb-0 fw-bold text-primary section-title">社區承租紀錄</h2>
+            <h2 class="mb-0 fw-bold text-primary section-title">承租紀錄管理</h2>
         </div>
         
         <!-- 上方操作列 -->
@@ -524,6 +540,23 @@ function cleanInvalidChars(slot, field) {
     const cleaned = (slot[field] || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
     slot[field] = cleaned
 }
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'adminDashboard':
+            router.push('/AdminDashboard')
+            break
+        case 'parkingBack':
+            router.push('/pages/park/parking-back')
+            break
+        }
+    }
 </script>
 
 <style scoped>
@@ -676,39 +709,45 @@ select.form-select {
 }
 /* 標題字顏色 */
 .modal-title-colored {
-  color: #aebaff;
+    color: #aebaff;
 }
 
 /* 關閉按鈕 icon（乾淨、右上角） */
 .btn-close-custom {
-  background: none;
-  border: none;
-  color: #f8f9fa;
-  font-size: 1.25rem;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.2s ease;
+    background: none;
+    border: none;
+    color: #f8f9fa;
+    font-size: 1.25rem;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s ease;
 }
 .btn-close-custom:hover {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 /* 讓 icon 垂直置中對齊標題 */
 .modal-header .btn-close-custom i {
-  display: block;
+    display: block;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+    filter: invert(1);
 }
 
 input::placeholder,
 select::placeholder,
 textarea::placeholder {
-  color: #cbd5e1; /* 比 #888 更亮，更適合深色背景 */
-  opacity: 0.9;
+    color: #cbd5e1; /* 比 #888 更亮，更適合深色背景 */
+    opacity: 0.9;
 }
 .form-control::placeholder {
-  color: #cbd5e1;
+    color: #cbd5e1;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #ccc; /* 或 text-light 用於深色背景 */
+    margin: 0 0.5rem;
 }
 </style>

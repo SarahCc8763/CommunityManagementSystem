@@ -1,8 +1,24 @@
 <template>
     <div class="container mt-4">
+        <!-- 麵包屑導航 -->
+        <nav aria-label="breadcrumb" class="mb-3 ms-1">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('parkingBack')" class="text-decoration-none text-light">停車場</a>
+                </li>
+                <li class="breadcrumb-item active text-white" aria-current="page">社區車位建置</li>
+            </ol>
+        </nav>
+
         <!-- 社區初始化標頭 -->
         <div class="tag-style px-4 py-2 mb-4">
-            <h2 class="mb-0 fw-bold text-primary section-title">上傳車位資料</h2>
+            <h2 class="mb-0 fw-bold text-primary section-title">社區車位建置</h2>
         </div>
 
         <!-- 社區車位種類選取 -->
@@ -616,6 +632,22 @@ function cleanInvalidChars(slot, field) {
 }
 
 
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'adminDashboard':
+            router.push('/AdminDashboard')
+            break
+        case 'parkingBack':
+            router.push('/pages/park/parking-back')
+            break
+        }
+    }
 </script>
 
 <style scoped>
@@ -736,6 +768,12 @@ table td .btn {
 /* 深色背景下調整 .text-muted 顏色 */
 .text-muted {
   color: #ccc !important; /* 或你要的亮灰色，可調亮一點 */
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #ccc; /* 或 text-light 用於深色背景 */
+    margin: 0 0.5rem;
 }
 
 </style>
