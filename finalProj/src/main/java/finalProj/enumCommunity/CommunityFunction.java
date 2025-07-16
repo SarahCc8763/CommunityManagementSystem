@@ -1,62 +1,78 @@
 package finalProj.enumCommunity;
 
 public enum CommunityFunction {
+// 主功能（2^0 ~ 2^7）
+ // 主功能
+ PACKAGE(1L),          // 2^0
+ BOOKING(1L << 1),           // 2^1
+ INVOICE(1L << 2),           // 2^2
+ MANBERSERVICE(1L << 3),     // 2^3
+ TICKET(1L << 4),            // 2^4
+ FQA(1L << 5),               // 2^5
+ PARK(1L << 6),              // 2^6
+ NOTICE(1L << 7),            // 2^7
 
-    PACKAGE(1L), // 2^0
-    BOOKING(2L), // 2^1
-    INVOICE(4L), // 2^2
-    MANBERSERVICE(8L), // 2^3
-    FQA(16L), // 2^4
-    PARKING(32L), // 2^5
-    NOTICE(64L), // 2^6
-    TICKET(128L), // 2^7
+ // 包裹子功能
+ PACKAGEPENDING(1L << 8),    
+ PACKAGEHISTORY(1L << 9),    
+ PACKAGESEARCH(1L << 10),
+ ADDPACKAGE(1L << 11),
 
-    // 子功能（從 2^8 起）
-    PACKAGEPENDING(256L), // 2^8
-    PACKAGEHISTORY(512L), // 2^9
 
-    BOOKINGGYM(1024L), // 2^10
-    BOOKINGPOOL(2048L), // 2^11
-    BOOKINGPARKING(4096L), // 2^12
+ // 預約子功能
+ FHV(1L << 12),             
+ FFAV(1L << 13),             
+ RHV(1L << 14),             
+ PTV(1L << 15),             
+ PTUV(1L << 16),            
+ PHV(1L << 17),             
 
-    INVOICEBILL(8192L), // 2^13
-    INVOICEHISTORY(16384L), // 2^14
-    INVOICETYPEADD(32768L), // 2^15
-    INVOICEPERIODADD(65536L), // 2^16
-    INVOICEINVOICEADD(131072L), // 2^17
-    INVOICERECEIPTADD(262144L), // 2^18
-    INVOICEREPLY(524288L), // 2^19
+ // 繳費子功能
+ FINUSER(1L << 18),         
+ INVOICEBILL(1L << 19),      
+ RECEIPT(1L << 20),       
+ FEETYPEADD(1L << 21),     
+ INVOICEADD(1L << 22),    
+ RECEIPTADD(1L << 23),    
+ INVOICEVALIDATE(1L << 23),         
+ INVOICEWITHRESPONSE(1L<<24),       
+ BILLINGPERIODADD(1L << 25),      
 
-    MANBERSERVICEEDIT(1048576L), // 2^20
-    MANBERSERVICETRANSFER(2097152L), // 2^21
+ // 會員服務子功能
+ MANBERSERVICEEDIT(1L << 26),        
+ MANBERSERVICETRANSFER(1L << 27),    
 
-    FAQQANDA(4194304L), // 2^22
-    FQACONTACT(8388608L), // 2^23
-    FQAFEEDBACK(16777216L), // 2^24
+ // 報修子功能
+ TICKETFORM(1L << 29),          
+ TICKETLIST(1L << 30),          
+ TICKETASSIGN(1L << 31),         
+ TICKETDETAIL(1L << 32),     
 
-    PARKINGINFO(33554432L), // 2^25
-    PARKINGRESERVE(67108864L), // 2^26
-    PARKINGRENT(134217728L), // 2^27
+ // FAQ 子功能
+ FAQQANDA(1L << 33),           
+ FQACONTACT(1L << 34),           
+ FQAFEEDBACK(1L << 35),          
+ FAQADMIN(1L << 36),             
+ FEEDBACKADMIN(1L << 37),        
 
-    NOTICEIMPORTANT(268435456L), // 2^28
-    NOTICELATEST(536870912L), // 2^29
+ // 停車子功能
+ PARKFRONT(1L << 38),            
+ MYPARK(1L << 39),               
+ PARKRENT(1L << 40),            
+ PARKAPP(1L << 41),             
+ PARKBACK(1L << 42),            
+ PARKINIT(1L << 43),           
+ PARKSLOT(1L << 44),          
+ PARKREC(1L << 45),             
+ PARKEVE(1L << 46),            
 
-    TICKETFORM(1073741824L), // 2^30
-    TICKETLIST(2147483648L), // 2^31
-    TICKETDETAIL(4294967296L), // 2^32
-    TICKETASSIGN(8589934592L), // 2^33
-    PHV(17179869184L), // 2^34
-    FAQADMIN(34359738368L), // 2^35
-    FEEDBACKADMIN(68719476736L), // 2^36
-    BULLETINADMIN(137438953472L), // 2^37
+ // 公告子功能
+ NOTICEIMPORTANT(1L << 47),     
+ NOTICELATEST(1L << 48),         
+ BULLETINADMIN(1L << 49),
 
-    FHV(274877906944L), // 2^38 公設與點數系統
-    FFAV(549755813888L), // 2^39 查詢公設
-    RHV(1099511627776L), // 2^40 我的預約紀錄
-    PTV(2199023255552L), // 2^41 點數轉移
-    PTUV(4398046511104L), // 2^42 點數儲值
-    PACKAGESEARCH(8796093022208L), // 2^43 點數交易紀錄
-    ADDPACKAGE(1L << 44);
+ //廠商
+ VENDOR(1L << 50);                          
 
     private final Long value;
 

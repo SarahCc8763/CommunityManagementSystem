@@ -77,7 +77,7 @@ const handleResetPassword = async () => {
       "email": form.value.email,
       "newPassword": form.value.password
     })
-
+console.log(response);
     // 後端成功回傳
     if (response.data.success) {
       console.log(response.data);
@@ -85,7 +85,7 @@ const handleResetPassword = async () => {
         text: response.data.message,
         icon: "success",
       });
-      router.push({ name: 'home' })
+      router.push({ path: '/BeforeLogIn' })
       window.dispatchEvent(new CustomEvent('show-login-modal'))
     } else {
       // 後端回傳失敗訊息

@@ -98,7 +98,7 @@
         <div class="container">
             <h2 class="serif-title text-center mb-4 fw-bold">社區功能導覽</h2>
             <div class="row g-4">
-                <div class="col-md-4" v-for="feature in features" :key="feature.title">
+                <div class="col-md-4" v-for="feature in filteredFeatures" :key="feature.title">
                     <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature)">
                         <div class="card-body text-center">
                             <i :class="['bi', feature.icon, 'animated-icon']" class="display-4 text-success mb-3"></i>
@@ -120,11 +120,30 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useUserStore } from '@/stores/UserStore'
+import axios from '@/plugins/axios'
+import {useUserStore} from '@/stores/UserStore'
+
 const userStore = useUserStore()
+const groupedCards = ref([])
+const filteredFeatures = ref([])
+onMounted(async () => {
+  try {
+    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
+    const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
+
+    // 只保留被允許的功能卡片
+    filteredFeatures.value = features.filter(f => allowed.includes(f.key))
+
+  } catch (err) {
+    console.error('❌ 載入社區功能失敗', err)
+  }
+})
+
+
 const router = useRouter();
 
 const navigate = (feature) => {
@@ -142,49 +161,50 @@ const features = [
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
         link: '/packages',
+        key:'PACKAGE',
         linkSecurity:'/packages_security'
     },
     {
         icon: 'bi-car-front-fill',
         title: '停車場管理',
         description: '掌握社區停車位使用狀況，並支援訪客車輛申請與排程。',
-        link: '/parking'
+        link: '/parking',
+        key:'PARK'
     },
     {
         icon: 'bi-person-circle',
         title: '帳戶資訊',
         description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/profile'
+        link: '/profile',
+        key:'INVOICE'
     },
     {
         icon: 'bi-megaphone',
         title: '最新公告',
         description: '快速接收社區重要通知與活動資訊，不再錯過任何消息。',
-        link: '/announcements'
+        link: '/announcements',
+        key:'NOTICE'
     },
     {
         icon: 'bi-question-circle',
         title: '常見問題',
         description: '整理住戶最常遇到的問題與解答，操作流程一目瞭然。',
-        link: '/faq'
+        link: '/faq',
+        key:'FQA'
     },
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
         description: '線上預約健身房、交誼廳等公設，點數管理。',
-        link: '/facilities'
+        link: '/facilities',
+        key:'BOOKING'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
-        link: '/TicketDashboard'
-    },
-    {
-        icon: 'bi-tools',
-        title: '廠商',
-        description: '廠商',
-        link: '/Vendor'
+        link: '/TicketDashboard',
+        key:'TICKET'
     }
 ];
 

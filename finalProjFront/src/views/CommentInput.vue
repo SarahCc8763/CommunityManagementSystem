@@ -27,6 +27,8 @@
 <script setup>
 import { ref } from 'vue'
 import axios from '@/plugins/axios'
+import { useUserStore } from '@/stores/UserStore.js'
+const userStore = useUserStore()
 
 const props = defineProps({
   ticketId: Number,
@@ -80,7 +82,7 @@ async function submit() {
     const commentPayload = {
       ticketId: props.ticketId,
       comment: commentText.value,
-      commenterId: 1
+      commenter: userStore.userId 
     }
 
     const res = await axios.post(`/TicketComment`, commentPayload)
@@ -102,7 +104,7 @@ async function submit() {
 
     // 通知父元件
     props.onSuccess?.({
-      user: '你是登入者',
+      user: userStore.name,
       time: new Date().toLocaleString(),
       text: newComment.comment
     })

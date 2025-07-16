@@ -7,7 +7,7 @@
                     <th>交易時間</th>
                     <th>類型</th>
                     <th>點數</th>
-                    <th>對象</th>
+                    <!-- <th>對象</th> -->
                     <th>備註</th>
                 </tr>
             </thead>
@@ -19,7 +19,7 @@
                     <td :class="item.amount >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'">
                         {{ item.amount > 0 ? '+' + item.amount : item.amount }}
                     </td>
-                    <td>{{ item.relatedUnitName || '—' }}</td>
+                    <!-- <td>{{ item.relatedUnitName || '—' }}</td> -->
                     <td>{{ item.transactionDescription || '—' }}</td>
                 </tr>
             </tbody>
