@@ -120,7 +120,6 @@ public class Ticket {
 		return assignerName;
 	}
 
-	
 	public List<IssueTypeAndTicket> getIssueTypes() {
 		return issueTypes;
 	}
@@ -278,10 +277,5 @@ public class Ticket {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-
-
-
-
-
 
 }

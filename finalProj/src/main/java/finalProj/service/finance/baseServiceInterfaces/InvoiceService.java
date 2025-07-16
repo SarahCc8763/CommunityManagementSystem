@@ -3,6 +3,7 @@ package finalProj.service.finance.baseServiceInterfaces;
 import java.util.List;
 
 import finalProj.domain.finance.Invoice;
+import finalProj.dto.finance.InvoiceDTO;
 
 public interface InvoiceService extends BaseService<Invoice, Integer> {
     List<Invoice> findUnpaidInvoices();
@@ -23,4 +24,16 @@ public interface InvoiceService extends BaseService<Invoice, Integer> {
 
     // 根據communityId查詢
     java.util.List<Invoice> findByCommunityId(Integer communityId);
+
+    // 查詢所有status為false（待審核）
+    java.util.List<Invoice> findByStatus(Boolean status);
+
+    // 根據 userId 查詢未繳帳單
+
+    List<InvoiceDTO> findUnpaidInvoicesByUserId(Integer userId);
+
+    List<InvoiceDTO> findUnpaidInvoicesByCommunityId(Integer communityId);
+
+    // 查詢某用戶所有 paymentStatus 不是 'paid' 的帳單（即 unpaid + pending）
+    List<InvoiceDTO> findUnpaidOrPendingInvoicesByUserId(Integer userId);
 }

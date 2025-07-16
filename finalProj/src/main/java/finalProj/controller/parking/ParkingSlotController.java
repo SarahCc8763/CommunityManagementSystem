@@ -1,6 +1,7 @@
 package finalProj.controller.parking;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,36 @@ public class ParkingSlotController {
 
     @Autowired
     private ParkingSlotRepository repository;
+
+    // 查詢單一車位資料
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ParkingSlotDTO>> getSlotById(@PathVariable("id") Integer id) {
+        Optional<ParkingSlot> optional = repository.findById(id);
+        if (optional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.failure("查無此車位 ID"));
+        }
+
+        ParkingSlot slot = optional.get();
+        ParkingSlotDTO dto = new ParkingSlotDTO();
+        dto.setId(slot.getId());
+        dto.setSlotNumber(slot.getSlotNumber());
+        dto.setLocation(slot.getLocation());
+        dto.setIsRentable(slot.getIsRentable());
+        dto.setLicensePlate(slot.getLicensePlate());
+
+        if (slot.getParkingType() != null) {
+            dto.setParkingTypeId(slot.getParkingType().getId());
+            dto.setParkingTypeName(slot.getParkingType().getType());
+        }
+
+        if (slot.getUsers() != null) {
+            dto.setUsersId(slot.getUsers().getUsersId());
+            dto.setUserName(slot.getUsers().getName());
+        }
+
+        return ResponseEntity.ok(ApiResponse.success("查詢成功", dto));
+    }
 
     // 查詢某社區所有車位資料
     @GetMapping

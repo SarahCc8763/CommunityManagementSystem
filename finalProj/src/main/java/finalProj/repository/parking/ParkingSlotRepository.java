@@ -11,26 +11,27 @@ import org.springframework.data.repository.query.Param;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.parking.ParkingSlot;
+import finalProj.domain.parking.ParkingType;
 
 public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Integer> {
 
 	boolean existsBySlotNumber(String slotNumber);
 
 	@Query("""
-			    SELECT ps FROM ParkingSlot ps
-			    WHERE ps.community.id = :communityId
-				  AND ps.parkingType.id = :typeId
-			      AND ps.users.name = 'sa'
-			      AND ps.isRentable = true
-			      AND NOT EXISTS (
-			        SELECT 1 FROM ParkingRentals pr
-			        WHERE pr.parkingSlot.id = ps.id
-			          AND pr.rentBuyStart <= :eventEnd
-			          AND pr.rentEnd >= :eventStart
-			      )
+			  SELECT ps FROM ParkingSlot ps
+			  JOIN ps.users u
+			  JOIN u.RolesUsersList rul
+			  WHERE ps.parkingType.id = :typeId
+			    AND rul.role.rolesId = 2
+			    AND ps.isRentable = true
+			    AND NOT EXISTS (
+			      SELECT 1 FROM ParkingRentals pr
+			      WHERE pr.parkingSlot.id = ps.id
+			        AND pr.rentBuyStart <= :eventEnd
+			        AND pr.rentEnd >= :eventStart
+			    )
 			""")
 	List<ParkingSlot> findAvailableSlotsForEvent(
-			@Param("communityId") Integer communityId,
 			@Param("typeId") Integer typeId,
 			@Param("eventStart") Date eventStart,
 			@Param("eventEnd") Date eventEnd,
@@ -64,5 +65,7 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Intege
 	ParkingSlot findBySlotNumberAndCommunity_CommunityId(String slotNumber, Integer communityId);
 
 	List<ParkingSlot> findByUsers_UsersId(Integer usersId);
+
+	boolean existsByParkingType(ParkingType pt);
 
 }

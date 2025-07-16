@@ -3,39 +3,39 @@
     <button class="right-nav-close" @click="emit('close')">
       <i class="bi bi-x-circle-fill"></i>
     </button>
-   
 
-<!-- 社區活動 -->
-<div class="events-card">
-  <div class="card-header">
-    <i class="bi bi-calendar-event"></i>
-    <span>近期活動</span>
-  </div>
-  <div class="events-content">
-    <div class="event-item">
-      <div class="event-date">
-        <div class="event-day">15</div>
-        <div class="event-month">12月</div>
+
+    <!-- 社區活動 -->
+    <div class="events-card">
+      <div class="card-header">
+        <i class="bi bi-calendar-event"></i>
+        <span>近期活動</span>
       </div>
-      <div class="event-info">
-        <div class="event-title">聖誕晚會</div>
-        <div class="event-time">19:00 - 22:00</div>
-        <div class="event-location">社區大廳</div>
+      <div class="events-content">
+        <div class="event-item">
+          <div class="event-date">
+            <div class="event-day">15</div>
+            <div class="event-month">12月</div>
+          </div>
+          <div class="event-info">
+            <div class="event-title">聖誕晚會</div>
+            <div class="event-time">19:00 - 22:00</div>
+            <div class="event-location">社區大廳</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-date">
+            <div class="event-day">25</div>
+            <div class="event-month">12月</div>
+          </div>
+          <div class="event-info">
+            <div class="event-title">新年倒數</div>
+            <div class="event-time">23:30 - 00:30</div>
+            <div class="event-location">頂樓花園</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="event-item">
-      <div class="event-date">
-        <div class="event-day">25</div>
-        <div class="event-month">12月</div>
-      </div>
-      <div class="event-info">
-        <div class="event-title">新年倒數</div>
-        <div class="event-time">23:30 - 00:30</div>
-        <div class="event-location">頂樓花園</div>
-      </div>
-    </div>
-  </div>
-</div>
     <!-- 廣告橫幅 -->
     <div class="ad-banner">
       <div class="ad-content">
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+
 const props = defineProps({
   show: {
     type: Boolean,
@@ -136,8 +136,8 @@ const emit = defineEmits(['close'])
   min-width: 320px;
   max-width: 320px;
   width: 320px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: -2px 0 8px rgba(0,0,0,0.04);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -146,12 +146,14 @@ const emit = defineEmits(['close'])
   bottom: 0;
   z-index: 2001;
   transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
 }
+
 .right-side-nav.open {
   transform: translateX(0);
 }
+
 .right-nav-close {
   position: absolute;
   top: 14px;
@@ -166,25 +168,28 @@ const emit = defineEmits(['close'])
   justify-content: center;
   font-size: 22px;
   color: #4c51bf;
-  box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
   cursor: pointer;
   z-index: 10;
   transition: background 0.2s, box-shadow 0.2s, border 0.2s, color 0.2s;
 }
+
 .right-nav-close:hover {
   background: #667eea;
   color: #fff;
   border-color: #4c51bf;
-  box-shadow: 0 4px 16px rgba(102,126,234,0.16);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.16);
 }
 
-.right-side-nav > * {
+.right-side-nav>* {
   margin: 18px 18px 0 18px;
 }
-.right-side-nav > *:first-child {
+
+.right-side-nav>*:first-child {
   margin-top: 32px;
 }
-.right-side-nav > *:last-child {
+
+.right-side-nav>*:last-child {
   margin-bottom: 32px;
 }
 
@@ -417,8 +422,13 @@ const emit = defineEmits(['close'])
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) rotate(45deg); }
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
 }
 
 .ad-content {
@@ -509,6 +519,7 @@ const emit = defineEmits(['close'])
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -522,4 +533,4 @@ const emit = defineEmits(['close'])
     padding: 20px;
   }
 }
-</style> 
+</style>

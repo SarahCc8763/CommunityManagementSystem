@@ -54,20 +54,20 @@
           管理後台
         </button>
       </div>
-      
+
       <!-- 通知中心彈出 -->
-      <div v-if="isNotificationCenterOpen" class="notification-center" ref="notificationCenterRef" >
+      <div v-if="isNotificationCenterOpen" class="notification-center" ref="notificationCenterRef">
         <!-- 你可以放列表、已讀未讀、捲軸等 -->
         <div class="notification-header">
           <h3>通知中心</h3>
-        </div>  
+        </div>
         <ul v-if="notifications.length > 0" class="notification-list">
           <li v-for="notice in notifications" :key="notice.unitsNotificationsId" class="notification-item">
             <p class="title">{{ notice.title }}</p>
             <!-- <small>{{ notice.description }}</small> -->
           </li>
         </ul>
-      <!-- 沒有通知時 -->
+        <!-- 沒有通知時 -->
         <div v-else class="notification-empty">
           尚無新通知
         </div>
@@ -89,6 +89,7 @@ import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import Logo from '@/assets/images/main/Logo.jpg'
 import { useFacilitiesStore } from '@/stores/FacilitiesStore'
+
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const path = import.meta.env.VITE_API_URL
@@ -181,7 +182,7 @@ const triggerLogin = () => {
 // 處理登入成功
 const handleLoginSuccess = (loginData) => {
   isLoggedIn.value = true
-  user.value.name = loginData.username
+  userStore.name = loginData.username
 }
 
 // 登入登出切換
@@ -261,6 +262,16 @@ const handleGlobalLogout = () => {
   isLoggedIn.value = false
 }
 
+// 點擊header主選單大標題時的導頁行為
+const handleMainNavClick = (category) => {
+  // 只針對「繳費資訊」大標題導向繳費總覽（FinUser）
+  if (category.title === '繳費資訊') {
+    router.push({ name: 'FinUser' })
+    activeIndex.value = null // 點擊後收起下拉選單
+  }
+  // 其他大標題維持原本展開下拉選單的行為
+}
+
 onMounted(() => {
   // 監聽全局登入成功事件
   window.addEventListener('login-success', handleGlobalLoginSuccess)
@@ -272,8 +283,6 @@ onMounted(() => {
   // if (userStore.isAuthenticated) {
   //   user.value.name = userStore.name
   // }
-  //不要解開!!!!!
-
 })
 
 onUnmounted(() => {
@@ -349,7 +358,6 @@ const menuList = ref([
       { label: '我的車位', key: 'MYPARK', routeName: 'mySlots' },
       { label: '使用者承租車位', key: 'PARKRENT', routeName: 'parkRentalFront' },
       { label: '抽籤申請', key: 'PARKAPP', routeName: 'lotteryApply' },
-
     ]
   },
   {
@@ -362,10 +370,12 @@ const menuList = ref([
   }
 ])
 
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
+
 onMounted(() => {
   // loadCommunityFunctions()
-
-  window.addEventListener('refresh-community-functions', loadCommunityFunctions)
 })
 
 onUnmounted(() => {
@@ -380,6 +390,7 @@ async function loadCommunityFunctions() {
 
     if (Array.isArray(res.data)) {
       communityFunctions.value = res.data
+
       finalMenuList.value = menuList.value
         .filter(module => communityFunctions.value.includes(module.key))
         .map(module => ({
@@ -394,18 +405,19 @@ async function loadCommunityFunctions() {
   }
 }
 
-const props = defineProps({
-  isDarkMode: { type: Boolean, default: false }
-})
+
+
 
 </script>
+
 
 <style scoped>
 /* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 /* 通知中心---------------------------------------------------------------- */
 .notification-center {
   position: absolute;
-  top: 60px; /* 根據頭像位置調整 */
+  top: 60px;
+  /* 根據頭像位置調整 */
   right: 20px;
   width: 300px;
   max-height: 400px;
@@ -413,7 +425,7 @@ const props = defineProps({
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 16px;
   z-index: 1000;
 }
