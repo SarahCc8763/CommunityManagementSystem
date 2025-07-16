@@ -1,6 +1,6 @@
 <template>
   <div class="admin-dashboard-bg py-5">
-    <div class="container-xl">
+    <div class="container-xl" style="margin-left: 20%;">
       <h2 class="fw-bold text-info mb-4">財務管理員專區</h2>
       <!-- 教學/說明區塊 -->
       <div class="card bg-dark text-light shadow p-4 mb-5">
@@ -389,6 +389,7 @@ onMounted(() => {
 
 .admin-dashboard-bg {
   min-height: 100vh;
+
   background: linear-gradient(135deg, #23272b 0%, #1a1d20 100%);
 }
 
@@ -454,6 +455,10 @@ onMounted(() => {
   overflow: hidden;
   transition: max-height 0.4s ease;
   background: #1a1d20;
+
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+
 }
 
 .tutorial-content.expanded {
@@ -462,5 +467,6 @@ onMounted(() => {
 
 .tutorial-content-inner {
   padding: 1.5rem;
+
 }
 </style>

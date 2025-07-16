@@ -111,11 +111,7 @@ const router = createRouter({
 
     // Finance相關
     //// Fin-Admin
-    {
-      path: '/BeforeLogIn',                // 你要把 BeforeLogin 當首頁的話
-      name: 'BeforeLogIn',
-      component: BeforeLogIn
-    },
+
     {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
