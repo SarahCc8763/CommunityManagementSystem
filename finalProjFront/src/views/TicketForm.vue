@@ -21,7 +21,7 @@
       <div class="mb-3">
         <label class="label">問題描述</label>
         <QuillEditor style="min-height:300px" v-model:content="form.description" contentType="html"
-          placeholder="Describe the issue..." class="input" />
+          placeholder="     Describe the issue..." class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
           <p>📎 拖曳圖片到這裡，或 <span @click="fileInput.click()" class="text-primary">點選上傳</span></p>
@@ -210,7 +210,41 @@ async function handleSubmit() {
 <style scoped>
 .container {
   max-width: 1200px !important;
-  margin: 0 auto !important;
-  padding: 0 24px !important;
+  margin: 40px auto 40px auto !important; /* ⬅️ 上60px，下40px */
+  padding: 24px !important;
 }
+:deep(.ql-container) {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+:deep(.ql-toolbar) {
+  background-color: transparent;
+  border: none;
+  padding: 0 0 6px 0;
+  margin-bottom: 6px;
+}
+
+:deep(.ql-editor) {
+  width: 100%; /* ✅ 讓它撐滿 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  background-color: #fff;
+  min-height: 300px;
+  box-sizing: border-box; /* ✅ 保證 padding 不會把寬撐大 */
+  transition: border 0.2s;
+}
+
+:deep(.ql-editor:focus) {
+  border-color: #6ca0f6;
+  outline: none;
+}
+
+
+
+
 </style>

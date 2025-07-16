@@ -85,9 +85,9 @@
       <div class="mb-3">
         <label class="label">Status</label>
         <select v-model="ticket.status" @change="saveStatus" class="form-control">
-          <option value="To Do">To Do</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Done">Done</option>
+          <option value="To Do">TO DO</option>
+          <option value="In Progress">IN PROGRESS</option>
+          <option value="Done">DONE</option>
         </select>
       </div>
       <div class="mb-3">

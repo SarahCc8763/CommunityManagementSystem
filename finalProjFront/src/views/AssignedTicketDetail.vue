@@ -1,6 +1,6 @@
 <template>
   <div class="modal-mask" @click.self="$emit('close')">
-    <div class="modal-container p-4">
+    <div class="modal-container p-4 bg-dark text-light">
       <h4 class="mb-3">📝 報修單詳細資訊</h4>
       <p class="d-flex align-items-center">
         <strong class="me-2">標題：</strong>

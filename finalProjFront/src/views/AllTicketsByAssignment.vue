@@ -11,14 +11,14 @@
       />
 </div>
 
+
 <!-- 篩選條件 -->
-<!-- 篩選條件 -->
-<div class="card p-3 mb-3 shadow-sm">
+<div class="card p-3 mb-3 shadow-sm bg-dark text-light">
   <div class="row">
 <!-- 問題種類 -->
-<div class="col-md-6 mb-3 position-relative">
+<div class="col-md-6 mb-3 position-relative ">
   <label class="form-label">問題種類</label>
-  <div class="selected-tags mb-1">
+  <div class="selected-tags mb-1 ">
     <span
       v-for="(name, idx) in filter.issueTypeNames"
       :key="idx"
@@ -31,7 +31,7 @@
 
   <div class="custom-multiselect" @click.stop="toggleDropdown">
     <div class="select-box">
-      <span class="text-muted">
+      <span class="text-light">
         {{ filter.issueTypeNames.length ? '已選擇 ' + filter.issueTypeNames.length + ' 項' : '請選擇問題種類（可複選）' }}
       </span>
       <i class="bi bi-chevron-down float-end"></i>
@@ -40,7 +40,7 @@
     <!-- Dropdown 清單 -->
     <ul
       v-if="showDropdown"
-      class="dropdown-list"
+      class="dropdown-list bg-dark text-light"
       @click.stop
     >
       <li
@@ -60,18 +60,18 @@
     <!-- 狀態 -->
     <div class="col-md-6 mb-3">
       <label class="form-label">狀態</label>
-      <select class="form-select" v-model="filter.status">
-        <option value="">全部</option>
-        <option value="to do">待處理</option>
-        <option value="doing">處理中</option>
-        <option value="done">已完成</option>
+      <select class="form-select bg-dark" v-model="filter.status">
+        <option value="">ALL</option>
+        <option value="to do">TO DO</option>
+        <option value="doing">IN PROGRESS</option>
+        <option value="done">DONE</option>
       </select>
     </div>
 
     <!-- 通報人 -->
     <div class="col-md-6 mb-3">
       <label class="form-label">通報人</label>
-      <select class="form-select" v-model="filter.reporter">
+      <select class="form-select bg-dark" v-model="filter.reporter">
         <option value="">全部</option>
         <option v-for="u in users" :key="u.id" :value="u.name">
           {{ u.name }}
@@ -81,8 +81,8 @@
 
     <!-- 建立時間 -->
     <div class="col-md-6 mb-3">
-      <label class="form-label">建立時間</label>
-      <input type="date" class="form-control" v-model="filter.startDate" />
+      <label class="form-label ">建立時間</label>
+      <input type="date" class="form-control bg-dark" v-model="filter.startDate" />
     </div>
   </div>
 </div>
@@ -90,11 +90,11 @@
 
 
     <!-- ✅ 已指派 -->
-    <div class="mb-5">
-      <h4 class="text-success">✅ 已指派報修單</h4>
+    <div class="mb-5 " >
+      <h4 class="text-success ">✅ 已指派報修單</h4>
       <div v-if="assignedTickets.length">
         <div v-for="ticket in assignedTickets" :key="ticket.id" class="card mb-3 p-3 
-        shadow-sm" @click="openDetail(ticket)">
+        shadow-sm bg-dark text-light" @click="openDetail(ticket)">
 
 
         <span
@@ -344,9 +344,9 @@ watch([searchText, filter], async () => {
 
 function formatStatus(status) {
   switch (status) {
-    case "to do": return '待處理'
-    case "In Progress": return '處理中'
-    case "Done": return '已完成'
+    case "to do": return 'TO DO'
+    case "In Progress": return 'IN PROGRESS'
+    case "Done": return ''
     default: return '未知'
   }
 }
@@ -561,10 +561,11 @@ img {
 /* 多選下拉外框 */
 .custom-multiselect {
   position: relative;
-  border: 1px solid #ced4da;
+  border: 1px solid #495057;
   border-radius: 0.375rem;
   padding: 0.375rem 0.75rem;
-  background-color: #fff;
+  background-color: #1e1e2f; /* 深色背景 */
+  color: #f8f9fa; /* 白字 */
   cursor: pointer;
   min-height: 38px;
   user-select: none;
@@ -573,6 +574,7 @@ img {
 /* 文字區（例如「請選擇」） */
 .select-box {
   user-select: none;
+  color: inherit;
 }
 
 /* 下拉選單列表 */
@@ -626,6 +628,9 @@ img {
 .tag i {
   margin-left: 0.25rem;
   cursor: pointer;
+}
+.bg-dark {
+  background-color: #1e1e2f !important;
 }
 
 </style>

@@ -88,10 +88,10 @@ style="width: 24px; height: 24px; cursor: pointer;"
   <div class="mb-3">
     <label class="form-label">狀態</label>
     <select class="form-select" v-model="filter.status">
-      <option value="">全部</option>
-      <option value="to do">待處理</option>
-      <option value="In Progress">處理中</option>
-      <option value="Done">已完成</option>
+      <option value="">All</option>
+      <option value="to do">TO DO</option>
+      <option value="In Progress">IN PROGRESS</option>
+      <option value="Done">DONE</option>
     </select>
   </div>
 </div>
@@ -240,7 +240,7 @@ return plain.length > length ? plain.slice(0, length) + '...' : plain
 
 
 const currentPage = ref(1)
-const pageSize = ref(5) // 每頁幾筆資料
+const pageSize = ref(10) // 每頁幾筆資料
 const pagedTickets = computed(() => {
 const start = (currentPage.value - 1) * pageSize.value
 const end = start + pageSize.value
