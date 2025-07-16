@@ -31,7 +31,7 @@
                     class=" border p-3 rounded bg-light shadow-sm my-1">
                     <span class="fs-6 text-secondary fw-normal">{{ bulletin.postStatus ? '（已發佈）' :
                         "（草稿）"
-                    }}</span>
+                        }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="fw-bold text-dark fs-5"><span v-if="bulletin.isPinned">[置頂]</span>
                             {{ bulletin.title }} <span v-if="bulletin.poll"
@@ -47,7 +47,7 @@
                     <div class="mb-2">
                         <span class="badge  me-2 fw-normal" style="font-size: 80%;background-color: #BEBEBE;">{{
                             bulletin.categoryName
-                            }}</span>
+                        }}</span>
                         <span class="text-muted small">發布人：{{ bulletin.userName }}</span>
                     </div>
                     <p class="text-truncate text-muted small mb-3 fs-6">

@@ -209,6 +209,14 @@ function removeExistingAttachment(index) {
     form.value.existingAttachments.splice(index, 1)
 }
 async function submitEdit() {
+    if (form.value.postTime >= form.value.removeTime) {
+        Swal.fire({
+            icon: 'error',
+            title: '失敗',
+            text: '發佈時間必須早於下架時間'
+        })
+        return
+    }
     const fileReads = form.value.existingAttachments
         .filter(att => att.file)
         .map(att => {

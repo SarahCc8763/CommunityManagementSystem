@@ -162,6 +162,14 @@ function removeExistingAttachment(index) {
 
 
 function submitEdit() {
+    if (form.value.postTime >= form.value.removeTime) {
+        Swal.fire({
+            icon: 'error',
+            title: '失敗',
+            text: '發佈時間必須早於下架時間'
+        })
+        return
+    }
     // 對所有有 file 的附件轉 base64
     const fileReads = form.value.existingAttachments
         .filter(att => att.file)

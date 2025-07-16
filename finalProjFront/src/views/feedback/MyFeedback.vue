@@ -81,6 +81,10 @@
                                                 @click="openEditModal(feedback.id)">
                                                 修改
                                             </button>
+                                            <button v-if="feedback.status != '已結案'"
+                                                class="btn btn-outline-secondary btn-sm" @click="delete (feedback.id)">
+                                                撤銷此案
+                                            </button>
                                         </div>
                                         <!-- 評分區塊 -->
                                         <div class="mt-3">
@@ -243,8 +247,11 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
         if (stepKey === '待處理') {
             Swal.fire({
                 icon: 'info',
-                title: `建立回饋 -> 待處理`,
-                html: `建立時間：${formatDateTime(feedback.submittedAt)}<br>建立人員：${feedback.frontEndData.userName}`
+                title: `「建立回饋」➜「待處理」`,
+                html: `
+                <div class="text-start " style="margin:0 15%">
+                建立時間：${formatDateTime(feedback.submittedAt)}
+                <br>建立人員：${feedback.frontEndData.userName}</div>`
             });
             return;
         }
@@ -256,8 +263,11 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
         // console.log(historyData.value);
         Swal.fire({
             icon: 'info',
-            title: `${historyData.value.oldStatus} -> ${historyData.value.newStatus}`,
-            html: `狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}`,
+            title: `「${historyData.value.oldStatus}」➜「${historyData.value.newStatus}」`,
+            html: `
+            <div class="text-start " style="margin:0 15%">
+            狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}
+            </div>`,
             showConfirmButton: true,
             confirmButtonText: '確定'
         });
@@ -328,6 +338,20 @@ const openEditModal = async (feedbackId) => {
     }
 }
 
+
+// delete
+const delete=async () => {
+    const confirm = await Swal.fire({
+        title: '確定要刪除嗎？',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定'
+    })
+    if (!confirm.isConfirmed) return
+
+}
 
 // 設定暫存評分
 const setRating = (feedback, star) => {

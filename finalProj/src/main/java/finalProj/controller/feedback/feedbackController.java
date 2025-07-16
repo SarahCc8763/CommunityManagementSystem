@@ -450,4 +450,25 @@ public class feedbackController {
         }
         return feedbackStatusHistoryService.findByFeedback_Id(feedbackId);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteFeedback(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (id == null) {
+            response.put("result", "未提供刪除意見所需資料");
+            log.warn("未提供刪除意見所需資料");
+        }
+        boolean deleted = feedbackService.deleteFeedback(id);
+
+        if (deleted) {
+            response.put("result", "刪除成功");
+            log.info("刪除意見成功");
+            return ResponseEntity.ok(response); // HTTP 200
+        } else {
+            response.put("result", "找不到此意見，無法刪除");
+            log.warn("找不到此意見，無法刪除");
+            return ResponseEntity.status(404).body(response); // ❗HTTP 404 錯誤
+        }
+    }
 }

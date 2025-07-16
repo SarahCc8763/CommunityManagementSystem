@@ -304,9 +304,14 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
         if (stepKey === '待處理') {
             Swal.fire({
                 icon: 'info',
-                title: `建立回饋 -> 待處理`,
-                html: `建立時間：${formatDateTime(feedback.submittedAt)}<br>建立人員：${feedback.frontEndData.userName}`
-            });
+                title: `「建立回饋」➜「待處理」`,
+                html: `
+                <div class="text-start " style="margin:0 15%">
+                建立時間：${formatDateTime(feedback.submittedAt)}
+                <br>建立人員：${feedback.frontEndData.userName}</div>`,
+                showConfirmButton: true,
+                confirmButtonText: '確定'
+            })
             return;
         }
         // 重新發送 API 請求獲取完整的歷史記錄
@@ -316,8 +321,11 @@ const showFeedbackHistoryDetail = async (feedback, stepKey) => {
         // console.log(historyData.value);
         Swal.fire({
             icon: 'info',
-            title: `${historyData.value.oldStatus} -> ${historyData.value.newStatus}`,
-            html: `狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}`,
+            title: `「${historyData.value.oldStatus}」➜「${historyData.value.newStatus}」`,
+            html: `
+            <div class="text-start " style="margin:0 15%">
+            狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}
+            </div>`,
             showConfirmButton: true,
             confirmButtonText: '確定'
         });
