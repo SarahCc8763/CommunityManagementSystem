@@ -85,14 +85,22 @@
             </div>
           </div>
           <div v-else-if="payMethod === 'credit'">
-            <div class="alert alert-success">即將導向綠界線上刷卡頁面（模擬）</div>
-            <div class="mb-2">
-              <label>留言（選填）</label>
-              <input v-model="remitNote" class="form-control" />
+            <div class="alert alert-info mb-2">
+              請點選下方「前往刷卡」按鈕，系統將導引您至由綠界科技提供的安全線上刷卡頁面。<br><br>
+              <span class="text-danger">
+                請於 {{ formatDate(currentInvoice.deadline) }} 前完成付款，以利管理員確認並寄發繳費提醒。
+              </span>
             </div>
-            <button class="btn btn-success w-100" @click="goCredit">前往刷卡</button>
-            <button class="btn btn-primary w-100 mt-2" @click="submitRemit">送出回覆</button>
+
+            <button class="btn btn-success w-100" @click="goCredit">
+              前往刷卡
+            </button>
+
+            <button class="btn btn-secondary text-end mt-2" @click="closePayModal">
+              返回
+            </button>
           </div>
+
           <div v-else-if="payMethod === 'cash'">
             <div class="alert alert-warning">
               辦公室時間為 9:00~17:00，請於上班時間至管理室櫃檯繳費。<br>
@@ -278,6 +286,23 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 強制輸入欄與下拉框維持淺色背景 */
+.modal-container input.form-control,
+.modal-container select.form-select {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da;
+}
+
+/* focus 時也維持白底 */
+.modal-container input.form-control:focus,
+.modal-container select.form-select:focus {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
 /* 把SweetAlert放上面 */
 .swal-on-top {
   z-index: 99999 !important;

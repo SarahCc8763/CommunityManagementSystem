@@ -17,7 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import finalProj.domain.community.Community;
 import finalProj.domain.facilities.PointAccountsBean;
 import finalProj.domain.facilities.PointTransactionsBean;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
 import finalProj.domain.users.Units;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.service.facilities.PointAccountsService;
 import finalProj.service.facilities.PointTransactionsService;
 import finalProj.util.EcpayUtils;
@@ -33,6 +37,12 @@ public class EcpayCallbackController {
 
 	@Autowired
 	private PointTransactionsService pointTransactionsService;
+
+	@Autowired
+    NotificationsRepository notificationsRepository;
+
+    @Autowired
+    UnitsNotificationsRepository unitsNotificationsRepository;
 
 	private static final String HASH_KEY = "5294y06JbISpM5x9";
 	private static final String HASH_IV = "v77hoKGq4kWxNNIS";
@@ -98,6 +108,21 @@ public class EcpayCallbackController {
 			tx.setTransactionDescription("ECPay付款：" + merchantTradeNo);
 			tx.setCreatedAt(LocalDateTime.now());
 			pointTransactionsService.create(tx);
+
+
+			// === 建立儲值 Notifications ===
+			Notifications notification = new Notifications();
+			notification.setTitle("儲值成功");
+			notification.setDescription("您已成功透過綠界儲值" + amount + "點");	
+			notification.setCreatedTime(LocalDateTime.now());
+			notification.setCommunity(unit.getCommunity());
+			notificationsRepository.save(notification);
+			
+			UnitsNotifications unitsNotifications = new UnitsNotifications();
+			unitsNotifications.setNotifications(notification);
+			unitsNotifications.setUnits(unit);
+			unitsNotificationsRepository.save(unitsNotifications);
+
 
 			System.out.println("✅ Step 4 成功儲值：" + amount + " 點，帳戶 ID：" + accountId + "，訂單：" + merchantTradeNo);
 

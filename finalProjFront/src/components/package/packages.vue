@@ -7,8 +7,8 @@
             <thead>
                 <tr>
                     <th>編號</th>
+                    <th>件數</th>
                     <th>包裹描述</th>
-                    <th>到達時間</th>
                     <th>到達時間</th>
                     <th>放置地點</th>
                     <th>領取狀態</th>

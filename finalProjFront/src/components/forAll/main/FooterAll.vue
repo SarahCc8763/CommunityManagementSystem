@@ -19,7 +19,6 @@
             <div>地址：12345 假地址市 建設路100號</div>
           </div>
         </div>
-
         <!-- 快速導覽 -->
         <div class="col-md-2 mb-4">
           <h6 class="text-uppercase fw-bold border-bottom pb-1 mb-3">快速導覽</h6>
@@ -30,7 +29,7 @@
             <li><a href="#" class="text-white text-decoration-none">聯絡我們</a></li>
           </ul>
         </div>
-
+        
         <!-- 法律資訊 -->
         <div class="col-md-3 mb-4">
           <h6 class="text-uppercase fw-bold border-bottom pb-1 mb-3">法務資訊</h6>
@@ -41,7 +40,7 @@
             <li><a href="#" class="text-white text-decoration-none">Cookie 政策</a></li>
           </ul>
         </div>
-
+        
         <!-- 電子報訂閱 -->
         <div class="col-md-3 mb-4">
           <h6 class="text-uppercase fw-bold text-light mb-3">訂閱電子報</h6>
@@ -50,7 +49,6 @@
             <div class="mb-2">
               <input type="email" class="form-control form-control-sm" placeholder="輸入您的 Email" />
             </div>
-            <button type="submit" class="btn btn-sm btn-outline-light">訂閱</button>
           </form>
         </div>
       </div>
@@ -71,15 +69,15 @@
     </div>
   </footer>
 </template>
-
+  
 <script setup>
-// 無邏輯需要處理
 </script>
-
+  
 <style scoped>
 /* 圖示 hover 效果 */
 a i:hover {
   color: #ffc107;
   /* Bootstrap 警告色黃色 */
 }
+
 </style>

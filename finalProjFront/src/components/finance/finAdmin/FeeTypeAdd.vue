@@ -15,7 +15,7 @@
           <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
         </li>
         <li class="breadcrumb-item">
-          <a href="#" @click="goTo('financeBack')" class="text-decoration-none text-light">財務後台</a>
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
         </li>
         <li class="breadcrumb-item active text-white" aria-current="page">費用項目管理</li>
       </ol>
@@ -41,11 +41,11 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">費用代碼</label>
-                  <input v-model="form.feeCode" class="form-control" required placeholder="ex: MGMT2024" />
+                  <input v-model="form.feeCode" class="form-control" placeholder="ex: 25WP" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">名稱/描述</label>
-                  <input v-model="form.description" class="form-control" required placeholder="ex: 管理費" />
+                  <input v-model="form.description" class="form-control" placeholder="ex: 第四屆年度歡迎派對" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">單價</label>
@@ -58,7 +58,7 @@
                     <option value="每戶">每戶</option>
                     <option value="每坪">每坪</option>
                     <option value="每住戶">每住戶</option>
-                    <option value="每住戶">每人</option>
+                    <option value="每人">每人</option>
                     <option value="其他">其他</option>
                   </select>
                   <input v-if="form.unit === '其他'" v-model="customUnit" @input="form.unit = customUnit"
@@ -70,6 +70,7 @@
                     <option value="每月">每月</option>
                     <option value="每季">每季</option>
                     <option value="每年">每年</option>
+                    <option value="單次">單次收費</option>
                     <option value="其他">其他</option>
                   </select>
                   <input v-if="form.frequency === '其他'" v-model="customFrequency"
@@ -80,8 +81,8 @@
                   <input v-model="form.note" class="form-control" placeholder="ex: 限定現金交易" />
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">社區ID</label>
-                  <input v-model.number="form.communityId" type="number" class="form-control" disabled />
+                  <label class="form-label">建立者</label>
+                  <input v-model="form.createdBy" class="form-control" disabled />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">狀態</label>
@@ -223,13 +224,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios.js'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
 import { useUserStore } from '@/stores/UserStore'
+
+const userStore = useUserStore()
+const router = useRouter()
+const route = useRoute()
 
 const successMsg = ref('')
 const errorMsg = ref('')
@@ -238,20 +243,23 @@ const customFrequency = ref('')
 const editItem = ref({})
 const deleteTarget = ref(null)
 const feeTypes = ref([])
-const userStore = useUserStore()
-const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
 
-const form = ref({
+const getDefaultForm = () => ({
   feeCode: '',
   description: '',
   amountPerUnit: null,
   unit: '',
   frequency: '',
   note: '',
-  communityId: null,
+  communityId: userStore.communityId || null,
   status: true,
+  createdAt: new Date().toISOString(),
+  createdBy: userStore.userId,
+  updatedBy: userStore.userId,
 })
+
+const form = ref(getDefaultForm())
 
 const fetchFeeTypes = async () => {
   try {
@@ -265,24 +273,11 @@ const fetchFeeTypes = async () => {
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
-
   try {
     await axios.post('/finance/fee-types', form.value)
     successMsg.value = '新增成功！'
-    form.value = {
-      feeCode: '',
-      description: '',
-      amountPerUnit: null,
-      unit: '',
-      frequency: '',
-      note: '',
-      communityId: null,
-      status: true
-    }
-
-    // modal?.hide()
+    form.value = getDefaultForm()
     addModalInstance.hide()
-    // closeAddModal()
     await fetchFeeTypes()
   } catch (e) {
     if (e.response?.status === 409) {
@@ -291,12 +286,6 @@ const submitForm = async () => {
       errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
     }
   }
-}
-
-const openEditModal = (item) => {
-  editItem.value = { ...item }
-  const modal = new bootstrap.Modal(document.getElementById('editFeeTypeModal'))
-  modal.show()
 }
 
 const submitEditForm = async () => {
@@ -331,9 +320,6 @@ const deleteFeeType = async (id) => {
   }
 }
 
-// 麵包屑導航
-import { useRouter } from 'vue-router'
-const router = useRouter()
 const goTo = (target) => {
   switch (target) {
     case 'home':
@@ -342,23 +328,23 @@ const goTo = (target) => {
     case 'adminDashboard':
       router.push('/AdminDashboard')
       break
-    case 'parkingBack':
+    case 'finBack':
       router.push('/finance/admin-dashboard')
       break
   }
 }
 
-
-// 開 Modal 公式
-const addModalRef = ref(null) // 綁在Modal的ref上
-let addModalInstance = null // 定義一個變數來存 bootstrap.Modal 的實例
+const addModalRef = ref(null)
+let addModalInstance = null
 
 onMounted(() => {
+  fetchFeeTypes()
   addModalInstance = new bootstrap.Modal(addModalRef.value)
   form.value.communityId = userStore.communityId
 })
 
 const openAddModal = () => {
+  form.value = getDefaultForm()
   addModalInstance.show()
 }
 
@@ -366,6 +352,11 @@ const closeAddModal = () => {
   addModalInstance.hide()
 }
 
+const openEditModal = (item) => {
+  editItem.value = { ...item }
+  const modal = new bootstrap.Modal(document.getElementById('editFeeTypeModal'))
+  modal.show()
+}
 </script>
 
 <style scoped>
@@ -375,10 +366,7 @@ const closeAddModal = () => {
   border-radius: 15px;
 }
 
-input::placeholder {
-  color: #6b7074;
-}
-
+/* 麵包屑 */
 .breadcrumb-item+.breadcrumb-item::before {
   content: ">";
   color: #ccc;

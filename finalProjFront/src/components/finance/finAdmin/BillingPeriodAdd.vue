@@ -1,5 +1,21 @@
 <template>
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">繳費期間設定</li>
+      </ol>
+    </nav>
     <BannerImage :imageSrc="bannerImg" heading="繳費期間設定" subtext=" 輕鬆管理各期繳費時間，包括查看現有期別、調整設定，或新增新的繳費期間。"
       textAlign="left" />
   </div>
@@ -74,7 +90,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">建立者</label>
-                  <input v-model="form.createdBy" class="form-control" />
+                  <input v-model="form.createdBy" class="form-control" disabled />
                 </div>
 
               </div>
@@ -386,6 +402,23 @@ const openAddModal = () => {
 const closeAddModal = () => {
   addModalInstance.hide()
 }
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
+}
 </script>
 
 <style scoped>
@@ -441,5 +474,14 @@ const closeAddModal = () => {
 input::placeholder {
   color: #5d5d5d !important;
   opacity: 1;
+}
+
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

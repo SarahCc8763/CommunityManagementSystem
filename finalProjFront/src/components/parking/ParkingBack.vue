@@ -30,7 +30,7 @@
             <div class="card-body d-flex align-items-center">
               <i class="bi bi-car-front fs-1 me-3 text-white"></i>
               <div>
-                <h5 class="card-title mb-1 fw-bold text-white">社區停車位管理</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">停車場車位管理</h5>
                 <p class="card-text text-muted">查看社區所有車位，管理車位資料。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('slots')">前往</button>
               </div>
@@ -44,7 +44,7 @@
             <div class="card-body d-flex align-items-center">
               <i class="bi bi-calendar-check fs-1 me-3 text-white"></i>
               <div>
-                <h5 class="card-title mb-1 fw-bold text-white">車位承租紀錄管理</h5>
+                <h5 class="card-title mb-1 fw-bold text-white">承租紀錄管理</h5>
                 <p class="card-text text-muted">社區承租車位歷史紀錄與管理。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('rental')">前往</button>
               </div>
@@ -59,7 +59,7 @@
               <i class="bi bi-box2-heart fs-1 me-3 text-white"></i>
               <div>
                 <h5 class="card-title mb-1 fw-bold text-white">抽籤活動管理</h5>
-                <p class="card-text text-muted">建立車位抽籤活動，查看申請人，抽籤公告。</p>
+                <p class="card-text text-muted">建立車位抽籤活動，查看申請人，抽籤結果。</p>
                 <button class="btn btn-outline-primary btn-sm" @click="goTo('lottery')">前往</button>
               </div>
             </div>
@@ -144,5 +144,8 @@
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.7);
   transform: scale(1.1);
 }
-  </style>
-  
+
+.text-muted {
+  color: #ccc !important;
+}
+</style>

@@ -33,7 +33,7 @@ public class ParkingTypeService {
 	public List<ParkingType> replaceTypesByCommunity(Integer communityId, List<ParkingType> inputTypes) {
 		Optional<Community> communityOpt = communityRepository.findById(communityId);
 		if (communityOpt.isEmpty()) {
-			return null;
+			throw new IllegalArgumentException("無社區資料");
 		}
 
 		Community community = communityOpt.get();

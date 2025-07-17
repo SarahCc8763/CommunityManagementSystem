@@ -20,7 +20,7 @@
       </div>
       <div class="info-item">
         <span class="info-label">下個繳款截止日</span>
-        <span class="info-value">2024-07-31</span>
+        <span class="info-value">2024-08-31</span>
       </div>
       <div class="info-item">
         <span class="info-label">未繳帳單數</span>
@@ -51,7 +51,7 @@
 <script setup>
 //我可不可以先寫死資料就好 QwQ 
 import { onMounted, ref } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 
 
@@ -64,7 +64,7 @@ onMounted(async () => {
       console.error('❌ 無法取得登入者社區 ID')
       return
     }
-    const res = await axios.get(`http://localhost:8080/communitys/${communityId}`)
+    const res = await axios.get(`/communitys/${communityId}`)
     selectedCommunity.value = res.data
   } catch (err) {
     console.error('❌ 載入失敗', err)
