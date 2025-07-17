@@ -88,10 +88,10 @@ style="width: 24px; height: 24px; cursor: pointer;"
   <div class="mb-3">
     <label class="form-label">狀態</label>
     <select class="form-select" v-model="filter.status">
-      <option value="">全部</option>
-      <option value="to do">待處理</option>
-      <option value="In Progress">處理中</option>
-      <option value="Done">已完成</option>
+      <option value="">All</option>
+      <option value="to do">TO DO</option>
+      <option value="In Progress">IN PROGRESS</option>
+      <option value="Done">DONE</option>
     </select>
   </div>
 </div>
@@ -131,7 +131,7 @@ style="width: 24px; height: 24px; cursor: pointer;"
           <tr>
             <th></th>
             <!-- <th><input type="checkbox" /></th> -->
-            <th>ID</th>
+            <th>編號</th>
             <th>標題</th>
             <th>狀態</th>
             <th>指派人</th>
@@ -147,14 +147,16 @@ style="width: 24px; height: 24px; cursor: pointer;"
               <td @click.stop="toggleExpanded(ticket.id)" class="text-center text-primary">▶</td>
               <!-- <td><input type="checkbox" /></td> -->
               <td>T-{{ ticket.id }}</td>
-              <td class="text-primary font-semibold">{{ ticket.title }}</td>
+              <td class="title-cell text-primary font-semibold" :title="ticket.title">
+                {{ ticket.title }}
+              </td>
               <td>
                 <span class="badge" :class="statusClass(ticket.status)">
                   {{ ticket.status }}
                 </span>
               </td>
               <td>
-                <div class="avatar">{{ getInitials(ticket.assigner) }}</div> {{ ticket.assigner ??'未指派'}}
+                <div class="avatar">{{ getInitials(ticket.assignerName) }}</div> {{ ticket.assignerName ??'未指派'}}
               </td>
                 <td>
                 <div class="avatar">{{ getInitials(ticket.name) }}</div>
@@ -240,7 +242,7 @@ return plain.length > length ? plain.slice(0, length) + '...' : plain
 
 
 const currentPage = ref(1)
-const pageSize = ref(5) // 每頁幾筆資料
+const pageSize = ref(10) // 每頁幾筆資料
 const pagedTickets = computed(() => {
 const start = (currentPage.value - 1) * pageSize.value
 const end = start + pageSize.value
@@ -594,7 +596,12 @@ font-size: 13px;
 display: flex;
 align-items: center;
 }
-
+.title-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 </style>
 

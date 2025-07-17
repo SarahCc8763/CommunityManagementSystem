@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/" class="logo" style="cursor:pointer;">
+    <router-link to="/home" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
     <nav class="nav">
@@ -125,7 +125,7 @@ const notifications = ref([])   // ⬅️ 全局通知陣列
 
 // 輪詢邏輯
 const unitId = userStore.unitId
-
+console.log("unitId = " + unitId);
 async function pollNotifications() {
   try {
     const res = await axios.get(`/notifications/unit/${unitId}`)
@@ -231,7 +231,7 @@ const logout = () => {
   finalMenuList.value = []
 
 
-  router.push('/BeforeLogIn')
+  router.push('/')
   // 觸發全局登出事件（可有可無）
   window.dispatchEvent(new CustomEvent('logout'))
 
@@ -355,14 +355,6 @@ const menuList = ref([
       { label: '繳費總覽', routeName: 'FinUser', key: 'FINUSER' },
       { label: '待繳帳單', routeName: 'Invoice', key: 'INVOICEBILL' },
       { label: '繳費紀錄', routeName: 'Receipt', key: 'RECEIPT' },
-    ]
-  },
-  {
-    title: '會員服務',
-    key: 'MANBERSERVICE',
-    children: [
-      { label: '會員資訊修改', routeName: 'member-profile-edit', key: 'MANBERSERVICEEDIT' },
-      { label: '點數轉贈', routeName: 'points-transfer', key: 'MANBERSERVICETRANSFER' }
     ]
   },
   {
@@ -882,4 +874,27 @@ body {
     padding: 1px 4px;
   }
 }
+.admin-button {
+  background-color: #343a40; /* 深灰色背景 */
+  color: #fff; /* 白字 */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.admin-button:hover {
+  background-color: #495057; /* hover 淺一點 */
+  transform: translateY(-2px);
+}
+
+.admin-button:active {
+  background-color: #212529;
+  transform: scale(0.98);
+}
+
 </style>

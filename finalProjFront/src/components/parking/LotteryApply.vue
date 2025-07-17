@@ -1,5 +1,18 @@
 <template>
   <div class="container mt-4">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('parkingFront')" class="text-decoration-none">停車場</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">抽籤活動申請</li>
+      </ol>
+    </nav>
+
     <div class="tag-style px-4 py-2 mb-4">
       <h2 class="mb-0 fw-bold text-primary section-title">抽籤活動申請</h2>
     </div>
@@ -143,6 +156,7 @@ async function cancelApply(applyId,event) {
   }
 }
 
+
 // 查詢某活動的中獎名單
 async function viewWinners(event) {
   // 判斷活動是否已抽籤並結束
@@ -161,6 +175,20 @@ async function viewWinners(event) {
     // 確認登入者是否中籤
     const userWinner = winners.find(w => w.userId === userId)
     const isWinner = !!userWinner
+    
+    await Swal.fire({
+      title: '抽籤進行中...',
+      html: `
+      <div class="d-flex flex-column align-items-center">
+        <img src="/images/parking/Fortune wheel.gif" style="width: 240px;" />
+        <div class="mt-2">請稍候，正在揭曉結果...</div>
+        </div>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        timer: 2500
+      })
 
     await Swal.fire({
       icon: isWinner ? 'success' : 'info',
@@ -207,6 +235,20 @@ onMounted(() => {
   fetchEvents()
   fetchAppliedEvents()
 })
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'parkingFront':
+            router.push('/pages/park/parking-front')
+            break
+        }
+    }
 </script>
 
 <style scoped>
