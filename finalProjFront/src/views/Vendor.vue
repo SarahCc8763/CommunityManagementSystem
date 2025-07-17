@@ -3,7 +3,7 @@
     <h2 class="mb-4 text-light">🏢 廠商總覽</h2>
 
     <!-- 🔹 新增廠商表單 -->
-    <div class="card p-4 mb-4 shadow-sm text-dark">
+    <div class="card p-4 mb-4 shadow-sm bg-dark text-light">
       <h5>➕ 新增廠商</h5>
       <div class="row">
         <div class="col-md-4 mb-2">
@@ -32,62 +32,90 @@
       </div>
     </div>
 
-    <!-- 🔹 廠商卡片列表 -->
-    <div class="mt-4">
-      <div
-        class="vendor-card card mb-3 p-3 text-light bg-dark border-light"
-        v-for="vendor in vendors"
-        :key="vendor.vendorID"
-        @click="toggleExpanded(vendor.vendorID)"
-      >
-        <!-- 🔸 基本資訊 -->
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-1">{{ vendor.vendorName }}</h5>
-            <p class="mb-0">👤 {{ vendor.contactPerson }}　📞 {{ vendor.phoneNumber }}</p>
+    <!-- 🔹 廠商卡片列表與分頁 -->
+    <div class="vendor-list-wrapper position-relative d-flex mt-4">
+      <div class="flex-grow-1">
+        <div
+          class="vendor-card card mb-3 p-3 text-light bg-dark border-light"
+          v-for="vendor in paginatedVendors"
+          :key="vendor.vendorID"
+          @click="toggleExpanded(vendor.vendorID)"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">{{ vendor.vendorName }}</h5>
+              <p class="mb-0">👤 {{ vendor.contactPerson }}　📞 {{ vendor.phoneNumber }}</p>
+            </div>
+            <span class="badge bg-secondary">#{{ vendor.vendorID }}</span>
           </div>
-          <span class="badge bg-secondary">#{{ vendor.vendorID }}</span>
-        </div>
 
-        <!-- 🔸 展開區塊 -->
-        <div v-if="expandedId === vendor.vendorID" class="mt-3 border-top pt-3">
-          <!-- 編輯中 -->
-          <div v-if="editingId === vendor.vendorID" @click.stop>
-            <div class="mb-2">
-              <label class="form-label">地址</label>
-              <input v-model="editableVendor.address" class="form-control" />
+          <div v-if="expandedId === vendor.vendorID" class="mt-3 border-top pt-3">
+            <div v-if="editingId === vendor.vendorID" @click.stop>
+              <div class="mb-2">
+                <label class="form-label">地址</label>
+                <input v-model="editableVendor.address" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">備註</label>
+                <input v-model="editableVendor.notes" class="form-control" />
+              </div>
+              <div class="text-end mt-3">
+                <button class="btn custom-save-btn me-2" @click.stop="saveVendor(vendor.vendorID)">💾 儲存</button>
+                <button class="btn custom-close-btn" @click.stop="cancelEdit">取消</button>
+              </div>
             </div>
-            <div class="mb-2">
-              <label class="form-label">備註</label>
-              <input v-model="editableVendor.notes" class="form-control" />
-            </div>
-            <div class="text-end mt-3">
-              <button class="btn custom-save-btn me-2" @click.stop="saveVendor(vendor.vendorID)">💾 儲存</button>
-              <button class="btn custom-close-btn" @click.stop="cancelEdit">取消</button>
-            </div>
-          </div>
-          <!-- 查看中 -->
-          <div v-else>
-            <p class="mb-1">🏠 地址：{{ vendor.address || '（無）' }}</p>
-            <p class="mb-1">📝 備註：{{ vendor.notes || '（無）' }}</p>
-            <div class="text-end mt-3">
-              <button class="btn custom-edit-btn" @click.stop="startEditing(vendor)">✏️ 編輯</button>
+            <div v-else>
+              <p class="mb-1">🏠 地址：{{ vendor.address || '（無）' }}</p>
+              <p class="mb-1">📝 備註：{{ vendor.notes || '（無）' }}</p>
+              <div class="text-end mt-3">
+                <button class="btn custom-edit-btn" @click.stop="startEditing(vendor)">✏️ 編輯</button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="vertical-pagination">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="page-btn"
+          :class="{ active: currentPage === page }"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios'
 
 const vendors = ref([])
 const expandedId = ref(null)
 const editingId = ref(null)
 const editableVendor = ref({})
+
+const currentPage = ref(1)
+const pageSize = 3
+
+const paginatedVendors = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return vendors.value.slice(start, start + pageSize)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(vendors.value.length / pageSize)
+})
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
 
 const newVendor = ref({
   vendorName: '',
@@ -97,7 +125,6 @@ const newVendor = ref({
   note: ''
 })
 
-// 🔄 讀取列表
 async function fetchVendors() {
   try {
     const res = await axios.get('/vendors')
@@ -107,7 +134,6 @@ async function fetchVendors() {
   }
 }
 
-// ➕ 新增廠商
 async function createVendor() {
   try {
     await axios.post('/vendors', newVendor.value)
@@ -124,25 +150,21 @@ async function createVendor() {
   }
 }
 
-// 展開或收合
 function toggleExpanded(id) {
   expandedId.value = expandedId.value === id ? null : id
   editingId.value = null
 }
 
-// 開始編輯
 function startEditing(vendor) {
   editingId.value = vendor.vendorID
   editableVendor.value = { ...vendor }
 }
 
-// 取消編輯
 function cancelEdit() {
   editingId.value = null
   editableVendor.value = {}
 }
 
-// 儲存
 async function saveVendor(id) {
   try {
     await axios.put(`/vendors/${id}`, editableVendor.value)
@@ -166,7 +188,6 @@ onMounted(fetchVendors)
   background-color: #1e1e1e;
 }
 
-/* 🔘 按鈕樣式 */
 .custom-save-btn {
   background: linear-gradient(to right, #00c9a7, #007d77);
   color: white;
@@ -189,5 +210,38 @@ onMounted(fetchVendors)
   border-radius: 20px;
   padding: 6px 16px;
   border: none;
+}
+
+.vendor-list-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.vertical-pagination {
+  position: absolute;
+  top: 0;
+  right: -60px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  font-weight: bold;
+  background-color: #2c2f36;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.page-btn.active {
+  background-color: #4e6ef2;
+}
+
+.page-btn:hover {
+  background-color: #444;
 }
 </style>

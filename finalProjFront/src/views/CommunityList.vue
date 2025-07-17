@@ -4,9 +4,9 @@
     <!-- 🔽 社區選擇 -->
 
 
-    <h2 class="mb-4">🏘 {{ selectedCommunity?.name || '社區' }} - 功能設定</h2>
+    <h2 class="mb-4">{{ selectedCommunity?.name || '社區' }} - 功能設定</h2>
 
-    <div v-if="selectedCommunity" class="card p-4 shadow-sm bg-light">
+    <div v-if="selectedCommunity" class="card p-4 shadow-sm bg-light bg-dark text-light">
       <div class="mb-3">
         <p><strong>社區名稱：</strong>{{ selectedCommunity.name }}</p>
         <p><strong>地址：</strong>{{ selectedCommunity.address }}</p>
@@ -20,7 +20,7 @@
             <input class="form-check-input" type="checkbox" :id="module.value" :checked="isModuleChecked(module)"
               @change="toggleMainFunction(module.value, module.children)" />
             <label class="form-check-label fw-bold" :for="module.value">
-              {{ module.value }} (主項)
+              {{ module.label }}
             </label>
           </div>
 

@@ -131,7 +131,7 @@ style="width: 24px; height: 24px; cursor: pointer;"
           <tr>
             <th></th>
             <!-- <th><input type="checkbox" /></th> -->
-            <th>ID</th>
+            <th>編號</th>
             <th>標題</th>
             <th>狀態</th>
             <th>指派人</th>
@@ -147,7 +147,9 @@ style="width: 24px; height: 24px; cursor: pointer;"
               <td @click.stop="toggleExpanded(ticket.id)" class="text-center text-primary">▶</td>
               <!-- <td><input type="checkbox" /></td> -->
               <td>T-{{ ticket.id }}</td>
-              <td class="text-primary font-semibold">{{ ticket.title }}</td>
+              <td class="title-cell text-primary font-semibold" :title="ticket.title">
+                {{ ticket.title }}
+              </td>
               <td>
                 <span class="badge" :class="statusClass(ticket.status)">
                   {{ ticket.status }}
@@ -594,7 +596,12 @@ font-size: 13px;
 display: flex;
 align-items: center;
 }
-
+.title-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 </style>
 

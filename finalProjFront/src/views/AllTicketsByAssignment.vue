@@ -63,8 +63,8 @@
       <select class="form-select bg-dark" v-model="filter.status">
         <option value="">ALL</option>
         <option value="to do">TO DO</option>
-        <option value="doing">IN PROGRESS</option>
-        <option value="done">DONE</option>
+        <option value="In Progress">IN PROGRESS</option>
+        <option value="Done">DONE</option>
       </select>
     </div>
 
@@ -158,17 +158,18 @@
 
         <!-- 右側：垂直分頁 -->
         <ul class="pagination flex-column ms-3">
-          <li
-            class="page-item"
-            v-for="page in assignedTotalPages"
-            :key="page"
-            :class="{ active: assignedPage === page }"
-            @click="assignedPage = page"
-            style="cursor: pointer"
-          >
-            <a class="page-link">{{ page }}</a>
-          </li>
-        </ul>
+  <li
+    class="page-item"
+    v-for="page in assignedTotalPages"
+    :key="page"
+    :class="{ active: assignedPage === page }"
+    @click="assignedPage = page"
+    style="cursor: pointer"
+  >
+    <a class="page-link">{{ page }}</a>
+  </li>
+</ul>
+
       </div>
     </div>
     <div v-else class="text-muted">目前沒有已指派的報修單</div>
@@ -328,17 +329,17 @@
 
       <!-- 右側分頁 -->
       <ul class="pagination flex-column ms-3">
-        <li
-          class="page-item"
-          v-for="page in unassignedTotalPages"
-          :key="'unassigned-' + page"
-          :class="{ active: unassignedPage === page }"
-          @click="unassignedPage = page"
-          style="cursor: pointer"
-        >
-          <a class="page-link">{{ page }}</a>
-        </li>
-      </ul>
+  <li
+    class="page-item"
+    v-for="page in unassignedTotalPages"
+    :key="'unassigned-' + page"
+    :class="{ active: unassignedPage === page }"
+    @click="unassignedPage = page"
+    style="cursor: pointer"
+  >
+    <a class="page-link">{{ page }}</a>
+  </li>
+</ul>
     </div>
   </div>
   <div v-else class="text-muted">目前沒有未指派的報修單</div>
@@ -460,7 +461,8 @@ async function applySearch() {
     reporterId,
     issueTypeNames: filter.value.issueTypeNames || []
   }
-
+  assignedPage.value = 1
+  unassignedPage.value = 1
   await fetchTickets(payload)
 }
 
@@ -474,6 +476,14 @@ function toggleExpanded(index) {
 }
 function openDetail(ticket) {
   const plain = JSON.parse(JSON.stringify(ticket))
+
+  console.log('🔍 原始 ticket.attachments:', ticket.attachments)
+  plain.attachments = (plain.attachments || []).map(a => ({
+    url: `data:image/png;base64,${a.file}`,
+    file: a.file,
+    fileName: a.fileName
+  }))
+  console.log('✅ 處理後 plain.attachments:', plain.attachments)
   selectedTicket.value = plain
   showDetailModal.value = true
 }
@@ -618,6 +628,10 @@ function formatDate(dateString) {
 function updateTicket(updatedTicket) {
   const index = tickets.value.findIndex(t => t.id === updatedTicket.id)
   if (index !== -1) {
+    updatedTicket.attachments = (updatedTicket.attachments || []).map(a => ({
+      ...a,
+      url: a.url || `data:image/png;base64,${a.file}`
+    }))
     // 保留原本的 assigned 狀態
     updatedTicket.assigned = tickets.value[index].assigned
     tickets.value[index] = { ...updatedTicket }
@@ -723,5 +737,47 @@ img {
 .bg-dark {
   background-color: #1e1e2f !important;
 }
+/* ✅ 新增：垂直分頁樣式 */
+.pagination.flex-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.pagination.flex-column .page-item {
+  list-style: none;
+}
+
+.pagination.flex-column .page-item a {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #2c2f36;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  border: none;
+  transition: all 0.2s;
+}
+
+.pagination.flex-column .page-item.active a {
+  background-color: #4e65f9;
+  color: #fff;
+  font-weight: bold;
+}
+
+.pagination.flex-column .page-item a:hover {
+  background-color: #4e65f9;
+  color: #fff;
+}
+
 
 </style>
