@@ -358,14 +358,6 @@ const menuList = ref([
     ]
   },
   {
-    title: '會員服務',
-    key: 'MANBERSERVICE',
-    children: [
-      { label: '會員資訊修改', routeName: 'member-profile-edit', key: 'MANBERSERVICEEDIT' },
-      { label: '點數轉贈', routeName: 'points-transfer', key: 'MANBERSERVICETRANSFER' }
-    ]
-  },
-  {
     title: '報修服務',
     key: 'TICKET',
     children: [

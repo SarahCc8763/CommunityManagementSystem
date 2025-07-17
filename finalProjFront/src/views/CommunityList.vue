@@ -109,14 +109,6 @@ const allFunctionOptions = [
     ]
   },
   {
-    label: '社區活動',
-    value: 'MANBERSERVICE',
-    children: [
-      { label: '會員資訊修改', key: 'MANBERSERVICEEDIT' },
-      { label: '點數轉贈', key: 'MANBERSERVICETRANSFER' }
-    ]
-  },
-  {
     label: '財務報表',
     value: 'INVOICE',
     children: [
