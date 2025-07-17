@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
@@ -290,7 +291,10 @@ public class BulletinController {
     public BulletinResponse searchBulletinBy(@RequestBody Bulletin body) {
         BulletinResponse response = new BulletinResponse();
 
-        List<Bulletin> list = bulletinService.findByCategoryAndTitle(body);
+        List<Bulletin> list = bulletinService.findByCategoryAndTitle(body)
+                .stream().filter(a -> a.getCommunity().getCommunityId() == body.getCommunity().getCommunityId())
+                .collect(Collectors.toList());
+        // System.out.println(list.get(0).getCommunity().getCommunityId());
 
         if (list.isEmpty()) {
             response.setMessage("查無資料");

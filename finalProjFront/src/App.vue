@@ -1,55 +1,34 @@
 <template>
   <div id="app" :class="{ 'dark-mode': route.meta?.dark }">
-
     <!--  <BeforeLogIn /> -->
-
-
     <HeaderAll :isDarkMode="isDarkMode" />
     <main class="main-content">
       <aside>
         <LeftSideNav :isDarkMode="isDarkMode" />
         <RightSideNav :show="showRightNav" @close="showRightNav = false" />
-
         <button class="right-nav-toggle" @click.stop="showRightNav = true">
           <i class="bi bi-layout-sidebar-inset"></i>
         </button>
-
         <div v-if="!showRightNav" class="drawer-tab" @click.stop="showRightNav = true">
           <i class="bi bi-chevron-left"></i>
           <span class="drawer-tab-text">更多</span>
         </div>
         <div v-if="showRightNav" class="drawer-mask" @click="showRightNav = false"></div>
       </aside>
-
       <div class="main-area" :class="[{ 'with-right-nav': showRightNav }, isDarkMode ? 'dark-mode' : '']"
         @click="showRightNav && (showRightNav = false)">
         <RouterView />
         <FeedbackModal />
-
       </div>
     </main>
-
     <FooterAll />
-
-
     <!-- 登入模態框 -->
     <LoginModal :isVisible="showLogin" @close="showLogin = false" @login-success="handleLoginSuccess" />
   </div>
 </template>
 
-
-
-
-
-
-
-
-
 <script setup>
-
 import BeforeLogIn from '@/views/BeforeLogIn.vue'
-
-
 //功能類import
 import { RouterLink, RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'

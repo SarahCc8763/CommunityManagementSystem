@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "feedback_status_history")
@@ -40,6 +41,20 @@ public class FeedbackStatusHistory {
 
     @Column(name = "feedback_status_history_changed_at", insertable = false)
     private LocalDateTime changedAt;
+
+    @Transient
+    private String changedByUserName;
+
+    public String getChangedByUserName() {
+        if (changedBy != null) {
+            changedByUserName = changedBy.getName();
+        }
+        return changedByUserName;
+    }
+
+    public void setChangedByUserName(String changedByUserName) {
+        this.changedByUserName = changedByUserName;
+    }
 
     // Getters and Setters
     public Integer getId() {

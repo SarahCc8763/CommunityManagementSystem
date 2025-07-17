@@ -8,7 +8,7 @@
         </div>
 
         <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-primary w-10 " @click="postBulletins">新增公告</button>
+            <button class=" btn btn-primary w-10 " @click="postBulletins">新增公告</button>
             <button class="btn btn-primary w-10" @click="categoriesManagement" style="margin-right: 2%;">分類管理</button>
 
             <select v-model="searchCategory" class="form-select w-20" @change="searchBulletins">
@@ -33,11 +33,16 @@
                         "（草稿）"
                         }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="fw-bold text-dark fs-5">
+                        <div class="fw-bold text-dark fs-5"><span v-if="bulletin.isPinned">[置頂]</span>
                             {{ bulletin.title }} <span v-if="bulletin.poll"
                                 class="fs-6 text-secondary fw-normal">(投票活動)</span>
                         </div>
-                        <small class="text-muted">{{ formatDate(bulletin.postTime) }}</small>
+
+                        <div>
+
+                            <small class="text-muted">發布時間：{{ formatDate(bulletin.postTime) }}</small><br>
+                            <small class="text-muted">下架時間：{{ formatDate(bulletin.removeTime) }}</small>
+                        </div>
                     </div>
                     <div class="mb-2">
                         <span class="badge  me-2 fw-normal" style="font-size: 80%;background-color: #BEBEBE;">{{
@@ -51,21 +56,21 @@
                     </p>
                     <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-sm btn-outline-primary" @click="editBulletin(bulletin)">
-                            <i class="bi bi-pencil-square"></i> 　編輯
+                            <i class="bi bi-pencil-square"></i> &nbsp;編輯
                         </button>
                         <button class="btn btn-sm btn-outline-danger" @click="deleteBulletin(bulletin.id)">
-                            <i class="bi bi-trash"></i> 　刪除
+                            <i class="bi bi-trash"></i> &nbsp;刪除
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" @click="viewBulletin(bulletin)">
-                            <i class="bi bi-eye"></i> 　查看
+                            <i class="bi bi-eye"></i> &nbsp;查看
                         </button>
-                        <button v-if="bulletin.poll" type="button" class="btn btn-secondary"
+                        <button v-if="bulletin.poll" type="button" class="btn btn-sm btn-secondary"
                             @click="openPollModal(index, bulletin)">
-                            <i class="bi bi-pencil-square"></i> 　修改投票</button>
+                            <i class="bi bi-pencil-square"></i> &nbsp;修改投票</button>
 
                         <button v-if="!bulletin.poll" type="button" class="btn btn-sm btn-outline-secondary"
                             @click="openPollModal(index, bulletin)">
-                            <i class="bi bi-pencil-square"></i> 　新增投票</button>
+                            <i class="bi bi-plus-circle"></i> &nbsp;新增投票</button>
                     </div>
                 </div>
             </div>
@@ -175,7 +180,7 @@ function deleteBulletin(id) {
                         title: '刪除成功',
                         text: '公告已刪除',
                         icon: 'success',
-                        timer: 1500
+                        timer: 1000
                     })
                     fetchAll()
                 } else {

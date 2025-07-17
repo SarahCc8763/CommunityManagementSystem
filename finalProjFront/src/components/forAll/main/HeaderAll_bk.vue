@@ -11,9 +11,7 @@
       </div>
     </nav>
     <!-- 下拉大選單 -->
-    <div class="mega-menu" v-if="activeIndex !== null" ref="megaMenuRef" @mouseenter="keepDropdown"
-      @mouseleave="closeDropdown">
-
+    <div class="mega-menu" v-if="activeIndex !== null" @mouseenter="keepDropdown" @mouseleave="closeDropdown">
       <div class="mega-grid">
         <div v-for="(category, index) in finalMenuList" :key="category.title" class="mega-category"
           :class="{ 'mega-active': activeIndex === index, 'mega-inactive': activeIndex !== index }">
@@ -157,42 +155,8 @@ function handleClickOutside(event) {
   }
 }
 
-// 調整mega-menu--------------------------------------------------------------------------
-const megaMenuRef = ref(null)
-const navItemRefs = ref([])
-watch(activeIndex, (newIndex) => {
-  if (newIndex !== null && navItemRefs.value[newIndex]) {
-    const itemRect = navItemRefs.value[newIndex].getBoundingClientRect()
-    const menu = megaMenuRef.value
-
-    if (menu) {
-      // 將 mega-menu 靠齊目前 hover 的主選單項目
-      menu.style.left = `${itemRect.left}px`
-      menu.style.top = `${itemRect.bottom}px`
-    }
-  }
-})
-
-watch(activeIndex, (newIndex) => {
-  if (
-    newIndex !== null &&
-    navItemRefs.value[newIndex] &&
-    megaMenuRef.value
-  ) {
-    const item = navItemRefs.value[newIndex]
-    const itemRect = item.getBoundingClientRect()
-    const menu = megaMenuRef.value
-
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-    menu.style.left = `${itemRect.left + scrollLeft}px`
-    menu.style.top = `${itemRect.bottom}px`
-  }
-})
-// 調整mega-menu--------------------------------------------------------------------------
-
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  navItemRefs.value = document.querySelectorAll('.nav-item') //0717
 })
 
 onBeforeUnmount(() => {
@@ -709,39 +673,34 @@ body {
 .mega-menu {
   position: absolute;
   top: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
+  left: 0;
+  right: 0;
   max-width: 1280px;
-  /* ✅ 可依實際需求再調整寬度 */
-  background: rgba(255, 255, 255, 0.98);
+  width: 100%;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  padding: 32px;
-  z-index: 99999;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  overflow-x: auto;
-  /* ✅ 若畫面太小就滑動 */
+  padding: 0 32px 32px 32px;
+  z-index: 9999;
+  user-select: text;
+  display: flex;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* animation: megaMenuSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+  padding-top: 0;
 }
 
 .mega-grid {
   display: flex;
-  flex-wrap: nowrap;
-  /* ✅ 不允許換行 */
   gap: 32px;
-  justify-content: space-between;
-  min-width: 1200px;
-  /* ✅ 讓 8 欄有空間排進去 */
-}
-
-/* 每一欄固定寬度（8欄 * 140px + gap） */
-.mega-category {
-  flex: 0 0 120px;
-  display: flex;
-  flex-direction: column;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
+  justify-content: flex-start;
+  max-width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  overflow-x: visible;
 }
 
 .category-title {
@@ -774,7 +733,7 @@ body {
 }
 
 /* 每個分類區塊 */
-/* .mega-category {
+.mega-category {
   min-width: 140px;
   max-width: 180px;
   flex: 0 0 160px;
@@ -784,7 +743,7 @@ body {
   user-select: none;
   display: flex;
   flex-direction: column;
-} */
+}
 
 .mega-category:hover {
   opacity: 1 !important;

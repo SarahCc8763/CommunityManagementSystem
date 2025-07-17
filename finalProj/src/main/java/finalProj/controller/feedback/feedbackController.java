@@ -27,12 +27,14 @@ import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
+import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.users.Users;
 import finalProj.dto.feedback.FeedbackResponse;
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
 import finalProj.service.feedback.FeedbackReplyService;
 import finalProj.service.feedback.FeedbackService;
+import finalProj.service.feedback.FeedbackStatusHistoryService;
 import finalProj.service.users.UsersService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +56,9 @@ public class feedbackController {
 
     @Autowired
     private FeedbackReplyService feedbackReplyService;
+
+    @Autowired
+    private FeedbackStatusHistoryService feedbackStatusHistoryService;
 
     //
     //
@@ -435,5 +440,39 @@ public class feedbackController {
     @GetMapping("/findbyuser/{id}")
     public List<Feedback> findFaqByUser(@PathVariable Integer id) {
         return feedbackService.findByUser_UsersId(id);
+    }
+
+    @GetMapping("/history/{feedbackId}")
+    public List<FeedbackStatusHistory> findByFeedbackId(@PathVariable Integer feedbackId) {
+        if (feedbackId == null) {
+            log.error("未提供意見ID");
+            return null;
+        }
+        return feedbackStatusHistoryService.findByFeedback_Id(feedbackId);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteFeedback(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (id == null) {
+            response.put("result", "未提供刪除意見所需資料");
+            response.put("success", false);
+            log.warn("未提供刪除意見所需資料");
+            return ResponseEntity.badRequest().body(response); // HTTP 400
+        }
+        boolean deleted = feedbackService.deleteFeedback(id);
+
+        if (deleted) {
+            response.put("result", "刪除成功");
+            response.put("success", true);
+            log.info("刪除意見成功");
+            return ResponseEntity.ok(response); // HTTP 200
+        } else {
+            response.put("result", "找不到此意見，無法刪除");
+            response.put("success", false);
+            log.warn("找不到此意見，無法刪除");
+            return ResponseEntity.status(404).body(response); // ❗HTTP 404 錯誤
+        }
     }
 }

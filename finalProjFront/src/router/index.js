@@ -1,13 +1,7 @@
-
-
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-
-
-
-
-
-
+// 📌 首頁
+import Home from '../views/Home.vue'
 // 財務相關-使用者
 import finUser from '@/components/finance/finUser/finUser.vue'
 import Invoice from '@/components/finance/finUser/Invoice.vue'
@@ -20,28 +14,17 @@ import InvoiceValidate from '@/components/finance/finAdmin/InvoiceValidate.vue'
 import InvoiceWithResponse from '@/components/finance/finAdmin/InvoiceWithResponse.vue'
 import ReceiptAdd from '@/components/finance/finAdmin/ReceiptAdd.vue'
 import Dashboard from '@/components/finance/finAdmin/Dashboard.vue'
-
-
-// 📌 首頁
-import Home from '../views/Home.vue'
-
-
 // Ticket相關
 import TicketDetailView from '../views/TicketDetailView.vue'
 import TicketForm from '../views/TicketForm.vue'
 import TicketList from '../views/TicketList.vue'
 import TicketPage from '../views/TicketPage.vue'
 import AllTicketsByAssignment from '../views/AllTicketsByAssignment.vue'
-
-
 import CommunityList from '../views/CommunityList.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import TicketDashboard from '../views/TicketDashboard.vue'
 import Vendor from '../views/Vendor.vue'
-
-
-
-
+// Parking相關
 import LotteryApply from "@/components/parking/LotteryApply.vue"
 import LotteryEvent from "@/components/parking/LotteryEvent.vue"
 import ParkingBack from "@/components/parking/ParkingBack.vue"
@@ -60,19 +43,14 @@ import Faq from '@/views/faq/Faq.vue'
 import MyFeedback from '@/views/feedback/MyFeedback.vue'
 import BulletinAdmin from '@/views/bulletin/BulletinAdmin.vue'
 //Yu End
-
-// 📌 使用者功能頁面
+// 包裹
 import packages from '@/components/package/packages.vue'
 import profile from '@/components/profile/profile.vue'
 import notification from '@/components/notification/notification.vue'
 import resetPassword from '@/components/profile/resetPassword.vue'
-
-// 包裹
 import packages_picked from '@/components/package/packages_picked.vue';
 import packages_security from '@/components/package/packages_security.vue';
 import addPackage from '@/components/package/addPackage.vue';
-
-
 // 📌 公設預約頁面
 import FacilityReservationView from '../views/facilities/FacilityHomepageView.vue'
 import FacilityFindAllListView from '../views/facilities/FacilityFindAllListView.vue'
@@ -82,7 +60,6 @@ import PointHistoryView from '../views/facilities/PointHistoryView.vue'
 import PointTransferView from '../views/facilities/PointTransferView.vue'
 import PointTopupView from '../views/facilities/PointTopupView.vue'
 import PointTopupResultView from '../views/facilities/PointTopupResultView.vue'
-
 // 新增 BeforeLogIn 頁面路由
 import BeforeLogIn from '@/views/BeforeLogIn.vue'
 
@@ -96,22 +73,13 @@ const router = createRouter({
       component: BeforeLogIn,
     },
     {
-      path: '/adminDashboard',
-      name: 'AdminDashboard',
-      component: AdminDashboard,
-      meta: { dark: true },
-
-    },
-    {
       path: '/',
       name: 'home',
       component: Home,
 
     },
-
     // Finance相關
-    //// Fin-Admin
-
+    //// Fin-Admin    
     {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
@@ -153,7 +121,7 @@ const router = createRouter({
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
     },
-
+    
     {
       path: '/finance/admin-dashboard',
       name: 'FinAdminDashboard',
@@ -166,6 +134,18 @@ const router = createRouter({
       name: 'Receipt',
       component: Receipt,
     },
+    {
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice,
+    },
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser,
+    },    
+    // Finance相關結束
+    // package相關
     {
       path: '/profile',
       name: 'profile',
@@ -207,7 +187,21 @@ const router = createRouter({
       meta: { requiresAuth: true, dark: true }
     },
     {
-      path: '/TicketDashboard',
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: resetPassword
+    },
+    // package相關結束
+    // ticket相關
+    {
+      path: '/adminDashboard',
+      name: 'AdminDashboard',
+      component: AdminDashboard,
+      meta: { dark: true },
+
+    },
+    {
+      path: '/TicketDashboard',      
       name: 'TicketDashboard',
       component: TicketDashboard,
     },
@@ -216,18 +210,14 @@ const router = createRouter({
       name: 'Vendor',
       component: Vendor,
       meta: { dark: true },
-    }, {
-
-      path: '/finance/invoice',
-      name: 'Invoice',
-      component: Invoice,
-    },
+    },     
     {
-      path: '/finUser',
-      name: 'FinUser',
-      component: finUser,
+      path: '/CommunityList',
+      name: 'CommunityList',
+      component: CommunityList
     },
-    //Finance相關 end
+    // ticket相關結束
+    // Parking相關
     {
       path: "/pages/park/initialize",
       name: "parkInitialize",
@@ -284,6 +274,8 @@ const router = createRouter({
       component: AnnouncementLatest
 
     },
+    // Parking相關結束
+    // faq相關
     {
       path: '/faqAdmin',
       name: 'faqAdmin',
@@ -316,6 +308,8 @@ const router = createRouter({
       meta: { dark: true }
 
     },
+    // faq相關結束
+    // facility相關
     {
       path: '/facilities',
       name: 'FacilityHomepageView',
@@ -362,17 +356,7 @@ const router = createRouter({
       component: PointTopupResultView,
       props: true
     },
-
-    {
-      path: '/resetPassword',
-      name: 'resetPassword',
-      component: resetPassword
-    },
-    {
-      path: '/CommunityList',
-      name: 'CommunityList',
-      component: CommunityList
-    },
+    // facility相關結束    
   ],
 
   scrollBehavior(to, from, savedPosition) {

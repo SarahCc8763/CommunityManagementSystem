@@ -98,6 +98,10 @@ public class BulletinService {
             log.info("分類驗證成功：{}", entity.getCategory().getName());
 
             // 2. 儲存 Bulletin 主文
+            if (entity.getRemoveTime() == null) {
+                entity.setRemoveTime(LocalDateTime.now().plusDays(7));
+            }
+
             Bulletin savedBulletin = bulletinRepository.save(entity);
             log.info("公告主文儲存成功，ID：{}", savedBulletin.getId());
 
@@ -169,6 +173,7 @@ public class BulletinService {
             existing.setPostStatus(entity.getPostStatus() != null ? entity.getPostStatus() : existing.getPostStatus());
 
             existing.setModifyTime(LocalDateTime.now());
+            existing.setIsPinned(entity.getIsPinned() != null ? entity.getIsPinned() : existing.getIsPinned());
             log.debug("公告基本資訊已更新");
 
             // 更新分類（若有）
