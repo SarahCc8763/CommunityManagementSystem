@@ -1,6 +1,19 @@
 <template>
   <div class="admin-dashboard-bg py-5">
     <div class="container-xl" style="margin-left: 20%;">
+      <!-- 麵包屑導航 -->
+      <nav aria-label="breadcrumb" class="mb-3 ms-1">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+                class="bi bi-house-door-fill me-1"></i>首頁</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+          </li>
+          <li class="breadcrumb-item active text-white" aria-current="page">財務後台</li>
+        </ol>
+      </nav>
       <h2 class="fw-bold text-info mb-4">財務管理員專區</h2>
       <!-- 教學/說明區塊 -->
       <div class="card bg-dark text-light shadow p-4 mb-5">
@@ -267,35 +280,42 @@ const expandedTutorial = ref(null)
 
 const cards = [
   {
-    title: '期別管理',
+    title: '繳費期間設定',
     desc: '設定、檢視所有繳費期別，可自動或手動新增。',
     icon: 'bi bi-calendar2-week',
     route: '/finance/billing-period/add'
   },
   {
-    title: '費用類型管理',
+    title: '費用項目管理',
     desc: '設定各類費用（如管理費、水電費等），可自訂金額與單位。',
     icon: 'bi bi-cash-coin',
     route: '/finance/fee-type/add'
   },
   {
-    title: '請款單管理',
-    desc: '查詢、管理所有已產生的請款單，支援多條件篩選。',
+    title: '繳費通知製作',
+    desc: '自訂條件批次產生請款單，支援多選住戶。',
+    icon: 'bi bi-collection',
+    route: '/finance/invoice/add'
+  },
+  {
+    title: '繳費通知審核',
+    desc: '查詢、管理所有已產生的請款單，並核准發送，支援多條件篩選。',
+    icon: 'bi bi-file-earmark-text',
+    route: '/finance/invoice/validate'
+  },
+  {
+    title: '審核帳單回覆',
+    desc: '確認用戶留言，查詢、管理所有已產生的請款單支援多條件篩選。',
     icon: 'bi bi-file-earmark-text',
     route: '/finance/invoice/InvoiceWithResponse'
   },
   {
-    title: '繳款回覆/審核',
+    title: '收據管理中心',
     desc: '審核住戶繳款狀態，手動標記已繳/未繳。',
     icon: 'bi bi-clipboard-check',
-    route: '/finance/invoice/validate'
-  },
-  {
-    title: '批次產生請款單',
-    desc: '自訂條件批次產生請款單，支援多選住戶。',
-    icon: 'bi bi-collection',
-    route: '/finance/invoice/add'
+    route: '/finance/receipt/add'
   }
+
 ]
 
 function go(route) {
@@ -317,6 +337,15 @@ onMounted(() => {
     element.style.animationDelay = `${index * 0.1}s`
   })
 })
+
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+
+  }
+}
 </script>
 
 <style scoped>
@@ -343,6 +372,7 @@ onMounted(() => {
   border-radius: 18px;
   padding: 2rem;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .tip-card {
@@ -399,6 +429,7 @@ onMounted(() => {
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   transition: transform 0.15s, box-shadow 0.15s;
   border: 1.5px solid #23272b;
+  margin-bottom: 1.5rem;
 }
 
 .admin-card:hover {
@@ -422,7 +453,7 @@ onMounted(() => {
   border: 1px solid #495057;
   border-radius: 18px;
   transition: all 0.3s ease;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .tutorial-card:hover {
@@ -466,7 +497,91 @@ onMounted(() => {
 }
 
 .tutorial-content-inner {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 2.5rem;
+}
 
+h2,
+.main-title {
+  color: #90caf9 !important;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 2.5rem;
+}
+
+h4,
+.section-title {
+  color: #b39ddb !important;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 1.5rem;
+}
+
+h5,
+.admin-card .fw-bold {
+  color: #e3e3fa !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 0.8rem;
+  text-align: left;
+}
+
+h6,
+.step-item h6 {
+  color: #b39ddb !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.text-info {
+  color: #90caf9 !important;
+}
+
+.text-secondary,
+.admin-card p,
+.tip-card p,
+.tutorial-card p,
+.step-item p {
+  color: #b0b0b0 !important;
+}
+
+.text-light {
+  color: #e0e0e0 !important;
+}
+
+.admin-card .admin-card-icon {
+  font-size: 2.5rem;
+  color: #b39ddb;
+  margin-bottom: 0.5rem;
+}
+
+.admin-card .btn-outline-info {
+  border-color: #90caf9;
+  color: #90caf9;
+}
+
+.admin-card .btn-outline-info:hover {
+  background: #90caf9;
+  color: #23272b;
+}
+
+.admin-card p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #b0b0b0;
+}
+
+.tip-card .tip-icon {
+  font-size: 2rem;
+  color: #90caf9;
+  margin-bottom: 1rem;
+}
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

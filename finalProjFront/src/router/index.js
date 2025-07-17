@@ -68,28 +68,35 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/beforeLogIn',
-      name: 'beforeLogIn',
-      component: BeforeLogIn,
-    },
-    {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home,
 
     },
     // Finance相關
-    //// Fin-Admin    
+    //// Fin-Admin
     {
-      path: '/finance/fee-type/add',
-      name: 'FeeTypeAdd',
-      component: FeeTypeAdd,
-      meta: { dark: true },
+      path: '/',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
     },
+
     {
       path: '/finance/billing-period/add',
       name: 'BillingPeriodAdd',
       component: BillingPeriodAdd,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/admin-dashboard',
+      name: 'FinAdminDashboard',
+      component: Dashboard,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/fee-type/add',
+      name: 'FeeTypeAdd',
+      component: FeeTypeAdd,
       meta: { dark: true },
     },
     {
@@ -99,19 +106,7 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/receipt/add',
-      name: 'ReceiptAdd',
-      component: ReceiptAdd,
-      meta: { dark: true },
-    },
-    {
       path: '/finance/invoice/validate',
-      name: 'InvoiceValidate',
-      component: InvoiceValidate,
-      meta: { dark: true },
-    },
-    {
-      path: '/finance/invoice-review',
       name: 'InvoiceValidate',
       component: InvoiceValidate,
       meta: { dark: true },
@@ -120,20 +115,38 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
-    },
-    
-    {
-      path: '/finance/admin-dashboard',
-      name: 'FinAdminDashboard',
-      component: Dashboard,
       meta: { dark: true },
     },
+    {
+      path: '/finance/receipt/add',
+      name: 'ReceiptAdd',
+      component: ReceiptAdd,
+      meta: { dark: true },
+    },
+
     ////fin-user
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser,
+    },
+    {
+
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice,
+    },
     {
       path: '/finance/receipt/my',
       name: 'Receipt',
       component: Receipt,
     },
+    //Finance相關 end
+
+
+
+
+
     {
       path: '/finance/invoice',
       name: 'Invoice',
@@ -143,7 +156,7 @@ const router = createRouter({
       path: '/finUser',
       name: 'FinUser',
       component: finUser,
-    },    
+    },
     // Finance相關結束
     // package相關
     {
@@ -201,7 +214,7 @@ const router = createRouter({
 
     },
     {
-      path: '/TicketDashboard',      
+      path: '/TicketDashboard',
       name: 'TicketDashboard',
       component: TicketDashboard,
     },
@@ -210,7 +223,7 @@ const router = createRouter({
       name: 'Vendor',
       component: Vendor,
       meta: { dark: true },
-    },     
+    },
     {
       path: '/CommunityList',
       name: 'CommunityList',
@@ -355,6 +368,32 @@ const router = createRouter({
       name: 'PointTopupResultView',
       component: PointTopupResultView,
       props: true
+    },
+    {
+      path: '/ticket/:id',
+      name: 'TicketDetail',
+      component: TicketDetailView,
+    },
+    {
+      path: '/TicketForm',
+      name: 'TicketForm',
+      component: TicketForm,
+    },
+    {
+      path: '/TicketList',
+      name: 'TicketList',
+      component: TicketList,
+    },
+    {
+      path: '/TicketPage',
+      name: 'TicketPage',
+      component: TicketPage,
+    },
+    {
+      path: '/AllTicketsByAssignment',
+      name: 'AllTicketsByAssignment',
+      component: AllTicketsByAssignment,
+      meta: { dark: true },
     },
     // facility相關結束    
   ],

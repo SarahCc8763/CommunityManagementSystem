@@ -103,28 +103,28 @@ public class ParkingRentalsService {
 		rental.setStatus(rental.getStatus() == null ? false : rental.getStatus());
 
 		if (id == null || !repository.existsById(id)) {
-			return null;
+			throw new IllegalArgumentException("無該筆承租紀錄");
 		}
 
 		if (usersId == null || usersRepository.findById(usersId) == null) {
-			return null;
+			throw new IllegalArgumentException("使用者不可為空");
 		}
 
 		if (parkingSlotId == null || parkingSlotRepository.findById(parkingSlotId) == null) {
-			return null;
+			throw new IllegalArgumentException("車位不可為空");
 		}
 
 		if (rentBuyStart == null || rentEnd == null) {
-			return null;
+			throw new IllegalArgumentException("承租起始截止日不可為空");
 		}
 
 		if (licensePlate == null || licensePlate == "") {
-			return null;
+			throw new IllegalArgumentException("車牌不可為空");
 		}
 
 		// 檢查時間是否重疊
 		if (isOverlapping(rentBuyStart, rentEnd, parkingSlotId, id)) {
-			return null; // 或者丟出例外、回傳錯誤訊息
+			throw new IllegalArgumentException("該車位於該時段已被租用");
 		}
 
 		return repository.save(rental);

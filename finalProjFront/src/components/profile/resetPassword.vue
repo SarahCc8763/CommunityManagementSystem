@@ -4,7 +4,7 @@
 
     <form @submit.prevent="handleResetPassword">
       <!-- 信箱 -->
-      <div class="mb-3">
+      <div class="mb-3" >
         <label for="email" class="form-label">請輸入信箱</label>
         <input type="email" id="email" v-model="form.email" class="form-control" placeholder="輸入您的註冊信箱" />
         <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
@@ -155,6 +155,8 @@ console.log(response);
   padding: 10px 12px;
   border: 1px solid #ccc;
   transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff !important;
+  color: #000 !important;
 }
 
 .form-control:focus {

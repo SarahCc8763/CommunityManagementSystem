@@ -1,6 +1,22 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">繳費通知審核</li>
+      </ol>
+    </nav>
     <BannerImage :imageSrc="OO" heading="繳費通知審核" subtext="審核並核准繳費通知的發送申請，確認無誤後即可寄送給住戶。" textAlign="left" />
   </div>
 
@@ -63,6 +79,9 @@
         <button type="button" class="btn btn-secondary ms-2" @click="checkedIds = []">取消全選</button>
       </div>
     </form>
+    <button class="btn btn-outline-secondary mb-3" @click="goBack">
+      <i class="bi bi-arrow-left-circle me-1"></i> 回上一頁
+    </button>
   </div>
 </template>
 
@@ -142,11 +161,41 @@ function formatDate(dateStr) {
   const d = new Date(dateStr)
   return d.toLocaleDateString()
 }
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
+}
+
+const goBack = () => {
+  router.back()
+}
 </script>
 
 <style scoped>
 .table th,
 .table td {
   text-align: center;
+}
+
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

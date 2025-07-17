@@ -1,8 +1,21 @@
 <template>
   <div class="container mt-4">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('parkingFront')" class="text-decoration-none">停車場</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">我的車位</li>
+      </ol>
+    </nav>
+    
     <div class="tag-style px-4 py-2 mb-4">
-            <h2 class="mb-0 fw-bold text-primary section-title">我的車位</h2>
-        </div>
+      <h2 class="mb-0 fw-bold text-primary section-title">我的車位</h2>
+    </div>
     <div class="row g-4">
       <div class="col-md-4" v-for="slot in userSlotsFiltered" :key="slot.slotNumber">
         <div class="card h-100 shadow-sm border-0" @click="openModal(slot)" style="cursor: pointer;">
@@ -30,7 +43,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- 登記車位 Modal -->
     <div class="modal fade" id="plateModal" tabindex="-1" ref="plateModalRef">
       <div class="modal-dialog">
@@ -375,6 +388,20 @@ function cleanInvalidChars(slot, field) {
 function plateOK(plate) {
     return /^[A-Za-z0-9-]+$/.test(plate)
 }
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'parkingFront':
+            router.push('/pages/park/parking-front')
+            break
+        }
+    }
 </script>
 
 <style scoped>
