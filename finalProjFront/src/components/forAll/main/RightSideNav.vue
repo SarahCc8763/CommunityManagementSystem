@@ -133,8 +133,6 @@ const emit = defineEmits(['close'])
 
 <style scoped>
 .right-side-nav {
-  min-width: 320px;
-  max-width: 320px;
   width: 320px;
   background: rgba(255,255,255,0.95);
   box-shadow: -2px 0 8px rgba(0,0,0,0.04);
@@ -516,10 +514,42 @@ const emit = defineEmits(['close'])
 }
 
 /* 響應式設計 */
-@media (max-width: 1200px) {
+/* @media (max-width: 1200px) {
   .right-side-nav {
     min-width: 280px;
     padding: 20px;
   }
+} */
+
+@media (max-width: 768px) {
+  .right-side-nav {
+    width: 100%;
+    max-width: 300px;
+    right: -300px;
+    transition: right 0.3s ease;
+  }
+
+  .right-side-nav.open {
+    right: 0;
+  }
+
+  .drawer-mask {
+    right: 0;
+  }
+
+  .drawer-tab {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50%;
+    padding: 12px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .drawer-tab-text {
+    display: none;
+  }
 }
+
 </style> 

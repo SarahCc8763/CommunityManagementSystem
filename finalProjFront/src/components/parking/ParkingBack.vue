@@ -144,5 +144,8 @@
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.7);
   transform: scale(1.1);
 }
-  </style>
-  
+
+.text-muted {
+  color: #ccc !important;
+}
+</style>

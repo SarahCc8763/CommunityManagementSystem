@@ -73,7 +73,7 @@
     </div>
 
     <!-- 表格區塊 -->
-    <div class="table-wrapper">
+    <div class="table-wrapper" v-if="filteredSlots.length > 0">
       <div class="table-container">
         <table class="table table-hover table-bordered fixed-header-table">
           <thead class="table-light text-center">
@@ -110,6 +110,10 @@
         </table>
       </div>
     </div>
+    <p v-else class="no-slot-message text-center mt-5">
+      <i class="bi bi-info-circle me-2 text-secondary fs-5"></i> 暫無符合條件的車位
+    </p>
+
   </div>
   
   <!-- 共用 Modal（新增/編輯） -->
@@ -645,4 +649,12 @@ select.form-select {
     color: #ccc; /* 或 text-light 用於深色背景 */
     margin: 0 0.5rem;
 }
+
+.no-slot-message {
+  color: #ccc;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
 </style>

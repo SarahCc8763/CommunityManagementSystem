@@ -241,7 +241,8 @@ async function confirmAndSubmit() {
             title: response.data.message || '更新成功',
             confirmButtonText: '好的'
         })
-        
+        await fetchSelectedTypes()
+
         hasChanged.value = false
         showTypeWarning.value = false
 
@@ -355,6 +356,7 @@ function handleFileUpload(event) {
       const is_rentable_text = row['是否可承租']?.trim()
       
       const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
+      console.log(parkingType);
 
       let building = null, floor = null, unit = null
       if (unit_info) {
@@ -385,7 +387,6 @@ function handleFileUpload(event) {
         licensePlate: license_plate,
         isRentable,
         parkingTypeId: parkingType?.id ?? null,
-        parkingTypeLabel: parkingType?.label ?? null,
         usersId: user?.usersId ?? null,
         building,
         floor,
@@ -543,7 +544,6 @@ function addRow() {
         slotNumber: '',
         location: '',
         parkingTypeId: selectedTypes.value[0]?.id ?? 1,
-        parkingTypeLabel: selectedTypes.value[0]?.label ?? '汽車',
         unitsId: defaultUnitId,
         usersId: filteredUserList[0]?.usersId ?? null,
         licensePlate: '',
@@ -566,7 +566,7 @@ function submitData() {
         location: slot.location,
         licensePlate: slot.licensePlate,
         isRentable: slot.isRentable,
-        parkingType: slot.parkingTypeLabel ?? null,
+        parkingType: selectedTypes.value.find(t => t.id === slot.parkingTypeId)?.label ?? null,
         usersId: slot.usersId,
         building: slot.building,
         floor: slot.floor,
