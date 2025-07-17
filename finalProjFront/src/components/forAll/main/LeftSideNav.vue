@@ -189,7 +189,7 @@ onUnmounted(() => {
   border: 1.5px solid #e2e8f0;
   margin-bottom: 12px;
   position: relative;
-  min-height: 320px;
+  /* min-height: 320px; */
 }
 
 .member-avatar-block {
@@ -244,13 +244,8 @@ onUnmounted(() => {
 
 .user-row {
   display: flex;
-
-
-
   flex-direction: column;
   align-items: flex-start;
-
-
   gap: 8px;
 }
 
@@ -417,7 +412,7 @@ onUnmounted(() => {
 }
 
 .menu-section {
-  margin-top: 32px;
+  margin-top: 5px;
 }
 
 .menu-title {
@@ -659,8 +654,9 @@ onUnmounted(() => {
   }
 
   .quick-actions-row {
-    gap: 4px;
-    padding: 4px 0;
+    /* gap: 4px;
+    padding: 4px 0; */
+    flex-wrap: wrap;
   }
 
   .logout-button,
@@ -701,7 +697,7 @@ onUnmounted(() => {
   border-radius: 18px;
   padding: 22px 18px 16px 18px;
   min-height: 150px;
-  max-height: 200px;
+  /* max-height: 200px; */
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -714,6 +710,7 @@ onUnmounted(() => {
   background: none;
   box-shadow: none;
   border: none;
+  padding: 0 40px 0 0;
 }
 
 .no-border-action {
@@ -739,7 +736,7 @@ onUnmounted(() => {
   color: #444;
   background: transparent;
   border-radius: 12px;
-  padding: 12px 0 8px 0;
+  padding: 14px 16px 10px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
