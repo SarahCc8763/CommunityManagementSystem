@@ -253,7 +253,7 @@ async function saveFunction() {
       address: selectedCommunity.value.address,
       functions: finalFunctions
     }
-
+    console.log('🧪 最終送出的 functions:', finalFunctions)
     const res = await axios.put(
       `/communitys/${selectedCommunity.value.communityId}`,
       payload
