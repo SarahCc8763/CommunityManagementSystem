@@ -1,20 +1,15 @@
-<!-- 這個我還沒整理, 大家可以各自加上自己要的內容在 menuList中並改routeName -->
-
-
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
     <router-link to="/" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
-
     <nav class="nav">
       <div v-for="(category, index) in finalMenuList" :key="category.title" class="nav-item"
         :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index">
         {{ category.title }}
       </div>
     </nav>
-
     <!-- 下拉大選單 -->
     <div class="mega-menu" v-if="activeIndex !== null" @mouseenter="keepDropdown" @mouseleave="closeDropdown">
       <div class="mega-grid">
@@ -48,7 +43,8 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + imagePath + ')' }" @click="toggleNotificationCenter"></div>
+      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + imagePath + ')' }"
+        @click="toggleNotificationCenter"></div>
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
