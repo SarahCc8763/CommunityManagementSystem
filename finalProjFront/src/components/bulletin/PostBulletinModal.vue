@@ -130,7 +130,17 @@ const form = ref({
     poll: null,
     isPinned: false
 })
+watch(() => props.visible, val => {
+    if (val) {
+        const now = new Date()
 
+        now.setHours(now.getHours() + 8)
+        // console.log(now.toISOString());
+        form.value.postTime = now.toISOString().slice(0, 19)
+        now.setDate(now.getDate() + 7)
+        form.value.removeTime = now.toISOString().slice(0, 19)
+    }
+})
 function initPost() {
     emit('update:visible', false)
 
@@ -148,6 +158,7 @@ function initPost() {
         poll: null,
         isPinned: false
     }
+
 }
 
 function pollInit() {

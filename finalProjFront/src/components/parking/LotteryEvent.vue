@@ -656,7 +656,7 @@ watch(desiredSlotCount, (newVal) => {
 })
 </script>
 
-<style>
+<style scoped>
 /* 表格滾動容器 */
 .table-wrapper {
   position: relative;
