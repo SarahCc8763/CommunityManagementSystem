@@ -125,7 +125,7 @@ const notifications = ref([])   // ⬅️ 全局通知陣列
 
 // 輪詢邏輯
 const unitId = userStore.unitId
-
+console.log("unitId = " + unitId);
 async function pollNotifications() {
   try {
     const res = await axios.get(`/notifications/unit/${unitId}`)
