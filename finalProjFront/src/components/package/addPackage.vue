@@ -1,5 +1,5 @@
 <template>
-    <div class="resident-packages-container">
+    <div class="resident-packages-container" :class="{ 'dark-mode': isDarkMode }">
         <h1>管理員新增包裹</h1>
 
         <div class="search-bar" >
@@ -7,21 +7,21 @@
           <label>
             <select v-model="unit1">
               <option disabled value="">請選擇門牌號</option>
-              <option v-for="n in 15" :key="'unit1-' + n" :value="n">{{ n }}</option>
+              <option v-for="n in [10,12,14,16,18,20,22,24,26,28]" :key="'unit1-' + n" :value="n">{{ n }}</option>
             </select> 之
           </label>
 
           <label>
             <select v-model="unit2">
               <option value=""></option>
-              <option v-for="n in 15" :key="'unit2-' + n" :value="n">{{ n }}</option>
+              <option value="1">1</option>
             </select> 號
           </label>
 
           <label>
             <select v-model="floor1">
               <option disabled value="">請選擇樓層</option>
-              <option v-for="n in 15" :key="'floor-' + n" :value="n">{{ n }}</option>
+              <option v-for="n in 12" :key="'floor-' + n" :value="n + 1">{{ n + 1 }}</option>
             </select> 樓
           </label>
         </div>
@@ -154,6 +154,8 @@ console.log(unit);
 </script>
 
 <style scoped>
+
+
 .resident-packages-container {
   display: block;
   width: 100%;
@@ -304,5 +306,78 @@ console.log(unit);
   background-color: #f9fbfd;
   transition: background-color 0.2s;
 }
+
+/* dark mode */
+
+.dark-mode .resident-packages-container {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  color: #f0f0f0;
+}
+
+.dark-mode .resident-packages-container h1 {
+  color: #ffffff;
+}
+
+.dark-mode .search-bar {
+  background: #2a2a2a;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .search-bar label {
+  color: #ddd;
+}
+
+.dark-mode .search-bar select,
+.dark-mode .search-bar input {
+  background-color: #333;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
+.dark-mode .search-bar select:focus,
+.dark-mode .search-bar input:focus {
+  border-color: #66afe9;
+  box-shadow: 0 0 0 3px rgba(102, 175, 233, 0.2);
+}
+
+.dark-mode .search-bar button {
+  background: #4a90e2;
+  color: #fff;
+}
+
+.dark-mode .search-bar button:hover {
+  background: #2f72c1;
+}
+
+.dark-mode .no-data {
+  color: #bbb;
+}
+
+.dark-mode .packages-table {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .packages-table thead {
+  background-color: #3a3a3a;
+}
+
+.dark-mode .packages-table th {
+  color: #ffffff;
+  border-bottom: 2px solid #666;
+}
+
+.dark-mode .packages-table td {
+  color: #e0e0e0;
+  border-bottom: 1px solid #444;
+}
+
+.dark-mode .packages-table tbody tr:hover {
+  background-color: #444;
+}
+
+
 
 </style>
