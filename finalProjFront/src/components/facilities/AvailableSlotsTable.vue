@@ -38,6 +38,7 @@ import { ref, computed, watch } from 'vue'
 import { format, addDays, addHours, subHours, parse } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
 import Paginate from 'vuejs-paginate-next'
+import Swal from 'sweetalert2'
 
 // Props：父元件傳入的單一設施資料（含 openTime、closeTime、slotList）
 const props = defineProps({
@@ -169,7 +170,8 @@ const isConsecutive = (slot1, slot2) => {
     return diff === 60 * 60 * 1000 // 相差一小時
 }
 
-const toggleSlot = (dateStr, time) => {
+const toggleSlot = async (dateStr, time) => {
+
     if (!isSelectable(dateStr, time)) return
 
     const timeStr = format(time, 'HH:mm:ss')
@@ -177,23 +179,50 @@ const toggleSlot = (dateStr, time) => {
 
     const idx = selectedSlots.value.findIndex(s => s.key === key)
     if (idx !== -1) {
+        // 如果已選中 → 取消選取
         selectedSlots.value.splice(idx, 1)
         emit('update:selectedSlots', selectedSlots.value)
         return
     }
 
-    // 新點選
-    const maxSelectableSlots = Math.floor((props.facility.reservableDuration || 60) / 60)
-    if (selectedSlots.value.length >= maxSelectableSlots) return
+    // 👉 加入新的 slot
+    const newSlot = { key, date: dateStr, time: timeStr }
+    const newSelection = [...selectedSlots.value, newSlot]
 
-    if (selectedSlots.value.length === 1) {
-        const existing = selectedSlots.value[0]
-        const isSame = isSameDay(existing.date, dateStr)
-        const isAdj = isConsecutive(existing, { date: dateStr, time: timeStr })
-        if (!isSame || !isAdj) return
+    // ✅ 動態計算最多可選格數（以小時為單位）
+    const maxSlots = Math.floor((props.facility.reservableDuration || 60) / 60)
+    if (newSelection.length > maxSlots) {
+        await Swal.fire(
+            '超過可預約時數',
+            `最多只能選取 ${maxSlots} 小時（${maxSlots} 格）`,
+            'warning'
+        )
+        return
     }
 
-    selectedSlots.value.push({ key, date: dateStr, time: timeStr })
+    // 👉 按時間排序（含跨日處理）
+    const sorted = newSelection.slice().sort((a, b) => {
+        const aDateTime = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm:ss', new Date())
+        const bDateTime = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm:ss', new Date())
+        return aDateTime - bDateTime
+    })
+
+    // ✅ 檢查每一格都是連續的（每小時差距）
+    let isValid = true
+    for (let i = 1; i < sorted.length; i++) {
+        const prev = parse(`${sorted[i - 1].date} ${sorted[i - 1].time}`, 'yyyy-MM-dd HH:mm:ss', new Date())
+        const curr = parse(`${sorted[i].date} ${sorted[i].time}`, 'yyyy-MM-dd HH:mm:ss', new Date())
+        const diff = curr.getTime() - prev.getTime()
+        if (diff !== 60 * 60 * 1000) {
+            isValid = false
+            break
+        }
+    }
+
+    if (!isValid) return
+
+    // ✅ 全部通過 → 更新選取
+    selectedSlots.value = sorted
     emit('update:selectedSlots', selectedSlots.value)
 }
 

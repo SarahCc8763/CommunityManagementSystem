@@ -5,7 +5,7 @@
       <div class="user-profile-card new-member-card no-border-card">
         <div class="member-avatar-block">
           <div class="avatar-container">
-            <img :src="UserStore.avatarUrl" alt="頭像" class="user-avatar" />
+            <img :src="imagePath" alt="頭像" class="user-avatar" />
             <div class="status-indicator"></div>
           </div>
           <div class="member-info-texts">
@@ -27,7 +27,7 @@
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>
-          <router-link to="/account/settings" class="quick-action-card no-border-action">
+          <router-link to="/profile" class="quick-action-card no-border-action">
             <i class="bi bi-gear"></i>
             <span>設定</span>
           </router-link>
@@ -104,12 +104,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
 const UserStore = useUserStore()
 const router = useRouter()
+const imagePath = computed(() => `/images/users/user${UserStore.userId}.png?v=${Date.now()}`)
 
 const menuItems = [
   {
