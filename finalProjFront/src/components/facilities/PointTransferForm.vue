@@ -68,7 +68,7 @@ const transferAmount = ref(1)
 
 // 顯示目前單位門牌號-樓層
 const unitDisplay = computed(() => {
-    return `${facilitiesStore.unit}-${facilitiesStore.floor}`
+    return `${facilitiesStore.unit}號-${facilitiesStore.floor}`
 })
 
 
@@ -137,6 +137,7 @@ const fetchSelectableUnits = async () => {
                 excludeUnitId: facilitiesStore.unitId
             }
         })
+        console.log('unitOptions 原始資料：', res.data)
         unitOptions.value = res.data
     } catch (err) {
         console.error("載入轉入單位清單失敗", err)

@@ -1,11 +1,11 @@
 <template>
-  <aside class="left-side-nav" :class="{ 'dark-mode': isDarkMode }">
+  <aside class="left-side-nav">
     <!-- 會員頭像區（登入後才顯示） -->
     <div v-if="UserStore.isAuthenticated" class="user-section">
       <div class="user-profile-card new-member-card no-border-card">
         <div class="member-avatar-block">
           <div class="avatar-container">
-            <img :src="UserStore.avatarUrl" alt="頭像" class="user-avatar" />
+            <img :src="imagePath" alt="頭像" class="user-avatar" />
             <div class="status-indicator"></div>
           </div>
           <div class="member-info-texts">
@@ -27,7 +27,7 @@
             <i class="bi bi-bell"></i>
             <span>通知</span>
           </router-link>
-          <router-link to="/account/settings" class="quick-action-card no-border-action">
+          <router-link to="/profile" class="quick-action-card no-border-action">
             <i class="bi bi-gear"></i>
             <span>設定</span>
           </router-link>
@@ -104,12 +104,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
 const UserStore = useUserStore()
 const router = useRouter()
+const imagePath = computed(() => `/images/users/user${UserStore.userId}.png?v=${Date.now()}`)
 
 const menuItems = [
   {
@@ -243,8 +244,13 @@ onUnmounted(() => {
 
 .user-row {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+
+
+
+  flex-direction: column;
+  align-items: flex-start;
+
+
   gap: 8px;
 }
 
@@ -270,7 +276,7 @@ onUnmounted(() => {
   width: 100%;
   justify-content: space-between;
   gap: 12px;
-  margin: 12px 0 0 0;
+  margin: 12px 0 0 20px;
 }
 
 .quick-action-card {
@@ -305,7 +311,8 @@ onUnmounted(() => {
 }
 
 .logout-btn-wrapper {
-  margin-top: 32px;
+  margin-top: 12px;
+
   padding-top: 0;
   display: flex;
   justify-content: flex-end;
@@ -314,6 +321,7 @@ onUnmounted(() => {
 .logout-button.no-border-logout {
   width: 100%;
   margin-top: 0;
+
   background: #fff;
   color: #5a67d8;
   border: 2px solid #5a67d8;
@@ -641,13 +649,13 @@ onUnmounted(() => {
 
   .user-name,
   .placeholder-title {
-    font-size: 13px;
+    font-size: 10px;
   }
 
   .user-username,
   .user-badge,
   .placeholder-subtitle {
-    font-size: 10px;
+    font-size: 3px;
   }
 
   .quick-actions-row {
@@ -724,5 +732,36 @@ onUnmounted(() => {
 /* 確保快捷選項文字顯示 */
 .quick-action-card span {
   display: inline;
+}
+
+.quick-action-card.no-border-action {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #444;
+  background: transparent;
+  border-radius: 12px;
+  padding: 12px 0 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 500;
+}
+
+.quick-action-card.no-border-action:hover {
+  background: #f0f4ff;
+  color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+  font-weight: 700;
+}
+
+.quick-action-card.no-border-action:hover i {
+  color: #667eea;
+  transform: scale(1.12);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-card.no-border-action i {
+  font-size: 1.7rem;
+  margin-bottom: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

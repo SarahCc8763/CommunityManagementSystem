@@ -20,45 +20,38 @@
     <!-- ✅ 頁籤列：寬度對齊 container -->
     <ul class="nav nav-tabs mb-4" role="tablist">
       <li class="nav-item">
-        <a class="nav-link"
-          :class="{ active: selectedTab === 'rent' }"
-          href="#"
-          @click.prevent="selectedTab = 'rent'"
-        >我要承租車位</a>
+        <a class="nav-link" :class="{ active: selectedTab === 'rent' }" href="#"
+          @click.prevent="selectedTab = 'rent'">我要承租車位</a>
       </li>
       <li class="nav-item">
-        <a
-          class="nav-link"
-          :class="{ active: selectedTab === 'history' }"
-          href="#"
-          @click.prevent="selectedTab = 'history'"
-        >查看歷史紀錄</a>
+        <a class="nav-link" :class="{ active: selectedTab === 'history' }" href="#"
+          @click.prevent="selectedTab = 'history'">查看歷史紀錄</a>
       </li>
     </ul>
 
     <!-- -------------------------- 承租車位頁 -------------------------- -->
     <div v-if="selectedTab === 'rent'">
-        <div class="search-wrapper d-flex align-items-center gap-2 flex-wrap w-100">
-          <!-- 車位種類 -->
-          <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
-            <i class="bi bi-sliders2 me-2 text-secondary"></i>
-            <select class="form-select border-0 shadow-none" v-model="selectedType">
-              <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
-            </select>
-          </div>
-          <!-- 日期 -->
-          <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
-            <i class="bi bi-calendar3 me-2 text-secondary"></i>
-            <input type="month" class="form-control border-0 shadow-none" v-model="queryStartMonth" :min="minMonth" />
-            <span class="mx-2">—</span>
-            <input type="month" class="form-control border-0 shadow-none" v-model="queryEndMonth" :min="minMonth" />
-          </div>
-          <!-- 區域 -->
-          <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
-            <i class="bi bi-car-front me-2 text-secondary"></i>
-            <input type="text" class="form-control border-0 shadow-none" placeholder="搜尋樓層或區域" v-model="searchKeyword" />
-          </div>
+      <div class="search-wrapper d-flex align-items-center gap-2 flex-wrap w-100">
+        <!-- 車位種類 -->
+        <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
+          <i class="bi bi-sliders2 me-2 text-secondary"></i>
+          <select class="form-select border-0 shadow-none" v-model="selectedType">
+            <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
+          </select>
         </div>
+        <!-- 日期 -->
+        <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
+          <i class="bi bi-calendar3 me-2 text-secondary"></i>
+          <input type="month" class="form-control border-0 shadow-none" v-model="queryStartMonth" :min="minMonth" />
+          <span class="mx-2">—</span>
+          <input type="month" class="form-control border-0 shadow-none" v-model="queryEndMonth" :min="minMonth" />
+        </div>
+        <!-- 區域 -->
+        <div class="input-box d-flex align-items-center px-3 py-2 flex-fill">
+          <i class="bi bi-car-front me-2 text-secondary"></i>
+          <input type="text" class="form-control border-0 shadow-none" placeholder="搜尋樓層或區域" v-model="searchKeyword" />
+        </div>
+      </div>
 
       <!-- 查詢結果區塊 -->
       <div class="section-title d-flex align-items-center gap-2 mt-4 mb-3 ps-3 border-start border-4 border-primary">
@@ -130,10 +123,12 @@
                   </span>
                 </td>
                 <td class="d-flex justify-content-center flex-wrap gap-2">
-                  <button class="btn btn-primary btn-sm rounded-pill action-btn" :disabled="!record.approved || !record.canExtend" @click="openExtendModal(record)">
+                  <button class="btn btn-primary btn-sm rounded-pill action-btn"
+                    :disabled="!record.approved || !record.canExtend" @click="openExtendModal(record)">
                     續租
                   </button>
-                  <button class="btn btn-danger btn-sm rounded-pill action-btn" @click="deleteRecord(record)" :disabled="record.status && record.approved">
+                  <button class="btn btn-danger btn-sm rounded-pill action-btn" @click="deleteRecord(record)"
+                    :disabled="record.status && record.approved">
                     取消承租
                   </button>
                 </td>
@@ -147,45 +142,46 @@
   </div>
   <!-- 我要承租 Modal -->
   <div class="modal fade" id="rentalModal" tabindex="-1" aria-hidden="true" ref="modalElement">
-  <div class="modal-dialog">
-    <div class="modal-content p-4">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold text-primary">承租車位</h5>
-        <button type="button" class="btn-close" @click="handleClose"></button>
-      </div>
-
-      <div class="modal-body">
-        <!-- 資訊區 -->
-        <ul class="list-unstyled mb-3">
-          <li><strong>承租者：</strong>{{ userName }}</li>
-          <li><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</li>
-          <li><strong>車位區域：</strong>{{ rentalSlot.location }}</li>
-        </ul>
-
-        <!-- 表單欄位 -->
-        <div class="mb-3">
-          <label class="form-label">承租起始年月：</label>
-          <input type="month" class="form-control" v-model="rentStartMonth" :min="minMonth" />
+    <div class="modal-dialog">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold text-primary">承租車位</h5>
+          <button type="button" class="btn-close" @click="handleClose"></button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">承租結束年月：</label>
-          <input type="month" class="form-control" v-model="rentEndMonth" :min="rentStartMonth" />
+        <div class="modal-body">
+          <!-- 資訊區 -->
+          <ul class="list-unstyled mb-3">
+            <li><strong>承租者：</strong>{{ userName }}</li>
+            <li><strong>車位代碼：</strong>{{ rentalSlot.slotNumber }}</li>
+            <li><strong>車位區域：</strong>{{ rentalSlot.location }}</li>
+          </ul>
+
+          <!-- 表單欄位 -->
+          <div class="mb-3">
+            <label class="form-label">承租起始年月：</label>
+            <input type="month" class="form-control" v-model="rentStartMonth" :min="minMonth" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">承租結束年月：</label>
+            <input type="month" class="form-control" v-model="rentEndMonth" :min="rentStartMonth" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">登記車牌：</label>
+            <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文"
+              @blur="licensePlate = cleanInvalidChars(licensePlate)" maxlength="10" />
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">登記車牌：</label>
-          <input type="text" class="form-control" v-model="licensePlate" placeholder="僅限英數，不可含中文" @blur="licensePlate = cleanInvalidChars(licensePlate)" maxlength="10"/>
+        <!-- 按鈕區 -->
+        <div class="modal-footer">
+          <button class="btn btn-primary px-4" @click="submitRental">送出承租</button>
         </div>
-      </div>
-
-      <!-- 按鈕區 -->
-      <div class="modal-footer">
-        <button class="btn btn-primary px-4" @click="submitRental">送出承租</button>
       </div>
     </div>
   </div>
-</div>
 
   <!-- 續租 Modal -->
   <div class="modal fade" id="extendModal" tabindex="-1" ref="extendModalRef">
@@ -215,7 +211,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios.js'
@@ -232,9 +228,9 @@ const userName = userStore.name
 // 從資料庫抓user資料
 const allUsers = ref([])
 const fetchUserOptions = async () => {
-    const res = await axios.get(`/users?communityId=${communityId}`)
-    allUsers.value = res.data.data.map(user => ({ usersId: user.usersId, name: user.name }))
-    console.log(allUsers.value)
+  const res = await axios.get(`/users?communityId=${communityId}`)
+  allUsers.value = res.data.data.map(user => ({ usersId: user.usersId, name: user.name }))
+  console.log(allUsers.value)
 }
 
 // 從資料庫比對userName，取得userId
@@ -263,7 +259,7 @@ const fetchType = async () => {
     label: t.type
   }))
   console.log(parkingTypes.value)
-  
+
   // 設定預設 selectedType 為第一筆
   if (parkingTypes.value.length > 0) {
     selectedType.value = parkingTypes.value[0].id
@@ -283,7 +279,7 @@ watch([queryStartMonth, queryEndMonth], ([start, end]) => {
   const minEndDate = new Date(startDate)
   minEndDate.setMonth(startDate.getMonth())
   const minEndStr = minEndDate.toISOString().slice(0, 7)
-  
+
   if (!end || end < minEndStr) {
     queryEndMonth.value = minEndStr
   }
@@ -361,7 +357,7 @@ const filteredSlots = computed(() => {
 
 // 自動偵測查詢欄位變動 → 查詢車位
 watch([selectedType, queryStartMonth, queryEndMonth], ([type, start, end]) => {
-  if (!type || !start || !end) return;  
+  if (!type || !start || !end) return;
   fetchAvailableSlots();
 });
 
@@ -402,14 +398,14 @@ modalElement.value?.addEventListener('hidden.bs.modal', () => {
 
 // Modal：起始月變更 → 自動修正截止月不得早於 +1 月
 watch([rentStartMonth, rentEndMonth], ([start, end]) => {
-    const startDate = new Date(start)
-    const minEndDate = new Date(startDate)
-    minEndDate.setMonth(startDate.getMonth())
-    const minEndStr = minEndDate.toISOString().slice(0, 7)
+  const startDate = new Date(start)
+  const minEndDate = new Date(startDate)
+  minEndDate.setMonth(startDate.getMonth())
+  const minEndStr = minEndDate.toISOString().slice(0, 7)
 
-    if (!end || end < minEndStr) {
-        rentEndMonth.value = minEndStr
-    }
+  if (!end || end < minEndStr) {
+    rentEndMonth.value = minEndStr
+  }
 })
 
 // 轉換日期格式 (年月日)
@@ -420,7 +416,7 @@ function formatDateOnly(dateStr) {
 
 // 日期時間格式化（含時分秒）
 function formatDateTime2(datetimeStr) {
-    return datetimeStr.replace('T', ' ').slice(0, 19)
+  return datetimeStr.replace('T', ' ').slice(0, 19)
 }
 
 // 送出承租申請
@@ -487,7 +483,7 @@ async function submitRental() {
 
 // 驗證車牌格式
 function plateOK(plate) {
-    return /^[A-Za-z0-9-]+$/.test(plate)
+  return /^[A-Za-z0-9-]+$/.test(plate)
 }
 
 // ---------------------------- 承租歷史頁籤 -----------------------------
@@ -633,7 +629,7 @@ async function deleteRecord(record) {
     confirmButtonText: '刪除',
     cancelButtonText: '取消'
   })
-  
+
   if (!result.isConfirmed) return
   try {
     const res = await axios.delete(`/park/parking-rentals/${record.id}`)
@@ -645,7 +641,7 @@ async function deleteRecord(record) {
     })
     fetchRentalHistory()
     console.log(res.data.data)
-    
+
   } catch (e) {
     await Swal.fire({
       icon: 'error',
@@ -701,7 +697,7 @@ const goTo = (target) => {
         }
     }
 </script>
-  
+
 <style scoped>
 .search-wrapper {
   border-radius: 12px;
@@ -712,12 +708,14 @@ const goTo = (target) => {
   background: linear-gradient(to right, #ecebff, #e7e9ff);
   border: 1px solid #d0d3e7;
 }
+
 .input-box {
   border: 1px solid #d0d3e7;
   border-radius: 12px;
   background-color: white;
   min-width: 180px;
 }
+
 .rent-btn {
   background: linear-gradient(to right, #6a11cb, #2575fc);
   border: none;
@@ -725,10 +723,12 @@ const goTo = (target) => {
   border-radius: 20px;
   transition: all 0.3s ease;
 }
+
 .rent-btn:hover {
   background: linear-gradient(to right, #5c0ec1, #1f66e2);
   box-shadow: 0 0 8px rgba(100, 100, 255, 0.3);
 }
+
 .rent-btn {
   background: linear-gradient(to right, #6a11cb, #2575fc);
   border: none;
@@ -737,90 +737,92 @@ const goTo = (target) => {
   transition: all 0.3s ease;
   font-weight: 600;
 }
+
 .rent-btn:hover {
   background: linear-gradient(to right, #5c0ec1, #1f66e2);
   box-shadow: 0 0 8px rgba(100, 100, 255, 0.3);
 }
+
 /* 外層包住 scroll 或修正定位問題 */
 .table-wrapper {
-    position: relative;
-    z-index: 0;
+  position: relative;
+  z-index: 0;
 }
 
 /* 滾動表格區塊 */
 .table-container {
-    max-height: 500px;
-    overflow-y: auto;
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 0;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0;
 }
 
 /* 表格固定表頭設定 */
 .fixed-header-table {
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    margin: 0 !important;
-    width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  margin: 0 !important;
+  width: 100%;
 }
 
 /* 表頭 sticky 並美化背景 */
 .fixed-header-table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #f0f4f8;
-    z-index: 10;
-    text-align: center;
-    font-weight: 700;
-    color: #333;
-    border-bottom: 2px solid #dee2e6;
-    padding: 12px;
+  position: sticky;
+  top: 0;
+  background-color: #f0f4f8;
+  z-index: 10;
+  text-align: center;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+  padding: 12px;
 }
 
 /* 表格列 hover 效果 */
 .fixed-header-table tbody tr:hover {
-    background-color: #f9fcff;
+  background-color: #f9fcff;
 }
 
 /* 表格儲存格樣式 */
 .fixed-header-table td {
-    padding: 10px;
-    vertical-align: middle;
-    color: #333;
-    font-size: 15px;
+  padding: 10px;
+  vertical-align: middle;
+  color: #333;
+  font-size: 15px;
 }
 
 /* 狀態標籤 */
 .status-badge {
-    font-size: 0.85em;
-    padding: 0.4em 0.75em;
-    border-radius: 1em;
-    font-weight: 600;
-    display: inline-block;
-    min-width: 80px;
+  font-size: 0.85em;
+  padding: 0.4em 0.75em;
+  border-radius: 1em;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 80px;
 }
 
 /* 承租狀態顏色 */
 .status-yes {
-    background-color: #e6f4ea;
-    color: #2e7d32;
-    border: 1px solid #c1e1c1;
+  background-color: #e6f4ea;
+  color: #2e7d32;
+  border: 1px solid #c1e1c1;
 }
 
 .status-no {
-    background-color: #fdecea;
-    color: #c62828;
-    border: 1px solid #f5c6cb;
+  background-color: #fdecea;
+  color: #c62828;
+  border: 1px solid #f5c6cb;
 }
 
 /* 操作按鈕樣式一致化 */
 .btn-sm {
-    border-radius: 20px;
-    font-size: 0.9em;
-    font-weight: 600;
-    padding: 6px 16px;
-    transition: all 0.2s ease;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 6px 16px;
+  transition: all 0.2s ease;
 }
 
 .btn-disabled {
@@ -833,6 +835,7 @@ td .btn {
   min-width: 80px;
   font-weight: 500;
 }
+
 td .btn-sm {
   min-width: 100px;
   font-weight: 500;
@@ -861,7 +864,7 @@ td .btn-sm {
 .btn-primary:hover:not(:disabled),
 .btn-danger:hover:not(:disabled) {
   filter: brightness(1.05);
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 /* 圓角外觀精緻 */
@@ -876,8 +879,10 @@ td .btn-sm {
 }
 
 .modal-body ul {
-  font-size: 1.05rem;       /* 比預設略大 */
-  line-height: 1.6;         /* 增加行距 */
+  font-size: 1.05rem;
+  /* 比預設略大 */
+  line-height: 1.6;
+  /* 增加行距 */
 }
 
 .modal-footer {
@@ -889,15 +894,20 @@ td .btn-sm {
   background-color: #fff !important;
   color: #000 !important;
 }
+
 .form-select {
-  appearance: none; /* Chrome, Safari, Edge */
-  -webkit-appearance: none; /* Safari */
-  -moz-appearance: none; /* Firefox */
+  appearance: none;
+  /* Chrome, Safari, Edge */
+  -webkit-appearance: none;
+  /* Safari */
+  -moz-appearance: none;
+  /* Firefox */
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M0 0l2 2 2-2z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 8px 10px;
 }
+
 .form-control {
   background-color: #fff !important;
   color: #000 !important;

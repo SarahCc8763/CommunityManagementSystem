@@ -36,18 +36,21 @@
             <div class="accordion " id="faqAccordion">
                 <div class="accordion-item " v-for="faq in paginatedFaqs" :key="faq.id">
                     <h2 class="accordion-header" :id="`heading-${faq.id}`">
-                        <button class="accordion-button collapsed  fw-normal" type="button" data-bs-toggle="collapse"
-                            :data-bs-target="`#collapse-${faq.id}`" aria-expanded="false"
-                            :aria-controls="`collapse-${faq.id}`">
+                        <button class="accordion-button fw-normal" :class="{ 'collapsed': faq.isExpanded }"
+                            @click="toggle(faq)" type="button">
+                            <!-- 內容 -->
+
                             <span class="badge rounded-pill me-2 fs-6 py-2 "
                                 :class="getCategoryBadgeClass(faq.category)">
                                 {{ faq.category }}
                             </span>
-                            <span style="font-size: 120%;">{{ faq.question }}</span>
+                            <span style="font-size: 120%;">{{ faq.question }} <small v-if="!faq.postStatus"
+                                    class="text-secondary">( 未公開
+                                    )</small></span>
                         </button>
                     </h2>
-                    <div :id="`collapse-${faq.id}`" class="accordion-collapse collapse"
-                        :aria-labelledby="`heading-${faq.id}`" data-bs-parent="#faqAccordion" style="font-size: 110%;">
+                    <div v-show="faq.isExpanded" :id="`collapse-${faq.id}`" class="accordion-collapse"
+                        :aria-labelledby="`heading-${faq.id}`" style="font-size: 110%;">
                         <div class="accordion-body d-flex flex-column justify-content-between"
                             style="min-height: 180px;">
                             <!-- 主要內容區 -->
@@ -58,7 +61,7 @@
                             <!-- 底部列：分類與按鈕在同一行 -->
                             <div class="mt-auto d-flex justify-content-between align-items-end flex-wrap gap-2">
                                 <!-- 分類與關鍵字 -->
-                                <div class="small" style="color: #828282;">
+                                <div class="small" style="color: #BEBEBE;">
                                     分類：{{ faq.category }}　
                                     關鍵字：{{ faq.keywords?.join(', ') || '—' }}
                                 </div>
@@ -104,12 +107,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 
 import FaqFormModal from '@/components/faq/FaqFormModal.vue'
 import FaqCategoryModal from '@/components/faq/FaqCategoryModal.vue'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+
 
 
 const userStore = useUserStore()
@@ -163,7 +168,7 @@ const confirmDelete = async (faqId) => {
             await fetchFaqs()
             Swal.fire('刪除成功', '', 'success')
         } catch (err) {
-            console.error(err)
+            //console.error(err)
             Swal.fire('刪除失敗', '', 'error')
         }
     }
@@ -186,6 +191,17 @@ const paginatedFaqs = computed(() => {
     return filteredFaqs.value.slice(start, start + pageSize)
 })
 
+const toggle = (targetFaq) => {
+    faqList.value.forEach(faq => {
+        if (faq === targetFaq) {
+            faq.isExpanded = !faq.isExpanded // 切換自己
+        } else {
+            faq.isExpanded = false // 其他關掉
+        }
+    })
+}
+
+
 // 🔹取得 FAQ 資料（初始用）
 const fetchFaqs = async () => {
     loading.value = true
@@ -204,14 +220,27 @@ const fetchFaqs = async () => {
                 const bIndex = categoryOrder.indexOf(b.category)
                 return aIndex - bIndex
             })
-            faqList.value = fullfaqList.value
+            faqList.value = fullfaqList.value.map(faq => ({ ...faq, isExpanded: false }))
         }
+
     } catch (error) {
-        console.error('取得FAQ或分類失敗:', error)
+        //console.error('取得FAQ或分類失敗:', error)
     } finally {
         loading.value = false
     }
 }
+
+
+watch(paginatedFaqs, async (faqs) => {
+    await nextTick()
+    faqs.forEach(faq => {
+        const el = document.getElementById(`collapse-${faq.id}`)
+        if (el) new bootstrap.Collapse(el, { toggle: false })
+    })
+})
+
+
+
 
 // 🔹查詢 FAQ（分類/關鍵字）
 const searchFaqs = async () => {
@@ -239,7 +268,7 @@ const searchFaqs = async () => {
             page.value = 1
         }
     } catch (error) {
-        console.error('查詢 FAQ 失敗:', error)
+        //console.error('查詢 FAQ 失敗:', error)
     } finally {
         loading.value = false
     }
@@ -289,7 +318,12 @@ const getCategoryBadgeClass = (category) => {
     }
 }
 
-onMounted(fetchFaqs)
+
+
+onMounted(() => {
+    fetchFaqs()
+
+})
 </script>
 
 <style scoped>
@@ -361,7 +395,7 @@ onMounted(fetchFaqs)
 
 /* 修改展開與未展開的標題按鈕背景 */
 .accordion-button {
-    background-color: #2C2C2C;
+    background-color: #202d44;
     /* 自訂標題背景 */
     color: #ffffff;
     font-weight: 600;
@@ -370,13 +404,13 @@ onMounted(fetchFaqs)
 
 /* 當折疊時的樣式（加上 collapsed） */
 .accordion-button.collapsed {
-    background-color: #2C2C2C;
+    background-color: #182234;
     /* 未展開的按鈕顏色 */
 }
 
 /* accordion 內容區塊背景 */
 .accordion-body {
-    background-color: #373737;
+    background-color: #34445f;
     color: #f5f5f5;
     font-weight: 400;
     font-size: 100%;

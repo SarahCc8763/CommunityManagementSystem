@@ -2,7 +2,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import axios from '@/plugins/axios'
 
 // 引入自定義全局樣式
 import './assets/custom-bootstrap.scss'
@@ -14,6 +13,10 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import router from './router'
 
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
+
+
 // 正確的順序：先建立 pinia，再套用 plugin
 const app = createApp(App)
 
@@ -22,4 +25,9 @@ pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
 app.use(router)
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
+})
 app.mount('#app')

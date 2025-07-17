@@ -19,7 +19,7 @@ public interface UnitsRepository extends JpaRepository<Units, Integer> {
 
     public List<Units> findByCommunity_CommunityId(Integer communityId);
 
-     @Query("SELECT u.unitsId FROM Units u WHERE u.community.id = :communityId")
+    @Query("SELECT u.unitsId FROM Units u WHERE u.community.id = :communityId")
     List<Integer> findUnitIdsByCommunityId(@Param("communityId") Integer communityId);
 
     // 查詢點數可轉入unit方法

@@ -73,56 +73,74 @@ async function toggleRead(notice) {
 
 <style scoped>
 .notification-center {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
+  display: block;
+  width: 100%;
+  max-width: 800px;         /* 容器最大寬度 */
+  min-width: 500px;         /* 避免太窄 */
+  margin: 80px auto 40px auto; /* 離頁面頂端 100px 並置中 */
+  padding: 3rem;
+  background: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
 .notification-center h1 {
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: #222;
 }
 
 .notification-item {
-    background: #e0e0e0;
-    /* 已讀背景 */
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    transition: background 0.3s, opacity 0.3s;
-}
-
-.notification-item h3,
-.notification-item p {
-    margin: 0 0 8px 0;
-    color: #555;
-    /* 已讀字體深灰 */
-}
-
-.notification-item .time {
-    font-size: 12px;
-    color: #888;
+  display: block;
+  width: 75%;               /* 單卡寬度小一點 */
+  margin: 0 auto 20px auto; /* 左右置中並有下間距 */
+  background: #e0e0e0;      /* 已讀背景 */
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;       /* 文字置中 */
 }
 
 .notification-item.unread {
-    background: #f5f5f5;
-    /* 未讀背景 */
-    opacity: 1;
-    /* 未讀完全不透明 */
+  background: #f5f5f5;      /* 未讀背景 */
+  opacity: 1;
+}
+
+.notification-item:not(.unread) {
+  opacity: 0.7;
+}
+
+.notification-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.notification-item h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.notification-item p {
+  margin: 0;
+  font-size: 1rem;
+  color: #555;
 }
 
 .notification-item.unread h3,
 .notification-item.unread p {
-    color: #222;
-    /* 未讀文字較黑 */
+  color: #222;
 }
 
-.notification-item:not(.unread) {
-    opacity: 0.7;
-    /* 已讀降低透明度 */
+.no-data {
+  text-align: center;
+  color: #888;
+  margin-top: 2rem;
+  font-size: 1.2rem;
 }
 
-.notification-item:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
 </style>

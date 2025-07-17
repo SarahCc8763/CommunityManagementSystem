@@ -1,10 +1,11 @@
 <template>
-    <!-- 左邊側欄 -->
-    <div class="d-flex">
+
+    <div class="d-flex justify-content-center">
 
         <main>
             <BannerImage :imageSrc="OO" heading="財務管理區" subtext="快速查帳、繳費與明細查詢，提醒您 : 別忘了定期查看帳單與費用明細" textAlign="left" />
             <FeatureCards :features="cards" />
+
         </main>
     </div>
 </template>
@@ -13,7 +14,7 @@
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/finance/happyFaces.jpg';
 import FeatureCards from '@/components/forAll/FeatureCards.vue'
-import SideNav from '@/components/forAll/main/LeftSideNav.vue'
+
 const cards = [
     {
         icon: 'bi-receipt',

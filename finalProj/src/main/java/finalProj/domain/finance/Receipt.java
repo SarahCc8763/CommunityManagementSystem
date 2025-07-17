@@ -8,6 +8,7 @@ import finalProj.domain.users.Users;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "finance_receipt")
 public class Receipt extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

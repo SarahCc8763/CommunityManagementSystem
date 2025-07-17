@@ -1,22 +1,19 @@
-<!-- 這個我還沒整理, 大家可以各自加上自己要的內容在 menuList中並改routeName -->
-
-
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/" class="logo" style="cursor:pointer;">
+    <router-link to="/home" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
-
     <nav class="nav">
       <div v-for="(category, index) in finalMenuList" :key="category.title" class="nav-item"
         :class="{ active: activeIndex === index }" @mouseenter="activeIndex = index">
         {{ category.title }}
       </div>
     </nav>
-
     <!-- 下拉大選單 -->
-    <div class="mega-menu" v-if="activeIndex !== null" @mouseenter="keepDropdown" @mouseleave="closeDropdown">
+    <div class="mega-menu" v-if="activeIndex !== null" ref="megaMenuRef" @mouseenter="keepDropdown"
+      @mouseleave="closeDropdown">
+
       <div class="mega-grid">
         <div v-for="(category, index) in finalMenuList" :key="category.title" class="mega-category"
           :class="{ 'mega-active': activeIndex === index, 'mega-inactive': activeIndex !== index }">
@@ -48,26 +45,27 @@
             stroke-linejoin="round" />
         </svg>
       </div>
-      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + userStore.avatarUrl + ')' }" @click="toggleNotificationCenter"></div>
+      <div v-if="userStore.isAuthenticated" class="avatar" :style="{ backgroundImage: 'url(' + imagePath + ')' }"
+        @click="toggleNotificationCenter"></div>
       <div v-if="isAdmin">
         <button class="admin-button" @click="router.push('/AdminDashboard')">
           管理後台
         </button>
       </div>
-      
+
       <!-- 通知中心彈出 -->
-      <div v-if="isNotificationCenterOpen" class="notification-center" ref="notificationCenterRef" >
+      <div v-if="isNotificationCenterOpen" class="notification-center" ref="notificationCenterRef">
         <!-- 你可以放列表、已讀未讀、捲軸等 -->
         <div class="notification-header">
           <h3>通知中心</h3>
-        </div>  
+        </div>
         <ul v-if="notifications.length > 0" class="notification-list">
           <li v-for="notice in notifications" :key="notice.unitsNotificationsId" class="notification-item">
             <p class="title">{{ notice.title }}</p>
             <!-- <small>{{ notice.description }}</small> -->
           </li>
         </ul>
-      <!-- 沒有通知時 -->
+        <!-- 沒有通知時 -->
         <div v-else class="notification-empty">
           尚無新通知
         </div>
@@ -89,6 +87,7 @@ import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import Logo from '@/assets/images/main/Logo.jpg'
 import { useFacilitiesStore } from '@/stores/FacilitiesStore'
+
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const path = import.meta.env.VITE_API_URL
@@ -98,6 +97,7 @@ const userStore = useUserStore()
 const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
+const imagePath = computed(() => `/images/users/user${userStore.userId}.png?v=${Date.now()}`)
 
 //存放社區功能
 const communityFunctions = ref([])
@@ -125,7 +125,7 @@ const notifications = ref([])   // ⬅️ 全局通知陣列
 
 // 輪詢邏輯
 const unitId = userStore.unitId
-
+console.log("unitId = " + unitId);
 async function pollNotifications() {
   try {
     const res = await axios.get(`/notifications/unit/${unitId}`)
@@ -157,8 +157,42 @@ function handleClickOutside(event) {
   }
 }
 
+// 調整mega-menu--------------------------------------------------------------------------
+const megaMenuRef = ref(null)
+const navItemRefs = ref([])
+watch(activeIndex, (newIndex) => {
+  if (newIndex !== null && navItemRefs.value[newIndex]) {
+    const itemRect = navItemRefs.value[newIndex].getBoundingClientRect()
+    const menu = megaMenuRef.value
+
+    if (menu) {
+      // 將 mega-menu 靠齊目前 hover 的主選單項目
+      menu.style.left = `${itemRect.left}px`
+      menu.style.top = `${itemRect.bottom}px`
+    }
+  }
+})
+
+watch(activeIndex, (newIndex) => {
+  if (
+    newIndex !== null &&
+    navItemRefs.value[newIndex] &&
+    megaMenuRef.value
+  ) {
+    const item = navItemRefs.value[newIndex]
+    const itemRect = item.getBoundingClientRect()
+    const menu = megaMenuRef.value
+
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+    menu.style.left = `${itemRect.left + scrollLeft}px`
+    menu.style.top = `${itemRect.bottom}px`
+  }
+})
+// 調整mega-menu--------------------------------------------------------------------------
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  navItemRefs.value = document.querySelectorAll('.nav-item') //0717
 })
 
 onBeforeUnmount(() => {
@@ -180,7 +214,7 @@ const triggerLogin = () => {
 // 處理登入成功
 const handleLoginSuccess = (loginData) => {
   isLoggedIn.value = true
-  user.value.name = loginData.username
+  userStore.name = loginData.username
 }
 
 // 登入登出切換
@@ -197,7 +231,7 @@ const logout = () => {
   finalMenuList.value = []
 
 
-  router.push('/BeforeLogIn')
+  router.push('/')
   // 觸發全局登出事件（可有可無）
   window.dispatchEvent(new CustomEvent('logout'))
 
@@ -225,6 +259,7 @@ const handleNavigate = (item) => {
   // }
   // 有改--------------------------------------------------------
   if (item.routeName === 'contact-us') {
+    console.log("77777");
     const modalEl = document.getElementById('feedbackModal')
     if (modalEl) {
       const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
@@ -260,6 +295,16 @@ const handleGlobalLogout = () => {
   isLoggedIn.value = false
 }
 
+// 點擊header主選單大標題時的導頁行為
+const handleMainNavClick = (category) => {
+  // 只針對「繳費資訊」大標題導向繳費總覽（FinUser）
+  if (category.title === '繳費資訊') {
+    router.push({ name: 'FinUser' })
+    activeIndex.value = null // 點擊後收起下拉選單
+  }
+  // 其他大標題維持原本展開下拉選單的行為
+}
+
 onMounted(() => {
   // 監聽全局登入成功事件
   window.addEventListener('login-success', handleGlobalLoginSuccess)
@@ -271,8 +316,6 @@ onMounted(() => {
   // if (userStore.isAuthenticated) {
   //   user.value.name = userStore.name
   // }
-  //不要解開!!!!!
-
 })
 
 onUnmounted(() => {
@@ -315,14 +358,6 @@ const menuList = ref([
     ]
   },
   {
-    title: '會員服務',
-    key: 'MANBERSERVICE',
-    children: [
-      { label: '會員資訊修改', routeName: 'member-profile-edit', key: 'MANBERSERVICEEDIT' },
-      { label: '點數轉贈', routeName: 'points-transfer', key: 'MANBERSERVICETRANSFER' }
-    ]
-  },
-  {
     title: '報修服務',
     key: 'TICKET',
     children: [
@@ -335,8 +370,10 @@ const menuList = ref([
     key: 'FQA',
     children: [
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
-      { label: '聯絡客服', routeName: 'feedback', key: 'FQACONTACT' },
-      { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進
+      { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
+      { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進, //問題的進度跟進
+      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -356,14 +393,17 @@ const menuList = ref([
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
+      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ])
 
+const props = defineProps({
+  isDarkMode: { type: Boolean, default: false }
+})
+
 onMounted(() => {
   // loadCommunityFunctions()
-
-  window.addEventListener('refresh-community-functions', loadCommunityFunctions)
 })
 
 onUnmounted(() => {
@@ -378,6 +418,7 @@ async function loadCommunityFunctions() {
 
     if (Array.isArray(res.data)) {
       communityFunctions.value = res.data
+
       finalMenuList.value = menuList.value
         .filter(module => communityFunctions.value.includes(module.key))
         .map(module => ({
@@ -392,18 +433,19 @@ async function loadCommunityFunctions() {
   }
 }
 
-const props = defineProps({
-  isDarkMode: { type: Boolean, default: false }
-})
+
+
 
 </script>
+
 
 <style scoped>
 /* 僅保留 layout/spacing/animation，移除背景、字色、border，這些交由 custom-bootstrap.scss 控制 */
 /* 通知中心---------------------------------------------------------------- */
 .notification-center {
   position: absolute;
-  top: 60px; /* 根據頭像位置調整 */
+  top: 60px;
+  /* 根據頭像位置調整 */
   right: 20px;
   width: 300px;
   max-height: 400px;
@@ -411,7 +453,7 @@ const props = defineProps({
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 16px;
   z-index: 1000;
 }
@@ -659,34 +701,39 @@ body {
 .mega-menu {
   position: absolute;
   top: 72px;
-  left: 0;
-  right: 0;
-  max-width: 1280px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
+  max-width: 1280px;
+  /* ✅ 可依實際需求再調整寬度 */
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  padding: 0 32px 32px 32px;
-  z-index: 9999;
-  user-select: text;
-  display: flex;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  /* animation: megaMenuSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
-  padding-top: 0;
+  padding: 32px;
+  z-index: 99999;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow-x: auto;
+  /* ✅ 若畫面太小就滑動 */
 }
 
 .mega-grid {
   display: flex;
+  flex-wrap: nowrap;
+  /* ✅ 不允許換行 */
   gap: 32px;
-  justify-content: flex-start;
-  max-width: 100%;
-  margin: 0 auto;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  overflow-x: visible;
+  justify-content: space-between;
+  min-width: 1200px;
+  /* ✅ 讓 8 欄有空間排進去 */
+}
+
+/* 每一欄固定寬度（8欄 * 140px + gap） */
+.mega-category {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
 }
 
 .category-title {
@@ -719,7 +766,7 @@ body {
 }
 
 /* 每個分類區塊 */
-.mega-category {
+/* .mega-category {
   min-width: 140px;
   max-width: 180px;
   flex: 0 0 160px;
@@ -729,7 +776,7 @@ body {
   user-select: none;
   display: flex;
   flex-direction: column;
-}
+} */
 
 .mega-category:hover {
   opacity: 1 !important;
@@ -827,4 +874,27 @@ body {
     padding: 1px 4px;
   }
 }
+.admin-button {
+  background-color: #343a40; /* 深灰色背景 */
+  color: #fff; /* 白字 */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.admin-button:hover {
+  background-color: #495057; /* hover 淺一點 */
+  transform: translateY(-2px);
+}
+
+.admin-button:active {
+  background-color: #212529;
+  transform: scale(0.98);
+}
+
 </style>

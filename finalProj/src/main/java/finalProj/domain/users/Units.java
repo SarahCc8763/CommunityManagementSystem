@@ -3,7 +3,6 @@ package finalProj.domain.users;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -74,7 +73,7 @@ public class Units {
 
 	// --- Julie的關聯 END ---
 
-		// --- javert的關聯 START ---
+	// --- javert的關聯 START ---
 
 	// 對應 facility_reservations 單位預約（多對一）：
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -90,9 +89,7 @@ public class Units {
 	@OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference("units-pointTransactions")
 	private List<PointTransactionsBean> pointTransactions;
-
 	// --- javert的關聯 END ---
-
 
 	public Integer getUnitsId() {
 		return unitsId;

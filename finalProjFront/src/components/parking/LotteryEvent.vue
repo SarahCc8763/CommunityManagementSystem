@@ -19,7 +19,8 @@
     <div class="tag-style px-4 py-2 mb-4">
       <h2 class="mb-0 fw-bold text-primary section-title">抽籤活動管理</h2>
     </div>
-    <button class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm mb-4" @click="openCreateModal">
+    <button class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm mb-4"
+      @click="openCreateModal">
       <i class="bi bi-plus-lg text-white me-2"></i>
       <span class="fw-semibold">新增活動</span>
     </button>
@@ -61,35 +62,36 @@
           </button>
         </div>
         <div class="form-group">
-          
+
           <label class="form-label fw-semibold">活動名稱：</label>
           <input v-model="form.title" class="form-control" maxlength="20" placeholder="例如： 114 年度機車未抽籤" />
-          
+
           <label class="form-label fw-semibold">車位種類：</label>
           <select v-model="form.typeId" class="form-select">
             <option disabled value="">請選擇</option>
             <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
           </select>
-          
+
           <label class="form-label fw-semibold">起始時間：</label>
           <input type="datetime-local" v-model="form.startedAt" class="form-control" />
-          
+
           <label class="form-label fw-semibold">結束時間：</label>
           <input type="datetime-local" v-model="form.endedAt" class="form-control" />
 
           <label class="form-label fw-semibold">承租起始日：</label>
           <input type="month" v-model="form.rentalStart" class="form-control" :min="minMonth" />
-          
+
           <label class="form-label fw-semibold">承租截止日：</label>
           <input type="month" v-model="form.rentalEnd" class="form-control" :min="minMonth" />
-          
+
           <!-- 想要抽的數量 -->
           <label class="form-label fw-semibold">想要抽的車位數量：</label>
-          <input type="number" class="form-control" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length" :class="{ 'is-invalid': touched && desiredSlotCount < 1 }" @blur="validateInput" />
+          <input type="number" class="form-control" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length"
+            :class="{ 'is-invalid': touched && desiredSlotCount < 1 }" @blur="validateInput" />
           <div v-if="touched && desiredSlotCount < 1" class="invalid-feedback">
             車位數量不得小於 1
           </div>
-          
+
           <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
             <div v-if="parkingSlots.length" class="fw-semibold">已選擇車位：</div>
             <a href="#" class="text-decoration-none link-light small me-3" @click.prevent="startEditSlots">
@@ -107,11 +109,12 @@
             </ul>
 
           </div>
-          
+
           <!-- 顯示 checkbox 編輯車位 -->
           <div v-if="editingSlots && rawSlotIds.length" class="scroll-container">
             <div class="form-check d-flex align-items-center gap-2 mb-2" v-for="slot in parkingSlots" :key="slot.id">
-              <input class="form-check-input" type="checkbox" :id="'slot-' + slot.id" :value="slot.id" v-model="tempSlotIds" />
+              <input class="form-check-input" type="checkbox" :id="'slot-' + slot.id" :value="slot.id"
+                v-model="tempSlotIds" />
               <label class="form-check-label" :for="'slot-' + slot.id">
                 {{ slot.slotNumber }} - {{ slot.location }}
               </label>
@@ -173,7 +176,8 @@
                   <span v-else>未抽籤</span>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-danger" @click="removeParticipant(p)" :disabled="lotteryDrawn">移除</button>
+                  <button class="btn btn-sm btn-danger" @click="removeParticipant(p)"
+                    :disabled="lotteryDrawn">移除</button>
                 </td>
               </tr>
             </tbody>
@@ -220,11 +224,11 @@ const fetchParkingSlots = async () => {
     rentalEnd: getLastDayOfMonth(form.value.rentalEnd)
   })
   const res = await axios.post('/park/parking-slots/available', {
-      communityId: communityId,
-      typeId: form.value.typeId,
-      eventStart: getFirstDayOfMonth(form.value.rentalStart),
-      eventEnd: getLastDayOfMonth(form.value.rentalEnd),
-      limit: 50
+    communityId: communityId,
+    typeId: form.value.typeId,
+    eventStart: getFirstDayOfMonth(form.value.rentalStart),
+    eventEnd: getLastDayOfMonth(form.value.rentalEnd),
+    limit: 50
   })
   let availableSlots = res.data.data || []
 
@@ -588,11 +592,11 @@ async function drawLots(eventId) {
   try {
     console.log("eventId" + eventId);
     const res = await axios.put(`/park/lottery-event/draw/${eventId}`)
-    if(res.data.data.totalApplicants == 0) {
+    if (res.data.data.totalApplicants == 0) {
       Swal.fire('抽籤失敗', '無人申請', 'info')
-    }else if(res.data.data.totalSpaces == 0){
+    } else if (res.data.data.totalSpaces == 0) {
       Swal.fire('抽籤失敗', '未選擇車位', 'info')
-    }else{
+    } else {
       fetchEvents()
       await Swal.fire({
       title: '抽籤進行中...',
@@ -704,6 +708,7 @@ const goTo = (target) => {
   position: relative;
   z-index: 0;
 }
+
 .table-container {
   max-height: 500px;
   overflow-y: auto;
@@ -719,6 +724,7 @@ const goTo = (target) => {
   border-spacing: 0 !important;
   width: 100%;
 }
+
 .fixed-header-table thead th {
   position: sticky;
   top: 0;
@@ -730,9 +736,11 @@ const goTo = (target) => {
   border-bottom: 2px solid #dee2e6;
   padding: 12px;
 }
+
 .fixed-header-table tbody tr:hover {
   background-color: #f9fcff;
 }
+
 .fixed-header-table td {
   padding: 10px;
   vertical-align: middle;
@@ -749,11 +757,13 @@ const goTo = (target) => {
   display: inline-block;
   min-width: 80px;
 }
+
 .status-yes {
   background-color: #e6f4ea;
   color: #2e7d32;
   border: 1px solid #c1e1c1;
 }
+
 .status-no {
   background-color: #fdecea;
   color: #c62828;
@@ -765,17 +775,21 @@ const goTo = (target) => {
   border-radius: 1rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+
 .modal-title {
   font-weight: 700;
   font-size: 1.25rem;
   color: #4b3cc4;
 }
+
 .modal-title-colored {
   color: #aebaff;
 }
+
 .modal-header .btn-close-custom i {
   display: block;
 }
+
 .btn-close-custom {
   background: none;
   border: none;
@@ -785,6 +799,7 @@ const goTo = (target) => {
   line-height: 1;
   transition: color 0.2s ease;
 }
+
 .btn-close-custom:hover {
   color: #ffffff;
 }
@@ -796,19 +811,23 @@ const goTo = (target) => {
   padding: 0.6rem 1rem;
   font-size: 0.95rem;
 }
+
 .form-group label {
   margin-top: 0.75rem;
   font-weight: 600;
 }
+
 input::placeholder,
 select::placeholder,
 textarea::placeholder {
   color: #cbd5e1;
   opacity: 0.9;
 }
+
 .form-control::placeholder {
   color: #cbd5e1;
 }
+
 .form-check-input {
   vertical-align: middle;
 }
@@ -827,12 +846,15 @@ select.form-select {
   height: auto;
   appearance: auto;
 }
+
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
+
 input[type="month"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
+
 .text-muted {
   color: #ccc !important;
 }
@@ -845,14 +867,17 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   padding: 6px 16px;
   transition: all 0.2s ease;
 }
+
 .btn-danger {
   background: linear-gradient(to right, #ff6b6b, #ff8e8e);
   color: white;
   border: none;
 }
+
 .btn-danger:hover {
   background: #e05a5a;
 }
+
 .btn-primary {
   background: linear-gradient(90deg, #7b5cff, #8e87ff);
   border: none;
@@ -861,6 +886,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   border-radius: 0.6rem;
   box-shadow: 0 4px 12px rgba(123, 92, 255, 0.4);
 }
+
 .btn-primary:hover {
   background: #6d56e6;
 }
@@ -903,27 +929,32 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 /* 寬度控制：根據內容做彈性調整 */
 .table-participant th:nth-child(1),
 .table-participant td:nth-child(1) {
-  width: 70px; /* 姓名 */
+  width: 70px;
+  /* 姓名 */
 }
 
 .table-participant th:nth-child(2),
 .table-participant td:nth-child(2) {
-  width: 180px; /* Email */
+  width: 180px;
+  /* Email */
 }
 
 .table-participant th:nth-child(3),
 .table-participant td:nth-child(3) {
-  width: 150px; /* 時間 */
+  width: 150px;
+  /* 時間 */
 }
 
 .table-participant th:nth-child(4),
 .table-participant td:nth-child(4) {
-  width: 90px; /* 中籤車位 */
+  width: 90px;
+  /* 中籤車位 */
 }
 
 .table-participant th:nth-child(5),
 .table-participant td:nth-child(5) {
-  width: 80px; /* 操作按鈕 */
+  width: 80px;
+  /* 操作按鈕 */
 }
 
 .table-participant .btn-remove {
@@ -936,6 +967,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   font-weight: 600;
   transition: background-color 0.2s ease;
 }
+
 .table-participant .btn-remove:hover {
   background-color: #ef5350;
 }
@@ -944,11 +976,13 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 .scroll-container {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 8px; /* 可選，避免右側 checkbox 太貼邊 */
+  padding-right: 8px;
+  /* 可選，避免右側 checkbox 太貼邊 */
 }
 
 .scroll-container {
-  background-color: rgba(255, 255, 255, 0.05); /* 半透明白作為深色背景上區塊 */
+  background-color: rgba(255, 255, 255, 0.05);
+  /* 半透明白作為深色背景上區塊 */
   border-radius: 12px;
   padding-left: 1rem;
   max-height: 300px;
@@ -956,7 +990,8 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 }
 
 .custom-card .card-footer {
-  background-color: #23262e; /* 稍微更深的底色區分 footer */
+  background-color: #23262e;
+  /* 稍微更深的底色區分 footer */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 

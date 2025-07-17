@@ -50,8 +50,8 @@
 
 <script setup>
 //我可不可以先寫死資料就好 QwQ 
-import { onMounted,ref } from 'vue'
-import axios from 'axios'
+import { onMounted, ref } from 'vue'
+import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 
 
@@ -63,14 +63,14 @@ onMounted(async () => {
     if (!communityId) {
       console.error('❌ 無法取得登入者社區 ID')
       return
-      }
-      const res = await axios.get(`http://localhost:8080/communitys/${communityId}`)
-      selectedCommunity.value = res.data
-      }catch (err) {
-        console.error('❌ 載入失敗', err)
-        }
-        }
-        )
+    }
+    const res = await axios.get(`/communitys/${communityId}`)
+    selectedCommunity.value = res.data
+  } catch (err) {
+    console.error('❌ 載入失敗', err)
+  }
+}
+)
 </script>
 
 <style scoped>

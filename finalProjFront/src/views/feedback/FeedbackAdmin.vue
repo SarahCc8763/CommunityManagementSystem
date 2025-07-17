@@ -15,8 +15,8 @@
                 <select v-model="selectedStatus" class="form-select w-auto">
                     <option value="">全部</option>
                     <option value="待處理">待處理</option>
-                    <option value="處理中">處理中</option>
                     <option value="確認中">確認中</option>
+                    <option value="處理中">處理中</option>
                     <option value="已結案">已結案</option>
                 </select>
             </div>
@@ -59,6 +59,8 @@
 
                                     <!-- 右側：狀態 + 使用者/時間（左右排列） -->
                                     <div class="d-flex align-items-center ms-auto gap-3">
+
+
                                         <!-- 狀態 Badge -->
                                         <span class="badge" :class="'bg-' + getStatusVariant(feedback.status)"
                                             style="font-size: 90%;">
@@ -88,98 +90,120 @@
                                         style="width: 20%; height: auto; object-fit: contain; cursor: zoom-in;"
                                         @click="openImageModal(getFirstImage(feedback))" />
 
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="fw-normal">主旨：span{{ feedback.title }}</h5>
-                                        <p class="card-text mx-2">內容：{{ feedback.description }}</p>
+                                    <div class="card-body d-flex flex-row justify-content-between gap-3">
+                                        <div class="flex-grow-1">
 
-                                        <div>
-                                            <h6>最新進度：</h6>
-                                            <div v-if="feedback.replies && feedback.replies.length > 0" class="mx-2">
-                                                {{ feedback.replies[feedback.replies.length - 1].reply }}
-                                                <div class="lh-lg" style="font-size: 70%;">{{
-                                                    formatDateTime(feedback.replies[feedback.replies.length -
-                                                        1].repliedAt) }}</div>
+
+
+                                            <h5 class="fw-normal">主旨：span{{ feedback.title }} </h5>
+                                            <p class="card-text mx-2">內容：{{ feedback.description }}</p>
+                                            <!-- 確保你先載入 feedback.statusHistory 資料 -->
+
+                                            <div>
+                                                <h6>最新進度：</h6>
+                                                <div v-if="feedback.replies && feedback.replies.length > 0"
+                                                    class="mx-2">
+                                                    {{ feedback.replies[feedback.replies.length - 1].reply }}
+                                                    <div class="lh-lg" style="font-size: 70%;">{{
+                                                        formatDateTime(feedback.replies[feedback.replies.length -
+                                                            1].repliedAt) }}</div>
+                                                </div>
+                                                <div v-else>尚無回覆</div>
+
                                             </div>
-                                            <div v-else>尚無回覆</div>
-                                        </div>
-                                        <!-- 附件 -->
-                                        <div v-if="feedback.attachments?.length" class="mt-4">
-                                            <strong>附件：</strong>
-                                            <ul>
-                                                <li v-for="file in feedback.attachments" :key="file.id"
-                                                    class="d-flex align-items-center gap-2 mb-2">
-                                                    <!-- 檔案下載連結 -->
-                                                    <a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
-                                                        :download="file.fileName"
-                                                        class="text-info text-decoration-underline" target="_blank">
-                                                        {{ file.fileName }}
-                                                    </a>
+                                            <!-- 附件 -->
+                                            <div v-if="feedback.attachments?.length" class="mt-4">
+                                                <strong>附件：</strong>
+                                                <ul>
+                                                    <li v-for="file in feedback.attachments" :key="file.id"
+                                                        class="d-flex align-items-center gap-2 mb-2">
+                                                        <!-- 檔案下載連結 -->
+                                                        <a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
+                                                            :download="file.fileName"
+                                                            class="text-info text-decoration-underline" target="_blank">
+                                                            {{ file.fileName }}
+                                                        </a>
 
-                                                    <!-- 如果是圖片，加一個「放大」按鈕 -->
-                                                    <button v-if="file.mimeType?.startsWith('image/')"
-                                                        class="btn btn-outline-light btn-sm btn-expand"
-                                                        @click="openImageModal('data:' + file.mimeType + ';base64,' + file.attachment)">
-                                                        <i class="bi bi-arrows-angle-expand"></i>
-                                                    </button>
+                                                        <!-- 如果是圖片，加一個「放大」按鈕 -->
+                                                        <button v-if="file.mimeType?.startsWith('image/')"
+                                                            class="btn btn-outline-light btn-sm btn-expand"
+                                                            @click="openImageModal('data:' + file.mimeType + ';base64,' + file.attachment)">
+                                                            <i class="bi bi-arrows-angle-expand"></i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <br>
+
+
+                                            <ul class="mt-3 list-unstyled">
+                                                <li v-for="reply in feedback.replies" :key="reply.id" class="mb-3">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <!-- 回覆內容區塊 -->
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                                    style="width: 40px; height: 40px; font-size: 0.9rem">
+                                                                    {{ reply.user?.name?.charAt(0) || '?' }}
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}
+                                                                </div>
+                                                                <div class="bg-darky rounded p-2 mb-1"
+                                                                    style="max-width: 600px; word-break: break-word;">
+                                                                    {{ reply.reply }}
+                                                                </div>
+                                                                <div class="text-light small">{{
+                                                                    formatDateTime(reply.repliedAt) }}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- 刪除按鈕 -->
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger btn-sm btn-de ms-3 mt-2 flex-shrink-0"
+                                                            style="height: 30px; width: 100px;"
+                                                            @click="deleteReply(reply.id)">
+                                                            刪除回應
+                                                        </button>
+                                                    </div>
                                                 </li>
+
                                             </ul>
-                                        </div>
-
-                                        <div class="d-flex gap-2 mt-2">
-                                            <button class="btn btn-outline-primary btn-sm btn-nn"
-                                                @click="toggleReplies(feedback)">
-                                                {{ feedback.showReplies ? '隱藏回覆' : '顯示所有回覆' }}
-                                            </button>
-                                            <button class="btn btn-outline-secondary btn-sm btn-nn"
-                                                @click="openEditModal(feedback.id)">
-                                                修改
-                                            </button>
-                                        </div>
-
-                                        <ul class="mt-3 list-unstyled" v-if="feedback.showReplies">
-                                            <li v-for="reply in feedback.replies" :key="reply.id" class="d-flex mb-3">
+                                            <!-- 回覆輸入區塊 -->
+                                            <div v-if="feedback.showReplies" class="mt-3 d-flex align-items-start">
+                                                <!-- 左側：頭像圓圈（顯示登入者名稱縮寫） -->
                                                 <div class="me-2">
-                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                                        style="width: 40px; height: 40px; font-size: 0.9rem">
-                                                        {{ reply.user?.name?.charAt(0) || '?' }}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}</div>
-                                                    <div class="bg-darky rounded p-2">{{ reply.reply }}</div>
-                                                    <div class="text-light small">{{ formatDateTime(reply.repliedAt) }}
+                                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                                        {{ currentUserInitial }}
                                                     </div>
                                                 </div>
 
-                                                <button type="button"
-                                                    class=" btn-outline-danger btn-sm ms-auto btn-de mt-4"
-                                                    style="height: 30px ;" @click="deleteReply(reply.id)">刪除回應</button>
-                                            </li>
-                                        </ul>
-                                        <!-- 回覆輸入區塊 -->
-                                        <div v-if="feedback.showReplies" class="mt-3 d-flex align-items-start">
-                                            <!-- 左側：頭像圓圈（顯示登入者名稱縮寫） -->
-                                            <div class="me-2">
-                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                                    style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                                    {{ currentUserInitial }}
+                                                <!-- 右側：輸入框 + 送出按鈕 -->
+                                                <div class="flex-grow-1">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control rounded-pill px-3"
+                                                            v-model="feedback.newReplyText" placeholder="留言……"
+                                                            @keyup.enter="submitReply(feedback)">
+                                                        <button class=" mx-2 rounded-circle send-btn"
+                                                            @click="submitReply(feedback)"
+                                                            style="border: 0 none;background-color: #FAF4FF;">
+                                                            <img src="@/assets/images/feedback/sendIcon.png" alt="➤"
+                                                                style="height: 35px;width: 32px;">
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <!-- 右側：輸入框 + 送出按鈕 -->
-                                            <div class="flex-grow-1">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control rounded-pill px-3"
-                                                        v-model="feedback.newReplyText" placeholder="留言……"
-                                                        @keyup.enter="submitReply(feedback)">
-                                                    <button class=" mx-2 rounded-circle send-btn"
-                                                        @click="submitReply(feedback)"
-                                                        style="border: 0 none;background-color: #FAF4FF;">
-                                                        <img src="@/assets/images/feedback/sendIcon.png" alt="➤"
-                                                            style="height: 35px;width: 32px;">
-                                                    </button>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center" style="min-width: 180px;">
+                                            <FeedbackProgress :feedback="feedback"
+                                                @show-history-detail="showFeedbackHistoryDetail" />
+                                            <button class="btn btn-outline-secondary btn-sm btn-nn mt-1"
+                                                @click="openEditModal(feedback.id)">
+                                                修改處理進度
+                                            </button>
                                         </div>
 
                                     </div>
@@ -193,6 +217,8 @@
 
             <!-- 引入編輯 Modal 元件 -->
             <FeedbackManageModal @updated="fetchData" :selectedFeedback="selectedFeedback" />
+            <!-- <FeedbackHistoryModal :visible="showHistoryModal" :historyData="historyData"
+                @update:visible="showHistoryModal = $event" /> -->
 
             <!-- 點擊圖片後的放大 Modal -->
             <!-- 改寫為純 Vue Modal，不依賴 Bootstrap JS -->
@@ -217,15 +243,21 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios'
-// import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import noImage from '@/assets/images/feedback/noImage.jpg'
 import FeedbackManageModal from '@/components/feedback/FeedbackManageModal.vue'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 
+// 引入新的歷史 Modal
+// import FeedbackHistoryModal from '@/components/feedback/FeedbackHistoryModal.vue';
+import FeedbackProgress from '@/components/feedback/FeedbackProgress.vue';
+
+const showHistoryModal = ref(false);
+const historyData = ref([]); // 用於儲存要顯示在歷史 Modal 中的資料
 
 const userStore = useUserStore()
-const userId = userStore.id || 0 // 假設當前使用者 id
+const userId = userStore.userId || 0 // 假設當前使用者 id
 const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const defaultImage = noImage
@@ -258,9 +290,6 @@ const filteredFeedbackList = computed(() => {
     })
 })
 
-const toggleReplies = (feedback) => {
-    feedback.showReplies = !feedback.showReplies
-}
 
 const getFirstImage = (feedback) => {
     const image = feedback.attachments?.find((a) => a.mimeType?.startsWith('image/'))
@@ -270,6 +299,50 @@ const getFirstImage = (feedback) => {
         return defaultImage
     }
 }
+const showFeedbackHistoryDetail = async (feedback, stepKey) => {
+    try {
+        if (stepKey === '待處理') {
+            Swal.fire({
+                icon: 'info',
+                title: `「建立回饋」➜「待處理」`,
+                html: `
+                <div class="text-start " style="margin:0 15%">
+                建立時間：${formatDateTime(feedback.submittedAt)}
+                <br>建立人員：${feedback.frontEndData.userName}</div>`,
+                showConfirmButton: true,
+                confirmButtonText: '確定'
+            })
+            return;
+        }
+        // 重新發送 API 請求獲取完整的歷史記錄
+        const res = await axios.get(`/api/feedback/history/${feedback.id}`);
+        const historyArray = res.data.filter((item) => item.newStatus === stepKey);
+        historyData.value = historyArray[historyArray.length - 1];
+        // console.log(historyData.value);
+        Swal.fire({
+            icon: 'info',
+            title: `「${historyData.value.oldStatus}」➜「${historyData.value.newStatus}」`,
+            html: `
+            <div class="text-start " style="margin:0 15%">
+            狀態變更時間：${formatDateTime(historyData.value.changedAt)}<br>變更人員：${historyData.value.changedByUserName}
+            </div>`,
+            showConfirmButton: true,
+            confirmButtonText: '確定'
+        });
+
+
+
+
+
+    } catch (err) {
+        // //console.error('載入意見回饋歷史失敗', err);
+        Swal.fire({
+            icon: 'error',
+            title: '載入失敗',
+            text: '處理歷程目前無法載入。'
+        });
+    }
+};
 
 const submitReply = async (feedback) => {
     const text = feedback.newReplyText?.trim()
@@ -283,6 +356,7 @@ const submitReply = async (feedback) => {
     }
 
     try {
+        console.log(payload);
         const res = await axios.post(
             `/api/feedback/${feedback.id}/reply`,
             payload
@@ -299,7 +373,7 @@ const submitReply = async (feedback) => {
             alert('送出失敗')
         }
     } catch (err) {
-        console.error('送出回覆失敗', err)
+        //console.error('送出回覆失敗', err)
         alert('無法送出，請稍後再試')
     }
 }
@@ -369,7 +443,7 @@ const openEditModal = async (feedbackId) => {
         //console.log(selectedFeedback.value);
 
     } catch (err) {
-        console.error('載入意見資料失敗', err)
+        //console.error('載入意見資料失敗', err)
     }
 }
 
@@ -411,7 +485,7 @@ const deleteReply = async (replyId) => {
         });
 
     } catch (e) {
-        console.error('刪除發生錯誤', e);
+        //console.error('刪除發生錯誤', e);
         Swal.fire({
             icon: 'error',
             title: '刪除失敗',
@@ -424,11 +498,12 @@ const deleteReply = async (replyId) => {
 
 
 const fetchData = async () => {
-
-    if (!userId) {
-        error.value = '找不到使用者資訊，請重新登入。'
-        return
-    }
+    // console.log(userStore);
+    // console.log(userId);
+    // if (!userId) {
+    //     error.value = '找不到使用者資訊，請重新登入。'
+    //     return
+    // }
 
     loading.value = true
     await axios
@@ -439,11 +514,11 @@ const fetchData = async () => {
                 showReplies: false,
                 newReplyText: ''
             }))
-            //console.log(feedbackList.value);
+            console.log(feedbackList.value);
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'
-            console.error(err)
+            //console.error(err)
         })
         .finally(() => {
             loading.value = false

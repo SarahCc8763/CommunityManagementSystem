@@ -14,7 +14,7 @@
                 <h6>附件：</h6>
                 <ul class="list-group">
                     <li v-for="att in attachments" :key="att.id" class="list-group-item ">
-                        <a :href="`http://localhost:8080/api/bulletin/attachments/${att.id}`" target="_blank"
+                        <a :href="`${url}/api/bulletin/attachments/${att.id}`" target="_blank"
                             style="font-size: 90%;">{{
                                 att.fileName }}</a>
                     </li>

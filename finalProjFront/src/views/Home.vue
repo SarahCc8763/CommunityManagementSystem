@@ -8,10 +8,10 @@
                 <div class="hero-text">
                     <h1 class="serif-title text-white fw-bold">歡迎回到 <span style="color: rgb(220, 245, 179);">RiVER
                             BANK</span> </h1>
-                    <h2 class="serif-title text-white fw-bold">智慧社區管理，從此開始</h2>
+                    <h2 class="serif-title text-white fw-bold">好家宅社區管理，從此開始</h2>
                     <br><br>
                     <p class="text-white" style=""> <span style="color: rgb(228, 245, 220);">
-                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 OO建設</span></p>
+                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 智匯建設</span></p>
 
                 </div>
             </div>
@@ -125,22 +125,22 @@ import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axios from '@/plugins/axios'
-import {useUserStore} from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore()
 const groupedCards = ref([])
 const filteredFeatures = ref([])
 onMounted(async () => {
-  try {
-    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
-    const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
+    try {
+        const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
+        const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
 
-    // 只保留被允許的功能卡片
-    filteredFeatures.value = features.filter(f => allowed.includes(f.key))
+        // 只保留被允許的功能卡片
+        filteredFeatures.value = features.filter(f => allowed.includes(f.key))
 
-  } catch (err) {
-    console.error('❌ 載入社區功能失敗', err)
-  }
+    } catch (err) {
+        console.error('❌ 載入社區功能失敗', err)
+    }
 })
 
 
@@ -149,9 +149,9 @@ const router = useRouter();
 const navigate = (feature) => {
     // 有改---------------------------------
     // if (link) router.push(link);
-    if(userStore.roleId == 2 && feature.linkSecurity){
+    if (userStore.roleId == 2 && feature.linkSecurity) {
         router.push(feature.linkSecurity)
-    }else if (feature.link) router.push(feature.link);
+    } else if (feature.link) router.push(feature.link);
     // 有改---------------------------------
 };
 
@@ -161,50 +161,55 @@ const features = [
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
         link: '/packages',
-        key:'PACKAGE',
-        linkSecurity:'/packages_security'
+        key: 'PACKAGE',
+        linkSecurity: '/packages_security'
     },
     {
         icon: 'bi-car-front-fill',
         title: '停車場管理',
         description: '掌握社區停車位使用狀況，並支援訪客車輛申請與排程。',
         link: '/parking',
-        key:'PARK'
+        key: 'PARK'
     },
     {
         icon: 'bi-person-circle',
         title: '帳戶資訊',
-        description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/profile',
-        key:'INVOICE'
+        description: '檢視與更新個人資料、聯絡方式，方便又安全。',
+        link: '/Users'
+    },
+    {
+        icon: 'bi bi-cash',
+        title: '帳務資訊',
+        description: '把你的錢錢交出來。',
+        link: '/finUser'
     },
     {
         icon: 'bi-megaphone',
         title: '最新公告',
         description: '快速接收社區重要通知與活動資訊，不再錯過任何消息。',
         link: '/announcements',
-        key:'NOTICE'
+        key: 'NOTICE'
     },
     {
         icon: 'bi-question-circle',
         title: '常見問題',
         description: '整理住戶最常遇到的問題與解答，操作流程一目瞭然。',
         link: '/faq',
-        key:'FQA'
+        key: 'FQA'
     },
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
         description: '線上預約健身房、交誼廳等公設，點數管理。',
         link: '/facilities',
-        key:'BOOKING'
+        key: 'BOOKING'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
         link: '/TicketDashboard',
-        key:'TICKET'
+        key: 'TICKET'
     }
 ];
 
