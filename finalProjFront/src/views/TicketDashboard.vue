@@ -35,11 +35,6 @@
       description: '查看目前報修單的處理狀態與紀錄。',
       route: 'TicketList',
     },
-    {
-      title: '維修派工與指派',
-      description: '由管理員指派報修案件給負責人員。',
-      route: 'AllTicketsByAssignment',
-    },
   ]
   
   const goTo = (routeName) => {

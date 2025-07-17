@@ -1,8 +1,24 @@
 <template>
     <div class="container mt-4">
+        <!-- 麵包屑導航 -->
+        <nav aria-label="breadcrumb" class="mb-3 ms-1">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" @click="goTo('parkingBack')" class="text-decoration-none text-light">停車場</a>
+                </li>
+                <li class="breadcrumb-item active text-white" aria-current="page">社區車位建置</li>
+            </ol>
+        </nav>
+
         <!-- 社區初始化標頭 -->
         <div class="tag-style px-4 py-2 mb-4">
-            <h2 class="mb-0 fw-bold text-primary section-title">上傳車位資料</h2>
+            <h2 class="mb-0 fw-bold text-primary section-title">社區車位建置</h2>
         </div>
 
         <!-- 社區車位種類選取 -->
@@ -243,6 +259,7 @@ async function confirmAndSubmit() {
             title: response.data.message || '更新成功',
             confirmButtonText: '好的'
         })
+        await fetchSelectedTypes()
 
         hasChanged.value = false
         showTypeWarning.value = false
@@ -346,17 +363,18 @@ function handleFileUpload(event) {
         // 將 worksheet 轉為 JSON 陣列（每列是物件）
         const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) // defval 空白補空欄位
 
-        const result = []
-        json.forEach(row => {
-            const slot_number = row['車位編號']?.trim()
-            const location = row['區域']?.trim()
-            const parking_type_label = row['車位種類']?.trim()
-            const unit_info = row['擁有人戶號']?.trim()
-            const user_name = row['車位擁有人']?.trim()
-            const license_plate = row['登記車牌號']?.trim()
-            const is_rentable_text = row['是否可承租']?.trim()
-
-            const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
+    const result = []
+    json.forEach(row => {
+        const slot_number = row['車位編號']?.trim()
+        const location = row['區域']?.trim()
+        const parking_type_label = row['車位種類']?.trim()
+        const unit_info = row['擁有人戶號']?.trim()
+        const user_name = row['車位擁有人']?.trim()
+        const license_plate = row['登記車牌號']?.trim()
+        const is_rentable_text = row['是否可承租']?.trim()
+        
+        const parkingType = selectedTypes.value.find(type => type.label === parking_type_label)
+        console.log(parkingType);
 
             let building = null, floor = null, unit = null
             if (unit_info) {
@@ -378,23 +396,22 @@ function handleFileUpload(event) {
                 )
                 unitsId = matchedUnit?.unitsId ?? null
             }
-
+        
             const isRentable = is_rentable_text === '是'
 
-            result.push({
-                slotNumber: slot_number,
-                location,
-                licensePlate: license_plate,
-                isRentable,
-                parkingTypeId: parkingType?.id ?? null,
-                parkingTypeLabel: parkingType?.label ?? null,
-                usersId: user?.usersId ?? null,
-                building,
-                floor,
-                unit,
-                unitsId
-            })
+        result.push({
+        slotNumber: slot_number,
+        location,
+        licensePlate: license_plate,
+        isRentable,
+        parkingTypeId: parkingType?.id ?? null,
+        usersId: user?.usersId ?? null,
+        building,
+        floor,
+        unit,
+        unitsId
         })
+    })
 
         parkingSlots.value = result
 
@@ -545,7 +562,6 @@ function addRow() {
         slotNumber: '',
         location: '',
         parkingTypeId: selectedTypes.value[0]?.id ?? 1,
-        parkingTypeLabel: selectedTypes.value[0]?.label ?? '汽車',
         unitsId: defaultUnitId,
         usersId: filteredUserList[0]?.usersId ?? null,
         licensePlate: '',
@@ -568,7 +584,7 @@ function submitData() {
         location: slot.location,
         licensePlate: slot.licensePlate,
         isRentable: slot.isRentable,
-        parkingType: slot.parkingTypeLabel ?? null,
+        parkingType: selectedTypes.value.find(t => t.id === slot.parkingTypeId)?.label ?? null,
         usersId: slot.usersId,
         building: slot.building,
         floor: slot.floor,
@@ -634,6 +650,22 @@ function cleanInvalidChars(slot, field) {
 }
 
 
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'adminDashboard':
+            router.push('/AdminDashboard')
+            break
+        case 'parkingBack':
+            router.push('/pages/park/parking-back')
+            break
+        }
+    }
 </script>
 
 <style scoped>
@@ -793,4 +825,11 @@ table td .btn {
     color: #ccc !important;
     /* 或你要的亮灰色，可調亮一點 */
 }
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #ccc; /* 或 text-light 用於深色背景 */
+    margin: 0 0.5rem;
+}
+
 </style>
