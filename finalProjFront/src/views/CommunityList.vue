@@ -48,6 +48,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
+import Swal from 'sweetalert2'
 
 
 const userStore = useUserStore()
@@ -257,10 +258,20 @@ async function saveFunction() {
     window.dispatchEvent(new CustomEvent('refresh-community-functions'))
 
 
-    alert('✅ 功能設定已儲存')
+    Swal.fire({
+    icon: 'success',
+    title: '儲存成功',
+    text: '✅ 功能設定已儲存',
+    confirmButtonText: 'OK'
+  })
   } catch (err) {
     console.error('❌ 儲存失敗', err)
-    alert('❌ 儲存失敗')
+    Swal.fire({
+  icon: 'error',
+  title: '儲存失敗',
+  text: '❌ 請稍後再試一次',
+  confirmButtonText: '知道了'
+})
   }
 }
 

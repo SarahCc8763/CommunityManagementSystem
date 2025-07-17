@@ -403,7 +403,7 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  // loadCommunityFunctions()
+  window.addEventListener('refresh-community-functions', loadCommunityFunctions)
 })
 
 onUnmounted(() => {
