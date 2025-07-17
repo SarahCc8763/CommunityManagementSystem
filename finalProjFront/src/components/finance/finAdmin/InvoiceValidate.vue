@@ -1,8 +1,8 @@
 <template>
 
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
-      <!-- 麵包屑導航 -->
-      <nav aria-label="breadcrumb" class="mb-3 ms-1">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
           <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
@@ -79,6 +79,9 @@
         <button type="button" class="btn btn-secondary ms-2" @click="checkedIds = []">取消全選</button>
       </div>
     </form>
+    <button class="btn btn-outline-secondary mb-3" @click="goBack">
+      <i class="bi bi-arrow-left-circle me-1"></i> 回上一頁
+    </button>
   </div>
 </template>
 
@@ -175,6 +178,10 @@ const goTo = (target) => {
       break
   }
 }
+
+const goBack = () => {
+  router.back()
+}
 </script>
 
 <style scoped>
@@ -191,5 +198,4 @@ const goTo = (target) => {
   /* 或 text-light 用於深色背景 */
   margin: 0 0.5rem;
 }
-
 </style>

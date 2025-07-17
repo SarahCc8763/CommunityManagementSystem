@@ -304,7 +304,7 @@ const confirmGenerate = async () => {
     showConfirm.value = false
     successMsg.value = '新增成功！將導向審核頁面...'
     setTimeout(() => {
-      router.push('/finance/invoice-review')
+      router.push('/finance/invoice/validate')
     }, 1200)
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
@@ -339,7 +339,7 @@ const submitForm = async () => {
     form.value.feeTypeId = ''
     form.value.billingPeriodId = ''
     setTimeout(() => {
-      router.push('/finance/invoice-review')
+      router.push('/finance/invoice/validate')
     }, 1200)
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
@@ -365,11 +365,14 @@ const submitFullForm = async () => {
       createdBy: userStore.userId
     })
 
-    fullSuccessMsg.value = '批次產生成功！'
+    fullSuccessMsg.value = '新增成功！將導向審核頁面...'
     fullForm.value.billingPeriodId = ''
     fullForm.value.feeTypeId = ''
     fullForm.value.userIds = []
     userSearch.value = ''
+    setTimeout(() => {
+      router.push('/finance/invoice/validate')
+    }, 1200)
   } catch (e) {
     fullErrorMsg.value = '批次產生失敗：' + (e.response?.data?.message || e.message)
   }

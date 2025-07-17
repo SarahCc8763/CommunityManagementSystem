@@ -145,6 +145,7 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
+      meta: { dark: true },
     },
     {
       path: '/finance/receipt/add',

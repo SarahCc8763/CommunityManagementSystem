@@ -90,7 +90,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">建立者</label>
-                  <input v-model="form.createdBy" class="form-control" />
+                  <input v-model="form.createdBy" class="form-control" disabled />
                 </div>
 
               </div>

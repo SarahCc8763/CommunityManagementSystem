@@ -1,7 +1,7 @@
 <template>
   <div style="width: 60vw; max-width: 1200px; margin-left: 2rem; margin-right: 2rem; margin: auto;">
-      <!-- 麵包屑導航 -->
-      <nav aria-label="breadcrumb" class="mb-3 ms-1">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
           <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
@@ -205,14 +205,21 @@ function isOverdue(deadline) {
 onMounted(async () => {
   await reloadInvoices()
 })
-
 async function reloadInvoices() {
-  // 查詢所有 paymentStatus='unpaid' 或 'pending' 且有回覆的 invoice（新版API）
-  const res = await axiosapi.get('/finance/invoice-responses/with-response/unpaid', { params: { communityId: userStore.communityId } })
+  console.log('userStore.communityId =', userStore.communityId)
+  const communityId = typeof userStore.communityId === 'object'
+    ? userStore.communityId?.communityId
+    : userStore.communityId
+
+  const res = await axiosapi.get('/finance/invoice-responses/with-response/unpaid', {
+    params: { communityId }
+  })
+
   console.log('API 回應：', res.data)
   invoices.value = res.data
   console.log('載入完成，共', invoices.value?.length || 0, '筆資料')
 }
+
 
 function openReceiptModal(invoice, userId) {
   console.log('openReceiptModal 被呼叫', invoice, userId)
@@ -622,5 +629,4 @@ div {
   /* 或 text-light 用於深色背景 */
   margin: 0 0.5rem;
 }
-
 </style>
