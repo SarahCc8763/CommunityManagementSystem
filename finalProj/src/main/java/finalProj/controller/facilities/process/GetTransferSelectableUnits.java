@@ -44,7 +44,7 @@ public class GetTransferSelectableUnits {
 
 	    	        return new UnitOptionDTO(
 	    	            unit.getUnitsId(),
-	    	            unit.getUnit() + "-" + unit.getFloor(),
+	    	            unit.getUnit() + "號-" + unit.getFloor(),
 	    	            userName
 	    	        );
 	    	    })

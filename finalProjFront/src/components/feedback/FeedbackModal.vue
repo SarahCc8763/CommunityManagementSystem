@@ -63,14 +63,16 @@ import { ref, onMounted, reactive } from 'vue'
 import axios from '@/plugins/axios'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
 
+const userStore = useUserStore()
 const form = reactive({
     id: null,
     title: '',
     description: '',
     category: { id: '' },
-    user: { usersId: 1 },
-    community: { communityId: 1 },
+    user: { usersId: userStore.userId },
+    community: { communityId: userStore.communityId },
 })
 
 const categories = ref([])
@@ -83,7 +85,7 @@ const fetchCategories = async () => {
             categories.value = Object.entries(res.data.data).map(([id, name]) => ({ id: Number(id), name }))
         }
     } catch (error) {
-        console.error('取得分類失敗', error)
+        //console.error('取得分類失敗', error)
     }
 }
 
@@ -119,7 +121,12 @@ const removeAttachment = (index) => {
 
 const submitFeedback = async () => {
     if (!form.title.trim() || !form.description.trim() || !form.category.id) {
-        swal.fire({ icon: 'warning', title: '請填寫完整欄位', text: '標題、內容與分類為必填', confirmButtonText: '好的' })
+        swal.fire({
+            icon: 'warning',
+            title: '請填寫完整欄位',
+            text: '標題、內容與分類為必填',
+            confirmButtonText: '好的'
+        })
         return
     }
 
@@ -147,7 +154,7 @@ const submitFeedback = async () => {
         }
     } catch (error) {
         swal.fire({ icon: 'error', title: '失敗', text: error.data?.message || '送出失敗', showConfirmButton: false, timer: 1500 })
-        console.error('送出失敗', error)
+        //console.error('送出失敗', error)
     }
 }
 

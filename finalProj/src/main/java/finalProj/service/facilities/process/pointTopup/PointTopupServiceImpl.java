@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import finalProj.dto.facilities.topup.TopupRequest;
@@ -17,12 +18,13 @@ public class PointTopupServiceImpl implements PointTopupService {
 	private static final String HASH_KEY = "5294y06JbISpM5x9";
 	private static final String HASH_IV = "v77hoKGq4kWxNNIS";
 	private static final String ACTION_URL = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5";
+	@Value("${ecpay.ngrok-path}")
+	private String ngrokPath;
 
 	@Override
 	public String generateEcpayForm(TopupRequest request) throws Exception {
 		String merchantTradeNo = "TOPUP" + System.currentTimeMillis();
-		String merchantTradeDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-		String ngrokPath = "https://3c015cdc44cc.ngrok-free.app";
+		String merchantTradeDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());		
 
 		Map<String, String> params = new LinkedHashMap<>();
 		params.put("MerchantID", MERCHANT_ID);

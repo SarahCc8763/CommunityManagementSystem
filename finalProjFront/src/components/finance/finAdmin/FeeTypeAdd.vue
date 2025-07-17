@@ -1,5 +1,8 @@
 <template>
 
+
+
+
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
     <!-- 麵包屑導航 -->
     <nav aria-label="breadcrumb" class="mb-3 ms-1">
@@ -46,7 +49,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">單價</label>
-                  <input v-model.number="form.amountPerUnit" type="number" class="form-control" required />
+                  <input v-model.number="form.amountPerUnit" type="number" class="form-control" required
+                    placeholder="每單位價格" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">單位</label>
@@ -74,7 +78,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">備註</label>
-                  <input v-model="form.note" class="form-control" />
+                  <input v-model="form.note" class="form-control" placeholder="ex: 限定現金交易" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">建立者</label>
@@ -336,6 +340,7 @@ let addModalInstance = null
 onMounted(() => {
   fetchFeeTypes()
   addModalInstance = new bootstrap.Modal(addModalRef.value)
+  form.value.communityId = userStore.communityId
 })
 
 const openAddModal = () => {

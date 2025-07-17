@@ -122,6 +122,7 @@ public class FeedbackService {
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
                 || feedback.getCommunity() == null || feedback.getCommunity().getCommunityId() == null) {
+            log.info("資料不完整");
             return null;
         }
 
@@ -132,6 +133,7 @@ public class FeedbackService {
         Optional<Community> optionalCommunity = communityRepository.findById(feedback.getCommunity().getCommunityId());
 
         if (optionalCategory.isEmpty() || optionalUser.isEmpty() || optionalCommunity.isEmpty()) {
+            log.info("找不到對應的類別、反映使用者、處理者或社區");
             return null;
         }
 

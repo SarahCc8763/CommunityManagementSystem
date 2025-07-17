@@ -58,7 +58,7 @@ const facilitiesStore = useFacilitiesStore()
 const userStore = useUserStore()
 
 const amount = ref(100)
-const amountOptions = [50, 100, 200, 201, 202, 203, 204, 500, 666, 1000]
+const amountOptions = [50, 100, 200]
 
 const formatDate = (dateStr) => {
     return format(new Date(dateStr), 'yyyy-MM-dd')
