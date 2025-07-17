@@ -68,18 +68,16 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/beforeLogIn',
-      name: 'beforeLogIn',
-      component: BeforeLogIn,
-    },
-    {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home,
 
     },
-    // Finance相關
-    //// Fin-Admin    
+    {
+      path: '/',                // 你要把 BeforeLogin 當首頁的話
+      name: 'BeforeLogIn',
+      component: BeforeLogIn
+    },
     {
       path: '/finance/fee-type/add',
       name: 'FeeTypeAdd',
@@ -355,6 +353,32 @@ const router = createRouter({
       name: 'PointTopupResultView',
       component: PointTopupResultView,
       props: true
+    },
+    {
+      path: '/ticket/:id',
+      name: 'TicketDetail',
+      component: TicketDetailView,
+    },
+    {
+      path: '/TicketForm',
+      name: 'TicketForm',
+      component: TicketForm,
+    },
+    {
+      path: '/TicketList',
+      name: 'TicketList',
+      component: TicketList,
+    },
+    {
+      path: '/TicketPage',
+      name: 'TicketPage',
+      component: TicketPage,
+    },
+    {
+      path: '/AllTicketsByAssignment',
+      name: 'AllTicketsByAssignment',
+      component: AllTicketsByAssignment,
+      meta: { dark: true },
     },
     // facility相關結束    
   ],
