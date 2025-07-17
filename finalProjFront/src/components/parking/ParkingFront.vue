@@ -16,8 +16,8 @@
           <div class="card-body d-flex align-items-center">
             <i class="bi bi-person-badge fs-1 me-3 text-secondary"></i>
             <div>
-              <h5 class="card-title mb-1">我的車位與車牌</h5>
-              <p class="card-text text-muted">查看自己擁有與承租的車位，管理車牌資料。</p>
+              <h5 class="card-title mb-2">我的車位與車牌</h5>
+              <p class="card-text text-secondary">查看自己擁有與承租的車位，管理車牌資料。</p>
               <button class="btn btn-outline-primary btn-sm" @click="goTo('mySlots')">前往</button>
             </div>
           </div>
@@ -30,8 +30,8 @@
           <div class="card-body d-flex align-items-center">
             <i class="bi bi-calendar-check fs-1 me-3 text-secondary"></i>
             <div>
-              <h5 class="card-title mb-1">車位承租與紀錄</h5>
-              <p class="card-text text-muted">申請承租社區車位與查看歷史紀錄。</p>
+              <h5 class="card-title mb-2">車位承租與紀錄</h5>
+              <p class="card-text text-secondary">申請承租社區車位與查看歷史紀錄。</p>
               <button class="btn btn-outline-primary btn-sm" @click="goTo('rental')">前往</button>
             </div>
           </div>
@@ -44,28 +44,13 @@
           <div class="card-body d-flex align-items-center">
             <i class="bi bi-box2-heart fs-1 me-3 text-secondary"></i>
             <div>
-              <h5 class="card-title mb-1">參加抽籤活動</h5>
-              <p class="card-text text-muted">報名參與車位抽籤，查看抽籤結果。</p>
+              <h5 class="card-title mb-2">參加抽籤活動</h5>
+              <p class="card-text text-secondary">報名參與車位抽籤，查看抽籤結果。</p>
               <button class="btn btn-outline-primary btn-sm" @click="goTo('lottery')">前往</button>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- 4. 外賓臨時停車 -->
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body d-flex align-items-center">
-            <i class="bi bi-person-walking fs-1 me-3 text-secondary"></i>
-            <div>
-              <h5 class="card-title mb-1">申請臨時停車</h5>
-              <p class="card-text text-muted">為訪客申請臨時停車使用車位。</p>
-              <button class="btn btn-outline-primary btn-sm" @click="goTo('temporary')">前往</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </template>
@@ -84,9 +69,6 @@ const goTo = (target) => {
       break
     case 'lottery':
       router.push('/pages/park/lottery-apply')
-      break
-    case 'temporary':
-      router.push('/parking/temporary')
       break
   }
 }

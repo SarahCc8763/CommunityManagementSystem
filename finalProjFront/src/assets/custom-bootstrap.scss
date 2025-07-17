@@ -314,6 +314,11 @@ body {
     color: #48bb78;
 }
 
+.badge-danger {
+    background: linear-gradient(135deg, rgba(245, 101, 101, 0.1) 0%, rgba(229, 62, 62, 0.1) 100%);
+    color: #f56565;
+}
+
 .badge-warning {
     background: linear-gradient(135deg, rgba(237, 137, 54, 0.1) 0%, rgba(245, 101, 101, 0.1) 100%);
     color: #ed8936;

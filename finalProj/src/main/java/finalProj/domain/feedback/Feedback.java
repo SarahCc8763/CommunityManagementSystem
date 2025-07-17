@@ -79,7 +79,7 @@ public class Feedback {
     @JsonManagedReference("feedback-attachment")
     private List<FeedbackAttachment> attachments;
 
-    @OneToMany(mappedBy = "feedback")
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("feedback-status-history")
     private List<FeedbackStatusHistory> statusHistories;
 

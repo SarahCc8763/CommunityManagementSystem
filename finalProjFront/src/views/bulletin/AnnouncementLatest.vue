@@ -22,7 +22,9 @@
             <div class="announcements-grid">
                 <div v-for="bulletin in bulletins" :key="bulletin.id"
                     :class="['announcement-card', getGridColor(bulletin.categoryName)]">
+                    <small v-if="bulletin.isPinned" class="text-primary "><i class="bi bi-pin-fill"></i>&nbsp;置頂</small>
                     <div class="announcement-header">
+
                         <div class="announcement-badge fs-6">
                             <i :class="['bi', getIcon(bulletin.categoryName)]"></i>
                             {{ bulletin.categoryName }}
@@ -78,8 +80,8 @@
                             <ul class="list-group">
                                 <li v-for="att in selectedBulletin.attachments" :key="att.id"
                                     class="list-group-item list-group-item-action m-2">
-                                    <a :href="`http://localhost:8080/api/bulletin/attachments/${att.id}`"
-                                        target="_blank">{{ att.fileName }}</a>
+                                    <a :href="`${url}/api/bulletin/attachments/${att.id}`" target="_blank">{{
+                                        att.fileName }}</a>
                                 </li>
                             </ul>
                         </div>
@@ -201,6 +203,7 @@ import Swal from 'sweetalert2'
 import BarChart from '@/components/bulletin/BarChart.vue'
 
 
+
 import BannerImage from '@/components/forAll/BannerImage.vue';
 import maleIcon from '@/assets/images/bulletin/male.png'
 import femaleIcon from '@/assets/images/bulletin/female.png'
@@ -208,37 +211,37 @@ import defaultIcon from '@/assets/images/bulletin/default.png'
 import OO from '@/assets/images/bulletin/banner.png';
 import { useUserStore } from '@/stores/UserStore'
 
-
+// userStore
 const userStore = useUserStore()
+const userId = userStore.userId || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
+// 初始資料
+const categoryList = ref([])
 const bulletins = ref([])
 const selectedBulletin = ref(null)
 const selectedOptions = ref([])
+// 方法用
+const url = import.meta.env.VITE_API_URL
 const newComment = ref('')
 const replyContent = ref('')
 const replyingToId = ref(null)
+// 搜尋用
 const searchTitle = ref('')
 const searchCategory = ref('')
-const categoryList = ref([])
-const userId = userStore.userId || 0 // 假設當前使用者 id
-const communityId = userStore.communityId || 0 // 假設當前社區 ID
-
-console.log(userId, communityId);
-
+// 樣式用
+const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
+const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
+const gridClass = ['important', 'event', 'service', '']
+const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
+// 投票用
 const pollLabels = ref([])
 const pollVotes = ref([])
 const hasSubmittedVote = ref(false)
-
 const isPollEnded = computed(() => {
     const end = selectedBulletin.value?.poll?.end
     if (!end) return false
     return new Date(end) < new Date()
 })
-
-
-
-
-const formatDate = (dt) => new Date(dt).toLocaleString()
-const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
 const hasVoted = computed(() => {
     if (!selectedBulletin.value?.poll) return false
     if (selectedBulletin.value.poll.isMultiple) {
@@ -249,11 +252,11 @@ const hasVoted = computed(() => {
 })
 
 
-const bgColors = ['#b0cefa', '#fff7e6', '#f3fdf3', '#f8e8ff', '#e6ffe6']
-const badgeColors = ['#0d6efd', '#ffc107', '#28a745', '#d63384', '#20c997']
-const gridClass = ['important', 'event', 'service', '']
-const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
+const formatDate = (dt) => new Date(dt).toLocaleString()
+const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
 
+
+// 樣式方法
 function getCategoryColor(categoryName) {
     const index = categoryList.value.findIndex(c => c === categoryName) % 5
     return gridClass[index % gridClass.length]
@@ -272,28 +275,50 @@ function getIcon(categoryName) {
     const index = categoryList.value.findIndex(c => c === categoryName) % 4
     return iconClass[index]
 }
-
-
+// 處理內容換行
 function normalizeNewline(text) {
     return text?.replace(/\\n/g, '\n') || ''
 }
 
+//初始化
 onMounted(() => {
 
     fetchAll()
 })
 
 function fetchAll() {
-    //console.log(communityId);
     axios.get('/api/bulletin/community/' + communityId)
         .then(res => {
-            // //console.log(res.data.list);
-            const postedList = res.data.list.filter(val => val.postStatus === true)
-            bulletins.value = postedList.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
-            const cats = new Set(res.data.list.map(b => b.categoryName))
+            const now = new Date()
+
+            // 篩選：已發佈 && 現在時間在 postTime 和 removeTime 之間
+            const postedList = res.data.list.filter(val =>
+                val.postStatus === true &&
+                new Date(val.postTime) <= now &&
+                new Date(val.removeTime) > now
+            )
+
+            // 依 isPinned 再依 postTime 排序
+            const sortedList = postedList.sort((a, b) => {
+                if (a.isPinned === b.isPinned) {
+                    // 同樣都是置頂或都不是 → 用 postTime 新到舊
+                    return new Date(b.postTime) - new Date(a.postTime)
+                }
+                // isPinned 為 true 的排前面
+                return a.isPinned ? -1 : 1
+            })
+
+            bulletins.value = sortedList
+
+            // 取分類名稱（不重複）
+            const cats = new Set(postedList.map(b => b.categoryName))
             categoryList.value = [...cats]
         })
+        .catch(err => {
+            // //console.error('載入公告失敗', err)
+        })
 }
+
 
 function openBulletin(id) {
     axios.get(`/api/bulletin/${id}`).then(async res => {
@@ -339,14 +364,35 @@ function openBulletin(id) {
 function searchBulletins() {
     axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
-        category: searchCategory.value ? { name: searchCategory.value } : undefined
+        category: searchCategory.value ? { name: searchCategory.value } : undefined,
+        community: { communityId: communityId }
     }).then(res => {
-        const sortedList = res.data.list.sort((a, b) => new Date(b.postTime) - new Date(a.postTime))
+        // console.log(res.data);
+        if (!res.data.success) {
+            Swal.fire({
+                title: '查無資料',
+                icon: 'error',
+                confirmButtonText: '確定',
+                timer: 1500
+            })
+            return
+        }
+        const now = new Date()
+        const sortedList = res.data.list.filter(val => val.postStatus === true &&
+            new Date(val.postTime) <= now &&
+            new Date(val.removeTime) > now).
+            sort((a, b) => {
+                if (a.isPinned === b.isPinned) {
+                    // 同樣都是置頂或都不是 → 用 postTime 新到舊
+                    return new Date(b.postTime) - new Date(a.postTime)
+                }
+                return a.isPinned ? -1 : 1
+            })
+
         bulletins.value = sortedList
-        //console.log(sortedList);
+        // console.log(sortedList);
     })
 }
-
 async function submitVote() {
     const confirmed = await Swal.fire({
         title: '確定要投票嗎？',
@@ -363,10 +409,21 @@ async function submitVote() {
         const poll = selectedBulletin.value.poll
         const selectedIds = poll.isMultiple ? selectedOptions.value : [selectedOptions.value]
 
+        // 送出投票
         await axios.post(`/api/poll/${poll.id}/vote`, {
             userId,
             selectedOptionIds: selectedIds
         })
+
+        // 更新投票狀態
+        hasSubmittedVote.value = true
+
+        // ✅ [新增] 重新打 API 拿最新票數
+        const updatedPoll = await axios.get(`/api/bulletin/${selectedBulletin.value.id}`)
+        const updatedOptions = updatedPoll.data.list[0].poll.options
+
+        pollLabels.value = updatedOptions.map(opt => opt.text)
+        pollVotes.value = updatedOptions.map(opt => opt.votesCount || 0)
 
         await Swal.fire({
             title: '投票成功！',
@@ -374,8 +431,6 @@ async function submitVote() {
             timer: 1500,
             showConfirmButton: false
         })
-
-        hasSubmittedVote.value = true
 
     } catch (error) {
         Swal.fire({
@@ -386,6 +441,7 @@ async function submitVote() {
         })
     }
 }
+
 
 
 function submitComment() {
@@ -482,7 +538,7 @@ async function deleteComment(bulletinId, comment) {
             }, 200) // 建議等 200ms 讓 backdrop 正常清除
 
         } catch (err) {
-            console.error(err)
+            // //console.error(err)
             Swal.fire('錯誤', '刪除失敗，請稍後再試', 'error')
         }
     }

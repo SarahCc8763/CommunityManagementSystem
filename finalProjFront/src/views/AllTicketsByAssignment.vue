@@ -349,7 +349,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed ,watch} from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
 import { useUserStore } from '@/stores/UserStore'
@@ -513,8 +513,7 @@ async function fetchTickets(searchPayload = null) {
     }
 
     const [ticketRes, assignRes, vendorRes] = await Promise.all([
-    axios.post('/ticket/search', payload),
-      // axios.get('http://localhost:8080/ticket'),
+      axios.post('/ticket/search', payload),
       axios.get('/TicketToAdministrator'),
       axios.get('/vendors')
     ])
@@ -542,10 +541,10 @@ async function fetchTickets(searchPayload = null) {
       // console.log('Ticket ID:', ticket.id, 'assignedVendorIds:', assignedVendorIds)
 
       const attachments = (ticket.attachments || []).map(a => ({
-    url: `data:image/png;base64,${a.file}`,
-    file: a.file,
-    fileName: a.fileName
-  }))
+        url: `data:image/png;base64,${a.file}`,
+        file: a.file,
+        fileName: a.fileName
+      }))
       return {
         ...ticket,
         assignedVendorIds,
@@ -555,9 +554,9 @@ async function fetchTickets(searchPayload = null) {
         selectedVendorIds: [],
         attachments
       }
-      
+
     })
- 
+
   } catch (err) {
     console.error('❌ 載入報修單失敗', err)
   }
@@ -579,8 +578,8 @@ async function confirmAssign(ticket) {
     }
     console.log('🚀 準備送出指派資料：', payload)
     await axios.post('/TicketToAdministrator/assign', payload)
- // ✅ 再補送 PUT 更新 assignerId
- const putPayload = {
+    // ✅ 再補送 PUT 更新 assignerId
+    const putPayload = {
       reporterId: ticket.reporter?.usersId || ticket.reporterId || 1,  // 避免 undefined，預設 1
       title: ticket.title,
       assignerId: userStore.userId,
@@ -588,7 +587,7 @@ async function confirmAssign(ticket) {
       issueDescription: ticket.issueDescription,
       notes: ticket.notes || '',
       communityId: userStore.communityId,
-      actionBy: userStore.userId, 
+      actionBy: userStore.userId,
     }
     console.log('🚀 準備送出 PUT 資料：', putPayload)
 
@@ -648,21 +647,26 @@ function updateTicket(updatedTicket) {
 h2 {
   font-weight: bold;
 }
+
 .card {
   border-radius: 10px;
 }
+
 img {
   object-fit: cover;
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
   transform: scaleY(0.95);
 }
+
 /* 多選下拉外框 */
 .custom-multiselect {
   position: relative;
@@ -707,9 +711,11 @@ img {
   border-radius: 0.25rem;
   transition: background-color 0.2s ease;
 }
+
 .dropdown-list li:hover {
   background-color: #f1f3f5;
 }
+
 .dropdown-list li.selected {
   background-color: #e9ecef;
   font-weight: 500;
@@ -721,6 +727,7 @@ img {
   flex-wrap: wrap;
   gap: 0.25rem;
 }
+
 .tag {
   background-color: #0d6efd;
   color: white;
@@ -730,6 +737,7 @@ img {
   display: inline-flex;
   align-items: center;
 }
+
 .tag i {
   margin-left: 0.25rem;
   cursor: pointer;

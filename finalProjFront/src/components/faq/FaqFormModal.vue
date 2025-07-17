@@ -3,6 +3,10 @@
         <h4 class="fw-bold mb-3 text-center">{{ mode === 'edit' ? '編輯 FAQ' : '新增 FAQ' }}</h4>
 
         <div class="fs-5">
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" v-model="form.postStatus" id="postSwitch" />
+                <label class="form-check-label" for="postSwitch">是否公開</label>
+            </div>
             <div class="mb-3">
                 <label class="form-label">問題 <span class="text-danger">*</span></label>
                 <input v-model="form.question" type="text" class="form-control" placeholder="輸入問題" />
@@ -26,10 +30,6 @@
                 <input v-model="form.keywords" type="text" class="form-control" placeholder="ex: 電梯,水管,住戶" />
             </div>
 
-            <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" v-model="form.postStatus" id="postSwitch" />
-                <label class="form-check-label" for="postSwitch">是否公開</label>
-            </div>
 
             <div class="d-flex justify-content-end mt-4">
                 <button class="btn btn-secondary me-2" @click="emit('update:visible', false)">取消</button>
@@ -126,7 +126,7 @@ const submitForm = async () => {
             throw new Error('儲存失敗')
         }
     } catch (err) {
-        console.error('送出失敗', err)
+        //console.error('送出失敗', err)
         Swal.fire({
             icon: 'error',
             title: '儲存失敗',
