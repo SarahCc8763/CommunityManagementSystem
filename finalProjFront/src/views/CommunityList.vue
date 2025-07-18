@@ -116,12 +116,12 @@ const allFunctionOptions = [
       { label: '繳費總覽', key: 'FINUSER' },
       { label: '待繳帳單', key: 'INVOICEBILL' },
       { label: '繳費紀錄', key: 'RECEIPT' },
-      { label: 'A新增費用類型', key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別', key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單', key: 'INVOICEADD' },
-      { label: 'A新增收據', key: 'RECEIPTADD' },
-      { label: 'A請款單審核', key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
+      { label: '新增費用類型', key: 'FEETYPEADD' },
+      { label: '新增繳費期別', key: 'BILLINGPERIODADD' },
+      { label: '新增繳款單', key: 'INVOICEADD' },
+      { label: '新增收據', key: 'RECEIPTADD' },
+      { label: '請款單審核', key: 'INVOICEVALIDATE' },
+      { label: '審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
     ]
   },
   {
