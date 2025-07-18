@@ -61,9 +61,9 @@ const menuList = [
       { label: '費用項目管理', routeName: 'FeeTypeAdd', key: 'FEETYPEADD' },
       { label: '繳費期間設定', routeName: 'BillingPeriodAdd', key: 'BILLINGPERIODADD' },
       { label: '繳費通知製作', routeName: 'InvoiceAdd', key: 'INVOICEADD' },
-      { label: '收據管理中心', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
       { label: '繳費通知審核', routeName: 'InvoiceValidate', key: 'INVOICEVALIDATE' },
       { label: '審核帳單回覆', routeName: 'InvoiceWithResponse', key: 'INVOICEWITHRESPONSE' },
+      { label: '收據管理中心', routeName: 'ReceiptAdd', key: 'RECEIPTADD' },
     ]
   },
   {

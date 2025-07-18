@@ -1,5 +1,18 @@
 <template>
   <div class="container mt-4">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('parkingFront')" class="text-decoration-none">停車場</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">承租車位</li>
+      </ol>
+    </nav>
+
     <div class="tag-style px-4 py-2 mb-4">
       <h2 class="mb-0 fw-bold text-primary section-title">承租車位</h2>
     </div>
@@ -669,6 +682,20 @@ const cleanInvalidChars = (value) => {
   console.log("觸發blur");
   return (value || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
 }
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'parkingFront':
+            router.push('/pages/park/parking-front')
+            break
+        }
+    }
 </script>
 
 <style scoped>

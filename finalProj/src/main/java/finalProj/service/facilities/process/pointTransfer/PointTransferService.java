@@ -6,11 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import finalProj.domain.community.Community;
 import finalProj.domain.facilities.PointAccountsBean;
 import finalProj.domain.facilities.PointTransactionsBean;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
 import finalProj.domain.users.Units;
 import finalProj.dto.facilities.transfer.PointTransferRequest;
 import finalProj.exception.facilities.ResourceNotFoundException;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.repository.users.UnitsRepository;
 import finalProj.service.facilities.PointAccountsService;
 import finalProj.service.facilities.PointTransactionsService;
@@ -26,6 +31,12 @@ public class PointTransferService {
 
 	@Autowired
 	private UnitsRepository unitsRepository;
+
+	@Autowired
+    NotificationsRepository notificationsRepository;
+
+    @Autowired
+    UnitsNotificationsRepository unitsNotificationsRepository;
 
 	
 	public String getFirstUserNameByUnitId(Integer unitId) {
@@ -102,6 +113,42 @@ public class PointTransferService {
 		toTxn.setRelatedUnitId(fromUnitId);
 		toTxn.setCreatedAt(LocalDateTime.now());
 		pointTransactionsService.create(toTxn);
+
+
+        // === 建立來源單位 Notifications ===
+        Notifications notificationFrom = new Notifications();
+        notificationFrom.setTitle("您有" + amount + "點轉出至" + toUserName);
+        notificationFrom.setDescription("門牌號：" + fromAccount.getUnit().getUnit() + " 號 " + fromAccount.getUnit().getFloor() + "轉出" + amount + "點到門牌號：" + toAccount.getUnit().getUnit() + " 號 " + toAccount.getUnit().getFloor());
+
+        notificationFrom.setCreatedTime(LocalDateTime.now());
+        notificationFrom.setCommunity(fromAccount.getUnit().getCommunity());
+        notificationsRepository.save(notificationFrom);
+
+        // === 建立來源單位 UnitsNotifications ===
+        UnitsNotifications unitsNotificationsFrom = new UnitsNotifications();
+        unitsNotificationsFrom.setNotifications(notificationFrom);
+        unitsNotificationsFrom.setUnits(fromAccount.getUnit());
+        unitsNotificationsRepository.save(unitsNotificationsFrom);
+
+        // === 建立接收單位 Notifications ===
+        Notifications notificationTo = new Notifications();
+        notificationTo.setTitle("您有" + amount + "點轉入來自" + fromUserName);
+        notificationTo.setDescription("門牌號：" + toAccount.getUnit().getUnit() + " 號 " + toAccount.getUnit().getFloor() + "接收" + amount + "點來自門牌號：" + fromAccount.getUnit().getUnit() + " 號 " + fromAccount.getUnit().getFloor());
+
+        notificationTo.setCreatedTime(LocalDateTime.now());
+        notificationTo.setCommunity(toAccount.getUnit().getCommunity());
+        notificationsRepository.save(notificationTo);
+
+        // === 建立接收單位 UnitsNotifications ===
+        UnitsNotifications unitsNotificationsTo = new UnitsNotifications();
+        unitsNotificationsTo.setNotifications(notificationTo);
+        unitsNotificationsTo.setUnits(toAccount.getUnit());
+        unitsNotificationsRepository.save(unitsNotificationsTo);
+
+
+
+
+
 	}
 
 }

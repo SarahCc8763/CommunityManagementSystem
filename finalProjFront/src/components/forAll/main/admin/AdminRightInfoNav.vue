@@ -20,7 +20,7 @@
       </div>
       <div class="info-item">
         <span class="info-label">下個繳款截止日</span>
-        <span class="info-value">2024-07-31</span>
+        <span class="info-value">2024-08-31</span>
       </div>
       <div class="info-item">
         <span class="info-label">未繳帳單數</span>

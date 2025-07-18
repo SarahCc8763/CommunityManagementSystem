@@ -1,5 +1,21 @@
 <template>
   <div class="container mt-4">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('parkingBack')" class="text-decoration-none text-light">停車場</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">抽籤活動管理</li>
+      </ol>
+    </nav>
+    
     <div class="tag-style px-4 py-2 mb-4">
       <h2 class="mb-0 fw-bold text-primary section-title">抽籤活動管理</h2>
     </div>
@@ -582,6 +598,19 @@ async function drawLots(eventId) {
       Swal.fire('抽籤失敗', '未選擇車位', 'info')
     } else {
       fetchEvents()
+      await Swal.fire({
+      title: '抽籤進行中...',
+      html: `
+      <div class="d-flex flex-column align-items-center">
+        <img src="/images/parking/Fortune wheel.gif" style="width: 240px;" />
+        <div class="mt-2">請稍候，正在揭曉結果...</div>
+        </div>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        timer: 2500
+})
       Swal.fire('抽籤完成', res.data.data.winners, 'success')
     }
   } catch (e) {
@@ -654,6 +683,23 @@ watch(desiredSlotCount, (newVal) => {
     rawSlotIds.value = [] // ⬅️ 清空已選車位
   }
 })
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'adminDashboard':
+            router.push('/AdminDashboard')
+            break
+        case 'parkingBack':
+            router.push('/pages/park/parking-back')
+            break
+        }
+    }
 </script>
 
 <style scoped>
@@ -952,5 +998,11 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 .custom-card .card-title {
   color: #ffffff;
   font-weight: bold;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #ccc; /* 或 text-light 用於深色背景 */
+    margin: 0 0.5rem;
 }
 </style>
