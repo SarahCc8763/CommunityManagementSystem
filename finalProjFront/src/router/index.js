@@ -227,7 +227,8 @@ const router = createRouter({
     {
       path: '/CommunityList',
       name: 'CommunityList',
-      component: CommunityList
+      component: CommunityList,
+      meta: { dark: true },
     },
     // ticket相關結束
     // Parking相關

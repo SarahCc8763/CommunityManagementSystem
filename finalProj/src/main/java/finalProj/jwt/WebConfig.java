@@ -26,6 +26,13 @@ public class WebConfig implements WebMvcConfigurer {
 				.allowedOrigins("http://localhost:5173",
 						"https://payment-stage.ecpay.com.tw",
 						"https://payment.ecpay.com.tw",
+						"http://192.168.36.64",
+						"http://192.168.36.85",
+						"http://192.168.36.92",
+						"http://192.168.36.64",
+						"http://192.168.36.64",
+						"http://192.168.36.64",
+						"http://192.168.36.64",
 						"null")
 				.allowedMethods("GET", "POST", "PUT", "DELETE")
 				.allowedHeaders("*")

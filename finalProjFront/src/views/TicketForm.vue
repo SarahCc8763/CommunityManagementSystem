@@ -34,7 +34,7 @@
 
           <div class="preview-list d-flex flex-wrap gap-2 mt-2">
             <div class="position-relative" v-for="(file, index) in previews" :key="index">
-              <img :src="file.url" alt="preview" class="rounded border"
+              <img :src="file.url" alt="preview" class="rounded border" draggable="false" @dragstart.prevent
                 style="width: 100px; height: 100px; object-fit: cover;" />
               <button type="button" @click="removeFile(index)"
                 class="btn btn-danger btn-sm position-absolute top-0 end-0 translate-middle p-0 rounded-circle"
@@ -63,6 +63,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { useUserStore } from '@/stores/UserStore'
+import Swal from 'sweetalert2'
 const userStore = useUserStore()
 
 // 表單資料
@@ -148,7 +149,12 @@ function toBase64(file) {
 // 建立 ticket + 上傳附件
 async function handleSubmit() {
   if (!form.value.title || form.value.title.trim() === '') {
-    alert('❗請填寫標題')
+    Swal.fire({
+    icon: 'warning',
+    title: '欄位未填寫',
+    text: '❗請填寫標題',
+    confirmButtonText: '了解'
+  })
     return
   }
 
@@ -192,13 +198,28 @@ async function handleSubmit() {
       const uploadResult = uploadRes.data
 
       if (uploadResult.success) {
-        alert('✅ 報修單與附件上傳成功！')
+          Swal.fire({
+          icon: 'success',
+          title: '報修成功',
+          text: '✅ 報修單與附件上傳成功！',
+          confirmButtonText: 'OK'
+        })
       } else {
-        alert('📎 報修單建立成功，但附件上傳失敗：' + uploadResult.message)
+          Swal.fire({
+          icon: 'warning',
+          title: '附件上傳失敗',
+          text: '📎 報修單建立成功，但附件上傳失敗',
+          confirmButtonText: '了解'
+        })
       }
-    } else {
-      alert('✅ 報修單建立成功（無附件）')
-    }
+      } else {
+          Swal.fire({
+          icon: 'success',
+          title: '報修成功',
+          text: '✅ 報修單建立成功（無附件）',
+          confirmButtonText: 'OK'
+        })
+      }
 
     form.value.title = ''
     form.value.description = ''

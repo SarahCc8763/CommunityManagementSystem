@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import finalProj.domain.facilities.FacilityReservationsBean;
 import finalProj.domain.facilities.PointAccountsBean;
 import finalProj.domain.facilities.PointTransactionsBean;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.service.facilities.PointAccountsService;
 import finalProj.service.facilities.PointTransactionsService;
 
@@ -19,6 +23,12 @@ public class PointRefundProcessor {
 
 	@Autowired
 	private PointTransactionsService pointTransactionsService;
+
+    @Autowired
+    NotificationsRepository notificationsRepository;
+
+    @Autowired
+    UnitsNotificationsRepository unitsNotificationsRepository;
 	
 	public void refundIfEligible(FacilityReservationsBean reservation, int originalPoints) {
         
@@ -47,7 +57,21 @@ public class PointRefundProcessor {
             txn.setCreatedAt(LocalDateTime.now());
 
             pointTransactionsService.create(txn);
+
+            // === 建立取消反點 Notifications ===
+            Notifications notification = new Notifications();
+            notification.setTitle("取消成功");
+            notification.setDescription("您已成功預約 " + facilityName + "，反點" + refundAmount + "點");	
+            notification.setCreatedTime(LocalDateTime.now());
+            notification.setCommunity(account.getUnit().getCommunity());
+            notificationsRepository.save(notification);
+            
+            UnitsNotifications unitsNotifications = new UnitsNotifications();
+            unitsNotifications.setNotifications(notification);
+            unitsNotifications.setUnits(account.getUnit());
+            unitsNotificationsRepository.save(unitsNotifications);
         }
+
     }
 	
 	
