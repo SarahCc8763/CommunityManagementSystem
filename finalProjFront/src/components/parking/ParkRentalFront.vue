@@ -107,7 +107,7 @@
             <tbody>
               <tr v-for="record in rentalHistory" :key="record.id" class="text-center">
                 <td>{{ record.slotNumber }}</td>
-                <td>{{ record.parkingType }}</td>
+                <td>{{ record.parkingType.type }}</td>
                 <td>{{ record.location }}</td>
                 <td>{{ record.licensePlate }}</td>
                 <td>{{ record.rentBuyStart }}</td>
@@ -194,7 +194,7 @@
         </div>
         <div class="modal-body">
           <p><strong>車位編號：</strong>{{ selectedSlot.slotNumber }}</p>
-          <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
+          <p v-if="selectedSlot?.parkingType?.type"><strong>車位種類：</strong>{{ selectedSlot.parkingType.type }}</p>
           <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
           <label class="form-label">登記車牌：</label>
           <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" />
@@ -223,8 +223,8 @@ import { useUserStore } from '@/stores/UserStore'
 // 從 UserStore 取出社區 ID
 const userStore = useUserStore()
 const communityId = userStore.communityId
-
 const userName = userStore.name
+const usersId = userStore.userId
 
 // 從資料庫抓user資料
 const allUsers = ref([])
@@ -234,13 +234,6 @@ const fetchUserOptions = async () => {
   console.log(allUsers.value)
 }
 
-// 從資料庫比對userName，取得userId
-const usersId = userStore.userId
-// computed(() => {
-//   console.log(userName);
-//   const match = allUsers.value.find(user => user.name === userName)
-//   return match ? match.usersId : null
-// })
 
 // ----------------------------我要承租頁籤 -----------------------------
 
@@ -554,14 +547,44 @@ const extendEnd = ref('')
 function openExtendModal(slot) {
   selectedSlot.value = { ...slot }
   extendMonths.value = 1
-  const start = new Date(selectedSlot.value.rentEnd)
-  start.setDate(start.getDate() + 1)
+
+  const today = new Date()
+  const currentMonth = today.toISOString().slice(0, 7) // 本月 minMonth
+
+  const rentEnd = new Date(selectedSlot.value.rentEnd)
+  const rentEndMonth = rentEnd.toISOString().slice(0, 7)
+
+  let start
+  if (rentEndMonth <= currentMonth) {
+    // 截止日 <= 現在月份：從下個月的第一天開始
+    start = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+  } else {
+    // 正常續租邏輯：從 rentEnd + 1 天開始
+    start = new Date(rentEnd)
+    start.setDate(start.getDate() + 1)
+  }
+
   const end = new Date(start)
   end.setMonth(end.getMonth() + extendMonths.value - 1)
+
   extendStart.value = getFirstDayOfMonth(start)
   extendEnd.value = getLastDayOfMonth(end)
+  console.log(selectedSlot.value.parkingType.type)
   extendModalInstance.show()
 }
+
+
+// function openExtendModal(slot) {
+//   selectedSlot.value = { ...slot }
+//   extendMonths.value = 1
+//   const start = new Date(selectedSlot.value.rentEnd)
+//   start.setDate(start.getDate() + 1)
+//   const end = new Date(start)
+//   end.setMonth(end.getMonth() + extendMonths.value - 1)
+//   extendStart.value = getFirstDayOfMonth(start)
+//   extendEnd.value = getLastDayOfMonth(end)
+//   extendModalInstance.show()
+// }
 
 // 即時修正續租月份
 watch(extendMonths, () => {

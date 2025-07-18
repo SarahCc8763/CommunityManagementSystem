@@ -73,6 +73,11 @@
                         <p class="fs-5" style="white-space: pre-wrap;"><br>{{
                             normalizeNewline(selectedBulletin?.description) }}</p>
 
+                        <!-- Julie 抽籤導向 -->
+                        <p v-if="selectedBulletin?.categoryName === '抽籤'" class="fs-5" style="white-space: pre-wrap;">
+                            <a href="#" @click.prevent="goToLotteryApply">點此導向活動頁面</a>
+                        </p>
+
                         <!-- 附件 -->
                         <div v-if="selectedBulletin?.attachments?.length" style="font-size: 100%;">
                             <hr class="mt-5">
@@ -555,6 +560,21 @@ function clearSearch() {
     searchTitle.value = ''
     searchCategory.value = ''
     fetchAll() // 或改成 searchBulletins()，看你想顯示全部 or 篩選
+}
+
+
+
+// Julie 抽籤導向
+import { useRouter } from 'vue-router'
+const router = useRouter()
+function goToLotteryApply() {
+    const modalEl = document.getElementById('bulletinModal')
+    const modalInstance = bootstrap.Modal.getInstance(modalEl)
+    modalInstance?.hide()
+    
+    setTimeout(() => {
+        router.push('/pages/park/lottery-apply')
+    }, 300)
 }
 
 </script>

@@ -3,6 +3,7 @@ package finalProj.controller.parking;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,7 @@ public class ParkingRentalsController {
 			if (parkingSlot != null) {
 				dto.setSlotNumber(parkingSlot.getSlotNumber());
 				dto.setLocation(parkingSlot.getLocation());
-				dto.setParkingType(parkingSlot.getParkingType().getType());
-				dto.setParkingTypeId(parkingSlot.getParkingType().getId());
+				dto.setParkingType(parkingSlot.getParkingType());
 			}
 
 			if (record.getUsers() != null) {
@@ -127,7 +127,7 @@ public class ParkingRentalsController {
 				dto.setSlotNumber(parkingSlot.getSlotNumber());
 				dto.setSlotId(parkingSlot.getId());
 				dto.setLocation(parkingSlot.getLocation());
-				dto.setParkingType(parkingSlot.getParkingType().getType());
+				dto.setParkingType(parkingSlot.getParkingType());
 			}
 
 			if (record.getUsers() != null) {
@@ -304,11 +304,18 @@ public class ParkingRentalsController {
 	// 刪除承租紀錄
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse<Boolean>> delete(@PathVariable Integer id) {
+		Optional<ParkingRentals> record  = repository.findById(id);
+		if(record.isEmpty()){
+			return ResponseEntity.badRequest().body(ApiResponse.failure("找不到承租紀錄"));
+		}
+		if(record.get().getStatus()){
+			return ResponseEntity.badRequest().body(ApiResponse.failure("已繳費，不可取消承租"));
+		}
 		boolean success = service.delete(id);
 		if (success) {
 			return ResponseEntity.ok(ApiResponse.success("刪除成功", true));
 		} else {
-			return ResponseEntity.badRequest().body(ApiResponse.failure("刪除失敗或找不到紀錄"));
+			return ResponseEntity.badRequest().body(ApiResponse.failure("刪除失敗"));
 		}
 	}
 
