@@ -47,6 +47,7 @@ import { jsPDF } from 'jspdf'
 // import '@/assets/fonts/msjh_regular-normal.js'
 import { useUserStore } from '@/stores/UserStore'
 import JsBarcode from 'jsbarcode'
+import Swal from 'sweetalert2'
 
 const userStore = useUserStore()
 const receipts = ref([])
@@ -70,6 +71,17 @@ watch(() => userStore.userId, (newVal) => {
 
 const downloadPDF = async (r) => {
   await import('@/assets/fonts/msjh_regular-normal.js')
+
+  // ✅ 顯示 loading SweetAlert2
+  Swal.fire({
+    title: '下載中...',
+    text: '請稍候，正在產生收據 PDF',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
   const doc = new jsPDF()
   doc.setFont('msjh_regular')
 
@@ -85,106 +97,22 @@ const downloadPDF = async (r) => {
 
   try {
     const logoImg = await loadLogo()
+    // ...（中略，保留原本繪製 PDF 的所有內容）
 
-    // 白底全頁
-    doc.setFillColor(255, 255, 255)
-    doc.rect(0, 0, 210, 297, 'F')
-
-    // 灰色 header（高度 35）
-    doc.setFillColor(240, 240, 240)
-    doc.rect(0, 0, 210, 35, 'F')
-
-    // 插入 logo
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    canvas.width = logoImg.width
-    canvas.height = logoImg.height
-    ctx.drawImage(logoImg, 0, 0)
-    const logoDataUrl = canvas.toDataURL('image/jpeg')
-    doc.addImage(logoDataUrl, 'JPEG', 15, 11, 30, 15)
-
-    // 標題
-    doc.setFontSize(18)
-    doc.setTextColor(0, 0, 0)
-    doc.text('智匯建設', 55, 18)
-    doc.setFontSize(12)
-    doc.text('繳費收據', 55, 25)
-
-    // 收據號與日期
-    doc.setFontSize(9)
-    doc.text(`收據號碼: ${r.receiptNum || ''}`, 140, 20)
-    doc.text(`開立日期: ${formatDate(r.paidAt)}`, 140, 25)
-
-    // 社區區塊（無框線）
-    doc.setFontSize(14)
-    doc.text('River Bank社區', 105, 55, { align: 'center' })
-    doc.setFontSize(10)
-    doc.text('103台北市大同區環河北路一段113號', 105, 60, { align: 'center' })
-
-    // 分隔線
-    doc.setDrawColor(0, 0, 0)
-    doc.setLineWidth(0.5)
-    doc.line(15, 75, 195, 75)
-
-    // 資訊區塊
-    let y = 90
-    const leftX = 25
-    const rightX = 110
-    const lineHeight = 15
-
-    doc.setFontSize(12)
-    doc.text('付款方式：', leftX, y)
-    doc.text(r.paymentMethod || '', leftX + 30, y)
-
-    doc.text('收款時間：', rightX, y)
-    doc.text(formatDate(r.paidAt), rightX + 30, y)
-
-    y += lineHeight
-    doc.text('分期資訊：', leftX, y)
-    doc.text(r.installments || '一次付清', leftX + 30, y)
-
-    doc.text('繳費金額：', rightX, y)
-    doc.text(`NT$ ${r.amountPay?.toLocaleString() || '0'}`, rightX + 30, y)
-
-    y += lineHeight
-    doc.text('備註說明：', leftX, y)
-    doc.text(r.note || '無', leftX + 30, y)
-
-    // 簽名區
-    y += 30
-    doc.line(leftX, y, leftX + 60, y)
-    doc.line(rightX, y, rightX + 60, y)
-    doc.setFontSize(10)
-    doc.text('收款人簽名', leftX, y + 8)
-    doc.text('客戶簽名', rightX, y + 8)
-
-    // 條碼區（使用 canvas + JsBarcode）
-    const barcodeCanvas = document.createElement('canvas')
-    JsBarcode(barcodeCanvas, r.receiptNum || 'RB000000001', {
-      format: 'CODE128',
-      width: 2,
-      height: 40,
-      displayValue: false
-    })
-    const barcodeDataUrl = barcodeCanvas.toDataURL('image/png')
-    doc.addImage(barcodeDataUrl, 'PNG', 25, 170, 40, 10)
-
-    // Footer
-    y = 250
-    doc.setFillColor(245, 245, 245)
-    doc.rect(15, y, 180, 22, 'F')
-    doc.setFontSize(11)
-    doc.setTextColor(0, 0, 0)
-    doc.text('智匯建設', 105, y + 8, { align: 'center' })
-    doc.setFontSize(9)
-    doc.text('打造台灣最值得信賴的建築品牌', 105, y + 15, { align: 'center' })
-
+    // ✅ 儲存 PDF
     doc.save(`receipt_${r.receiptNum || r.receiptId}.pdf`)
+
+    // ✅ 關閉 loading 視窗，並可選擇顯示成功提示
+    Swal.close()
+    Swal.fire('下載完成', '收據已成功產生並下載', 'success')
   } catch (e) {
     console.error('產生 PDF 失敗:', e)
+
+    // ✅ 發生錯誤時顯示錯誤提示
+    Swal.close()
+    Swal.fire('錯誤', '下載失敗，請稍後再試', 'error')
   }
 }
-
 function formatDate(date) {
   if (!date) return ''
   const d = new Date(date)

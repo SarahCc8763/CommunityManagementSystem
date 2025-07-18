@@ -397,6 +397,15 @@ const goTo = (target) => {
 </script>
 
 <style scoped>
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #999;
+  /* ← 請替換你想要的顏色 */
+  opacity: 1;
+  /* 修正某些瀏覽器預設半透明 */
+}
+
 .container-xl {
   max-width: 1200px;
 }
@@ -432,5 +441,14 @@ const goTo = (target) => {
   color: #ccc;
   /* 或 text-light 用於深色背景 */
   margin: 0 0.5rem;
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #999;
+  /* ← 請替換你想要的顏色 */
+  opacity: 1;
+  /* 修正某些瀏覽器預設半透明 */
 }
 </style>
