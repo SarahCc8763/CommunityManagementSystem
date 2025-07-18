@@ -329,6 +329,7 @@ const handleLogin = async () => {
       errors.value.general = response.data.message || '登入失敗'
     }
   } catch (error) {
+    // alert("登入失敗")
     Swal.fire({
       text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
       icon: "error",

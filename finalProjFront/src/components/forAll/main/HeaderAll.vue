@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/" class="logo" style="cursor:pointer;">
+    <router-link :to="userStore.isAuthenticated ? '/home' : '/'" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
     <nav class="nav">
@@ -124,11 +124,10 @@ const notificationCenterRef = ref(null)
 const notifications = ref([])   // ⬅️ 全局通知陣列
 
 // 輪詢邏輯
-const unitId = userStore.unitId
-console.log("unitId = " + unitId);
+// const unitId = userStore.unitId
 async function pollNotifications() {
   try {
-    const res = await axios.get(`/notifications/unit/${unitId}`)
+    const res = await axios.get(`/notifications/unit/${unitId.value}`)
     console.log('📬 收到通知', res.data.data)
     notifications.value = res.data.data.filter(i => i.isRead === 0 || i.isRead === '0') // 只顯示未讀通知
       .slice(0, 10)
@@ -137,14 +136,46 @@ async function pollNotifications() {
   }
 }
 // 點擊頭像時執行
+
+// 改為 computed，確保 reactive
+const unitId = computed(() => userStore.unitId)
+
+// watch unitId 初始化後，自動補抓通知（只執行一次）
+watch(
+  () => unitId.value,
+  (newUnitId) => {
+    if (newUnitId && isNotificationCenterOpen.value) {
+      console.log('✅ unitId 初始化完成：', newUnitId)
+      pollNotifications()
+    }
+  }
+)
+
+// function toggleNotificationCenter() {
+//   console.log("unitId = " + unitId);
+//   isNotificationCenterOpen.value = !isNotificationCenterOpen.value
+
+//   if (isNotificationCenterOpen.value) {
+//     console.log('🔔 開啟通知中心，開始取得最新通知')
+//     pollNotifications()
+//   }
+// }
+
+
 async function toggleNotificationCenter() {
   isNotificationCenterOpen.value = !isNotificationCenterOpen.value
 
   if (isNotificationCenterOpen.value) {
-    console.log('🔔 開啟通知中心，開始取得最新通知')
+    if (!unitId.value) {
+      console.warn('❌ 尚未取得 unitId，無法載入通知')
+      return
+    }
+
+    console.log('🔔 開啟通知中心，取得通知中... unitId =', unitId.value)
     await pollNotifications()
   }
 }
+
 // 通知中心--------------------------------------------------------------------------
 
 function handleClickOutside(event) {
@@ -412,7 +443,7 @@ async function loadCommunityFunctions() {
   try {
     console.log(userStore.rawData.communityId)
     const res = await axios.get(`/communitys/functions/${userStore.rawData.communityId}`)
-    console.log('✅ API 回傳內容：', res.data)
+    // console.log('✅ API 回傳內容：', res.data)
 
     if (Array.isArray(res.data)) {
       communityFunctions.value = res.data

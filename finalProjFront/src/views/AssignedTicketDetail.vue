@@ -244,7 +244,7 @@ function formatDate(dateString) {
 <style scoped>
 .modal-mask {
   position: fixed;
-  z-index: 9999;
+  z-index: 1050;
   top: 0;
   left: 0;
   right: 0;
