@@ -651,6 +651,7 @@ function clearSearch() {
     gap: 1rem;
 }
 
+/* 
 .announcement-card {
     background: white;
     border-radius: 16px;
@@ -660,7 +661,7 @@ function clearSearch() {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-}
+} */
 
 .announcement-card::before {
     content: '';
@@ -753,12 +754,42 @@ function clearSearch() {
     line-height: 1.4;
 }
 
+.announcement-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* ✅ 確保高度一致，讓 flex 有空間作用 */
+    padding: 24px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.announcement-content {
+    flex-grow: 1;
+    /* ✅ 中間區域可撐開 */
+    margin-bottom: 16px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    /* 如你有設定行數限制，也可保留 line-clamp */
+}
+
+.announcement-footer {
+    margin-top: auto;
+    /* ✅ 最關鍵，footer 永遠貼在最下方 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 
 .announcement-content {
     color: #718096;
     line-height: 1.6;
     margin-bottom: 20px;
     display: -webkit-box;
-
+    flex-grow: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -767,7 +798,8 @@ function clearSearch() {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+
+} */
 
 .announcement-author {
     font-size: 12px;

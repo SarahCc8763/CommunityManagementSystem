@@ -44,7 +44,7 @@
 import { ref, watch } from 'vue'
 import axiosapi from '@/plugins/axios'
 import { jsPDF } from 'jspdf'
-import '@/assets/fonts/msjh_regular-normal.js'
+// import '@/assets/fonts/msjh_regular-normal.js'
 import { useUserStore } from '@/stores/UserStore'
 import JsBarcode from 'jsbarcode'
 
@@ -69,6 +69,7 @@ watch(() => userStore.userId, (newVal) => {
 
 
 const downloadPDF = async (r) => {
+  await import('@/assets/fonts/msjh_regular-normal.js')
   const doc = new jsPDF()
   doc.setFont('msjh_regular')
 
