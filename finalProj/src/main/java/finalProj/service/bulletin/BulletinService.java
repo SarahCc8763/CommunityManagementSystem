@@ -12,11 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinAttachment;
 import finalProj.domain.bulletin.BulletinCategory;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
 import finalProj.domain.poll.Poll;
 import finalProj.domain.poll.PollOption;
+import finalProj.domain.users.Units;
 import finalProj.repository.bulletin.BulletinAttachmentRepository;
 import finalProj.repository.bulletin.BulletinCategoryRepository;
 import finalProj.repository.bulletin.BulletinRepository;
+import finalProj.repository.community.CommunityRepository;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.repository.poll.PollOptionRepository;
 import finalProj.repository.poll.PollRepository;
 import finalProj.repository.poll.PollVoteRepository;
@@ -47,6 +53,15 @@ public class BulletinService {
 
     @Autowired
     private PollOptionRepository pollOptionRepository;
+
+    @Autowired
+    private UnitsNotificationsRepository unitsNotificationsRepository;
+
+    @Autowired
+    private NotificationsRepository notificationsRepository;
+
+    @Autowired
+    private CommunityRepository communityRepository;
 
     BulletinService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
@@ -134,6 +149,7 @@ public class BulletinService {
             }
 
             log.info("公告新增流程完成，公告 ID：{}", savedBulletin.getId());
+
             return savedBulletin;
 
         } catch (Exception e) {
@@ -170,6 +186,9 @@ public class BulletinService {
             existing.setCommunity(entity.getCommunity() != null ? entity.getCommunity() : existing.getCommunity());
             existing.setUser(entity.getUser() != null ? usersRepository.findById(entity.getUser().getUsersId()).get()
                     : existing.getUser());
+
+            Boolean isFirstPublish = Boolean.FALSE.equals(existing.getPostStatus())
+                    && Boolean.TRUE.equals(entity.getPostStatus()); // 第一次對外發布，true則發送通知
             existing.setPostStatus(entity.getPostStatus() != null ? entity.getPostStatus() : existing.getPostStatus());
 
             existing.setModifyTime(LocalDateTime.now());
@@ -221,6 +240,33 @@ public class BulletinService {
 
             Bulletin updated = bulletinRepository.save(existing);
             log.info("公告修改成功，ID = {}", updated.getId());
+
+            // 5. 發送通知
+
+            if (isFirstPublish) {
+                // 建立通知
+                Notifications notification = new Notifications();
+                notification.setTitle("社區新公告：" + updated.getTitle());
+                notification.setDescription(updated.getDescription().substring(0,
+                        updated.getDescription().length() > 20 ? 20 : updated.getDescription().length())
+                        + "請至最新公告查看詳情");
+                notification.setCreatedTime(LocalDateTime.now());
+                notification.setUrl(null);
+                notification.setCommunity(updated.getCommunity());
+                notificationsRepository.save(notification);
+
+                // 綁定通知
+                List<Units> units = communityRepository.findByCommunityId(updated.getCommunity().getCommunityId())
+                        .getUnits();
+                System.out.println(units.size());
+                for (Units unit : units) {
+                    UnitsNotifications unitsNotifications = new UnitsNotifications();
+                    unitsNotifications.setNotifications(notification);
+                    unitsNotifications.setUnits(unit);
+                    unitsNotificationsRepository.save(unitsNotifications);
+                }
+                log.info("{} 筆通知已發送", units.size());
+            }
             return updated;
 
         } catch (Exception e) {

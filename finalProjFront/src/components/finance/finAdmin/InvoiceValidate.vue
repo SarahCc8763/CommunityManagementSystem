@@ -21,7 +21,7 @@
   </div>
 
 
-  <div class="container mt-4">
+  <div class="container mt-4 ">
     <h3 class="mb-4 fw-bold text-primary">請款單審核</h3>
     <!-- 查詢區塊 -->
     <div class="row mb-3 g-2 align-items-end flex-wrap">
@@ -47,33 +47,35 @@
     <div v-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
     <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
     <div v-if="filteredInvoices.length === 0" class="alert alert-info">目前沒有待審核的請款單</div>
-    <form v-if="filteredInvoices.length > 0" @submit.prevent="batchValidate">
-      <table class="table table-bordered align-middle">
-        <thead>
-          <tr>
-            <th><input type="checkbox" v-model="allChecked" @change="toggleAll" /></th>
-            <th>用戶ID</th>
-            <th>費用類型</th>
-            <th>期別</th>
-            <th>單位數</th>
-            <th>單價</th>
-            <th>金額</th>
-            <th>繳費截止日</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="inv in filteredInvoices" :key="inv.invoiceId">
-            <td><input type="checkbox" v-model="checkedIds" :value="inv.invoiceId" /></td>
-            <td>{{ inv.users?.usersId }}</td>
-            <td>{{ inv.feeType?.description }}</td>
-            <td>{{ inv.billingPeriod?.periodName }}</td>
-            <td>{{ inv.unitCount }}</td>
-            <td>{{ inv.unitPrice }}</td>
-            <td>{{ inv.amountDue }}</td>
-            <td>{{ formatDate(inv.deadline) }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <form v-if="filteredInvoices.length > 0" @submit.prevent="batchValidate" class="table-scroll-form">
+      <div class="table-wrapper">
+        <table class="table table-bordered align-middle ">
+          <thead>
+            <tr>
+              <th><input type="checkbox" v-model="allChecked" @change="toggleAll" /></th>
+              <th>用戶ID</th>
+              <th>費用類型</th>
+              <th>期別</th>
+              <th>單位數</th>
+              <th>單價</th>
+              <th>金額</th>
+              <th>繳費截止日</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="inv in filteredInvoices" :key="inv.invoiceId">
+              <td><input type="checkbox" v-model="checkedIds" :value="inv.invoiceId" /></td>
+              <td>{{ inv.users?.usersId }}</td>
+              <td>{{ inv.feeType?.description }}</td>
+              <td>{{ inv.billingPeriod?.periodName }}</td>
+              <td>{{ inv.unitCount }}</td>
+              <td>{{ inv.unitPrice }}</td>
+              <td>{{ inv.amountDue }}</td>
+              <td>{{ formatDate(inv.deadline) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-success" :disabled="checkedIds.length === 0">審核通過</button>
         <button type="button" class="btn btn-secondary ms-2" @click="checkedIds = []">取消全選</button>
@@ -197,5 +199,22 @@ const goBack = () => {
   color: #ccc;
   /* 或 text-light 用於深色背景 */
   margin: 0 0.5rem;
+}
+
+.table-wrapper {
+  max-height: 400px;
+  /* ← 可自訂高度 */
+  overflow-y: auto;
+  position: relative;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* 表頭固定 */
+.table-wrapper thead th {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 2;
 }
 </style>

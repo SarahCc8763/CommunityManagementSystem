@@ -1,12 +1,12 @@
 <template>
-
   <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
-      <!-- 麵包屑導航 -->
-      <nav aria-label="breadcrumb" class="mb-3 ms-1">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
-          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
-              class="bi bi-house-door-fill me-1"></i>首頁</a>
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light">
+            <i class="bi bi-house-door-fill me-1"></i>首頁
+          </a>
         </li>
         <li class="breadcrumb-item">
           <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
@@ -25,82 +25,87 @@
     <div class="receipt-flex-wrap">
       <!-- 左側：搜尋區塊 -->
       <div class="receipt-panel search-panel">
-        <transition name="expand-search">
-          <div class="search-bar mb-3" :class="{ 'expanded': showAdvanced }">
-            <!-- 原搜尋欄位與按鈕 -->
+        <div class="search-section">
+          <div class="search-bar" :class="{ 'expanded': showAdvanced }">
+            <!-- 搜尋欄位與按鈕 -->
             <div class="search-row">
-              <input v-model="search.keyword" class="form-control main-search-input search-keyword-input"
-                placeholder="請輸入住戶姓名/ID/期別/費用類型" />
+              <input v-model="search.keyword" class="form-control main-search-input" placeholder="請輸入住戶姓名/ID/期別/費用類型" />
               <div class="search-btn-group">
-                <button class="btn btn-outline-primary" @click="toggleAdvanced">{{ showAdvanced ? '收合進階搜尋' : '進階搜尋' }}</button>
+                <button class="btn btn-outline-primary" @click="toggleAdvanced">
+                  {{ showAdvanced ? '收合' : '進階' }}
+                </button>
                 <button class="btn btn-primary" @click="searchInvoices">查詢</button>
                 <button class="btn btn-secondary" @click="clearSearch">清除</button>
               </div>
             </div>
+
+            <!-- 進階搜尋 -->
             <transition name="fade">
               <div v-if="showAdvanced" class="advanced-search mt-3">
-                <!-- 原進階搜尋欄位 -->
                 <div class="row g-2">
-                  <div class="col-12 col-md-4"><input v-model="search.userName" class="form-control"
-                      placeholder="住戶姓名" /></div>
-                  <div class="col-12 col-md-4"><input v-model="search.userId" class="form-control"
-                      placeholder="住戶ID" /></div>
-                  <div class="col-12 col-md-4">
+                  <div class="col-12 col-md-6">
+                    <input v-model="search.userName" class="form-control" placeholder="住戶姓名" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input v-model="search.userId" class="form-control" placeholder="住戶ID" />
+                  </div>
+                  <div class="col-12 col-md-6">
                     <select v-model="search.feeType" class="form-select">
                       <option value="">全部費用類型</option>
-                      <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">{{
-                        type.description }}</option>
+                      <option v-for="type in feeTypes" :key="type.feeTypeId" :value="type.description">
+                        {{ type.description }}
+                      </option>
                     </select>
                   </div>
-                  <div class="col-12 col-md-4">
+                  <div class="col-12 col-md-6">
                     <select v-model="search.periodName" class="form-select">
                       <option value="">全部期別</option>
-                      <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">{{
-                        period.periodName }}</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-4">
-                    <select v-model="search.status" class="form-select">
-                      <option value="">全部狀態</option>
-                      <option value="unpaid">未繳</option>
-                      <option value="pending">待審核</option>
+                      <option v-for="period in periods" :key="period.billingPeriodId" :value="period.periodName">
+                        {{ period.periodName }}
+                      </option>
                     </select>
                   </div>
                 </div>
               </div>
             </transition>
           </div>
-        </transition>
+        </div>
 
         <!-- 搜尋結果 -->
-        <div v-if="searchResults.length > 0" class="search-results mb-4">
-          <div class="result-card mb-3" v-for="inv in searchResults" :key="inv.invoiceId">
-            <div class="row g-1 align-items-center">
-              <div class="col-12 col-md-10">
-                <div><b>發票ID：</b>{{ inv.invoiceId }}</div>
-                <div><b>住戶：</b>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
-                <div><b>期別：</b>{{ inv.billingPeriod?.periodName }}　<b>費用類型：</b>{{ inv.feeType?.description }}</div>
-                <div><b>金額：</b>{{ inv.amountDue }}　<b>狀態：</b>{{ inv.paymentStatus }}</div>
-              </div>
-              <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
-                <button class="btn btn-outline-success btn-sm w-100" @click="openConfirmModal(inv)">產生收據</button>
-              </div>
+        <div class="search-results" v-if="searchResults.length > 0">
+          <div class="result-card" v-for="inv in searchResults" :key="inv.invoiceId">
+            <div class="result-info">
+              <div><strong>發票ID：</strong>{{ inv.invoiceId }}</div>
+              <div><strong>住戶：</strong>{{ inv.user?.name }} (ID: {{ inv.user?.usersId }})</div>
+              <div><strong>期別：</strong>{{ inv.billingPeriod?.periodName }}</div>
+              <div><strong>費用類型：</strong>{{ inv.feeType?.description }}</div>
+              <div><strong>金額：</strong>{{ inv.amountDue }}</div>
+              <div><strong>狀態：</strong>{{ inv.paymentStatus }}</div>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-outline-success btn-sm" @click="openConfirmModal(inv)">
+                產生收據
+              </button>
             </div>
           </div>
+        </div>
+
+        <div v-else-if="searchResults.length === 0 && hasSearched" class="no-results">
+          <p class="text-muted">未找到符合條件的記錄</p>
         </div>
       </div>
 
       <!-- 右側：收據表單 -->
       <div class="receipt-panel">
-        <form @submit.prevent="submitForm" class="dark-form receipt-form">
+        <form @submit.prevent="submitForm" class="receipt-form">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">發票ID</label>
-              <input v-model.number="form.invoiceId" type="number" class="form-control" required />
+              <input v-model.number="form.invoiceId" type="number" class="form-control" required placeholder="ex:275" />
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">付款方式</label>
-              <input v-model="form.paymentMethod" class="form-control" />
+              <input v-model="form.paymentMethod" class="form-control" placeholder="ex:現金" />
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">付款時間</label>
@@ -125,69 +130,86 @@
         </form>
       </div>
     </div>
-  </div>
 
+    <!-- 確認模態框 -->
+    <div v-if="showConfirmModal" class="modal-mask" @click="closeConfirmModal">
+      <div class="modal-wrapper" @click.stop>
+        <div class="dark-modal-card">
+          <h5>確認產生收據</h5>
+          <p>您確定要為以下發票產生收據嗎？</p>
+          <div v-if="confirmInvoice" class="mb-3">
+            <p><strong>發票ID：</strong>{{ confirmInvoice.invoiceId }}</p>
+            <p><strong>住戶：</strong>{{ confirmInvoice.user?.name }}</p>
+            <p><strong>金額：</strong>{{ confirmInvoice.amountDue }}</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" @click="createReceiptFromInvoice">確認</button>
+            <button class="btn btn-secondary" @click="closeConfirmModal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axiosapi from '@/plugins/axios'
-import html2pdf from 'html2pdf.js'
 import Swal from 'sweetalert2'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/main/adminBanner.jpg'
+
 const route = useRoute()
+const router = useRouter()
+
+// 表單數據
 const form = ref({
   invoiceId: null,
   paymentMethod: '',
   paidAt: '',
   debitAt: '',
   amountPay: null,
-  installments: '',
   note: '',
 })
+
+// 搜尋數據
 const search = ref({
   keyword: '',
   userName: '',
   userId: '',
   feeType: '',
   periodName: '',
-  status: '',
 })
+
+// 狀態
 const showAdvanced = ref(false)
 const searchResults = ref([])
+const hasSearched = ref(false)
 const feeTypes = ref([])
 const periods = ref([])
 const successMsg = ref('')
 const errorMsg = ref('')
-const receiptDetail = ref(null)
-const communityName = ref('')
-const receiptRef = ref(null)
 const showConfirmModal = ref(false)
 const confirmInvoice = ref(null)
 
+// 方法
 function toggleAdvanced() {
   showAdvanced.value = !showAdvanced.value
 }
+
 function clearSearch() {
-  search.value = { keyword: '', userName: '', userId: '', feeType: '', periodName: '', status: '' }
+  search.value = { keyword: '', userName: '', userId: '', feeType: '', periodName: '' }
   searchResults.value = []
+  hasSearched.value = false
 }
+
 async function searchInvoices() {
-  // 依條件查詢未繳/待審核 invoice
   try {
-    const params = {}
-    if (search.value.keyword) params.keyword = search.value.keyword
-    if (search.value.userName) params.userName = search.value.userName
-    if (search.value.userId) params.userId = search.value.userId
-    if (search.value.feeType) params.feeType = search.value.feeType
-    if (search.value.periodName) params.periodName = search.value.periodName
-    if (search.value.status) params.status = search.value.status
-    // 修正 API 呼叫方式，使用 POST 並將 communityId 放在 body
     const res = await axiosapi.post('/finance/invoice/unpaid/by-community', { communityId: 1 })
-    // 前端過濾
     let list = res.data
+
+    // 前端過濾
     if (search.value.keyword) {
       const kw = search.value.keyword.toLowerCase()
       list = list.filter(inv =>
@@ -201,25 +223,24 @@ async function searchInvoices() {
     if (search.value.userId) list = list.filter(inv => String(inv.user?.usersId || '').includes(search.value.userId))
     if (search.value.feeType) list = list.filter(inv => (inv.feeType?.description || '') === search.value.feeType)
     if (search.value.periodName) list = list.filter(inv => (inv.billingPeriod?.periodName || '') === search.value.periodName)
-    if (search.value.status) list = list.filter(inv => inv.paymentStatus === search.value.status)
+
     searchResults.value = list
+    hasSearched.value = true
   } catch (e) {
     errorMsg.value = '查詢失敗：' + (e.response?.data?.message || e.message)
   }
 }
-function fillForm(inv) {
-  form.value.invoiceId = inv.invoiceId
-  form.value.amountPay = inv.amountDue
-  // 其他欄位可根據需要自動帶入
-}
+
 function openConfirmModal(inv) {
   confirmInvoice.value = inv
   showConfirmModal.value = true
 }
+
 function closeConfirmModal() {
   showConfirmModal.value = false
   confirmInvoice.value = null
 }
+
 async function createReceiptFromInvoice() {
   try {
     const payload = {
@@ -230,13 +251,13 @@ async function createReceiptFromInvoice() {
       debitAt: '',
       note: ''
     }
-    const res = await axiosapi.post('/finance/receipts', payload)
-    showConfirmModal.value = false
-    // 新增：產生收據後將 invoice 狀態設為 paid
+
+    await axiosapi.post('/finance/receipts', payload)
     await axiosapi.put(`/finance/invoice/status/${confirmInvoice.value.invoiceId}?status=paid`)
-    // 重新查詢列表
+
+    showConfirmModal.value = false
     await searchInvoices()
-    // SweetAlert2 成功提示
+
     Swal.fire({
       icon: 'success',
       title: '收據已產生',
@@ -248,70 +269,32 @@ async function createReceiptFromInvoice() {
     showConfirmModal.value = false
   }
 }
-onMounted(async () => {
-  // 若有query參數自動帶入
-  if (route.query.invoiceId) form.value.invoiceId = Number(route.query.invoiceId)
-  // 取得費用類型、期別下拉
-  const feeRes = await axiosapi.get('/finance/fee-types')
-  feeTypes.value = feeRes.data
-  const periodRes = await axiosapi.get('/finance/billing-periods')
-  periods.value = periodRes.data
-})
 
-const submitForm = async () => {
+async function submitForm() {
   successMsg.value = ''
   errorMsg.value = ''
   try {
-    const res = await axiosapi.post('/finance/receipts', form.value)
-    successMsg.value = '新增成功！'
-    // 取得收據詳細資料
-    const receiptId = res.data.receiptId || res.data.id
-    const detailRes = await axiosapi.get(`/finance/receipts/${receiptId}`)
-    receiptDetail.value = detailRes.data
-    // 查社區名稱
-    if (detailRes.data.communityId) {
-      const commRes = await axiosapi.get(`/communitys/${detailRes.data.communityId}`)
-      communityName.value = commRes.data.name
-    } else {
-      communityName.value = ''
+    await axiosapi.post('/finance/receipts', form.value)
+    Swal.fire({
+      icon: 'success',
+      title: '收據已產生',
+      text: '請至「查看收據」頁面審閱與列印收據',
+      confirmButtonText: '知道了'
+    })
+    // 重置表單
+    form.value = {
+      invoiceId: null,
+      paymentMethod: '',
+      paidAt: '',
+      debitAt: '',
+      amountPay: null,
+      note: '',
     }
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
   }
 }
 
-function formatDate(date) {
-  if (!date) return ''
-  const d = new Date(date)
-  return d.toLocaleString()
-}
-
-function printReceipt() {
-  const printContent = receiptRef.value
-  const win = window.open('', '', 'width=600,height=800')
-  win.document.write('<html><head><title>列印收據</title>')
-  win.document.write('<style>body{font-family:sans-serif;} .receipt-preview{max-width:420px;margin:0 auto;padding:24px;border:1.5px solid #aaa;border-radius:12px;} .receipt-title{text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:18px;} .receipt-row{margin-bottom:8px;font-size:1.1rem;} .receipt-footer{margin-top:24px;text-align:right;font-size:1.1rem;} @media print{body{background:#fff;}}</style>')
-  win.document.write('</head><body>')
-  win.document.write(printContent.outerHTML)
-  win.document.write('</body></html>')
-  win.document.close()
-  win.focus()
-  setTimeout(() => { win.print(); win.close() }, 500)
-}
-
-function downloadPDF() {
-  html2pdf(receiptRef.value, {
-    margin: 10,
-    filename: '收據.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
-  })
-}
-
-// 麵包屑導航
-import { useRouter } from 'vue-router'
-const router = useRouter()
 const goTo = (target) => {
   switch (target) {
     case 'home':
@@ -325,6 +308,23 @@ const goTo = (target) => {
       break
   }
 }
+
+onMounted(async () => {
+  if (route.query.invoiceId) {
+    form.value.invoiceId = Number(route.query.invoiceId)
+  }
+
+  try {
+    const [feeRes, periodRes] = await Promise.all([
+      axiosapi.get('/finance/fee-types'),
+      axiosapi.get('/finance/billing-periods')
+    ])
+    feeTypes.value = feeRes.data
+    periods.value = periodRes.data
+  } catch (e) {
+    console.error('載入基礎數據失敗:', e)
+  }
+})
 </script>
 
 <style scoped>
@@ -333,21 +333,126 @@ const goTo = (target) => {
   color: #e0e0e0;
 }
 
-.search-bar,
-.advanced-search {
+.container {
+  max-width: 100%;
+  background: none;
+}
+
+.receipt-flex-wrap {
+  display: flex;
+  gap: 2rem;
+  width: 60vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.receipt-panel {
+  flex: 1;
   background: #23272b;
   border-radius: 18px;
-  border: 1.5px solid #444;
-  padding: 18px 22px 12px 22px;
+  padding: 24px;
+  border: 2px solid #3a3a3a;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  height: fit-content;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.search-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-section {
+  flex-shrink: 0;
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  background: #2c3136;
+  border-radius: 12px;
+  border: 1px solid #444;
+  padding: 18px;
+  transition: all 0.3s ease;
+}
+
+.search-bar.expanded {
+  border-color: #666;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.main-search-input {
+  flex: 2;
+  background: #181a1b;
   color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.search-btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-btn-group .btn {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.advanced-search {
+  padding-top: 1rem;
+  border-top: 1px solid #444;
+}
+
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.result-card {
+  background: #2c3136;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 16px;
   margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.result-info {
+  flex: 1;
+}
+
+.result-info div {
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+.result-actions {
+  flex-shrink: 0;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
 }
 
 .form-control,
 .form-select {
   background: #181a1b;
   color: #e0e0e0;
-  border: 1px solid #444;
+  border: 1px solid #555;
 }
 
 .form-control:focus,
@@ -355,14 +460,12 @@ const goTo = (target) => {
   background: #23272b;
   color: #fff;
   border-color: #888;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
 }
 
-.btn,
-.btn:focus,
-.btn:active {
-  color: #e0e0e0;
-  background: #23272b;
-  border: 1px solid #444;
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 .btn-primary {
@@ -371,11 +474,9 @@ const goTo = (target) => {
   color: #fff;
 }
 
-.btn-primary:hover,
-.btn-primary:active {
+.btn-primary:hover {
   background: #1565c0;
   border-color: #1565c0;
-  color: #fff;
 }
 
 .btn-outline-primary {
@@ -384,173 +485,33 @@ const goTo = (target) => {
   background: transparent;
 }
 
-.btn-outline-primary:hover,
-.btn-outline-primary:active {
+.btn-outline-primary:hover {
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
 }
 
 .btn-outline-success {
-  color: #b9f6ca;
-  border-color: #43a047;
+  color: #81c784;
+  border-color: #4caf50;
   background: transparent;
 }
 
-.btn-outline-success:hover,
-.btn-outline-success:active {
-  background: #388e3c;
+.btn-outline-success:hover {
+  background: #4caf50;
   color: #fff;
-  border-color: #388e3c;
+  border-color: #4caf50;
 }
 
 .btn-secondary {
-  background: #23272b;
-  color: #b0b0b0;
-  border: 1px solid #444;
-}
-
-.btn-secondary:hover,
-.btn-secondary:active {
-  background: #181a1b;
-  color: #fff;
-}
-
-.result-card {
-  background: #23272b;
-  color: #e0e0e0;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 14px 18px;
-  margin-bottom: 12px;
-}
-
-.dark-form label,
-.dark-form input,
-.dark-form select {
+  background: #424242;
+  border-color: #424242;
   color: #e0e0e0;
 }
 
-.container {
-  max-width: 800%;
-  background: none;
-}
-
-.receipt-preview {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 24px 28px 18px 28px;
-  border: 1.5px solid #aaa;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-}
-
-.receipt-title {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  letter-spacing: 2px;
-}
-
-.receipt-row {
-  margin-bottom: 8px;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-}
-
-.receipt-footer {
-  margin-top: 24px;
-  text-align: right;
-  font-size: 1.1rem;
-}
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .receipt-preview,
-  .receipt-preview * {
-    visibility: visible !important;
-  }
-
-  .receipt-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    background: #fff;
-    box-shadow: none;
-  }
-}
-
-@media (max-width: 768px) {
-
-  .search-bar,
-  .advanced-search {
-    padding: 12px 8px 8px 8px;
-  }
-
-  .result-card {
-    padding: 10px 8px;
-  }
-}
-
-.search-bar {
-  background: #23272b;
-  border-radius: 18px;
-  border: 1.5px solid #444;
-  color: #e0e0e0;
-  margin-bottom: 12px;
-  padding: 18px 22px 12px 22px;
-  max-width: 100%;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, padding 0.3s;
-  overflow: hidden;
-  box-shadow: 0 2px 16px #0002;
-}
-
-.search-bar.expanded {
-  padding-bottom: 32px;
-  box-shadow: 0 4px 32px #0004;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-}
-
-.expand-search-enter-active,
-.expand-search-leave-active {
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, padding 0.3s;
-}
-
-.expand-search-enter-from,
-.expand-search-leave-to {
-  max-height: 80px;
-}
-
-.expand-search-enter-to,
-.expand-search-leave-from {
-  max-height: 400px;
-}
-
-.advanced-search input.form-control::placeholder {
-  color: #b0b0b0;
-  opacity: 1;
-  font-style: italic;
+.btn-secondary:hover {
+  background: #616161;
+  border-color: #616161;
 }
 
 .modal-mask {
@@ -569,10 +530,7 @@ const goTo = (target) => {
 .modal-wrapper {
   min-width: 320px;
   max-width: 420px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 90%;
 }
 
 .dark-modal-card {
@@ -580,89 +538,63 @@ const goTo = (target) => {
   color: #e0e0e0;
   padding: 32px;
   border-radius: 16px;
-  min-width: 320px;
-  max-width: 420px;
-  box-shadow: 0 4px 32px #000a;
-  z-index: 10000;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6);
 }
 
-.main-search-input::placeholder {
-  color: #b0b0b0;
-  opacity: 1;
-  font-style: italic;
-}
-
-
-/* 麵包屑 */
 .breadcrumb-item+.breadcrumb-item::before {
   content: ">";
   color: #ccc;
-  /* 或 text-light 用於深色背景 */
   margin: 0 0.5rem;
 }
 
-.receipt-flex-wrap {
-  display: flex;
-  gap: 2rem;
-  width: 60vw;
-  max-width: 1200px;
-  margin: 0 auto;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.receipt-panel {
-  flex: 1 1 0;
-  background: #23272b;
-  border-radius: 18px;
-  padding: 24px 18px;
-  min-height: 600px;
-  max-height: 600px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  border: 2px solid #3a3a3a;
-  box-shadow: 0 4px 24px #0003;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-/* 搜尋區塊上方橫向排列 */
-.search-row {
-  display: flex;
-  align-items: stretch;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.alert {
+  border-radius: 8px;
+  border: none;
 }
-.search-keyword-input {
-  flex: 2 1 0;
-  min-width: 0;
-  height: 40px;
+
+.alert-success {
+  background: #2e7d32;
+  color: #fff;
 }
-.search-btn-group {
-  display: flex;
-  gap: 0.5rem;
-  flex: 1 1 0;
-  align-items: stretch;
-}
-.search-btn-group .btn {
-  height: 40px;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-  white-space: nowrap;
+
+.alert-danger {
+  background: #c62828;
+  color: #fff;
 }
 
 @media (max-width: 900px) {
+  .receipt-flex-wrap {
+    flex-direction: column;
+    width: 90vw;
+  }
+
   .search-row {
     flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
   }
+
   .search-btn-group {
-    flex-direction: row;
-    gap: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
-/* 取消RWD，不再有 flex-direction: column 的切換 */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #999;
+  /* ← 請替換你想要的顏色 */
+  opacity: 1;
+  /* 修正某些瀏覽器預設半透明 */
+}
 </style>
