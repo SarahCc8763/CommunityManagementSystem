@@ -322,6 +322,7 @@ const handleLogin = async () => {
       });
     } else {
       // 後端回傳失敗訊息
+      router.push({ name: 'BeforeLogIn' })
       Swal.fire({
         text: response.data.message,
         icon: "warning",
