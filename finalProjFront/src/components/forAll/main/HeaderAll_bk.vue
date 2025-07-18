@@ -375,7 +375,8 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  // loadCommunityFunctions()
+  window.addEventListener('refresh-community-functions', loadCommunityFunctions)
+  loadCommunityFunctions() // 頁面初次進來時也要載入
 })
 
 onUnmounted(() => {
