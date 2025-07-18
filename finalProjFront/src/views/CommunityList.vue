@@ -116,12 +116,14 @@ const allFunctionOptions = [
       { label: '繳費總覽', key: 'FINUSER' },
       { label: '待繳帳單', key: 'INVOICEBILL' },
       { label: '繳費紀錄', key: 'RECEIPT' },
-      { label: 'A新增費用類型', key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別', key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單', key: 'INVOICEADD' },
-      { label: 'A新增收據', key: 'RECEIPTADD' },
-      { label: 'A請款單審核', key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
+      { label: '費用項目管理', key: 'FEETYPEADD' },
+      { label: '繳費期間設定', key: 'BILLINGPERIODADD' },
+      { label: '繳費通知製作', key: 'INVOICEADD' },
+      { label: '收據管理中心', key: 'RECEIPTADD' },
+      { label: '繳費通知審核', key: 'INVOICEVALIDATE' },
+      { label: '審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
+      { label: '財務後台管理入口', key: 'FINADMIN' },
+
     ]
   },
   {
@@ -259,19 +261,19 @@ async function saveFunction() {
 
 
     Swal.fire({
-    icon: 'success',
-    title: '儲存成功',
-    text: '✅ 功能設定已儲存',
-    confirmButtonText: 'OK'
-  })
+      icon: 'success',
+      title: '儲存成功',
+      text: '✅ 功能設定已儲存',
+      confirmButtonText: 'OK'
+    })
   } catch (err) {
     console.error('❌ 儲存失敗', err)
     Swal.fire({
-  icon: 'error',
-  title: '儲存失敗',
-  text: '❌ 請稍後再試一次',
-  confirmButtonText: '知道了'
-})
+      icon: 'error',
+      title: '儲存失敗',
+      text: '❌ 請稍後再試一次',
+      confirmButtonText: '知道了'
+    })
   }
 }
 

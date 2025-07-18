@@ -232,27 +232,14 @@ Swal.mixin({
 
 /* 響應式設計 */
 @media (max-width: 1200px) {
+  .right-side-nav {
+    width: 220px;
+  }
+
   .main-area {
-    margin-left: 80px;
     margin-right: 220px;
   }
 }
-
-@media (max-width: 992px) {
-  .main-area {
-    margin-left: 80px;
-    margin-right: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-area {
-    margin-left: 0;
-    margin-right: 0;
-    padding: 60px 16px 72px 16px;
-  }
-}
-
 
 .drawer-tab {
   position: fixed;

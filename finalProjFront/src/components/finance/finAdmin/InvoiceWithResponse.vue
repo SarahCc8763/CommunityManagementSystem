@@ -131,6 +131,9 @@ const errorMsg = ref('')
 const checkedInvoices = ref([])
 const allChecked = ref(false)
 
+onMounted(async () => {
+  await reloadInvoices()
+})
 // 篩選條件
 const filter = reactive({
   periodName: '',
@@ -203,6 +206,7 @@ const toggleAll = () => {
 
 // 資料載入
 const reloadInvoices = async () => {
+
   try {
     console.log('userStore.communityId =', userStore.communityId)
     const communityId = typeof userStore.communityId === 'object'
@@ -406,22 +410,28 @@ const batchCreateReceipts = async () => {
 }
 
 // 導航功能
-const goTo = (target) => {
-  const routes = {
-    'home': '/',
-    'adminDashboard': '/AdminDashboard',
-    'finBack': '/finance/admin-dashboard'
-  }
 
-  if (routes[target]) {
-    router.push(routes[target])
+
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
   }
 }
 
+
+
+
+
+
 // 生命週期
-onMounted(async () => {
-  await reloadInvoices()
-})
 </script>
 
 <style scoped>
