@@ -24,7 +24,7 @@ const userStore = useUserStore();
 const path = import.meta.env.VITE_API_URL
 const unitId = userStore.unitId
 const notifications = ref([])
-console.log('111' + unitId);
+console.log('unitId = ' + unitId);
 async function pollNotifications() {
     try {
         const res = await axios.get(`/notifications/unit/${unitId}`)
