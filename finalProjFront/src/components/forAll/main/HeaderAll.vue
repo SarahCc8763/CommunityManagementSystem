@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/" class="logo" style="cursor:pointer;">
+    <router-link :to="userStore.isAuthenticated ? '/home' : '/'" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
     <nav class="nav">
