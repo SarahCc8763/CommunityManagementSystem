@@ -122,6 +122,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from '@/plugins/axios'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
   ticket: Object,
@@ -213,13 +214,23 @@ async function submitUpdate() {
     emit('update-ticket', fixedData) // 替換內容，畫面會 reactive 更新
     console.log(fixedData)
 
-    alert('✅ 更新成功')
+    await Swal.fire({
+      icon: 'success',
+      title: '✅ 更新成功',
+      text: '報修單內容已更新',
+      confirmButtonText: '好的'
+    })
     editMode.value = false
     showVendorDropdown.value = false
     showIssueTypeDropdown.value = false
   } catch (err) {
     console.error('❌ 更新失敗', err)
-    alert('❌ 更新失敗，請檢查網路或資料格式')
+    Swal.fire({
+      icon: 'error',
+      title: '❌ 更新失敗',
+      text: '請檢查網路連線或資料格式',
+      confirmButtonText: '確定'
+    })
   }
 }
 
@@ -233,7 +244,7 @@ function formatDate(dateString) {
 <style scoped>
 .modal-mask {
   position: fixed;
-  z-index: 9999;
+  z-index: 1050;
   top: 0;
   left: 0;
   right: 0;
