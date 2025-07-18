@@ -128,16 +128,43 @@ function clearFilter() {
   filter.value = { feeTypeId: '', billingPeriodId: '' }
 }
 
+import Swal from 'sweetalert2'
+
 async function fetchPending() {
   try {
+    // 顯示 SweetAlert2 loading
+    Swal.fire({
+      title: '載入中...',
+      text: '正在載入待審核資料，請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
+    // 發送請求
     const res = await axiosapi.get('/finance/invoice/pending-validate')
     pendingInvoices.value = res.data
     checkedIds.value = []
     allChecked.value = false
+
+    // 載入成功後關閉 SweetAlert
+    Swal.close()
   } catch (e) {
-    errorMsg.value = '載入失敗：' + (e.response?.data?.message || e.message)
+    Swal.close() // 關閉 loading
+
+    const msg = '載入失敗：' + (e.response?.data?.message || e.message)
+    errorMsg.value = msg
+
+    // 顯示錯誤提示
+    Swal.fire({
+      icon: 'error',
+      title: '錯誤',
+      text: msg
+    })
   }
 }
+
 
 function toggleAll() {
   if (allChecked.value) {

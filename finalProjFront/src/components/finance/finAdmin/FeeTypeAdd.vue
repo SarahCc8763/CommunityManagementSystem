@@ -58,7 +58,7 @@
                     <option value="每戶">每戶</option>
                     <option value="每坪">每坪</option>
                     <option value="每住戶">每住戶</option>
-                    <option value="每人">每人</option>
+                    <option value="指定參與者">指定參與者</option>
                     <option value="其他">其他</option>
                   </select>
                   <input v-if="form.unit === '其他'" v-model="customUnit" @input="form.unit = customUnit"
@@ -263,6 +263,8 @@ const form = ref(getDefaultForm())
 
 const fetchFeeTypes = async () => {
   try {
+    successMsg.value = ''
+    errorMsg.value = ''
     const response = await axios.get('/finance/fee-types')
     feeTypes.value = response.data
   } catch (e) {
@@ -270,39 +272,119 @@ const fetchFeeTypes = async () => {
   }
 }
 
+
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+
   try {
+    // 顯示 loading 狀態
+    Swal.fire({
+      title: '新增中...',
+      text: '系統正在儲存費用類型，請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
+    // 發送請求
     await axios.post('/finance/fee-types', form.value)
-    successMsg.value = '新增成功！'
+
+    // 關閉 loading
+    Swal.close()
+
+    // 顯示成功提示
+    await Swal.fire({
+      icon: 'success',
+      title: '新增成功',
+      text: '費用類型已成功建立！',
+      timer: 1000,
+      showConfirmButton: false
+    })
+
+    // 重置表單
     form.value = getDefaultForm()
+
+    // 關閉 modal
     addModalInstance.hide()
+
+    // 重新載入資料
     await fetchFeeTypes()
+
   } catch (e) {
+    // 關閉 loading
+    Swal.close()
+
+    // 錯誤處理
+    let msg = '新增失敗：' + (e.response?.data?.message || e.message)
     if (e.response?.status === 409) {
-      errorMsg.value = '新增失敗：費用代碼已存在，請改用其他代碼'
-    } else {
-      errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
+      msg = '新增失敗：費用代碼已存在，請改用其他代碼'
     }
+
+    // 顯示錯誤提示
+    Swal.fire({
+      icon: 'error',
+      title: '錯誤',
+      text: msg
+    })
+
+    errorMsg.value = msg
   }
 }
 
+
+import Swal from 'sweetalert2'
+
 const submitEditForm = async () => {
   try {
+    // 關閉 modal
+    const modalEl = document.getElementById('editFeeTypeModal')
+    const modal = bootstrap.Modal.getInstance(modalEl)
+    modal?.hide()
+
+    // 顯示 loading 中
+    Swal.fire({
+      title: '更新中...',
+      text: '正在儲存費用類型的變更，請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
+    // 發送修改請求
     await axios.put(`/finance/fee-types/${editItem.value.feeTypeId}`, editItem.value)
-    successMsg.value = '修改成功！'
-    setTimeout(() => {
-      const modalEl = document.getElementById('editFeeTypeModal')
-      const modal = bootstrap.Modal.getInstance(modalEl)
-      modal?.hide()
-      successMsg.value = ''
-    }, 2000)
+
+    // 關閉 loading
+    Swal.close()
+
+    // 顯示成功訊息
+    await Swal.fire({
+      icon: 'success',
+      title: '修改成功',
+      text: '費用類型已成功更新',
+      timer: 2000,
+      showConfirmButton: false
+    })
+
+
+    // 重新取得資料
     await fetchFeeTypes()
+
   } catch (e) {
-    errorMsg.value = '修改失敗：' + (e.response?.data?.message || e.message)
+    // 關閉 loading
+    Swal.close()
+
+    // 顯示錯誤訊息
+    Swal.fire({
+      icon: 'error',
+      title: '修改失敗',
+      text: e.response?.data?.message || e.message || '發生未知錯誤'
+    })
   }
 }
+
 
 const confirmDelete = (item) => {
   if (window.confirm(`確定要刪除費用代碼「${item.feeCode}」嗎？`)) {
