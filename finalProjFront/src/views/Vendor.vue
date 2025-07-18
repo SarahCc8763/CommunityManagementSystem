@@ -24,7 +24,7 @@
         </div>
         <div class="col-md-4 mb-2">
           <label class="form-label">備註</label>
-          <input v-model="newVendor.note" class="form-control" />
+          <input v-model="newVendor.notes" class="form-control" />
         </div>
       </div>
       <div class="text-end">
@@ -93,6 +93,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/plugins/axios'
+import Swal from 'sweetalert2'
 
 const vendors = ref([])
 const expandedId = ref(null)
@@ -122,7 +123,7 @@ const newVendor = ref({
   contactPerson: '',
   phoneNumber: '',
   address: '',
-  note: ''
+  notes: ''
 })
 
 async function fetchVendors() {
@@ -143,10 +144,24 @@ async function createVendor() {
       contactPerson: '',
       phoneNumber: '',
       address: '',
-      note: ''
+      notes: ''
+    })
+
+
+    await Swal.fire({
+      icon: 'success',
+      title: '新增成功',
+      text: '廠商資料已成功新增',
+      confirmButtonText: '好的'
     })
   } catch (err) {
     console.error('❌ 新增失敗', err)
+    await Swal.fire({
+      icon: 'error',
+      title: '新增失敗',
+      text: '請檢查輸入資料或網路連線',
+      confirmButtonText: '確定'
+    })
   }
 }
 
@@ -170,8 +185,20 @@ async function saveVendor(id) {
     await axios.put(`/vendors/${id}`, editableVendor.value)
     editingId.value = null
     await fetchVendors()
+    await Swal.fire({
+      icon: 'success',
+      title: '儲存成功',
+      text: '廠商資料已更新',
+      confirmButtonText: '好的'
+    })
   } catch (err) {
     console.error('❌ 儲存失敗', err)
+    await Swal.fire({
+      icon: 'error',
+      title: '儲存失敗',
+      text: '請檢查網路連線或資料格式',
+      confirmButtonText: '確定'
+    })
   }
 }
 
