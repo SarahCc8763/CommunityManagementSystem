@@ -214,6 +214,7 @@ public class FeedbackService {
             history.setOldStatus(originalStatus);
             history.setNewStatus(feedback.getStatus());
             history.setChangedAt(LocalDateTime.now());
+            System.out.println("87364357367374354"+history.getChangedAt());
             history.setChangedBy(user);
             feedbackStatusHistoryRepository.save(history);
             log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
@@ -268,7 +269,7 @@ public class FeedbackService {
             history.setChangedAt(LocalDateTime.now());
             history.setChangedBy(usersService.findById(feedback.getHandler().getUsersId()));
             feedbackStatusHistoryRepository.save(history);
-            log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
+            log.info("狀態已變更，新增歷史紀錄：{} -> {},{}", originalStatus, feedback.getStatus(), history.getChangedAt());
         }
 
         return feedbackRepository.save(existing);

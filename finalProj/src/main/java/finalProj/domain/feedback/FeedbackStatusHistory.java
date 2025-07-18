@@ -39,7 +39,7 @@ public class FeedbackStatusHistory {
     @JsonBackReference("feedbackStatusHistory-user")
     private Users changedBy;
 
-    @Column(name = "feedback_status_history_changed_at", insertable = false)
+    @Column(name = "feedback_status_history_changed_at")
     private LocalDateTime changedAt;
 
     @Transient
