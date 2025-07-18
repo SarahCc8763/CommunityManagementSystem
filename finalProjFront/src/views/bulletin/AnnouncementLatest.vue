@@ -129,7 +129,21 @@
                                             width="40" height="40" />
                                         <div>
                                             <strong>{{ comment.userData[0] || '匿名用戶' }}</strong>
-                                            <p class="mb-1">{{ comment.comment }}</p>
+                                            <!-- 一般留言內容區域 -->
+                                            <p class="mb-1" v-if="editingCommentId !== comment.id">{{ comment.comment }}
+                                            </p>
+
+                                            <!-- 編輯輸入框 -->
+                                            <div v-else class="d-flex flex-column flex-sm-row align-items-start gap-2">
+                                                <textarea v-model="editedComment" class="form-control w-100" />
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <button class="btn btn-sm btn-success"
+                                                        @click="confirmEdit(comment.id)">✔</button>
+                                                    <button class="btn btn-sm btn-secondary"
+                                                        @click="cancelEdit">✖</button>
+                                                </div>
+                                            </div>
+
                                             <span class="text-muted" style="font-size: 0.85rem">{{
                                                 formatDate(comment.time) }}</span>
                                         </div>
@@ -139,6 +153,8 @@
                                             🧡 {{ comment.likeCount }}
                                         </button>
                                         <button class="btn-comment me-1" @click="toggleReply(comment.id)">回覆</button>
+                                        <button v-if="comment.userData[2] === userId" class="btn-comment me-1"
+                                            @click="modifyComment(selectedBulletin.id, comment)">修改</button>
                                         <button v-if="comment.userData[2] === userId" class="btn-comment me-1"
                                             @click="deleteComment(selectedBulletin.id, comment)">刪除</button>
                                     </div>
@@ -151,7 +167,22 @@
                                                 width="35" height="35" />
                                             <div>
                                                 <strong>{{ reply.userData[0] || '匿名用戶' }}</strong>
-                                                <p class="mb-1">{{ reply.comment }}</p>
+                                                <!-- 回覆留言文字 -->
+                                                <p class="mb-1" v-if="editingCommentId !== reply.id">{{ reply.comment }}
+                                                </p>
+
+                                                <!-- 編輯中 -->
+                                                <div v-else
+                                                    class="d-flex flex-column flex-sm-row align-items-start gap-2">
+                                                    <textarea v-model="editedComment" class="form-control w-100" />
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <button class="btn btn-sm btn-success"
+                                                            @click="confirmEdit(reply.id)">✔</button>
+                                                        <button class="btn btn-sm btn-secondary"
+                                                            @click="cancelEdit">✖</button>
+                                                    </div>
+                                                </div>
+
                                                 <span class="text-muted" style="font-size: 0.8rem">{{
                                                     formatDate(reply.time) }}</span>
                                             </div>
@@ -162,6 +193,8 @@
                                             </button>
                                             <button class="btn-comment me-1"
                                                 @click="toggleReply(reply.parentCommentId)">回覆</button>
+                                            <button v-if="reply.userData[2] === userId" class="btn-comment me-1"
+                                                @click="modifyComment(selectedBulletin.id, reply)">修改</button>
                                             <button v-if="reply.userData[2] === userId" class="btn-comment me-1"
                                                 @click="deleteComment(selectedBulletin.id, reply)">刪除</button>
                                         </div>
@@ -225,6 +258,10 @@ const url = import.meta.env.VITE_API_URL
 const newComment = ref('')
 const replyContent = ref('')
 const replyingToId = ref(null)
+const editingCommentId = ref(null) // 用來記錄目前正在編輯哪一則留言
+const isReplyEditing = ref(false) // 如果你想細分是否為回覆的編輯，可再增加區分
+const isEditingComment = ref(false)
+const editedComment = ref('')
 // 搜尋用
 const searchTitle = ref('')
 const searchCategory = ref('')
@@ -494,6 +531,37 @@ function likeComment(commentId) {
 }
 
 
+function modifyComment(bulletinId, comment) {
+    editingCommentId.value = comment.id
+    editedComment.value = comment.comment
+}
+async function confirmEdit(commentId) {
+    try {
+        const data = {
+            bulletin: { id: selectedBulletin.value.id },
+            comment: editedComment.value,
+            user: { usersId: userId },
+            isAlive: true
+        }
+
+        await axios.put(`/api/bulletin/comment/${commentId}`, data)
+
+        // 編輯後重新載入留言
+        const res = await axios.get(`/api/bulletin/${selectedBulletin.value.id}`)
+        selectedBulletin.value.comments = res.data.list[0].comments
+
+        // 清除編輯狀態
+        editingCommentId.value = null
+        editedComment.value = ''
+    } catch (error) {
+        Swal.fire('錯誤', '修改失敗，請稍後再試', 'error')
+    }
+}
+
+function cancelEdit() {
+    editingCommentId.value = null
+    editedComment.value = ''
+}
 
 
 async function deleteComment(bulletinId, comment) {
