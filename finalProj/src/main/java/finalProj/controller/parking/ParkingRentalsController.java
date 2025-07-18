@@ -82,6 +82,7 @@ public class ParkingRentalsController {
 				dto.setSlotNumber(parkingSlot.getSlotNumber());
 				dto.setLocation(parkingSlot.getLocation());
 				dto.setParkingType(parkingSlot.getParkingType().getType());
+				dto.setParkingTypeId(parkingSlot.getParkingType().getId());
 			}
 
 			if (record.getUsers() != null) {
@@ -254,8 +255,9 @@ public class ParkingRentalsController {
 			rentalDTO.setId(id); // 確保 ID 同步
 
 			// 🔄 將 DTO 轉換為 Entity
-			ParkingRentals rental = new ParkingRentals();
-			rental.setId(rentalDTO.getId());
+
+			ParkingRentals rental = repository.findById(id).get();
+
 			rental.setLicensePlate(rentalDTO.getLicensePlate());
 			rental.setRentBuyStart(rentalDTO.getRentBuyStart());
 			rental.setRentEnd(rentalDTO.getRentEnd());
@@ -263,13 +265,6 @@ public class ParkingRentalsController {
 			rental.setApproved(rentalDTO.getApproved());
 			rental.setCreatedAt(rentalDTO.getCreatedAt());
 			rental.setUpdatedAt(new Date()); // 更新時間
-
-			Community community = communityRepository.findByCommunityId(communityId);
-
-			if (community == null) {
-				return ResponseEntity.badRequest().body(ApiResponse.failure("找不到社區"));
-			}
-			rental.setCommunity(community);
 
 			// 🔗 關聯 ParkingSlot（由 slotNumber 找）
 			ParkingSlot slot = parkingSlotRepository.findBySlotNumberAndCommunity_CommunityId(rentalDTO.getSlotNumber(),
@@ -288,8 +283,8 @@ public class ParkingRentalsController {
 			rental.setUsers(user);
 
 			// 🔗 若有審核人（approverName）
-			if (rentalDTO.getApproverName() != null) {
-				Users approver = usersRepository.findByName(rentalDTO.getApproverName());
+			if (rentalDTO.getApproverId() != null) {
+				Users approver = usersRepository.findByUsersId(rentalDTO.getApproverId());
 				if (approver != null) {
 					rental.setApprover(approver);
 				}
@@ -331,50 +326,6 @@ public class ParkingRentalsController {
 
 		return ResponseEntity.ok(ApiResponse.success(availableSlots));
 	}
-
-	// 查詢某車位的承租歷史
-	// @GetMapping("/{slotId}/history")
-	// public List<RentalHistoryDTO> getRentalHistory(
-	// @PathVariable Integer slotId,
-	// @RequestParam String range
-	// ) {
-	// // 1. 找出該 slotNumber 對應的 slot id
-	// Optional<ParkingSlot> slotOpt = parkingSlotRepository.findById(slotId);
-	// if (slotOpt.isEmpty()) {
-	// throw new ResponseStatusException(HttpStatus.NOT_FOUND, "車位不存在");
-	// }
-	//
-	//
-	// // 2. 轉換 range 為 Date 範圍
-	// Date startDate = switch (range) {
-	// case "1" -> getDateYearsAgo(1);
-	// case "3" -> getDateYearsAgo(3);
-	// case "5" -> getDateYearsAgo(5);
-	// case "all" -> null;
-	// default -> throw new IllegalArgumentException("無效的範圍參數");
-	// };
-	//
-	// // 3. 查詢資料
-	// List<ParkingRentals> rentals =
-	// parkingRentalsRepository.findHistoryBySlotIdAndStartDate(1,slotId,
-	// startDate);
-	//
-	// // 4. 回傳前端格式
-	// return rentals.stream()
-	// .map(r -> new RentalHistoryDTO(
-	// r.getLicensePlate(),
-	// r.getRentBuyStart(),
-	// r.getRentEnd(),
-	// r.getStatus()
-	// ))
-	// .collect(Collectors.toList());
-	// }
-	//
-	// private Date getDateYearsAgo(int years) {
-	// Calendar cal = Calendar.getInstance();
-	// cal.add(Calendar.YEAR, -years);
-	// return cal.getTime();
-	// }
 
 	// 驗證時段重疊
 	@PostMapping("/overlap")

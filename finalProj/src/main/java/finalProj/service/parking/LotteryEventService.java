@@ -2,6 +2,7 @@ package finalProj.service.parking;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,12 +17,15 @@ import org.springframework.stereotype.Service;
 import finalProj.domain.bulletin.Bulletin;
 import finalProj.domain.bulletin.BulletinCategory;
 import finalProj.domain.community.Community;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
 import finalProj.domain.parking.LotteryApply;
 import finalProj.domain.parking.LotteryEventSpace;
 import finalProj.domain.parking.LotteryEvents;
 import finalProj.domain.parking.ParkingRentals;
 import finalProj.domain.parking.ParkingSlot;
 import finalProj.domain.parking.ParkingType;
+import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.DrawLotsResultDTO;
 import finalProj.dto.parking.LotteryEventSpaceDTO;
@@ -30,6 +34,8 @@ import finalProj.dto.parking.LotteryParticipantDTO;
 import finalProj.dto.parking.WinnerDTO;
 import finalProj.repository.bulletin.BulletinRepository;
 import finalProj.repository.community.CommunityRepository;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.repository.parking.LotteryApplyRepository;
 import finalProj.repository.parking.LotteryEventRepository;
 import finalProj.repository.parking.LotteryEventSpaceRepository;
@@ -74,6 +80,12 @@ public class LotteryEventService {
 
 	@Autowired
 	private ParkingRentalsRepository parkingRentalsRepository;
+
+	@Autowired
+	private NotificationsRepository notificationsRepository;
+
+	@Autowired
+	private UnitsNotificationsRepository unitsNotificationsRepository;
 
 	// 查詢所有抽籤活動
 	public List<LotteryEvents> findAll() {
@@ -450,6 +462,51 @@ public class LotteryEventService {
 		parkingRentalsRepository.saveAll(toUpdate);
 
 		repository.save(event);
+
+		// 建立通知（中籤與未中籤）
+		for (int i = 0; i < applies.size(); i++) {
+			LotteryApply apply = applies.get(i);
+			Users user = apply.getUsers();
+
+			boolean isWinner = i < winnersCount;
+			String title = isWinner ? "抽籤中籤通知" : "抽籤結果通知";
+			String description;
+
+			if (isWinner) {
+				ParkingSlot slot = spaces.get(i).getParkingSlot();
+				description = "恭喜您在抽籤活動中中籤，您可承租的車位為 " +
+						slot.getSlotNumber() + "<br>承租期間為 " +
+						event.getRentalStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+								.format(DateTimeFormatter.ofPattern("yyyy年MM月"))
+						+
+						" 至 " +
+						event.getRentalEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+								.format(DateTimeFormatter.ofPattern("yyyy年MM月"))
+						+
+						"。";
+			} else {
+				description = "很遺憾您在本次抽籤活動中未中籤，感謝您的參與。";
+			}
+
+			// 建立通知
+			Notifications notification = new Notifications();
+			notification.setTitle(title);
+			notification.setDescription(description);
+			notification.setCreatedTime(LocalDateTime.now());
+			notification.setCommunity(event.getParkingType().getCommunity());
+			notificationsRepository.save(notification);
+
+			// 綁定戶號（先抓出第一個）
+			if (user.getUnitsUsersList() != null && !user.getUnitsUsersList().isEmpty()) {
+				Units unit = user.getUnitsUsersList().get(0).getUnit();
+				if (unit != null) {
+					UnitsNotifications unitsNotifications = new UnitsNotifications();
+					unitsNotifications.setNotifications(notification);
+					unitsNotifications.setUnits(unit);
+					unitsNotificationsRepository.save(unitsNotifications);
+				}
+			}
+		}
 
 		return new DrawLotsResultDTO(eventId, applies.size(), spaces.size(), winners);
 	}

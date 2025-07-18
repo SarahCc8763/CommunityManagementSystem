@@ -353,6 +353,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios'
 import AssignedTicketDetail from './AssignedTicketDetail.vue'
 import { useUserStore } from '@/stores/UserStore'
+import Swal from 'sweetalert2'
 
 
 const userStore = useUserStore()
@@ -568,7 +569,12 @@ const unassignedTickets = computed(() => tickets.value.filter(t => !t.assigned))
 
 async function confirmAssign(ticket) {
   if (!ticket.selectedVendorIds?.length) {
-    alert('請至少選擇一個工程商')
+    Swal.fire({
+  icon: 'warning',
+  title: '請注意',
+  text: '請至少選擇一個工程商',
+  confirmButtonText: '確定'
+})
     return
   }
   try {
@@ -601,8 +607,19 @@ async function confirmAssign(ticket) {
     ticket.vendorName = ticket.assignedVendorIds
       .map(id => vendors.value.find(v => v.vendorID === id)?.vendorName)
       .join(', ')
+      Swal.fire({
+      icon: 'success',
+      title: '指派成功！',
+      text: '該報修單已成功指派給選定的工程商',
+      confirmButtonText: '好的'
+    })
   } catch (err) {
-    console.error('❌ 指派失敗', err)
+    Swal.fire({
+      icon: 'error',
+      title: '指派失敗',
+      text: '請稍後再試，或聯絡系統管理員',
+      confirmButtonText: '確定'
+    })
   }
 }
 

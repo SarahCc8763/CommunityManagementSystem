@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -20,6 +20,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.6",
+    "jsbarcode": "^3.12.1",
     "html2pdf.js": "^0.10.3",
     "jspdf": "^3.0.1",
     "pinia": "^3.0.1",

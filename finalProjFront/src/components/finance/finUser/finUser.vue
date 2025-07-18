@@ -26,7 +26,7 @@ const cards = [
         icon: 'bi-journal-text',
         title: '繳費紀錄',
         description: '查看過往繳費明細與下載收據',
-        link: '/invoiceHistory'
+        link: '/finance/receipt/my'
     },
     {
         icon: 'bi-bar-chart-line',

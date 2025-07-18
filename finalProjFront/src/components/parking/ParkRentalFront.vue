@@ -140,6 +140,7 @@
       </div>
     </div>
   </div>
+  
   <!-- 我要承租 Modal -->
   <div class="modal fade" id="rentalModal" tabindex="-1" aria-hidden="true" ref="modalElement">
     <div class="modal-dialog">

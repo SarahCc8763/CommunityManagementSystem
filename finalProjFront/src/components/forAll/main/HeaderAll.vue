@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/home" class="logo" style="cursor:pointer;">
+    <router-link to="/" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
     <nav class="nav">
@@ -372,8 +372,6 @@ const menuList = ref([
       { label: 'FAQ 問答集', routeName: 'faq', key: 'FAQQANDA' },
       { label: '聯絡客服', routeName: 'contact-us', key: 'FQACONTACT' },
       { label: '我的回饋紀錄', routeName: 'feedback', key: 'FQAFEEDBACK' }, //問題的進度跟進, //問題的進度跟進
-      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
-      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -393,7 +391,6 @@ const menuList = ref([
     children: [
       { label: '重要通知', routeName: 'announcement-important', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', routeName: 'announcement-latest', key: 'NOTICELATEST' },
-      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   }
 ])
@@ -403,7 +400,8 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  // loadCommunityFunctions()
+  window.addEventListener('refresh-community-functions', loadCommunityFunctions)
+  loadCommunityFunctions()
 })
 
 onUnmounted(() => {

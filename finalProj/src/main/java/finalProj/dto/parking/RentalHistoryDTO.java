@@ -23,6 +23,7 @@ public class RentalHistoryDTO {
 	private Integer slotId;
 	private String location;
 	private String parkingType;
+	private Integer parkingTypeId;
 	private String userName;
 	private Integer usersId;
 	private String approverName;
@@ -154,6 +155,14 @@ public class RentalHistoryDTO {
 
 	public void setSlotId(Integer slotId) {
 		this.slotId = slotId;
+	}
+
+	public Integer getParkingTypeId() {
+		return parkingTypeId;
+	}
+
+	public void setParkingTypeId(Integer parkingTypeId) {
+		this.parkingTypeId = parkingTypeId;
 	}
 
 }

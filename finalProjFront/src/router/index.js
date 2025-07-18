@@ -73,21 +73,30 @@ const router = createRouter({
       component: Home,
 
     },
+    // Finance相關
+    //// Fin-Admin
     {
       path: '/',                // 你要把 BeforeLogin 當首頁的話
       name: 'BeforeLogIn',
       component: BeforeLogIn
     },
-    {
-      path: '/finance/fee-type/add',
-      name: 'FeeTypeAdd',
-      component: FeeTypeAdd,
-      meta: { dark: true },
-    },
+
     {
       path: '/finance/billing-period/add',
       name: 'BillingPeriodAdd',
       component: BillingPeriodAdd,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/admin-dashboard',
+      name: 'FinAdminDashboard',
+      component: Dashboard,
+      meta: { dark: true },
+    },
+    {
+      path: '/finance/fee-type/add',
+      name: 'FeeTypeAdd',
+      component: FeeTypeAdd,
       meta: { dark: true },
     },
     {
@@ -97,19 +106,7 @@ const router = createRouter({
       meta: { dark: true },
     },
     {
-      path: '/finance/receipt/add',
-      name: 'ReceiptAdd',
-      component: ReceiptAdd,
-      meta: { dark: true },
-    },
-    {
       path: '/finance/invoice/validate',
-      name: 'InvoiceValidate',
-      component: InvoiceValidate,
-      meta: { dark: true },
-    },
-    {
-      path: '/finance/invoice-review',
       name: 'InvoiceValidate',
       component: InvoiceValidate,
       meta: { dark: true },
@@ -118,20 +115,38 @@ const router = createRouter({
       path: '/finance/invoice/InvoiceWithResponse',
       name: 'InvoiceWithResponse',
       component: InvoiceWithResponse,
-    },
-    
-    {
-      path: '/finance/admin-dashboard',
-      name: 'FinAdminDashboard',
-      component: Dashboard,
       meta: { dark: true },
     },
+    {
+      path: '/finance/receipt/add',
+      name: 'ReceiptAdd',
+      component: ReceiptAdd,
+      meta: { dark: true },
+    },
+
     ////fin-user
+    {
+      path: '/finUser',
+      name: 'FinUser',
+      component: finUser,
+    },
+    {
+
+      path: '/finance/invoice',
+      name: 'Invoice',
+      component: Invoice,
+    },
     {
       path: '/finance/receipt/my',
       name: 'Receipt',
       component: Receipt,
     },
+    //Finance相關 end
+
+
+
+
+
     {
       path: '/finance/invoice',
       name: 'Invoice',
@@ -141,7 +156,7 @@ const router = createRouter({
       path: '/finUser',
       name: 'FinUser',
       component: finUser,
-    },    
+    },
     // Finance相關結束
     // package相關
     {
@@ -199,7 +214,7 @@ const router = createRouter({
 
     },
     {
-      path: '/TicketDashboard',      
+      path: '/TicketDashboard',
       name: 'TicketDashboard',
       component: TicketDashboard,
     },
@@ -208,11 +223,12 @@ const router = createRouter({
       name: 'Vendor',
       component: Vendor,
       meta: { dark: true },
-    },     
+    },
     {
       path: '/CommunityList',
       name: 'CommunityList',
-      component: CommunityList
+      component: CommunityList,
+      meta: { dark: true },
     },
     // ticket相關結束
     // Parking相關
