@@ -28,7 +28,7 @@ public class BulletinAttachment {
     @Column(name = "bulletin_attachment", nullable = false)
     private byte[] fileData;
 
-    @Column(name = "bulletin_attachment_mime_type", nullable = false, length = 50)
+    @Column(name = "bulletin_attachment_mime_type", nullable = false, length = 100)
     private String mimeType;
 
     @Transient // 不存入資料庫，只作為接收 JSON 時用的欄位
