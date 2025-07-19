@@ -40,37 +40,37 @@ const router = useRouter();
 // const slideshowImages = Object.values(imagesContext);
 const facilitySlides = [
     {
-        image: new URL('@/assets/images/facilities/pool.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/pool.jpg', import.meta.url).href,
         title: '預約游泳池',
         subtitle: '清涼一夏的最佳選擇，開放式空間安心暢泳',
         link: '/reservations/book/3'
     },
     {
-        image: new URL('@/assets/images/facilities/gym.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/gym.jpg', import.meta.url).href,
         title: '預約健身房',
         subtitle: '配備完整設備，讓你隨時動起來',
         link: '/reservations/book/2'
     },
     {
-        image: new URL('@/assets/images/facilities/tabletennis.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/tabletennis.jpg', import.meta.url).href,
         title: '預約桌球室',
         subtitle: '室內舒適空間，揮拍對戰隨時開打',
         link: '/reservations/book/4'
     },
     {
-        image: new URL('@/assets/images/facilities/snooker.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/snooker.jpg', import.meta.url).href,
         title: '預約撞球室',
         subtitle: '沈穩風格場地，休閒與技術兼備',
         link: '/reservations/book/6'
     },
     {
-        image: new URL('@/assets/images/facilities/lounge.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/lounge.jpg', import.meta.url).href,
         title: '預約交誼廳',
         subtitle: '聚會、會議皆宜，社區共享交流空間',
         link: '/reservations/book/1'
     },
     {
-        image: new URL('@/assets/images/facilities/parking_grid.png', import.meta.url).href,
+        image: new URL('@/assets/images/facilities/parking_grid1.jpg', import.meta.url).href,
         title: '預約停車位',
         subtitle: '即時預約車位，訪客與住戶皆適用',
         link: '/reservations/book/7'

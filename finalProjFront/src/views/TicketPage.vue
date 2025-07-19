@@ -3,7 +3,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header">
-                    <h5 class="modal-title serif-title">Create Issue</h5>
+                    <h5 class="modal-title serif-title">建立報修單</h5>
                     <button type="button" class="btn-close" @click="hideModal"></button>
                 </div>
 
@@ -27,7 +27,7 @@
                         <div class="mb-3">
                             <label class="form-label">問題描述</label>
                             <QuillEditor style="min-height:150px" v-model:content="form.description" contentType="html"
-                                class="form-control" placeholder="Describe the issue..." />
+                                class="form-control" placeholder=" 請描述報修區域..." />
 
                             <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent
                                 @drop.prevent="handleDrop">

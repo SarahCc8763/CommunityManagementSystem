@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-4 card p-4">
-    <h2 class="card-title mb-3">Create Issue</h2>
+    <h2 class="card-title mb-3">建立報修單</h2>
 
     <form @submit.prevent="handleSubmit">
       <!-- 標題 -->
@@ -25,7 +25,7 @@
          style="min-height:300px"
          v-model:content="form.description" 
          contentType="html"
-          placeholder="     Describe the issue..." 
+          placeholder=" 請描述報修區域..." 
           class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
