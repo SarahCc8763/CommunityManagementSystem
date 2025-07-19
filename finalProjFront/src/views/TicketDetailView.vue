@@ -12,8 +12,8 @@
         <QuillEditor style="min-height:300px" v-model:content="edited.issueDescription" contentType="html"
           @focus="isEditing.issueDescription = true" class="custom-quill" />
         <div v-if="isEditing.issueDescription" class="edit-controls">
-          <button @click="cancelEdit('issueDescription')">取消</button>
-          <button @click="saveEdit('issueDescription')">儲存</button>
+          <button @click="cancelEdit('issueDescription')" class="btn-cancel">取消</button>
+          <button @click="saveEdit('issueDescription')" class="btn-save">儲存</button>
         </div>
       </div>
 
@@ -52,8 +52,8 @@
   :textContent="editedCommentText"
 ></div>
       <div>
-        <button class="btn btn-sm btn-secondary me-2" @click="cancelCommentEdit">取消</button>
-        <button class="btn btn-sm btn-primary" @click="saveCommentEdit(comment.id)">儲存</button>
+        <button class="btn-cancel me-2" @click="cancelCommentEdit">取消</button>
+        <button class="btn-save" @click="saveCommentEdit(comment.id)">儲存</button>
       </div>
     </div>
     <div v-else>
@@ -66,12 +66,12 @@
                   style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" @click="openPreview(img)" />
               </div>
                 <div class="mt-2" v-if="userStore.roleId === 2">
-                    <button
-                      class="btn btn-sm btn-outline-primary"
-                      v-if="userStore.roleId === 2 && isEditingComment !== i"
-                      @click="editComment(comment, i)"
-                    >
-                          編輯
+                  <button
+                  class="btn-edit"
+                  v-if="userStore.roleId === 2 && isEditingComment !== i"
+                  @click="editComment(comment, i)"
+                >
+                  編輯
                 </button>
               </div>
             </div>
@@ -83,13 +83,19 @@
     <!-- 右側詳情 -->
     <div class="ticket-side p-4 bg-light border-start" style="width: 320px; overflow-y: auto;">
       <div class="mb-3">
-        <label class="label">Status</label>
-        <select v-model="ticket.status" @change="saveStatus" class="form-control">
-          <option value="To Do">TO DO</option>
-          <option value="In Progress">IN PROGRESS</option>
-          <option value="Done">DONE</option>
-        </select>
-      </div>
+  <label class="label">Status</label>
+
+  <!-- 管理員才可以編輯 -->
+      <select v-if="isAdmin" v-model="ticket.status" @change="saveStatus" class="form-control">
+        <option value="To Do">TO DO</option>
+        <option value="In Progress">IN PROGRESS</option>
+        <option value="Done">DONE</option>
+      </select>
+      <!-- 一般使用者只看文字 -->
+      <div v-else class="form-control">
+      {{ ticket.status }}
+    </div>
+    </div>
       <div class="mb-3">
         <label class="label">指派人</label>
         <div class="form-control bg-white">
@@ -98,11 +104,34 @@
       </div>
 
       <div class="mb-3">
-        <label class="label">問題種類</label>
-        <Multiselect v-model="selectedIssueTypes" :options="allIssueTypes" :multiple="true" :taggable="true"
-          tag-placeholder="新增..." placeholder="請選擇或輸入問題種類" track-by="id" label="issueTypeName" @tag="addNewIssueType"
-          @update:modelValue="saveIssueTypes" />
-      </div>
+  <label class="label">問題種類</label>
+
+  <!-- ✅ 管理員才能編輯 -->
+  <Multiselect
+    v-if="isAdmin"
+    v-model="selectedIssueTypes"
+    :options="allIssueTypes"
+    :multiple="true"
+    :taggable="true"
+    tag-placeholder="新增..."
+    placeholder="請選擇或輸入問題種類"
+    track-by="id"
+    label="issueTypeName"
+    @tag="addNewIssueType"
+    @update:modelValue="saveIssueTypes"
+  />
+
+  <!-- ❌ 非管理員只顯示已選項目 -->
+  <div v-else class="form-control">
+    <span
+      v-for="(type, i) in selectedIssueTypes"
+      :key="i"
+      class="badge bg-secondary me-1"
+    >
+      {{ type.issueTypeName }}
+    </span>
+  </div>
+</div>
 
       <div class="mb-3">
         <label class="label">發布時間</label>
@@ -122,6 +151,7 @@ import CommentInput from '@/views/CommentInput.vue'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useUserStore } from '@/stores/UserStore.js'
+const isAdmin = computed(() => userStore.roleId === 2)
 const userStore = useUserStore()
 
 const route = useRoute()
@@ -380,6 +410,82 @@ async function saveCommentEdit(commentId) {
   border-color: #86b7fe;
   box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
 }
+.btn-cancel,
+.btn-save {
+  padding: 4px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-cancel {
+  background-color: #f4f5f7;
+  color: #172b4d;
+}
+
+.btn-cancel:hover {
+  background-color: #ebecf0;
+}
+
+.btn-save {
+  background-color: #0052cc;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #0065ff;
+}
+.btn-edit {
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid #0052cc;
+  background-color: white;
+  color: #0052cc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.btn-edit:hover {
+  background-color: #e6f0ff;
+  box-shadow: 0 2px 6px rgba(0, 82, 204, 0.2);
+  color: #0747a6;
+}
+.btn-cancel {
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background-color: #f4f5f7;
+  color: #42526e;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #ebecf0;
+  color: #172b4d;
+}
+
+.btn-save {
+  font-size: 13px;
+  padding: 4px 12px;
+  border: 1px solid #0052cc;
+  background-color: #0052cc;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  background-color: #0065ff;
+}
+
 </style>
 
 

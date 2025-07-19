@@ -85,7 +85,7 @@ console.log(response);
         text: response.data.message,
         icon: "success",
       });
-      router.push({ path: '/BeforeLogIn' })
+      router.push({ path: '/' })
       window.dispatchEvent(new CustomEvent('show-login-modal'))
     } else {
       // 後端回傳失敗訊息
@@ -95,11 +95,13 @@ console.log(response);
       });
       errors.value.general = response.data.message || '更改失敗'
     }
+    router.push({ path: '/' })
   } catch (error) {
     Swal.fire({
       text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
       icon: "error",
     });
+    router.push({ path: '/' })
     console.error('更改失敗:', error)
     errors.value.general = '伺服器錯誤，請稍後再試'
   }

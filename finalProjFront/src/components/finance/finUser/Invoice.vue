@@ -7,7 +7,7 @@
     <div v-if="invoices?.length === 0" class="no-invoice text-start my-5">
       <div class="fs-5 mb-3">目前沒有待繳帳單喔！</div>
       <div class="d-flex gap-3">
-        <router-link to="/" class="btn btn-outline-primary">回首頁</router-link>
+        <router-link to="/home" class="btn btn-outline-primary">回首頁</router-link>
         <router-link to="/finUser" class="btn btn-outline-success">帳務總覽</router-link>
       </div>
     </div>

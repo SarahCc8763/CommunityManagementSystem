@@ -135,7 +135,7 @@ function logout() {
   UserStore.logout()
   // 觸發全局登出事件
   window.dispatchEvent(new CustomEvent('logout'))
-  router.push('/BeforeLogIn')
+  router.push('/')
 }
 
 function showLoginModal() {

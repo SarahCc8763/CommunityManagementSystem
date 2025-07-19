@@ -77,7 +77,9 @@ public class InvoiceResponseController {
     // 查詢社區內所有未繳且有回覆的請款單
     @GetMapping("/with-response/unpaid")
     public ResponseEntity<List<InvoiceDTO>> getUnpaidInvoicesWithResponses(@RequestParam Integer communityId) {
+        System.out.println("into Controller");
         List<InvoiceDTO> list = invoiceResponseService.findUnpaidInvoiceWithResponseByCommunityId(communityId);
+        System.out.println("leave Controller");
         return ResponseEntity.ok(list);
     }
 

@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'dark-mode': isDarkMode }" @mouseleave="closeDropdown">
     <!-- LOGO -->
-    <router-link to="/" class="logo" style="cursor:pointer;">
+    <router-link :to="userStore.isAuthenticated ? '/home' : '/'" class="logo" style="cursor:pointer;">
       <img :src="Logo" alt="Logo" />
     </router-link>
     <nav class="nav">
@@ -903,9 +903,12 @@ body {
     padding: 1px 4px;
   }
 }
+
 .admin-button {
-  background-color: #343a40; /* 深灰色背景 */
-  color: #fff; /* 白字 */
+  background-color: #343a40;
+  /* 深灰色背景 */
+  color: #fff;
+  /* 白字 */
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -917,7 +920,8 @@ body {
 }
 
 .admin-button:hover {
-  background-color: #495057; /* hover 淺一點 */
+  background-color: #495057;
+  /* hover 淺一點 */
   transform: translateY(-2px);
 }
 
@@ -925,5 +929,4 @@ body {
   background-color: #212529;
   transform: scale(0.98);
 }
-
 </style>

@@ -349,4 +349,8 @@ Swal.mixin({
 .swal-on-top {
   z-index: 99999 !important;
 }
+
+.swal2-container {
+  z-index: 100000 !important;
+}
 </style>

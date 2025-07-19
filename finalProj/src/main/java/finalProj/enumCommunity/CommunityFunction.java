@@ -2,15 +2,14 @@ package finalProj.enumCommunity;
 
 public enum CommunityFunction {
 
-    
-    PACKAGE(1L << 0),        // 2^0 = 1
-    BOOKING(1L << 1),        // 2^1 = 2
-    INVOICE(1L << 2),        // 2^2 = 4
-    TICKET(1L << 3),         // 2^3 = 8 ← 原本是 2^4，這邊調整為連續
-    FQA(1L << 4),            // 2^4 = 16
-    PARK(1L << 5),           // 2^5 = 32
-    NOTICE(1L << 6),         // 2^6 = 64
-    VENDOR(1L << 7),         // 2^7 = 128
+    PACKAGE(1L << 0), // 2^0 = 1
+    BOOKING(1L << 1), // 2^1 = 2
+    INVOICE(1L << 2), // 2^2 = 4
+    TICKET(1L << 3), // 2^3 = 8 ← 原本是 2^4，這邊調整為連續
+    FQA(1L << 4), // 2^4 = 16
+    PARK(1L << 5), // 2^5 = 32
+    NOTICE(1L << 6), // 2^6 = 64
+    VENDOR(1L << 7), // 2^7 = 128
 
     // 包裹子功能（8～11）
     PACKAGEPENDING(1L << 8),

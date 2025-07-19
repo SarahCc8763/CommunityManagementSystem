@@ -116,7 +116,7 @@ import axiosapi from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import { useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, nextTick } from 'vue'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -131,6 +131,18 @@ const errorMsg = ref('')
 const checkedInvoices = ref([])
 const allChecked = ref(false)
 
+onMounted(async () => {
+  Swal.fire({
+    title: '載入中',
+    text: '請稍候，正在取得資料...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+  await reloadInvoices()
+  Swal.close()
+})
 // 篩選條件
 const filter = reactive({
   periodName: '',
@@ -203,6 +215,7 @@ const toggleAll = () => {
 
 // 資料載入
 const reloadInvoices = async () => {
+
   try {
     console.log('userStore.communityId =', userStore.communityId)
     const communityId = typeof userStore.communityId === 'object'
@@ -267,11 +280,25 @@ const submitReceipt = async () => {
     successMsg.value = ''
     errorMsg.value = ''
 
+    // 4. 關閉 modal
+    closeReceiptModal()
+    // ✅ 顯示 SweetAlert2 loading
+    Swal.fire({
+      title: '正在產生收據...',
+      text: '系統正在建立收據並更新帳單狀態，請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
     // 取得該 invoice 的第一筆 response 的 lastResponseTime
     let paidAt = null
-    if (selectedInvoice.value &&
+    if (
+      selectedInvoice.value &&
       Array.isArray(selectedInvoice.value.invoiceResponses) &&
-      selectedInvoice.value.invoiceResponses.length > 0) {
+      selectedInvoice.value.invoiceResponses.length > 0
+    ) {
       paidAt = selectedInvoice.value.invoiceResponses[0].lastResponseTime || null
     }
 
@@ -294,18 +321,11 @@ const submitReceipt = async () => {
     }
 
     console.log('submitReceipt payload', payload)
-    console.log('使用的 userId:', userId)
 
     // 1. 新增收據
     const res = await axiosapi.post('/finance/receipts', payload)
-    console.log('createReceipt 回傳', res.data)
-
     const receiptId = res.data.receiptId || res.data.id
-    console.log('receiptId', receiptId)
-    closeReceiptModal()
-    if (!receiptId) {
-      throw new Error('無法取得收據ID')
-    }
+    if (!receiptId) throw new Error('無法取得收據ID')
 
     // 2. 將 invoice 狀態設為 paid
     await axiosapi.put(`/finance/invoice/status/${receiptForm.invoiceId}?status=paid`)
@@ -313,22 +333,25 @@ const submitReceipt = async () => {
     // 3. 重新載入資料
     await reloadInvoices()
 
-    // 4. 顯示成功訊息並關閉modal - 設定高 z-index 讓 SweetAlert 顯示在 modal 上方
+    await nextTick()
+    // ✅ 關閉 loading 並顯示成功訊息
     Swal.fire({
-      title: '收據已產生並設為已繳',
-      text: '',
+      title: '收據已成功產生',
+      text: '帳單已更新為「已繳費」，可於收據紀錄中查詢',
       icon: 'success',
-      zIndex: 99999, // 確保 SweetAlert 顯示在 modal 上方
-      backdrop: false // 不要額外的背景遮罩
+      zIndex: 99999,
+      backdrop: false
     })
 
   } catch (error) {
+    // 關閉 loading
+    Swal.close()
+
     const errorMessage = error.response?.data?.message || error.message || '未知錯誤'
     errorMsg.value = '新增失敗：' + errorMessage
 
-    // 錯誤訊息也要設定高 z-index
     Swal.fire({
-      title: '產生失敗',
+      title: '產生收據失敗',
       text: errorMsg.value,
       icon: 'error',
       zIndex: 99999,
@@ -336,6 +359,7 @@ const submitReceipt = async () => {
     })
   }
 }
+
 
 // 批次產生收據
 const batchCreateReceipts = async () => {
@@ -406,22 +430,28 @@ const batchCreateReceipts = async () => {
 }
 
 // 導航功能
-const goTo = (target) => {
-  const routes = {
-    'home': '/',
-    'adminDashboard': '/AdminDashboard',
-    'finBack': '/finance/admin-dashboard'
-  }
 
-  if (routes[target]) {
-    router.push(routes[target])
+
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
   }
 }
 
+
+
+
+
+
 // 生命週期
-onMounted(async () => {
-  await reloadInvoices()
-})
 </script>
 
 <style scoped>
