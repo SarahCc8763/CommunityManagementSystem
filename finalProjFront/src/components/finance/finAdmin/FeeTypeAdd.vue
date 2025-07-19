@@ -276,7 +276,6 @@ const fetchFeeTypes = async () => {
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
-
   try {
     // 顯示 loading 狀態
     Swal.fire({

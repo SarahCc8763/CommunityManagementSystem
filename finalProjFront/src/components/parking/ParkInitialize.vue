@@ -323,7 +323,7 @@ function downloadSampleExcel() {
     const headers = ['車位編號', '區域', '車位種類', '擁有人戶號', '車位擁有人', '登記車牌號', '是否可承租']
     const data = [
         headers,
-        ['B1-001', 'B1 A區', '汽車', 'B棟-5F-10', '陳小芳', 'ABC-1234', '否']
+        ['B3-001', 'B3 A區', '汽車', 'A棟-2F-10', '陳志明', 'ABC-1234', '否']
     ]
 
     const worksheet = XLSX.utils.aoa_to_sheet(data)

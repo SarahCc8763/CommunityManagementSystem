@@ -141,9 +141,9 @@ const previewImage = ref(null)
 
 function formatStatus(status) {
   switch (status) {
-    case "to do": return '待處理'
-    case "In Progress": return '處理中'
-    case "Done": return '已完成'
+    case "to do": return 'TO DO'
+    case "In Progress": return 'IN PROGRESS'
+    case "Done": return 'DONE'
     default: return '未知'
   }
 }

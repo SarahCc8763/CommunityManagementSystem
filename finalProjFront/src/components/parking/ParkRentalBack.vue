@@ -44,7 +44,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">車位種類</label>
-                        <select class="form-select" v-model="filter.parkingType">
+                        <select class="form-select" v-model="filter.parkingTypeName">
                             <option value="">所有種類</option>
                             <option v-for="type in parkingTypes" :key="type.id" :value="type.label">{{ type.label }}
                             </option>
@@ -124,7 +124,7 @@
                     <tbody>
                         <tr v-for="record in filteredRecords" :key="record.id" class="text-center">
                             <td>{{ record.slotNumber }}</td>
-                            <td>{{ record.parkingType }}</td>
+                            <td>{{ record.parkingType.type }}</td>
                             <td>{{ record.location }}</td>
                             <td>{{ record.userName }}</td>
                             <td>{{ record.licensePlate }}</td>
@@ -170,8 +170,8 @@
                                     <label class="form-label fw-semibold">車位種類</label>
                                     <select class="form-select" v-model="selectedRecord.parkingType"
                                         :disabled="!isEditMode">
-                                        <option disabled value="">請選擇</option>
-                                        <option v-for="type in parkingTypes" :key="type.id" :value="type.label">{{
+                                        <option value="" disabled>請選擇</option>
+                                        <option v-for="type in parkingTypes" :key="type.id" :value="type">{{
                                             type.label }}</option>
                                     </select>
                                 </div>
@@ -181,7 +181,7 @@
                                     <select class="form-select" v-model="selectedRecord.slotNumber"
                                         :disabled="!isEditMode">
                                         <option disabled value="">請選擇</option>
-                                        <option v-for="slot in filteredSlots" :key="slot.slotNumber"
+                                        <option v-for="slot in availableSlots" :key="slot.slotNumber"
                                             :value="slot.slotNumber">{{ slot.slotNumber }}</option>
                                     </select>
                                 </div>
@@ -226,15 +226,15 @@
                                 <!-- 起始時間 -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">起始時間</label>
-                                    <input type="date" class="form-control" v-model="selectedRecord.rentBuyStart"
-                                        :readonly="!isEditMode" />
+                                    <input type="month" class="form-control" v-model="selectedRecord.rentBuyStart"
+                                        :readonly="!isEditMode" :min="minMonth"/>
                                 </div>
 
                                 <!-- 結束時間 -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">結束時間</label>
-                                    <input type="date" class="form-control" v-model="selectedRecord.rentEnd"
-                                        :readonly="!isEditMode" />
+                                    <input type="month" class="form-control" v-model="selectedRecord.rentEnd"
+                                        :readonly="!isEditMode" :min="selectedRecord.rentBuyStart"/>
                                 </div>
                             </div>
                             <!-- 操作按鈕 -->
@@ -268,6 +268,9 @@ import { Modal, Collapse } from 'bootstrap'
 const userStore = useUserStore()
 const communityId = userStore.communityId
 const currentUser = userStore.userId
+
+// 最小可選月份：本月
+const minMonth = new Date().toISOString().slice(0, 7)
 
 // 從資料庫抓type資料
 const parkingTypes = ref([])
@@ -325,18 +328,24 @@ const selectedRecord = ref(null)
 async function openAddModal() {
     isEditMode.value = true
     isAddMode.value = true
+    let parkingType
+    if (parkingTypes.value.length > 0) {
+        parkingType = parkingTypes.value[0]
+    }
+    console.log(parkingType);
     selectedRecord.value = {
         slotNumber: '',
-        parkingType: '',
+        parkingType,
         location: '',
         usersId: '',
         licensePlate: '',
-        rentBuyStart: '',
-        rentEnd: '',
+        rentBuyStart: minMonth,
+        rentEnd: minMonth,
         status: '',
-        approved: false
+        approved: false,
+        approverId: null
     }
-
+    
     await nextTick()
     modalInstance?.show()
 }
@@ -344,7 +353,7 @@ async function openAddModal() {
 // 篩選器
 const filter = ref({
     slotNumber: '',
-    parkingType: '',
+    parkingTypeName: '',
     location: '',
     usersId: '',
     licensePlate: '',
@@ -369,7 +378,7 @@ const filteredRecords = computed(() => {
 
         return (
             (!filter.value.slotNumber || record.slotNumber?.includes(filter.value.slotNumber)) &&
-            (!filter.value.parkingType || record.parkingType === filter.value.parkingType) &&
+            (!filter.value.parkingTypeName || record.parkingType.type === filter.value.parkingTypeName) &&
             (!filter.value.location || record.location?.includes(filter.value.location)) &&
             (!filter.value.usersId || record.usersId === Number(filter.value.usersId)) &&
             (!filter.value.licensePlate || record.licensePlate?.includes(filter.value.licensePlate)) &&
@@ -380,40 +389,171 @@ const filteredRecords = computed(() => {
     })
 })
 
+// 日期轉換
+function formatToYearMonth(dateStr) {
+    if (!dateStr) return ''
+    
+    const date = new Date(dateStr)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0') // 補 0
+    
+    return `${year}-${month}`
+}
+
+
 // 顯示詳細表單
 async function viewDetails(record) {
     isEditMode.value = false
     isAddMode.value = false
     selectedRecord.value = { ...record }
+    console.log(availableSlots.value)
+    
+    const currentSlotNumber = selectedRecord.value.slotNumber
+    const exists = availableSlots.value.some(slot => slot.slotNumber === currentSlotNumber)
+    console.log(availableSlots.value)
+    if (!exists) {
+        console.log("!exists")
+        console.log(currentSlotNumber)
+        console.log(record.location)
+        console.log(record.parkingType?.type)
+        availableSlots.value.push({
+            slotNumber: currentSlotNumber,
+            location: record.location ?? '',
+            type: record.parkingType?.type ?? '',
+        })
+        console.log(availableSlots.value)
+    }
 
+    selectedRecord.value.parkingType = parkingTypes.value.find(pt => pt.id === record.parkingType?.id)
+    selectedRecord.value.rentBuyStart = formatToYearMonth(selectedRecord.value.rentBuyStart)
+    selectedRecord.value.rentEnd = formatToYearMonth(selectedRecord.value.rentEnd)
     await nextTick()
     modalInstance?.show()
 }
 
-// 監控type變化，自動帶入相對應的slotNumber和location
-const filteredSlots = computed(() => {
-    if (!selectedRecord.value?.parkingType) return []
-    return allSlots.value.filter(slot =>
-        slot.parkingTypeName === selectedRecord.value.parkingType &&
-        slot.isRentable === true
-    )
-})
+// 可承租車位
+const availableSlots = ref([])
 
-
-
-// 監控slotNumber變化，自動帶入相對應的parkingType和location
-watch(() => selectedRecord.value?.slotNumber, (newSlotNumber) => {
-    if (!newSlotNumber) return
-    const slot = allSlots.value.find(s => s.slotNumber === newSlotNumber)
-    if (slot) {
-        selectedRecord.value.location = slot.location || ''
+// 查詢可承租車位
+async function fetchAvailableSlots() {
+    console.log("parkingType: " + selectedRecord.value?.parkingType.id + ", rentBuyStart: " + selectedRecord.value?.rentBuyStart + ", rentEnd: " + selectedRecord.value?.rentEnd)
+    if (!selectedRecord.value?.parkingType.id || !selectedRecord.value?.rentBuyStart || !selectedRecord.value?.rentEnd) return
+    const res = await axios.get(`/park/parking-rentals/available-slots`, {
+        params: {
+            parkingTypeId: selectedRecord.value?.parkingType.id,
+            start: getFirstDayOfMonth(selectedRecord.value?.rentBuyStart),
+            end: getLastDayOfMonth(selectedRecord.value?.rentEnd)
+        }
+    })
+    const slots = res.data.data
+    
+    // ✅ 自動補上目前 slot（如果不在清單中）
+    const currentSlotNumber = selectedRecord.value?.slotNumber
+    const exists = slots.some(slot => slot.slotNumber === currentSlotNumber)
+    if (!exists && currentSlotNumber) {
+        const fallbackSlot = {
+            slotNumber: currentSlotNumber,
+            location: selectedRecord.value.location ?? '',
+            type: selectedRecord.value.parkingType?.type ?? ''
+        }
+        slots.push(fallbackSlot)
     }
-})
+    
+    availableSlots.value = slots
+}
 
+watch(
+    () => [
+        selectedRecord.value?.parkingType,
+        selectedRecord.value?.rentBuyStart,
+        selectedRecord.value?.rentEnd
+    ],
+    () => {
+        fetchAvailableSlots()
+    }
+)
+
+watch(
+    () => selectedRecord.value?.slotNumber,
+    (newSlotNumber) => {
+        console.log(newSlotNumber)
+        console.log(availableSlots.value)
+        const matchedSlot = availableSlots.value.find(
+            slot => slot.slotNumber === newSlotNumber
+        )
+        if (matchedSlot) {
+            selectedRecord.value.location = matchedSlot.location
+        } else {
+            selectedRecord.value.location = ''
+        }
+    }
+)
+
+// Modal：起始月變更 → 自動修正截止月不得早於 +1 月
+watch(
+    () => [
+        selectedRecord.value?.rentBuyStart,
+        selectedRecord.value?.rentEnd
+    ],
+    ([start, end]) => {
+        console.log("watch " + start + ", " + end)
+        const startDate = new Date(start)
+        const minEndDate = new Date(startDate)
+        minEndDate.setMonth(startDate.getMonth())
+        const minEndStr = minEndDate.toISOString().slice(0, 7)
+        
+        if (!end || end < minEndStr) {
+            selectedRecord.value.rentEnd = minEndStr
+        }
+    }
+)
+
+
+// 補足日期為每月 1 號
+function getFirstDayOfMonth(input) {
+    let year, month
+    
+    if (typeof input === 'string') {
+        [year, month] = input.split('-').map(Number)
+    } else if (input instanceof Date) {
+        year = input.getFullYear()
+        month = input.getMonth() + 1
+    } else {
+        return '-'
+    }
+    
+    const yyyy = year
+    const mm = String(month).padStart(2, '0')
+    return `${yyyy}-${mm}-01`
+}
+
+
+// 補足日期為每月最後一天
+function getLastDayOfMonth(input) {
+    let year, month
+    
+    if (typeof input === 'string') {
+        [year, month] = input.split('-').map(Number)
+    } else if (input instanceof Date) {
+        year = input.getFullYear()
+        month = input.getMonth() + 1 // getMonth() 是 0-based，要補回來
+    } else {
+        return '-'
+    }
+    
+    const date = new Date(year, month, 0) // 該月最後一天
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+}
 
 // 送出新增
 async function addRecord() {
     try {
+        selectedRecord.value.rentBuyStart = getFirstDayOfMonth(selectedRecord.value.rentBuyStart)
+        selectedRecord.value.rentEnd = getLastDayOfMonth(selectedRecord.value.rentEnd)
+        // selectedRecord.value.parkingType = selectedRecord.value.parkingType.label
         console.log(selectedRecord.value)
         const res = await axios.post(`/park/parking-rentals?communityId=${communityId}`, selectedRecord.value)
         await Swal.fire({
@@ -437,7 +577,7 @@ async function addRecord() {
 
 // 關閉Modal後初始化
 function closeModal() {
-    selectedRecord.value = null
+    // selectedRecord.value = null
     isEditMode.value = false
     isAddMode.value = false
 }
@@ -445,10 +585,16 @@ function closeModal() {
 // 編輯資料
 async function saveRecordEdit() {
     try {
-        selectedRecord.value.approved = false
-        selectedRecord.value.approverId = null
-        console.log(selectedRecord.value)
-        const res = await axios.put(`/park/parking-rentals/${selectedRecord.value.id}?communityId=${communityId}`, selectedRecord.value)
+        const form = {
+            ...selectedRecord.value,
+        }
+        form.approved = false
+        form.approverId = null
+        form.approverName = null
+        form.rentBuyStart = getFirstDayOfMonth(selectedRecord.value.rentBuyStart)
+        form.rentEnd = getLastDayOfMonth(selectedRecord.value.rentEnd)
+        console.log(form)
+        const res = await axios.put(`/park/parking-rentals/${selectedRecord.value.id}?communityId=${communityId}`, form)
         await Swal.fire({
             icon: 'success',
             title: '修改成功',
@@ -470,13 +616,18 @@ async function saveRecordEdit() {
 
 // 審核
 async function approveRecord() {
-    selectedRecord.value.approved = true
-    selectedRecord.value.approverId = currentUser
+    const form = {
+        ...selectedRecord.value,
+    }
+    form.approved = true
+    form.approverId = currentUser
+    form.rentBuyStart = getFirstDayOfMonth(selectedRecord.value.rentBuyStart)
+    form.rentEnd = getLastDayOfMonth(selectedRecord.value.rentEnd)
 
-    console.log(selectedRecord.value)
+    console.log(form)
 
     try {
-        const res = await axios.put(`/park/parking-rentals/${selectedRecord.value.id}?communityId=${communityId}`, selectedRecord.value)
+        const res = await axios.put(`/park/parking-rentals/${selectedRecord.value.id}?communityId=${communityId}`, form)
         await Swal.fire({
             icon: 'success',
             title: '審核成功',
@@ -779,7 +930,7 @@ select.form-select {
     display: block;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
+input[type="month"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
 

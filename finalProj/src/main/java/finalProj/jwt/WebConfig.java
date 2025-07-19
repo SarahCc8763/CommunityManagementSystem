@@ -24,29 +24,27 @@ public class WebConfig implements WebMvcConfigurer {
 	}
 
 	@Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(buildAllowedOrigins())
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-    }
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedOrigins(buildAllowedOrigins())
+				.allowedMethods("*")
+				.allowedHeaders("*")
+				.allowCredentials(true);
+	}
 
-    private String[] buildAllowedOrigins() {
-        List<String> origins = new ArrayList<>();
-        origins.add("http://localhost:5173");
-        origins.add("https://payment-stage.ecpay.com.tw");
-        origins.add("https://payment.ecpay.com.tw");
-		origins.add("null");		
+	private String[] buildAllowedOrigins() {
+		List<String> origins = new ArrayList<>();
+		origins.add("http://localhost:5173");
+		origins.add("https://payment-stage.ecpay.com.tw");
+		origins.add("https://payment.ecpay.com.tw");
+		origins.add("null");
 
-        for (int i = 1; i <= 255; i++) {
-            origins.add("http://192.168.36." + i);
+		for (int i = 1; i <= 255; i++) {
+			origins.add("http://192.168.36." + i);
 			origins.add("https://192.168.36." + i);
-        }
+		}
 
-        return origins.toArray(new String[0]);
-    }
-
-
+		return origins.toArray(new String[0]);
+	}
 
 }
