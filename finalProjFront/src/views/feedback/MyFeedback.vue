@@ -24,6 +24,9 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+        <div v-if="feedbackList.length === 0 && !loading" class="d-flex justify-content-center">
+            <p>您尚未提交任何回饋。</p>
+        </div>
 
         <div v-else class="d-flex justify-content-center">
             <div class="accordion" id="feedbackAccordion" style="width: 90%;">
