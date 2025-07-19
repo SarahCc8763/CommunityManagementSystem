@@ -83,6 +83,10 @@ public class LotteryApplyController {
 			return ResponseEntity.badRequest().body(ApiResponse.failure("已超過申請期限"));
 		}
 
+		if (eventOp.get().getStartedAt().after(new Date())) {
+			return ResponseEntity.badRequest().body(ApiResponse.failure("活動未開始"));
+		}
+
 		LotteryApply apply = new LotteryApply();
 		apply.setLotteryEvents(eventOp.get());
 		apply.setUsers(userOp.get());

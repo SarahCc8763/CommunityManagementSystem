@@ -3,7 +3,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header">
-                    <h5 class="modal-title serif-title">Create Issue</h5>
+                    <h5 class="modal-title serif-title">建立報修單</h5>
                     <button type="button" class="btn-close" @click="hideModal"></button>
                 </div>
 
@@ -27,7 +27,7 @@
                         <div class="mb-3">
                             <label class="form-label">問題描述</label>
                             <QuillEditor style="min-height:150px" v-model:content="form.description" contentType="html"
-                                class="form-control" placeholder="Describe the issue..." />
+                                class="form-control" placeholder=" 請描述報修區域..." />
 
                             <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent
                                 @drop.prevent="handleDrop">
@@ -67,7 +67,7 @@ import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useUserStore } from '@/stores/UserStore'
-
+import Swal from 'sweetalert2'
 
 
 
@@ -163,7 +163,12 @@ function toBase64(file) {
 
 async function handleSubmit() {
     if (!form.value.title || form.value.title.trim() === '') {
-        alert('❗請填寫標題')
+        Swal.fire({
+        icon: 'warning',
+        title: '欄位未填寫',
+        text: '❗請填寫標題',
+        confirmButtonText: '了解'
+    })
         return
     }
     const payload = {
@@ -197,14 +202,29 @@ async function handleSubmit() {
             const uploadRes = await axios.post('/ticket-attachment/upload/base64/multiple', base64Files)
             const uploadResult = uploadRes.data
             if (uploadResult.success) {
-                alert('✅ 報修單與附件上傳成功！')
+                          Swal.fire({
+                            icon: 'success',
+                            title: '報修成功',
+                            text: '✅ 報修單與附件上傳成功！',
+                            confirmButtonText: 'OK'
+                            })
                 emit('created')
             } else {
-                alert('📎 報修單建立成功，但附件上傳失敗：' + uploadResult.message)
+                Swal.fire({
+                icon: 'warning',
+                title: '附件上傳失敗',
+                text: '📎 報修單建立成功，但附件上傳失敗',
+                confirmButtonText: '了解'
+                })
                 emit('created')
             }
         } else {
-            alert('✅ 報修單建立成功（無附件）')
+            Swal.fire({
+            icon: 'success',
+            title: '報修成功',
+            text: '✅ 報修單建立成功（無附件）',
+            confirmButtonText: 'OK'
+            })
             emit('created')
         }
         form.value.title = ''

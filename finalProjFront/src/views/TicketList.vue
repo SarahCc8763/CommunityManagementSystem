@@ -27,7 +27,7 @@
   v-model="searchText"
   type="text"
   class="form-control me-2"
-  placeholder="輸入關鍵字搜尋..."
+  placeholder="輸入標題關鍵字搜尋..."
   @keyup.enter="applySearch"
 />
 
@@ -42,7 +42,7 @@ style="width: 24px; height: 24px; cursor: pointer;"
 
 <!-- 篩選條件區塊 -->
 <div v-if="showFilter" class="mb-3 card p-3 shadow-sm" style="margin-bottom: 5rem;">
-<div class="row">
+<div class="row ">
 
 <!-- 左側：問題種類 + 狀態 -->
 <div class="col-md-6">

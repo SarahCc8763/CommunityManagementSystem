@@ -7,7 +7,7 @@ Use finalProj;
 
 INSERT INTO community (name, address,[function])
 VALUES 
-(N'台中社區一號', N'台中市北區中清路100號',15),
+(N'RiverBank', N'台北市大同區環河北路一段113號',15),
 (N'高雄社區二號', N'高雄市三民區建國一路200號',15),
 (N'新北社區三號', N'新北市板橋區文化路300號',15),
 (N'台南社區四號', N'台南市東區林森路400號',15),
@@ -317,7 +317,8 @@ VALUES
     (N'26', N'12F', N'E棟', 35, 50, 1),
     (N'28', N'12F', N'E棟', 35, 50, 1),
     (N'26', N'13F', N'E棟', 35, 50, 1),
-    (N'28', N'13F', N'E棟', 35, 50, 1);
+    (N'28', N'13F', N'E棟', 35, 50, 1),
+	(N'99', N'99F', N'E棟', 99, 99999, 1);
 
 -- units_users
 INSERT INTO units_users
@@ -466,7 +467,8 @@ VALUES
     (141, 141, 1),
     (142, 142, 1),
     (143, 143, 1),
-    (144, 144, 1);
+    (144, 144, 1),
+	(145, 145, 1);
 
 -- roles_users
 INSERT INTO roles_users
@@ -680,17 +682,17 @@ INSERT INTO facilities (
 --TRUNCATE TABLE facility_images;
 INSERT INTO facility_images (facility_id, image_url, image_description, sort_order)
 VALUES 
-(1, '/images/facilities/lounge.png', N'交誼廳外觀', 0),
-(2, '/images/facilities/gym.png', N'健身房設備照', 0),
-(3, '/images/facilities/pool.png', N'游泳池環境', 0),
-(4, '/images/facilities/tabletennis1.png', N'桌球室B101外觀', 0),
-(4, '/images/facilities/tabletennis2.png', N'桌球室B102外觀', 1),
-(5, '/images/facilities/tabletennis3.png', N'桌球室B102外觀', 0),
-(6, '/images/facilities/snooker1.png', N'撞球室環境', 0),
-(6, '/images/facilities/snooker2.png', N'撞球室環境', 1),
-(6, '/images/facilities/snooker3.png', N'撞球室環境', 2),
-(7, '/images/facilities/parking_grid.png', N'地下停車場 A1 車位', 0),
-(8, '/images/facilities/parking_grid.png', N'地下停車場 A2 車位', 0);
+(1, '/images/facilities/lounge.jpg', N'交誼廳外觀', 0),
+(2, '/images/facilities/gym.jpg', N'健身房設備照', 0),
+(3, '/images/facilities/pool.jpg', N'游泳池環境', 0),
+(4, '/images/facilities/tabletennis1.jpg', N'桌球室B101外觀', 0),
+(4, '/images/facilities/tabletennis2.jpg', N'桌球室B102外觀', 1),
+(5, '/images/facilities/tabletennis3.jpg', N'桌球室B102外觀', 0),
+(6, '/images/facilities/snooker1.jpg', N'撞球室環境', 0),
+(6, '/images/facilities/snooker2.jpg', N'撞球室環境', 1),
+(6, '/images/facilities/snooker3.jpg', N'撞球室環境', 2),
+(7, '/images/facilities/parking_grid1.jpg', N'地下停車場 A1 車位', 0),
+(8, '/images/facilities/parking_grid2.jpg', N'地下停車場 A2 車位', 0);
 
 
 --TRUNCATE TABLE point_accounts;
@@ -711,7 +713,7 @@ VALUES
 (1, 5, 100, @endOfMonth, GETDATE()),
 (1, 6, 100, @endOfMonth, GETDATE()),
 (1, 7, 100, @endOfMonth, GETDATE()),
-(1, 8, 100, @endOfMonth, GETDATE()),
+(1, 8, 9999, @endOfMonth, GETDATE()),
 (1, 9, 100, @endOfMonth, GETDATE()),
 (1, 10, 100, @endOfMonth, GETDATE()),
 (1, 11, 100, @endOfMonth, GETDATE()),
@@ -847,7 +849,8 @@ VALUES
 (1,141, 100, @endOfMonth, GETDATE()),
 (1,142, 100, @endOfMonth, GETDATE()),
 (1,143, 100, @endOfMonth, GETDATE()),
-(1,144, 100, @endOfMonth, GETDATE());
+(1,144, 100, @endOfMonth, GETDATE()),
+(1,144, 99999, @endOfMonth, GETDATE());
 
 -- 預約紀錄 (共150筆)
 INSERT INTO facility_reservations (
@@ -1182,7 +1185,7 @@ VALUES
 (1, 4, 'TRANSFER_IN', 44, 3, NULL, N'黃怡君 收到來自 張嘉豪', GETDATE());
 ------------------------------------------------------------------------------------javert結束
 
-------------------------------------------------------------------------------------Sara開始
+------------------------------------------------------------------------------------Sarah開始
 
 -- 1. 費用類別
 INSERT INTO finance_Fee_Type (description, fee_code, amount_Per_Unit, frequency, unit, created_at, last_updated, created_by, updated_by, status, note, community_id)
@@ -1297,4 +1300,151 @@ VALUES
 ('R20250402', '現金', '2025-04-20', '2025-04-21', 75, NULL, GETDATE(), GETDATE(), 1, 1, 1, '水費收據', 22, 2, 1),
 ('R20250602', '轉帳', '2025-06-10', '2025-06-11', 90, NULL, GETDATE(), GETDATE(), 1, 1, 1, '電費收據', 23, 2, 1);
 
-------------------------------------------------------------------------------------Sara結束
+------------------------------------------------------------------------------------Sarah結束
+
+------------------------------------------------------------------------------------yu開始
+go
+-- FAQ 分類
+INSERT INTO faq_category (faq_category_name, community_id) VALUES
+(N'社區管理系統', 1),
+(N'住戶服務', 1),
+(N'公共設備', 1),
+(N'社區設施', 1),
+(N'安全與門禁', 1);
+GO
+
+-- FAQ 問答
+INSERT INTO faq (faq_question, faq_answer, faq_category_id, faq_last_modified, faq_post_status, community_id) VALUES
+(N'如何修改社區 App 密碼？', N'請至 App 的帳號設定中選擇「修改密碼」，輸入舊密碼與新密碼後確認即可。', 1, '2025-06-10 10:00:00', 1, 1),
+(N'申請訪客車位需要提前多久？', N'建議至少提前一天透過 App 或管理室登記，以確保車位保留。', 2, '2025-06-11 10:00:00', 1, 1),
+(N'地下室燈光太暗可以反映嗎？', N'可至反映專區提出建議，設施組將依實際情況調整照明。', 3, '2025-06-12 10:00:00', 1, 1),
+(N'社區健身房使用時間為何？', N'每日早上 6 點至晚上 10 點開放，請攜帶住戶卡入場。', 4, '2025-06-13 10:00:00', 1, 1),
+(N'出入門禁卡遺失怎麼辦？', N'請立即聯絡管理室掛失，並攜帶證件辦理補發手續。', 5, '2025-06-14 10:00:00', 1, 1);
+GO
+
+-- FAQ 關鍵字
+INSERT INTO faq_keyword (faq_keyword, community_id) VALUES
+(N'App', 1),
+(N'車位申請', 1),
+(N'照明問題', 1),
+(N'健身房', 1),
+(N'門禁卡', 1);
+GO
+
+-- FAQ 關鍵字連結
+INSERT INTO faq_faq_keyword (faq_id, faq_keyword_id) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+GO
+
+-- Feedback 分類
+INSERT INTO feedback_category (feedback_category_name, feedback_category_description, community_id) VALUES
+(N'設備維修', N'設備損壞、異常或故障相關問題', 1),
+(N'環境清潔', N'垃圾、異味、水漬等環境問題', 1),
+(N'管理服務', N'管理員服務態度、效率等問題', 1),
+(N'停車空間', N'車位劃分、違停、使用規範等', 1),
+(N'其他建議', N'任何不屬於上述分類的反映事項', 1);
+GO
+
+-- Feedback 主表（含 user_id, handler_id）
+INSERT INTO feedback (feedback_title, feedback_description, feedback_category_id, user_id, handler_id, feedback_status, feedback_last_updated_at, feedback_submit_at, feedback_resolved_at, feedback_user_rating, community_id) VALUES
+(N'地下室感應燈壞了', N'晚間回家時整個地下停車場都很暗，感應燈沒有啟動。', 1, 1, 2, N'待處理', '2025-06-13 10:00:00', '2025-06-11 10:00:00', NULL, 3, 1),
+(N'大廳地板有積水', N'最近下雨後大廳靠窗位置常出現積水，容易滑倒。', 2, 2, 3, N'待處理', '2025-06-12 10:00:00', '2025-06-11 10:00:00', NULL, 5, 1),
+(N'管理員服務不佳', N'昨日下午詢問事情時，值班人員態度不耐煩，建議加強教育訓練。', 3, 3, 4, N'待處理', '2025-06-14 10:00:00', '2025-06-14 10:00:00', NULL, 4, 1),
+(N'機車停車格不足', N'近期有許多新住戶，機車格不足導致常有亂停情形。', 4, 4, 1, N'待處理', '2025-06-15 10:00:00', '2025-06-12 10:00:00', NULL, 5, 1),
+(N'希望加裝戶外遮雨棚', N'希望在管理室外空地設置遮雨棚，讓等待訪客或外送不會淋雨。', 5, 1, 2, N'待處理', '2025-06-15 10:00:00', '2025-06-13 10:00:00', NULL, 5, 1);
+GO
+
+-- 公告分類
+INSERT INTO bulletin_category (bulletin_category_name, community_id) VALUES
+(N'停水公告', 1),
+(N'活動訊息', 1),
+(N'維修通知', 1),
+(N'社區公告', 1),
+(N'設備更新', 1);
+GO
+
+-- 公告內容
+INSERT INTO bulletin ( bulletin_title, bulletin_description, bulletin_category_id, user_id, bulletin_is_pinned, bulletin_post_time, bulletin_modify_time, bulletin_remove_time, bulletin_post_status, community_id) VALUES
+( N'本週三社區將進行停水作業', N'由於管線檢修，將於 6/12(三) 上午9點至下午3點暫停供水，請提前儲水備用。', 1, 1, 0, '2025-06-11 10:00:00', '2025-06-12 10:00:00', '2025-06-13 10:00:00', 1, 1),
+( N'中庭週末舉辦社區野餐活動', N'本週六下午4點起於中庭舉辦住戶野餐，歡迎全家參加，現場備有小點與飲品。', 2, 2, 1, '2025-06-13 10:00:00', '2025-06-14 10:00:00', '2025-06-16 10:00:00', 1, 1),
+( N'B棟電梯維修通知', N'B棟南側電梯將於 6/15~6/17 進行維修保養，請改搭北側電梯，造成不便敬請見諒。', 3, 3, 0, '2025-06-12 10:00:00', '2025-06-14 10:00:00', '2025-06-17 10:00:00', 1, 1),
+( N'新住戶報到須知', N'提醒近期搬入的新住戶，請至管理室登記並領取門禁卡及垃圾分類手冊。', 4, 4, 0, '2025-06-10 10:00:00', '2025-06-11 10:00:00', '2025-06-15 10:00:00', 1, 1),
+( N'健身房將汰換新設備', N'下週一健身房將更換跑步機與啞鈴設備，期間暫停開放一天，敬請見諒。', 5, 1, 1, '2025-06-15 10:00:00', '2025-06-16 10:00:00', '2025-06-19 10:00:00', 1, 1);
+GO
+
+-- 公告留言（主留言）
+INSERT INTO bulletin_comment (bulletin_id, bulletin_comment, user_id, bulletin_comment_time, bulletin_comment_is_alive, parent_comment_id) VALUES
+(1, N'請問停水範圍包含A棟嗎？', 2, '2025-06-10 10:00:00', 1, NULL),
+(2, N'太好了，小孩一定會喜歡這活動！', 3, '2025-06-11 10:00:00', 1, NULL),
+(3, N'維修期間會提供臨時指引嗎？', 4, '2025-06-12 10:00:00', 1, NULL),
+(4, N'剛入住一週，感謝提醒。', 1, '2025-06-13 10:00:00', 1, NULL),
+(5, N'希望新設備能有說明書可參考。', 2, '2025-06-14 10:00:00', 1, NULL);
+GO
+
+-- 公告留言子留言
+INSERT INTO bulletin_comment (bulletin_id, bulletin_comment, user_id, bulletin_comment_time, bulletin_comment_is_alive, parent_comment_id) VALUES
+(1, N'A棟也會一起停水，建議當天備水喔。', 1, '2025-06-11 10:00:00', 1, 1),
+(2, N'當天也會設有氣墊床，孩子應該很開心！', 4, '2025-06-12 10:00:00', 1, 2),
+(3, N'會在大廳張貼告示指引，請留意。', 1, '2025-06-13 10:00:00', 1, 3),
+(4, N'歡迎入住，有任何問題都可以聯絡管理室。', 3, '2025-06-14 10:00:00', 1, 4),
+(5, N'會提供操作指導圖卡，感謝建議。', 4, '2025-06-15 10:00:00', 1, 5);
+GO
+
+-- 留言按讚
+INSERT INTO bulletin_comment_like (bulletin_comment_id, user_id, bulletin_comment_like_is_valid) VALUES
+(1, 3, 1),
+(2, 1, 1),
+(3, 2, 1),
+(4, 3, 1),
+(5, 4, 1);
+GO
+
+-- 公告附件
+INSERT INTO bulletin_attachment (bulletin_id, bulletin_attachment_file_name, bulletin_attachment, bulletin_attachment_mime_type) VALUES
+(1, N'停水區域示意圖.jpg', 0x1234, 'image/jpeg'),
+(2, N'活動流程表.pdf', 0x1234, 'application/pdf'),
+(3, N'電梯維修公告.png', 0x1234, 'image/png'),
+(4, N'報到流程說明.jpg', 0x1234, 'image/jpeg'),
+(5, N'設備更新清單.pdf', 0x1234, 'application/pdf');
+GO
+
+-- 投票主題（每篇公告對應一題）
+INSERT INTO poll (poll_id, poll_title, poll_start, poll_end, poll_is_multiple) VALUES
+(1, N'您是否備妥停水所需水量？', '2025-06-10 10:00:00', '2025-06-16 10:00:00', 0),
+(2, N'您是否會參加社區野餐活動？', '2025-06-11 10:00:00', '2025-06-17 10:00:00', 0),
+(3, N'您對電梯維修安排是否滿意？', '2025-06-12 10:00:00', '2025-06-18 10:00:00', 0),
+(4, N'新住戶報到流程是否清楚？', '2025-06-11 10:00:00', '2025-06-16 10:00:00', 0),
+(5, N'您最期待哪些健身設備更新？', '2025-06-13 10:00:00', '2025-06-19 10:00:00', 1);
+GO
+
+-- 投票選項
+INSERT INTO poll_option (poll_id, poll_option_text) VALUES
+(1, N'已準備完成'), (1, N'尚未準備'),
+(2, N'會參加'), (2, N'不會參加'),
+(3, N'滿意'), (3, N'不滿意'),
+(4, N'非常清楚'), (4, N'有點不清楚'),
+(5, N'跑步機'), (5, N'啞鈴'), (5, N'飛輪車');
+GO
+
+-- 投票紀錄
+INSERT INTO poll_vote (poll_id, user_id, poll_option_id, poll_vote_is_checked) VALUES
+(1, 1, 1, 1),
+(2, 2, 3, 1),
+(3, 3, 5, 1),
+(4, 4, 7, 1),
+(5, 1, 9, 1),
+(5, 2, 10, 1);
+GO
+
+INSERT INTO feedback_reply (feedback_id, user_id, feedback_reply, feedback_reply_replied_at) VALUES
+(1, 3, N'您好，社區會在本週安排水電檢查，請放心。', '2025-06-15 10:00:00'),
+(2, 4, N'已通知清潔團隊，將加強公共區域整理。', '2025-06-16 10:00:00'),
+(3, 1, N'我們已安排師傅前往檢修，請保持手機暢通。', '2025-06-17 10:00:00'),
+(4, 2, N'此問題已提報委員會，將列入下次會議討論。', '2025-06-18 10:00:00'),
+(5, 3, N'謝謝您的反映，將由客服專員持續追蹤進度。', '2025-06-19 10:00:00');
+GO
+------------------------------------------------------------------------------------yu結束

@@ -78,15 +78,15 @@ const menuList = [
     title: '報修服務',
     key: 'TICKET',
     children: [
-      { label: 'AllTicketsByAssignment', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
+      { label: '報修單指派管理', routeName: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
     ]
   },
   {
     title: '常見問題',
     key: 'FQA',
     children: [
-      { label: '後臺 - FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
-      { label: '後臺 - 回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
+      { label: 'FAQ 管理', routeName: 'faqAdmin', key: 'FAQADMIN' }, //FAQ後台
+      { label: '回饋管理', routeName: 'feedbackAdmin', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
@@ -104,14 +104,14 @@ const menuList = [
     title: '公告',
     key: 'NOTICE',
     children: [
-      { label: '後臺 - 公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
+      { label: '公告管理', routeName: 'bulletin-admin', key: 'BULLETINADMIN' },
     ]
   },
   {
     title: '配合廠商',
     key: 'VENDOR',
     children: [
-      { label: '後臺 - 配合廠商', routeName: 'Vendor', key: 'VENDOR' },
+      { label: '配合廠商', routeName: 'Vendor', key: 'VENDOR' },
     ]
   }
 ]

@@ -86,7 +86,7 @@
             <button class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
             <button class="btn btn-outline-primary" @click="editRentalPlateFromModal">編輯車牌</button>
             <button class="btn btn-danger" @click="cancelRental">取消承租</button>
-            <button class="btn btn-success" @click="openExtendModal">續租</button>
+            <button class="btn btn-success" @click="openExtendModal" :disabled="!selectedSlot.approved">續租</button>
           </div>
         </div>
       </div>
@@ -253,6 +253,7 @@ const updatePlate = async () => {
     }
 
     if (isFromRental.value) {
+      payload.parkingType = null
       console.log("修改承租")
       // 修改承租紀錄
       payload.approved = false
@@ -309,12 +310,25 @@ const cancelRental = async () => {
     confirmButtonText: '是',
     cancelButtonText: '否'
   })
+
   if (!result.isConfirmed) return
-  await axios.delete(`/park/parking-rentals/${selectedSlot.value.id}`)
-  await Swal.fire('已取消承租', '', 'success')
-  await fetchUserSlots()
-  rentalModalInstance.hide()
+
+  try {
+    await axios.delete(`/park/parking-rentals/${selectedSlot.value.id}`)
+    await Swal.fire('已取消承租', '', 'success')
+    await fetchUserSlots()
+    rentalModalInstance.hide()
+  } catch (error) {
+    console.error('取消承租失敗', error)
+    await Swal.fire({
+      icon: 'error',
+      title: '取消失敗',
+      text: error?.response?.data?.message || '發生錯誤，請稍後再試',
+      confirmButtonText: '關閉'
+    })
+  }
 }
+
 
 // 開啟續租 Modal
 const openExtendModal = () => {
@@ -355,8 +369,9 @@ const submitExtend = async () => {
     cancelButtonText: '否'
   })
   if (!result.isConfirmed) return
-  console.log(payload)
   try {
+    payload.parkingType = null
+    console.log(payload)
     await axios.post(`/park/parking-rentals?communityId=${userStore.communityId}`, payload)
     await Swal.fire('續租成功', '', 'success')
     extendModalInstance.hide()
