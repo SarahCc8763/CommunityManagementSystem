@@ -49,7 +49,7 @@
                                     <li class="list-group-item bg-reply" v-for="reply in selectedFeedback?.replies"
                                         :key="reply.id">
                                         <div>
-                                            <strong>{{ reply.user?.name || '未知使用者' }}</strong>：{{ reply.reply }}
+                                            <strong>{{ reply.userName || '未知使用者' }}</strong>：{{ reply.reply }}
                                             <br />
                                             <small class="text-muted">{{ formatDateTime(reply.repliedAt) }}</small>
                                         </div>
@@ -121,15 +121,15 @@ watch(
 // ✅ 修改狀態 更新 feedback.status
 const submitReply = async () => {
     try {
+        console.log(userId);
         const res = await axios.put(`/api/feedback/status/${props.selectedFeedback.id}`, {
             id: props.selectedFeedback.id, // ✅ 後端使用 findById(id)
             status: status.value, // ✅ 後端會比對原始與新狀態
-            handler: {
-                usersId: userId || 0 // ✅ 後端會透過此 ID 查找承辦人
-            }
+            handlerId: userId || 0 // ✅ 後端會透過此 ID 查找承辦人
+
         });
 
-        //console.log(res.data);
+        console.log(res.data);
         if (res.data?.list[0]?.id) {
             // 可以在這裡加入成功提示或更新本地狀態
             emit('updated'); // 通知父元件重新 fetch 資料

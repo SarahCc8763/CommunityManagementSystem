@@ -431,7 +431,7 @@ CREATE TABLE bulletin_attachment (
     bulletin_id INT NOT NULL,                                       -- 公告流水號（外鍵）
     bulletin_attachment_file_name NVARCHAR(50) NOT NULL,            -- 附件名稱
     bulletin_attachment VARBINARY(MAX) NOT NULL,                -- 附件檔案（最大 2MB 二進位資料）
-    bulletin_attachment_mime_type VARCHAR(50) NOT NULL,             -- MIME Type（如 image/jpeg）
+    bulletin_attachment_mime_type VARCHAR(100) NOT NULL,             -- MIME Type（如 image/jpeg）
 
     -- 外鍵約束
     FOREIGN KEY (bulletin_id) REFERENCES bulletin(bulletin_id)
@@ -636,7 +636,7 @@ CREATE TABLE feedback_attachment (
     feedback_id INT NOT NULL,                                     -- 意見主表流水號，外鍵
     feedback_attachment_file_name NVARCHAR(50) NOT NULL,          -- 附件名稱
     feedback_attachment VARBINARY(MAX) NOT NULL,                  -- 附件檔案（二進位資料）
-    feedback_attachment_mime_type VARCHAR(50) NOT NULL,           -- 檔案類型（MIME Type）
+    feedback_attachment_mime_type VARCHAR(100) NOT NULL,           -- 檔案類型（MIME Type）
     feedback_attachment_file_size INT NOT NULL,                   -- 檔案大小（長度，單位：Byte）
 
     -- 外鍵關聯至 feedback 表

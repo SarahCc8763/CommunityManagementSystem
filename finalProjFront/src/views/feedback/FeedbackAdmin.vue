@@ -145,11 +145,11 @@
                                                             <div class="me-2">
                                                                 <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
                                                                     style="width: 40px; height: 40px; font-size: 0.9rem">
-                                                                    {{ reply.user?.name?.charAt(0) || '?' }}
+                                                                    {{ reply.userName?.charAt(0) || '?' }}
                                                                 </div>
                                                             </div>
                                                             <div>
-                                                                <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}
+                                                                <div class="fw-bold">{{ reply.userName || '未知使用者' }}
                                                                 </div>
                                                                 <div class="bg-darky rounded p-2 mb-1"
                                                                     style="max-width: 600px; word-break: break-word;">
@@ -172,7 +172,7 @@
 
                                             </ul>
                                             <!-- 回覆輸入區塊 -->
-                                            <div v-if="feedback.showReplies" class="mt-3 d-flex align-items-start">
+                                            <div class="mt-3 d-flex align-items-start">
                                                 <!-- 左側：頭像圓圈（顯示登入者名稱縮寫） -->
                                                 <div class="me-2">
                                                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
@@ -513,8 +513,8 @@ const fetchData = async () => {
                 ...f,
                 showReplies: false,
                 newReplyText: ''
-            }))
-            console.log(feedbackList.value);
+            })).sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+            // console.log(feedbackList.value);
         })
         .catch((err) => {
             error.value = '無法載入資料，請稍後再試。'
