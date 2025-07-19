@@ -14,7 +14,7 @@
                 <h6>附件：</h6>
                 <ul class="list-group">
                     <li v-for="att in attachments" :key="att.id" class="list-group-item ">
-                        <a :href="`http://localhost:8080/api/bulletin/attachments/${att.id}`" target="_blank"
+                        <a :href="`${url}/api/bulletin/attachments/${att.id}`" target="_blank"
                             style="font-size: 90%;">{{
                                 att.fileName }}</a>
                     </li>
@@ -30,7 +30,7 @@
             </div>
 
 
-            <div v-if="Array.isArray(bulletin.comments)" class="text-dark">
+            <div v-if="Array.isArray(bulletin.comments) && bulletin.comments.length > 0" class="text-dark">
                 <div v-for="comment in bulletin.comments.filter(c => !c.parentCommentId)" :key="comment.id"
                     class="border rounded p-2 mb-2">
                     <div class="d-flex align-items-start mb-2">
@@ -38,7 +38,10 @@
                             height="40" />
                         <div style="color: darkslategray;">
                             <strong>{{ comment.userData[0] || '匿名用戶' }}</strong>
-                            <p class="mb-1">{{ comment.comment }}</p>
+                            <p v-if="comment.isAlive === false" class="text-seconary">[本則留言已被刪除]
+                                &nbsp;&nbsp;</p>
+                            <p v-else class="mb-1">{{
+                                comment.comment }}</p>
                             <span class="text-muted" style="font-size: 0.85rem">{{
                                 formatDate(comment.time) }}</span>
                         </div>
@@ -48,8 +51,8 @@
                             🧡 {{ comment.likeCount }}
                         </button>
 
-                        <button class="btn-comment btn-cursor-pointer me-1"
-                            @click="deleteComment(comment.id)">刪除</button>
+                        <button v-if="comment.isAlive === true" class="btn-comment btn-cursor-pointer me-1"
+                            @click="deleteComment(comment)">刪除</button>
                     </div>
 
                     <!-- 第二層留言 -->
@@ -60,7 +63,8 @@
                                 height="35" />
                             <div style="color: darkslategray;">
                                 <strong>{{ reply.userData[0] || '匿名用戶' }}</strong>
-                                <p class="mb-1">{{ reply.comment }}</p>
+                                <p v-if="reply.isAlive === false" class="text-seconary">[本則留言已被刪除]&nbsp;&nbsp;</p>
+                                <p v-else class="mb-1">{{ reply.comment }}</p>
                                 <span class="text-muted" style="font-size: 0.8rem">{{
                                     formatDate(reply.time) }}</span>
                             </div>
@@ -69,14 +73,15 @@
                             <button class=" btn-comment me-1">
                                 🧡 {{ reply.likeCount }}
                             </button>
-                            <button class="btn-comment btn-cursor-pointer me-1"
-                                @click="deleteComment(reply.id)">刪除</button>
+                            <button v-if="reply.isAlive === true" class="btn-comment btn-cursor-pointer me-1"
+                                @click="deleteComment(reply)">刪除</button>
                         </div>
                     </div>
 
 
                 </div>
             </div>
+            <div v-else class="text-secondary text-center"> <br><br><br> --- <small>目前尚無留言</small> --- </div>
 
 
         </div>
@@ -123,7 +128,7 @@ function getAvatarByGender(gender) {
     return defaultIcon;
 }
 
-function deleteComment(commentId) {
+function deleteComment(comment) {
     Swal.fire({
         title: '確定要刪除嗎？',
         text: '刪除後將無法復原，請確認是否確定刪除',
@@ -134,8 +139,34 @@ function deleteComment(commentId) {
         confirmButtonText: '確定',
         cancelButtonText: '取消'
     }).then((result) => {
-        axios.post(`/api/bulletin/comment/${commentId}`)
-            .then(() => emit('refresh'))
+        axios.put(`/api/bulletin/comment/${comment.id}`, {
+            bulletin: {
+                id: props.bulletin?.id   //要與該留言原本對應的公告一致
+            },
+            comment: comment.comment,
+            user: {
+                usersId: comment.userData[2]
+            },
+            isAlive: false
+        })
+            .then(() => {
+                Swal.fire({
+                    title: '刪除成功',
+                    icon: 'success',
+                    confirmButtonText: '確定',
+                    timer: 1000
+                })
+                emit('refresh')
+
+            })
+            .catch(err => {
+                Swal({
+                    title: '刪除失敗',
+                    icon: 'error',
+                    confirmButtonText: '確定',
+                    timer: 1000
+                })
+            })
 
     })
 }

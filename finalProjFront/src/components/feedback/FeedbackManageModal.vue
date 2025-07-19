@@ -34,8 +34,8 @@
                             <div class="col-sm-3">
                                 <select v-model="status" class="form-select bg-status ">
                                     <option value="待處理">待處理</option>
-                                    <option value="處理中">處理中</option>
                                     <option value="確認中">確認中</option>
+                                    <option value="處理中">處理中</option>
                                     <option value="已結案">已結案</option>
                                 </select>
                             </div>
@@ -74,6 +74,10 @@
 import { ref, watch, computed } from 'vue'
 import axios from '@/plugins/axios'
 import Swal from 'sweetalert2'
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
+const userId = userStore.userId || 0 // 假設當前使用者 id
+const communityId = userStore.communityId || 0 // 假設當前社區 ID
 
 const status = ref('')
 
@@ -121,7 +125,7 @@ const submitReply = async () => {
             id: props.selectedFeedback.id, // ✅ 後端使用 findById(id)
             status: status.value, // ✅ 後端會比對原始與新狀態
             handler: {
-                usersId: Number(localStorage.getItem('userId') || 3) // ✅ 後端會透過此 ID 查找承辦人
+                usersId: userId || 0 // ✅ 後端會透過此 ID 查找承辦人
             }
         });
 
@@ -138,7 +142,7 @@ const submitReply = async () => {
             })
         }
     } catch (err) {
-        console.error('狀態更新失敗', err);
+        //console.error('狀態更新失敗', err);
         alert('更新失敗，請稍後再試');
     }
 }

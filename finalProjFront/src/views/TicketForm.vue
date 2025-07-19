@@ -20,8 +20,13 @@
       <!-- 描述 + 附件 -->
       <div class="mb-3">
         <label class="label">問題描述</label>
-        <QuillEditor style="min-height:300px" v-model:content="form.description" contentType="html"
-          placeholder="Describe the issue..." class="input" />
+        <QuillEditor
+        ref="quillRef"
+         style="min-height:300px"
+         v-model:content="form.description" 
+         contentType="html"
+          placeholder="     Describe the issue..." 
+          class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
           <p>📎 拖曳圖片到這裡，或 <span @click="fileInput.click()" class="text-primary">點選上傳</span></p>
@@ -29,7 +34,7 @@
 
           <div class="preview-list d-flex flex-wrap gap-2 mt-2">
             <div class="position-relative" v-for="(file, index) in previews" :key="index">
-              <img :src="file.url" alt="preview" class="rounded border"
+              <img :src="file.url" alt="preview" class="rounded border" draggable="false" @dragstart.prevent
                 style="width: 100px; height: 100px; object-fit: cover;" />
               <button type="button" @click="removeFile(index)"
                 class="btn btn-danger btn-sm position-absolute top-0 end-0 translate-middle p-0 rounded-circle"
@@ -58,6 +63,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { useUserStore } from '@/stores/UserStore'
+import Swal from 'sweetalert2'
 const userStore = useUserStore()
 
 // 表單資料
@@ -70,7 +76,7 @@ const form = ref({
 
 const formIssue = ref({ issueType: [] })
 const issueOptions = ref([])
-
+const quillRef = ref(null)
 // 取得 issueType 選項
 onMounted(() => {
   axios.get('/IssueTypes')
@@ -143,7 +149,12 @@ function toBase64(file) {
 // 建立 ticket + 上傳附件
 async function handleSubmit() {
   if (!form.value.title || form.value.title.trim() === '') {
-    alert('❗請填寫標題')
+    Swal.fire({
+    icon: 'warning',
+    title: '欄位未填寫',
+    text: '❗請填寫標題',
+    confirmButtonText: '了解'
+  })
     return
   }
 
@@ -187,16 +198,34 @@ async function handleSubmit() {
       const uploadResult = uploadRes.data
 
       if (uploadResult.success) {
-        alert('✅ 報修單與附件上傳成功！')
+          Swal.fire({
+          icon: 'success',
+          title: '報修成功',
+          text: '✅ 報修單與附件上傳成功！',
+          confirmButtonText: 'OK'
+        })
       } else {
-        alert('📎 報修單建立成功，但附件上傳失敗：' + uploadResult.message)
+          Swal.fire({
+          icon: 'warning',
+          title: '附件上傳失敗',
+          text: '📎 報修單建立成功，但附件上傳失敗',
+          confirmButtonText: '了解'
+        })
       }
-    } else {
-      alert('✅ 報修單建立成功（無附件）')
-    }
+      } else {
+          Swal.fire({
+          icon: 'success',
+          title: '報修成功',
+          text: '✅ 報修單建立成功（無附件）',
+          confirmButtonText: 'OK'
+        })
+      }
 
     form.value.title = ''
     form.value.description = ''
+    if (quillRef.value) {
+  quillRef.value.setHTML('')
+}
     formIssue.value.issueType = []
     files.value = []
     previews.value = []
@@ -210,7 +239,41 @@ async function handleSubmit() {
 <style scoped>
 .container {
   max-width: 1200px !important;
-  margin: 0 auto !important;
-  padding: 0 24px !important;
+  margin: 40px auto 40px auto !important; /* ⬅️ 上60px，下40px */
+  padding: 24px !important;
 }
+:deep(.ql-container) {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+:deep(.ql-toolbar) {
+  background-color: transparent;
+  border: none;
+  padding: 0 0 6px 0;
+  margin-bottom: 6px;
+}
+
+:deep(.ql-editor) {
+  width: 100%; /* ✅ 讓它撐滿 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  background-color: #fff;
+  min-height: 300px;
+  box-sizing: border-box; /* ✅ 保證 padding 不會把寬撐大 */
+  transition: border 0.2s;
+}
+
+:deep(.ql-editor:focus) {
+  border-color: #6ca0f6;
+  outline: none;
+}
+
+
+
+
 </style>

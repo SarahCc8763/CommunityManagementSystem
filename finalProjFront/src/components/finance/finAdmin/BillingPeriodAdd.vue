@@ -1,24 +1,63 @@
 <template>
-  <div class="w-60 position-relative" style="margin-left: calc(-50vw + 50%); width: 60vw;">
-    <BannerImage :imageSrc="bannerImg" heading="繳費期別管理" subtext="您可以在此檢視、管理所有繳費期別，或新增新期別。" textAlign="left" />
+  <div style="width: 60vw; max-width: 1200px; margin: 2rem auto 0;">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none text-light"><i
+              class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('adminDashboard')" class="text-decoration-none text-light">後台管理</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('finBack')" class="text-decoration-none text-light">財務後台</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">繳費期間設定</li>
+      </ol>
+    </nav>
+    <BannerImage :imageSrc="bannerImg" heading="繳費期間設定" subtext=" 輕鬆管理各期繳費時間，包括查看現有期別、調整設定，或新增新的繳費期間。"
+      textAlign="left" />
   </div>
+
 
   <!-- 新增繳費期別 Modal -->
   <div class="modal fade" id="billingPeriodModal" tabindex="-1" aria-labelledby="billingPeriodModalLabel"
-    aria-hidden="true">
+    aria-hidden="true" ref="addModalRef">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <form @submit.prevent="submitForm">
           <div class="modal-header">
-            <h5 class="modal-title" id="billingPeriodModalLabel">新增繳費期別</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            <h5 class="modal-title" id="billingPeriodModalLabel">+ 新增繳費期別</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" @click="closeAddModal"></button>
           </div>
           <div class="modal-body">
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別名稱</label>
-                  <input v-model="form.periodName" class="form-control" required />
+                  <div class="row g-2">
+                    <div class="col-4">
+                      <select v-model="formYear" class="form-select w-100">
+                        <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}年</option>
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <select v-model="formMonthOrQuarter" class="form-select w-100">
+                        <option v-for="n in (formType === 'M' ? 12 : 4)" :key="n" :value="n">{{ n }}</option>
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <select v-model="formType" class="form-select w-100">
+                        <option value="M">月</option>
+                        <option value="Q">季</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">自訂期別名稱</label>
+                  <input v-model="form.customPeriodName" class="form-control" placeholder="可自行輸入期別名稱" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">期別代碼</label>
@@ -40,14 +79,8 @@
                   <label class="form-label">備註</label>
                   <input v-model="form.note" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">費用類型ID</label>
-                  <input v-model.number="form.feeTypeId" type="number" class="form-control" />
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">社區ID</label>
-                  <input v-model.number="form.communityId" type="number" class="form-control" />
-                </div>
+
+
                 <div class="col-md-6 mb-3">
                   <label class="form-label">狀態</label>
                   <select v-model="form.status" class="form-select">
@@ -57,12 +90,9 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">建立者</label>
-                  <input v-model="form.createdBy" class="form-control" />
+                  <input v-model="form.createdBy" class="form-control" disabled />
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">更新者ID</label>
-                  <input v-model.number="form.updatedBy" type="number" class="form-control" />
-                </div>
+
               </div>
               <div v-if="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
               <div v-if="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
@@ -83,34 +113,39 @@
       <div class="tag-style px-4 py-2" :class="{ 'dark-mode': isDarkMode }">
         <h4 class="mb-0 fw-bold text-primary section-title">繳費期別列表</h4>
       </div>
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#billingPeriodModal">
+      <button class="btn btn-success" @click="openAddModal">
         新增繳費期別
       </button>
     </div>
     <div class="row mb-3 g-2 align-items-end flex-wrap">
-      <div class="col-lg-3 col-md-6 col-12">
+      <div class="col-lg-2 col-md-6 col-12">
         <label class="form-label mb-1">期別ID</label>
         <input v-model="searchId" type="number" class="form-control" placeholder="請輸入期別ID" />
       </div>
-      <div class="col-lg-4 col-md-6 col-12">
+      <div class="col-lg-3 col-md-6 col-12">
         <label class="form-label mb-1">期別名稱</label>
-        <input v-model="searchName" class="form-control" placeholder="請輸入期別名稱（如2024年6月）" />
+        <input v-model="searchName" class="form-control" placeholder="ex: 25M6" />
       </div>
-      <div class="col-lg-5 col-12">
+      <div class="col-lg-7 col-12">
         <label class="form-label mb-1">期別代碼</label>
-        <div class="input-group flex-nowrap">
-          <span class="input-group-text">年份</span>
-          <input v-model="searchYear" class="form-control" style="max-width: 80px;" disabled />
-          <span class="input-group-text">月份/季</span>
-          <select v-model="searchMonth" class="form-select" style="max-width: 80px;">
+        <div class="input-group flex-nowrap period-code-group align-items-stretch">
+          <span class="input-group-text align-items-center" style="height:38px;">年份</span>
+          <input v-model="searchYear" class="form-control year-input"
+            style="max-width: 110px; min-width: 80px; height:38px;" disabled />
+          <span class="input-group-text align-items-center" style="height:38px;">期數</span>
+          <select v-model="searchMonth" class="form-select month-select"
+            style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="">--</option>
             <option v-for="n in 12" :key="n" :value="n">{{ n }}</option>
           </select>
-          <select v-model="searchType" class="form-select" style="max-width: 80px;">
+          <span class="input-group-text align-items-center" style="height:38px;">月份／季</span>
+          <select v-model="searchType" class="form-select type-select"
+            style="max-width: 110px; min-width: 80px; height:38px;">
             <option value="M">月</option>
             <option value="Q">季</option>
           </select>
-          <button class="btn btn-primary" @click="searchBillingPeriod" type="button">搜尋</button>
+          <button class="btn btn-primary d-flex align-items-center" style="height:38px;" @click="searchBillingPeriod"
+            type="button">搜尋</button>
         </div>
       </div>
     </div>
@@ -125,7 +160,7 @@
             <th scope="col">開始日</th>
             <th scope="col">結束日</th>
             <th scope="col">截止日</th>
-            <th scope="col">費用類型ID</th>
+
             <th scope="col">狀態</th>
             <th scope="col">備註</th>
           </tr>
@@ -137,7 +172,7 @@
             <td>{{ searchResult.startDate }}</td>
             <td>{{ searchResult.endDate }}</td>
             <td>{{ searchResult.dueDate }}</td>
-            <td>{{ searchResult.feeTypeId }}</td>
+
             <td>
               <span class="badge" :class="searchResult.status ? 'badge-success' : 'badge-secondary'">
                 {{ searchResult.status ? '啟用' : '停用' }}
@@ -160,7 +195,7 @@
               <th scope="col">開始日</th>
               <th scope="col">結束日</th>
               <th scope="col">截止日</th>
-              <th scope="col">費用類型ID</th>
+
               <th scope="col">狀態</th>
               <th scope="col">備註</th>
             </tr>
@@ -172,7 +207,7 @@
               <td>{{ item.startDate }}</td>
               <td>{{ item.endDate }}</td>
               <td>{{ item.dueDate }}</td>
-              <td>{{ item.feeTypeId }}</td>
+
               <td>
                 <span class="badge" :class="item.status ? 'badge-success' : 'badge-secondary'">
                   {{ item.status ? '啟用' : '停用' }}
@@ -189,28 +224,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from '@/plugins/axios'
+import axiosapi from '@/plugins/axios'
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import bannerImg from '@/assets/images/main/adminBanner.jpg'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 
 const successMsg = ref('')
 const errorMsg = ref('')
-const form = ref({
+const getDefaultForm = () => ({
   periodName: '',
   periodCode: '',
   startDate: '',
   endDate: '',
   dueDate: '',
   note: '',
-  feeTypeId: null,
-  communityId: null,
+  communityId: userStore.communityId,
   status: true,
-  createdBy: '',
-  updatedBy: null,
-})
+  createdAt: new Date().toISOString(),
+  createdBy: userStore.userId,
+  updatedBy: userStore.userId,
+});
+const form = ref(getDefaultForm());
 const billingPeriods = ref([])
 const route = useRoute()
 const isDarkMode = computed(() => route.meta?.dark === true)
@@ -221,10 +259,43 @@ const searchMonth = ref('')
 const searchType = ref('M')
 const searchResult = ref(null)
 
+const now = new Date();
+const yearOptions = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
+const formYear = ref(now.getFullYear());
+const formType = ref('M');
+const formMonthOrQuarter = ref(1);
+
+// 當自訂期別名稱有輸入時，自動清空原本的期別名稱選擇欄，並清空 periodCode
+watch(() => form.value.customPeriodName, (val) => {
+  if (val && val.trim() !== '') {
+    formYear.value = ''
+    formMonthOrQuarter.value = ''
+    formType.value = ''
+    form.value.periodCode = ''
+  }
+});
+
+// 僅當沒有自訂期別名稱時，才自動產生 periodCode
+watch([formYear, formType, formMonthOrQuarter], ([y, t, m]) => {
+  if (!form.value.customPeriodName || form.value.customPeriodName.trim() === '') {
+    if (t === 'M') {
+      form.value.periodName = `${y}年${m}月`;
+      const yearShort = String(y).slice(-2);
+      form.value.periodCode = `${yearShort}M${m}`;
+    } else if (t === 'Q') {
+      form.value.periodName = `${y}年第${m}季`;
+      const yearShort = String(y).slice(-2);
+      form.value.periodCode = `${yearShort}Q${m}`;
+    } else {
+      form.value.periodCode = '';
+    }
+  }
+});
+
 const fetchBillingPeriods = async () => {
 
   try {
-    const res = await axios.get('/finance/billing-periods')
+    const res = await axiosapi.get('/finance/billing-periods')
     billingPeriods.value = res.data || []
   } catch (e) {
     errorMsg.value = '載入失敗：' + (e.response?.data?.message || e.message)
@@ -241,13 +312,20 @@ const latestBillingPeriods = computed(() => {
 const submitForm = async () => {
   successMsg.value = ''
   errorMsg.value = ''
+  // 若有自訂期別名稱，送出前覆蓋periodName
+  if (form.value.customPeriodName && form.value.customPeriodName.trim() !== '') {
+    form.value.periodName = form.value.customPeriodName.trim();
+  }
+  form.value.communityId = userStore.communityId
+  form.value.createdBy = userStore.userId
+  form.value.updatedBy = userStore.userId
+  form.value.createdAt = new Date().toISOString()
   try {
-    await axios.post('/finance/billing-periods/create', form.value)
+    await axiosapi.post('/finance/billing-periods/create', form.value)
     successMsg.value = '新增成功！'
-    Object.keys(form.value).forEach(k => form.value[k] = (typeof form.value[k] === 'boolean' ? true : null))
     const modalEl = document.getElementById('billingPeriodModal')
     const modal = bootstrap.Modal.getInstance(modalEl)
-    modal?.hide()
+    addModalInstance.hide()
     fetchBillingPeriods()
   } catch (e) {
     errorMsg.value = '新增失敗：' + (e.response?.data?.message || e.message)
@@ -275,7 +353,7 @@ const searchBillingPeriod = async () => {
       }
       params.periodCode = code
     }
-    const res = await axios.get('/finance/billing-periods/query', { params })
+    const res = await axiosapi.get('/finance/billing-periods/query', { params })
     if (res.data) {
       searchResult.value = res.data
     } else {
@@ -297,21 +375,113 @@ const clearSearch = () => {
 
 onMounted(() => {
   fetchBillingPeriods()
+  // 初始化 periodName/periodCode
+  if (formType.value === 'M') {
+    form.value.periodName = `${formYear.value}年${formMonthOrQuarter.value}月`;
+    const yearShort = String(formYear.value).slice(-2);
+    form.value.periodCode = `${yearShort}M${formMonthOrQuarter.value}`;
+  } else {
+    form.value.periodName = `${formYear.value}年第${formMonthOrQuarter.value}季`;
+    const yearShort = String(formYear.value).slice(-2);
+    form.value.periodCode = `${yearShort}Q${formMonthOrQuarter.value}`;
+  }
 })
+
+// 開 Modal 公式
+const addModalRef = ref(null) // 綁在Modal的ref上
+let addModalInstance = null // 定義一個變數來存 bootstrap.Modal 的實例
+
+onMounted(() => {
+  addModalInstance = new bootstrap.Modal(addModalRef.value)
+})
+
+const openAddModal = () => {
+  addModalInstance.show()
+}
+
+const closeAddModal = () => {
+  addModalInstance.hide()
+}
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+  switch (target) {
+    case 'home':
+      router.push('/')
+      break
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
+  }
+}
 </script>
 
 <style scoped>
 .container {
-  max-width: 900px;
+  max-width: 1150px;
+  padding-top: 30px;
+  border-radius: 15px;
 }
 
 .input-group>.form-label {
   margin-bottom: 0;
 }
 
+.period-code-group>.input-group-text,
+.period-code-group>.form-control,
+.period-code-group>.form-select {
+  margin-right: 8px;
+}
+
+.period-code-group>.form-control,
+.period-code-group>.form-select {
+  min-width: 80px;
+  max-width: 110px;
+}
+
+.period-code-group>.year-input {
+  min-width: 100px;
+  max-width: 120px;
+}
+
+.period-code-group>.month-select,
+.period-code-group>.type-select {
+  min-width: 100px;
+  max-width: 120px;
+}
+
 @media (max-width: 991px) {
-  .row.mb-3.g-2.align-items-end.flex-wrap>div {
-    margin-bottom: 12px;
+
+  .period-code-group>.input-group-text,
+  .period-code-group>.form-control,
+  .period-code-group>.form-select {
+    margin-right: 4px;
   }
+
+  .period-code-group>.form-control,
+  .period-code-group>.form-select {
+    min-width: 70px;
+    max-width: 100px;
+  }
+}
+
+/* 讓期別ID與期別名稱input的placeholder顏色更淺的深灰色 */
+input::placeholder {
+  color: #5d5d5d !important;
+  opacity: 1;
+}
+
+
+/* 麵包屑 */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  color: #ccc;
+  /* 或 text-light 用於深色背景 */
+  margin: 0 0.5rem;
 }
 </style>

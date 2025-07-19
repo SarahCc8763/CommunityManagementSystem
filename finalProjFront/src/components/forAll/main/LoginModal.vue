@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-overlay" v-if="isVisible" @click="closeModal">
+  <div class="modal-overlay" v-if="isVisible" @click.stop>
     <div class="modal-container" @click.stop>
       <!-- 關閉按鈕 -->
       <button class="close-button" @click="closeModal">
@@ -297,7 +297,7 @@ const handleLogin = async () => {
       "email": form.value.username,
       "password": form.value.password
     })
-
+    console.log(response);
     // 後端成功回傳
     if (response.data.success) {
       // remember me
@@ -322,6 +322,7 @@ const handleLogin = async () => {
       });
     } else {
       // 後端回傳失敗訊息
+      router.push({ name: 'BeforeLogIn' })
       Swal.fire({
         text: response.data.message,
         icon: "warning",
@@ -329,13 +330,14 @@ const handleLogin = async () => {
       errors.value.general = response.data.message || '登入失敗'
     }
   } catch (error) {
-    closeModal()
+    // alert("登入失敗")
     Swal.fire({
       text: error.response?.data?.message || '伺服器錯誤，請稍後再試',
       icon: "error",
     });
     console.error('登入失敗:', error)
     errors.value.general = '伺服器錯誤，請稍後再試'
+    closeModal()
   } finally {
     isLoading.value = false
   }

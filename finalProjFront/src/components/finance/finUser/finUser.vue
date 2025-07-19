@@ -1,10 +1,13 @@
 <template>
-    <!-- 左邊側欄 -->
-    <div class="d-flex">
+
+    <div class="d-flex justify-content-center">
 
         <main>
             <BannerImage :imageSrc="OO" heading="財務管理區" subtext="快速查帳、繳費與明細查詢，提醒您 : 別忘了定期查看帳單與費用明細" textAlign="left" />
             <FeatureCards :features="cards" />
+            <button @click="goHome" class="btn btn-primary" style="margin-top: 20px;">
+                <i class="bi bi-house-door-fill me-1"></i> 回首頁
+            </button>
         </main>
     </div>
 </template>
@@ -13,7 +16,7 @@
 import BannerImage from '@/components/forAll/BannerImage.vue'
 import OO from '@/assets/images/finance/happyFaces.jpg';
 import FeatureCards from '@/components/forAll/FeatureCards.vue'
-import SideNav from '@/components/forAll/main/LeftSideNav.vue'
+
 const cards = [
     {
         icon: 'bi-receipt',
@@ -25,14 +28,9 @@ const cards = [
         icon: 'bi-journal-text',
         title: '繳費紀錄',
         description: '查看過往繳費明細與下載收據',
-        link: '/invoiceHistory'
+        link: '/finance/receipt/my'
     },
-    {
-        icon: 'bi-bar-chart-line',
-        title: '財務報表',
-        description: '查看大樓每月的收支總覽與統計',
-        link: '/finance/report'
-    },
+
     {
         icon: 'bi-question-circle-fill',
         title: '常見問題與支援',
@@ -40,7 +38,12 @@ const cards = [
         link: '/package'
     },]
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
+const goHome = () => {
+    router.push('/home')
+}
 
 </script>
 

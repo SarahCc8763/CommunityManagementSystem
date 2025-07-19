@@ -4,9 +4,9 @@
     <!-- 🔽 社區選擇 -->
 
 
-    <h2 class="mb-4">🏘 {{ selectedCommunity?.name || '社區' }} - 功能設定</h2>
+    <h2 class="mb-4">{{ selectedCommunity?.name || '社區' }} - 功能設定</h2>
 
-    <div v-if="selectedCommunity" class="card p-4 shadow-sm bg-light">
+    <div v-if="selectedCommunity" class="card p-4 shadow-sm bg-light bg-dark text-light">
       <div class="mb-3">
         <p><strong>社區名稱：</strong>{{ selectedCommunity.name }}</p>
         <p><strong>地址：</strong>{{ selectedCommunity.address }}</p>
@@ -20,7 +20,7 @@
             <input class="form-check-input" type="checkbox" :id="module.value" :checked="isModuleChecked(module)"
               @change="toggleMainFunction(module.value, module.children)" />
             <label class="form-check-label fw-bold" :for="module.value">
-              {{ module.value }} (主項)
+              {{ module.label }}
             </label>
           </div>
 
@@ -48,6 +48,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
+import Swal from 'sweetalert2'
 
 
 const userStore = useUserStore()
@@ -72,7 +73,7 @@ const allFunctionOptions = [
     children: [
       { label: '重要通知', key: 'NOTICEIMPORTANT' },
       { label: '最新公告', key: 'NOTICELATEST' },
-      { label: '後臺 - 公告管理',key: 'BULLETINADMIN' },
+      { label: '後臺 - 公告管理', key: 'BULLETINADMIN' },
     ]
   },
   {
@@ -82,14 +83,14 @@ const allFunctionOptions = [
       { label: '待領包裹', key: 'PACKAGEPENDING' },
       { label: '領取紀錄', key: 'PACKAGEHISTORY' },
       { label: '管理員包裹查詢', key: 'PACKAGESEARCH' },
-      { label: '新增包裹',  key: 'ADDPACKAGE' },
+      { label: '新增包裹', key: 'ADDPACKAGE' },
     ]
   },
   {
     label: '公設預約',
     value: 'BOOKING',
     children: [
-    { label: '公設與點數系統', key: 'FHV' },
+      { label: '公設與點數系統', key: 'FHV' },
       { label: '查詢公設', key: 'FFAV' },
       { label: '我的預約紀錄', key: 'RHV' },
       { label: '點數轉移', key: 'PTV' },
@@ -103,45 +104,41 @@ const allFunctionOptions = [
     children: [
       { label: 'FAQ 問答集', key: 'FAQQANDA' },
       { label: '聯絡客服', key: 'FQACONTACT' },
-      { label: '回饋與抱怨？', key: 'FQAFEEDBACK' }
-    ]
-  },
-  {
-    label: '社區活動',
-    value: 'MANBERSERVICE',
-    children: [
-      { label: '會員資訊修改', key: 'MANBERSERVICEEDIT' },
-      { label: '點數轉贈', key: 'MANBERSERVICETRANSFER' }
+      { label: '回饋與抱怨？', key: 'FQAFEEDBACK' }, //問題的進度跟進
+      { label: '後臺 - FAQ 管理', key: 'FAQADMIN' }, //FAQ後台
+      { label: '後臺 - 回饋管理', key: 'FEEDBACKADMIN' }, //回饋後台
     ]
   },
   {
     label: '財務報表',
     value: 'INVOICE',
     children: [
-    { label: '繳費總覽',  key: 'FINUSER' },
-      { label: '待繳帳單',  key: 'INVOICEBILL' },
-      { label: '繳費紀錄',  key: 'RECEIPT' },
-      { label: 'A新增費用類型',  key: 'FEETYPEADD' },
-      { label: 'A新增繳費期別',  key: 'BILLINGPERIODADD' },
-      { label: 'A新增繳款單',  key: 'INVOICEADD' },
-      { label: 'A新增收據',  key: 'RECEIPTADD' },
-      { label: 'A請款單審核',  key: 'INVOICEVALIDATE' },
-      { label: 'A審核帳單回覆',  key: 'INVOICEWITHRESPONSE' },
+      { label: '繳費總覽', key: 'FINUSER' },
+      { label: '待繳帳單', key: 'INVOICEBILL' },
+      { label: '繳費紀錄', key: 'RECEIPT' },
+      { label: '費用項目管理', key: 'FEETYPEADD' },
+      { label: '繳費期間設定', key: 'BILLINGPERIODADD' },
+      { label: '繳費通知製作', key: 'INVOICEADD' },
+      { label: '收據管理中心', key: 'RECEIPTADD' },
+      { label: '繳費通知審核', key: 'INVOICEVALIDATE' },
+      { label: '審核帳單回覆', key: 'INVOICEWITHRESPONSE' },
+      { label: '財務後台管理入口', key: 'FINADMIN' },
+
     ]
   },
   {
     label: '停車管理',
     value: 'PARK',
     children: [
-    { label: '社區停車場建置', key: 'PARKINIT'},
-      { label: '所有車位查詢', key: 'PARKSLOT'},  // 共用同個路徑去韋韋那頁
-      { label: '使用者承租車位', key: 'PARKRENT'},
-      { label: '承租記錄查詢', key: 'PARKREC'},
-      { label: '抽籤活動', key: 'PARKEVE'},
-      { label: '抽籤申請', key: 'PARKAPP'},
-      { label: '我的車位', key: 'MYPARK'},
-      { label: '前端停車主頁', key: 'PARKFRONT'},
-      { label: '後端停車主頁', key: 'PARKBACK'},
+      { label: '社區停車場建置', key: 'PARKINIT' },
+      { label: '所有車位查詢', key: 'PARKSLOT' },  // 共用同個路徑去韋韋那頁
+      { label: '使用者承租車位', key: 'PARKRENT' },
+      { label: '承租記錄查詢', key: 'PARKREC' },
+      { label: '抽籤活動', key: 'PARKEVE' },
+      { label: '抽籤申請', key: 'PARKAPP' },
+      { label: '我的車位', key: 'MYPARK' },
+      { label: '前端停車主頁', key: 'PARKFRONT' },
+      { label: '後端停車主頁', key: 'PARKBACK' },
     ]
   },
   {
@@ -253,7 +250,7 @@ async function saveFunction() {
       address: selectedCommunity.value.address,
       functions: finalFunctions
     }
-
+    console.log('🧪 最終送出的 functions:', finalFunctions)
     const res = await axios.put(
       `/communitys/${selectedCommunity.value.communityId}`,
       payload
@@ -263,10 +260,20 @@ async function saveFunction() {
     window.dispatchEvent(new CustomEvent('refresh-community-functions'))
 
 
-    alert('✅ 功能設定已儲存')
+    Swal.fire({
+      icon: 'success',
+      title: '儲存成功',
+      text: '✅ 功能設定已儲存',
+      confirmButtonText: 'OK'
+    })
   } catch (err) {
     console.error('❌ 儲存失敗', err)
-    alert('❌ 儲存失敗')
+    Swal.fire({
+      icon: 'error',
+      title: '儲存失敗',
+      text: '❌ 請稍後再試一次',
+      confirmButtonText: '知道了'
+    })
   }
 }
 

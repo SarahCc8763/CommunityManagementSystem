@@ -8,10 +8,10 @@
                 <div class="hero-text">
                     <h1 class="serif-title text-white fw-bold">歡迎回到 <span style="color: rgb(220, 245, 179);">RiVER
                             BANK</span> </h1>
-                    <h2 class="serif-title text-white fw-bold">智慧社區管理，從此開始</h2>
+                    <h2 class="serif-title text-white fw-bold">好家宅社區管理，從此開始</h2>
                     <br><br>
                     <p class="text-white" style=""> <span style="color: rgb(228, 245, 220);">
-                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 OO建設</span></p>
+                            整合住戶服務，提升生活品質與社區效率。完美社區的最佳首選 智匯建設</span></p>
 
                 </div>
             </div>
@@ -28,71 +28,43 @@
                 <i class="bi bi-megaphone"></i>
                 最新公告
             </h2>
-            <button class="view-all-btn">
-                <i class="bi bi-arrow-right"></i>
-                查看全部
-            </button>
+            <a :href="baseUrl + '/announcement-latest'">
+                <button class="view-all-btn">
+
+                    <i class="bi bi-arrow-right"></i>
+                    查看全部
+                </button>
+            </a>
         </div>
 
         <div class="announcements-grid">
-            <!-- 重要公告 -->
-            <div class="announcement-card important">
+            <!-- 公告 -->
+            <div v-for="bulletin in bulletins" :key="bulletin.id"
+                :class="['announcement-card', getGridColor(bulletin.categoryName)]">
                 <div class="announcement-header">
-                    <div class="announcement-badge">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        重要
+                    <div class="announcement-badge fs-6">
+                        <i :class="['bi', getIcon(bulletin.categoryName)]"></i>
+                        {{ bulletin.categoryName }}
                     </div>
-                    <div class="announcement-date">2024/12/10</div>
+
+                    <div class="announcement-date">{{ formatDate(bulletin.postTime) }}</div>
                 </div>
-                <h3 class="announcement-title">電梯維護通知</h3>
+
+                <h3 class="announcement-title">{{ bulletin.title }}</h3>
                 <p class="announcement-content">
-                    為確保住戶安全,A棟電梯將於12月15日進行年度維護,預計維護時間為上午9:00至下午5:00,
-                    請住戶提前安排行程,造成不便敬請見諒。
+                    {{ normalizeNewline(truncateText(bulletin.description, 50)) }}
+                    <span v-if="bulletin.description.length > 50">
+                        ...
+                    </span>
                 </p>
                 <div class="announcement-footer">
-                    <span class="announcement-author">管理委員會</span>
-                    <button class="read-more-btn">
-                        <i class="bi bi-arrow-right"></i>
-                        閱讀更多
-                    </button>
+                    <span class="announcement-author">發布人：{{ bulletin.userName }}</span>
+
                 </div>
             </div>
-
-            <!-- 一般公告 -->
-            <div class="announcement-card">
-                <div class="announcement-header">
-                    <div class="announcement-badge">
-                        <i class="bi bi-info-circle"></i>
-                        一般
-                    </div>
-                    <div class="announcement-date">2024/12/08</div>
-                </div>
-                <h3 class="announcement-title">聖誕晚會活動通知</h3>
-                <p class="announcement-content">
-                    一年一度的聖誕晚會即將來臨！誠摯邀請所有住戶參加12月15日晚間7點在社區大廳舉辦的聖誕晚會，
-                    現場將有精彩表演、美食饗宴及抽獎活動，歡迎闔家參與。
-                </p>
-                <div class="announcement-footer">
-                    <span class="announcement-author">活動委員會</span>
-                    <button class="read-more-btn">
-                        <i class="bi bi-arrow-right"></i>
-                        閱讀更多
-                    </button>
-                </div>
-            </div>
-
-
-
-
         </div>
+
     </div>
-
-
-
-
-
-
-
 
     <section class="py-5 bg-light">
         <div class="container">
@@ -114,9 +86,6 @@
     <SlideShow :images="slideshowImages" carousel-id="home-carousel" />
 
 
-
-
-
 </template>
 
 <script setup>
@@ -125,22 +94,84 @@ import { useRouter } from 'vue-router';
 import SlideShow from '@/components/forAll/SlideShow.vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axios from '@/plugins/axios'
-import {useUserStore} from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore'
+
 
 const userStore = useUserStore()
 const groupedCards = ref([])
 const filteredFeatures = ref([])
+
+//Yu start
+const baseUrl = window.location.origin
+const communityId = userStore.communityId
+const bulletins = ref([])
+const categoryList = ref([])
+const gridClass = ['important', 'event', 'service', '']
+const iconClass = ['bi-exclamation-triangle', 'bi-calendar-check', 'bi-info-circle', 'bi-megaphone']
+
+const formatDate = (dt) => new Date(dt).toLocaleString()
+const truncateText = (text, maxLength) => text?.length > maxLength ? text.slice(0, maxLength) : text
+
+function normalizeNewline(text) {
+    return text?.replace(/\\n/g, '\n') || ''
+}
+
+function getGridColor(categoryName) {
+    const index = categoryList.value.findIndex(c => c === categoryName) % 4
+
+    return gridClass[index]
+}
+function getIcon(categoryName) {
+    const index = categoryList.value.findIndex(c => c === categoryName) % 4
+    return iconClass[index]
+}
+
+
+function fetchBulletins() {
+    axios.get('/api/bulletin/community/' + communityId)
+        .then(res => {
+            const now = new Date()
+
+            // 篩選：已發佈 && 現在時間在 postTime 和 removeTime 之間
+            const postedList = res.data.list.filter(val =>
+                val.postStatus === true &&
+                new Date(val.postTime) <= now &&
+                new Date(val.removeTime) > now
+            )
+
+            // 依 isPinned 再依 postTime 排序
+            const sortedList = postedList.sort((a, b) => {
+                if (a.isPinned === b.isPinned) {
+                    // 同樣都是置頂或都不是 → 用 postTime 新到舊
+                    return new Date(b.postTime) - new Date(a.postTime)
+                }
+                // isPinned 為 true 的排前面
+                return a.isPinned ? -1 : 1
+            })
+
+            bulletins.value = sortedList.slice(0, 2)
+            console.log(bulletins.value);
+            // 取分類名稱（不重複）
+            const cats = new Set(postedList.map(b => b.categoryName))
+            categoryList.value = [...cats]
+        })
+        .catch(err => {
+            // //console.error('載入公告失敗', err)
+        })
+}
+//Yu End
 onMounted(async () => {
-  try {
-    const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
-    const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
+    try {
+        const res = await axios.get(`/communitys/functions/${userStore.communityId}`)
+        const allowed = res.data // 後端回傳的功能 key 陣列，例如：["PACKAGE", "TICKET", ...]
 
-    // 只保留被允許的功能卡片
-    filteredFeatures.value = features.filter(f => allowed.includes(f.key))
+        // 只保留被允許的功能卡片
+        filteredFeatures.value = features.filter(f => allowed.includes(f.key))
+        fetchBulletins()
 
-  } catch (err) {
-    console.error('❌ 載入社區功能失敗', err)
-  }
+    } catch (err) {
+        console.error('❌ 載入社區功能失敗', err)
+    }
 })
 
 
@@ -149,9 +180,9 @@ const router = useRouter();
 const navigate = (feature) => {
     // 有改---------------------------------
     // if (link) router.push(link);
-    if(userStore.roleId == 2 && feature.linkSecurity){
+    if (userStore.roleId == 2 && feature.linkSecurity) {
         router.push(feature.linkSecurity)
-    }else if (feature.link) router.push(feature.link);
+    } else if (feature.link) router.push(feature.link);
     // 有改---------------------------------
 };
 
@@ -161,50 +192,55 @@ const features = [
         title: '包裹管理',
         description: '即時查詢與領取住戶包裹狀態，確保重要物品不遺漏。',
         link: '/packages',
-        key:'PACKAGE',
-        linkSecurity:'/packages_security'
+        key: 'PACKAGE',
+        linkSecurity: '/packages_security'
     },
     {
         icon: 'bi-car-front-fill',
         title: '停車場管理',
         description: '掌握社區停車位使用狀況，並支援訪客車輛申請與排程。',
         link: '/parking',
-        key:'PARK'
+        key: 'PARK'
     },
     {
         icon: 'bi-person-circle',
         title: '帳戶資訊',
-        description: '檢視與更新個人資料、聯絡方式與繳費紀錄，方便又安全。',
-        link: '/profile',
-        key:'INVOICE'
+        description: '檢視與更新個人資料、聯絡方式，方便又安全。',
+        link: '/Users'
+    },
+    {
+        icon: 'bi bi-cash',
+        title: '帳務資訊',
+        description: '把你的錢錢交出來。',
+        link: '/finUser'
     },
     {
         icon: 'bi-megaphone',
         title: '最新公告',
         description: '快速接收社區重要通知與活動資訊，不再錯過任何消息。',
         link: '/announcements',
-        key:'NOTICE'
+        key: 'NOTICE'
     },
     {
         icon: 'bi-question-circle',
         title: '常見問題',
         description: '整理住戶最常遇到的問題與解答，操作流程一目瞭然。',
         link: '/faq',
-        key:'FQA'
+        key: 'FQA'
     },
     {
         icon: 'bi-calendar-check',
         title: '公設預約',
         description: '線上預約健身房、交誼廳等公設，點數管理。',
         link: '/facilities',
-        key:'BOOKING'
+        key: 'BOOKING'
     },
     {
         icon: 'bi-tools',
         title: '報修單',
         description: '設備損壞通報即時送達，快速安排維修處理。',
         link: '/TicketDashboard',
-        key:'TICKET'
+        key: 'TICKET'
     }
 ];
 
@@ -214,6 +250,8 @@ const slideshowImages = [
     new URL('@/assets/images/forSlideShow/nightView.jpg', import.meta.url).href,
     new URL('@/assets/images/forSlideShow/sunHouse.jpg', import.meta.url).href
 ];
+
+
 </script>
 
 <style scoped>
@@ -428,13 +466,19 @@ const slideshowImages = [
 
 /* 公告區域 */
 .announcements-section {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .section-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 48px;
     margin-bottom: 24px;
 }
 
@@ -473,8 +517,9 @@ const slideshowImages = [
 
 .announcements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    justify-content: center;
 }
 
 .announcement-card {
@@ -701,6 +746,23 @@ const slideshowImages = [
 @media (max-width: 480px) {
     .functions-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .announcements-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .announcements-section {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 16px;
     }
 }
 </style>

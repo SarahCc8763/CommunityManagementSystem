@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import finalProj.domain.community.Community;
 import finalProj.domain.parking.ParkingType;
 import finalProj.repository.community.CommunityRepository;
+import finalProj.repository.parking.ParkingSlotRepository;
 import finalProj.repository.parking.ParkingTypeRepository;
 import jakarta.transaction.Transactional;
 
@@ -25,11 +26,14 @@ public class ParkingTypeService {
 	@Autowired
 	private CommunityRepository communityRepository;
 
+	@Autowired
+	private ParkingSlotRepository parkingSlotRepository;
+
 	// 修改社區車位
 	public List<ParkingType> replaceTypesByCommunity(Integer communityId, List<ParkingType> inputTypes) {
 		Optional<Community> communityOpt = communityRepository.findById(communityId);
 		if (communityOpt.isEmpty()) {
-			return null;
+			throw new IllegalArgumentException("無社區資料");
 		}
 
 		Community community = communityOpt.get();
@@ -42,6 +46,13 @@ public class ParkingTypeService {
 
 		// 2. 刪除原有但不在新資料裡的項目
 		List<ParkingType> toDelete = existing.stream().filter(pt -> !newTypeNames.contains(pt.getType())).toList();
+		for (ParkingType pt : toDelete) {
+			boolean inUse = parkingSlotRepository.existsByParkingType(pt);
+			if (inUse) {
+				throw new IllegalStateException("無法刪除已被使用的車位種類：" + pt.getType());
+			}
+		}
+
 		repository.deleteAll(toDelete);
 
 		// 3. 新增新的項目（如果還沒存在）

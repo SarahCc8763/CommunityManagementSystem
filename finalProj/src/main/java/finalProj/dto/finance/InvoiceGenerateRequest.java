@@ -9,4 +9,5 @@ public class InvoiceGenerateRequest {
     private String feeTypeName;
     private String billingPeriodCode;
     private BigDecimal unitPrice;
+    private Boolean status;
 }

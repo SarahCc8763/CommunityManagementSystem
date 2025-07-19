@@ -1,8 +1,21 @@
 <template>
   <div class="container mt-4">
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb" class="mb-3 ms-1">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('home')" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>首頁</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#" @click="goTo('parkingFront')" class="text-decoration-none">停車場</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">我的車位</li>
+      </ol>
+    </nav>
+    
     <div class="tag-style px-4 py-2 mb-4">
-            <h2 class="mb-0 fw-bold text-primary section-title">我的車位</h2>
-        </div>
+      <h2 class="mb-0 fw-bold text-primary section-title">我的車位</h2>
+    </div>
     <div class="row g-4">
       <div class="col-md-4" v-for="slot in userSlotsFiltered" :key="slot.slotNumber">
         <div class="card h-100 shadow-sm border-0" @click="openModal(slot)" style="cursor: pointer;">
@@ -21,7 +34,7 @@
             <p class="mb-1"><strong>登記車牌：</strong>{{ slot.licensePlate || '未登記' }}</p>
             <template v-if="slot.isRented">
               <p class="mb-0" v-if="slot.rentBuyStart">
-                <strong>承租期間：</strong>{{ formatDate(slot.rentBuyStart) }} ~ {{ formatDate(slot.rentEnd) }}
+                <strong>承租期間：</strong>{{ getFirstDayOfMonth(slot.rentBuyStart) }} ~ {{ getLastDayOfMonth(slot.rentEnd) }}
               </p>
               <p class="mb-0"><strong>審核狀態：</strong>{{ getApprovalText(slot.approved) }}</p>
               <p class="mb-0"><strong>繳費狀態：</strong>{{ getStatusText(slot.status) }}</p>
@@ -30,7 +43,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- 登記車位 Modal -->
     <div class="modal fade" id="plateModal" tabindex="-1" ref="plateModalRef">
       <div class="modal-dialog">
@@ -41,7 +54,7 @@
           </div>
           <div class="modal-body">
             <label class="form-label">車牌號碼：</label>
-            <input type="text" class="form-control" v-model="selectedSlot.licensePlate" placeholder="請輸入新車牌" />
+            <input type="text" class="form-control" v-model="selectedSlot.licensePlate" @blur="cleanInvalidChars(selectedSlot, 'licensePlate')" placeholder="請輸入新車牌" maxlength="10"/>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
@@ -64,8 +77,8 @@
             <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
             <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
             <p><strong>登記車牌：</strong>{{ selectedSlot.licensePlate || '未登記' }}</p>
-            <p><strong>承租起始：</strong>{{ formatDate(selectedSlot.rentBuyStart) }}</p>
-            <p><strong>承租截止：</strong>{{ formatDate(selectedSlot.rentEnd) }}</p>
+            <p><strong>承租起始：</strong>{{ getFirstDayOfMonth(selectedSlot.rentBuyStart) }}</p>
+            <p><strong>承租截止：</strong>{{ getLastDayOfMonth(selectedSlot.rentEnd) }}</p>
             <p><strong>審核狀態：</strong>{{ getApprovalText(selectedSlot.approved) }}</p>
             <p><strong>繳費狀態：</strong>{{ getStatusText(selectedSlot.status) }}</p>
           </div>
@@ -73,7 +86,7 @@
             <button class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
             <button class="btn btn-outline-primary" @click="editRentalPlateFromModal">編輯車牌</button>
             <button class="btn btn-danger" @click="cancelRental">取消承租</button>
-            <button class="btn btn-success" @click="openExtendModal">續租</button>
+            <button class="btn btn-success" @click="openExtendModal" :disabled="!selectedSlot.approved">續租</button>
           </div>
         </div>
       </div>
@@ -92,12 +105,12 @@
             <p><strong>車位種類：</strong>{{ selectedSlot.parkingType }}</p>
             <p><strong>位置：</strong>{{ selectedSlot.location }}</p>
             <label class="form-label">登記車牌：</label>
-            <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" />
+            <input type="text" class="form-control mb-3" v-model="selectedSlot.licensePlate" @blur="cleanInvalidChars(selectedSlot, 'licensePlate')" placeholder="請輸入新車牌" maxlength="10"/>
             <p><strong>承租起始：</strong>{{ extendStart }}</p>
             <p><strong>承租截止：</strong>{{ extendEnd }}</p>
             <label class="form-label">續租月數</label>
             <select class="form-select" v-model="extendMonths">
-              <option v-for="m in 6" :value="m">{{ m }} 個月</option>
+              <option v-for="m in 12" :value="m">{{ m }} 個月</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -127,7 +140,7 @@ const plateModalRef = ref(null)
 const rentalModalRef = ref(null)
 const extendModalRef = ref(null)
 let plateModalInstance, rentalModalInstance, extendModalInstance
-const usersId = userStore.id
+const usersId = userStore.userId
 const today = new Date()
 
 const userSlotsFiltered = computed(() => {
@@ -154,21 +167,61 @@ onMounted(async () => {
   fetchUserSlots()
 })
 
+// 補足日期為每月 1 號
+function getFirstDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1
+  } else {
+    return '-'
+  }
+
+  const yyyy = year
+  const mm = String(month).padStart(2, '0')
+  return `${yyyy}-${mm}-01`
+}
+
+
+// 補足日期為每月最後一天
+function getLastDayOfMonth(input) {
+  let year, month
+
+  if (typeof input === 'string') {
+    [year, month] = input.split('-').map(Number)
+  } else if (input instanceof Date) {
+    year = input.getFullYear()
+    month = input.getMonth() + 1 // getMonth() 是 0-based，要補回來
+  } else {
+    return '-'
+  }
+
+  const date = new Date(year, month, 0) // 該月最後一天
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+// 轉換日期格式 (年月日)
+function formatDateOnly(dateStr) {
+  const d = new Date(dateStr)
+  return d.toISOString().slice(0, 10) // yyyy-MM-dd
+}
+
+// 即時修正續租月份
 watch(extendMonths, () => {
   if (!selectedSlot.value.rentEnd) return
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
   const end = new Date(start)
-  end.setMonth(end.getMonth() + extendMonths.value)
-  extendStart.value = formatDate(start)
-  extendEnd.value = formatDate(end)
+  end.setMonth(end.getMonth() + extendMonths.value - 1)
+  extendStart.value = getFirstDayOfMonth(start)
+  extendEnd.value = getLastDayOfMonth(end)
 })
-
-const formatDate = (strOrDate) => {
-  if (!strOrDate) return '-'
-  const d = typeof strOrDate === 'string' ? new Date(strOrDate) : strOrDate
-  return d.toLocaleDateString('zh-TW')
-}
 
 const getApprovalText = (value) => value === null ? '待審核' : value ? '已審核' : '未通過'
 const getStatusText = (value) => value ? '已繳費' : '未繳費'
@@ -183,6 +236,16 @@ const openModal = (slot) => {
 
 
 const updatePlate = async () => {
+  if (!plateOK(selectedSlot.value.licensePlate)) {
+    await Swal.fire({
+      icon: 'warning',
+      title: '車牌格式錯誤',
+      text: '車牌不可含中文，僅能輸入英數字與 -',
+      confirmButtonText: '關閉'
+    });
+    return;
+  }
+
   try {
     const payload = {
       ...selectedSlot.value,
@@ -190,6 +253,7 @@ const updatePlate = async () => {
     }
 
     if (isFromRental.value) {
+      payload.parkingType = null
       console.log("修改承租")
       // 修改承租紀錄
       payload.approved = false
@@ -197,7 +261,7 @@ const updatePlate = async () => {
 
       console.log(payload)
       await axios.put(
-        `/park/parking-rentals/${selectedSlot.value.id}?communityId=${userStore.community}`,
+        `/park/parking-rentals/${selectedSlot.value.id}?communityId=${userStore.communityId}`,
         payload
       )
       await fetchUserSlots()
@@ -246,24 +310,41 @@ const cancelRental = async () => {
     confirmButtonText: '是',
     cancelButtonText: '否'
   })
+
   if (!result.isConfirmed) return
-  await axios.delete(`/park/parking-rentals/${selectedSlot.value.id}`)
-  await Swal.fire('已取消承租', '', 'success')
-  await fetchUserSlots()
-  rentalModalInstance.hide()
+
+  try {
+    await axios.delete(`/park/parking-rentals/${selectedSlot.value.id}`)
+    await Swal.fire('已取消承租', '', 'success')
+    await fetchUserSlots()
+    rentalModalInstance.hide()
+  } catch (error) {
+    console.error('取消承租失敗', error)
+    await Swal.fire({
+      icon: 'error',
+      title: '取消失敗',
+      text: error?.response?.data?.message || '發生錯誤，請稍後再試',
+      confirmButtonText: '關閉'
+    })
+  }
 }
 
+
+// 開啟續租 Modal
 const openExtendModal = () => {
+  initialSlotBackup = { ...selectedSlot.value }
   extendMonths.value = 1
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
   const end = new Date(start)
-  end.setMonth(end.getMonth() + extendMonths.value)
-  extendStart.value = formatDate(start)
-  extendEnd.value = formatDate(end)
+  end.setMonth(end.getMonth() + extendMonths.value - 1)
+  extendStart.value = getFirstDayOfMonth(start)
+  extendEnd.value = getLastDayOfMonth(end)
   extendModalInstance.show()
 }
 
+let initialSlotBackup = null
+// 送出續租申請
 const submitExtend = async () => {
   const start = new Date(selectedSlot.value.rentEnd)
   start.setDate(start.getDate() + 1)
@@ -272,8 +353,8 @@ const submitExtend = async () => {
 
   const payload = {
     ...selectedSlot.value,
-    rentBuyStart: start.toISOString().slice(0, 10),
-    rentEnd: end.toISOString().slice(0, 10),
+    rentBuyStart: formatDateOnly(start),
+    rentEnd: formatDateOnly(end),
     approved: false,
     status: false,
     approverName: null,
@@ -288,12 +369,54 @@ const submitExtend = async () => {
     cancelButtonText: '否'
   })
   if (!result.isConfirmed) return
-console.log(payload)
-  await axios.post(`/park/parking-rentals?communityId=${userStore.community}`, payload)
-  await Swal.fire('續租成功', '', 'success')
-  extendModalInstance.hide()
-  rentalModalInstance.hide()
+  try {
+    payload.parkingType = null
+    console.log(payload)
+    await axios.post(`/park/parking-rentals?communityId=${userStore.communityId}`, payload)
+    await Swal.fire('續租成功', '', 'success')
+    extendModalInstance.hide()
+    if (initialSlotBackup) {
+      initialSlotBackup = null
+    }
+    // rentalModalInstance.hide()
+  } catch (e) {
+    console.error('續租失敗', e)
+    await Swal.fire({
+      icon: 'error',
+      title: '續租失敗',
+      text: e?.response?.data?.message || '請稍後再試'
+    })
+    if (initialSlotBackup) {
+      selectedSlot.value = { ...initialSlotBackup }
+    }
+    return;
+  }
 }
+
+// 清除非法字元（例如貼上或有預設值）
+function cleanInvalidChars(slot, field) {
+    const cleaned = (slot[field] || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 10)
+    slot[field] = cleaned
+}
+
+// 驗證車牌格式
+function plateOK(plate) {
+    return /^[A-Za-z0-9-]+$/.test(plate)
+}
+
+// 麵包屑導航
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goTo = (target) => {
+    switch (target) {
+        case 'home':
+            router.push('/')
+            break
+        case 'parkingFront':
+            router.push('/pages/park/parking-front')
+            break
+        }
+    }
 </script>
 
 <style scoped>
@@ -311,4 +434,24 @@ console.log(payload)
   padding: 0.4em 0.6em;
   vertical-align: middle;
 }
+
+/* .container .input-box  */
+.form-control {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.form-select {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.form-select {
+  appearance: none; /* Chrome, Safari, Edge */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M0 0l2 2 2-2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 8px 10px;
+}
+
 </style>

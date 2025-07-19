@@ -66,7 +66,8 @@
         <p><strong>付款時間：</strong> <span th:text="${paymentDate}">N/A</span></p>
         <p><strong>狀態訊息：</strong> <span th:text="${rtnMsg}">N/A</span></p>
 
-        <a class="button" href="http://localhost:5173/points/history">查看交易紀錄</a>
+        <a class="button" th:href="${frontendUrl + '/points/history'}">查看交易紀錄</a>
+        <!-- <a class="button" href="http://localhost:5173/points/history">查看交易紀錄</a> -->
     </div>
 </body>
 </html>

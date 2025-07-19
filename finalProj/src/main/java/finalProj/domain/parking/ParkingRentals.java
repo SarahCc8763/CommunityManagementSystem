@@ -71,7 +71,7 @@ public class ParkingRentals {
 
 	// 是否已審核
 	@Column(name = "approved", nullable = false)
-	private Boolean approved = false;
+	private Boolean approved;
 
 	// 最後更新時間
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Taipei")
@@ -84,14 +84,6 @@ public class ParkingRentals {
 	private Date createdAt;
 
 	// ---------------------------------------------------------------------------------------
-
-	@Override
-	public String toString() {
-		return "ParkingRentals [id=" + id + ", community=" + community + ", parkingSlot=" + parkingSlot + ", users="
-				+ users + ", approver=" + approver + ", rentBuyStart=" + rentBuyStart + ", rentEnd=" + rentEnd
-				+ ", licensePlate=" + licensePlate + ", status=" + status + ", approved=" + approved + ", updatedAt="
-				+ updatedAt + ", createdAt=" + createdAt + "]";
-	}
 
 	public Integer getId() {
 		return id;

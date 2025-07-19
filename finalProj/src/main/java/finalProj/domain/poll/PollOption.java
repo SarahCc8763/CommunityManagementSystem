@@ -2,6 +2,7 @@
 package finalProj.domain.poll;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,10 +42,12 @@ public class PollOption {
     private Integer votesCount;
 
     public Integer getVotesCount() {
-        if (votes != null) {
-            votesCount = votes.size();
-        }
-        return votesCount;
+        if (votes == null)
+            return 0;
+
+        return (int) votes.stream()
+                .filter(v -> Boolean.TRUE.equals(v.getIsChecked()))
+                .count();
     }
 
     public void setVotesCount(Integer votesCount) {

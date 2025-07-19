@@ -40,8 +40,9 @@
                 <div class="col-md-4" v-for="feature in features" :key="feature.title">
                     <div class="card h-100 shadow-sm border-0 feature-card" @click="navigate(feature.link)">
                         <div class="card-body text-center">
-                            <i v-if="feature.icon" :class="['bi', feature.icon, 'animated-icon']"
-                                class="display-4 text-success mb-3"></i>
+                            <span class="diamond-frame mb-3 d-inline-block">
+                              <i v-if="feature.icon" :class="['bi', feature.icon, 'animated-icon']"></i>
+                            </span>
                             <h5 v-if="feature.title" class="card-title fw-bold">{{ feature.title }}</h5>
                             <p v-if="feature.description" class="card-text text-muted">{{ feature.description }}</p>
                         </div>
@@ -94,19 +95,52 @@ const navigate = (link) => {
 }
 
 .feature-card:hover .animated-icon {
-    animation: drop-in 0.6s ease;
+    animation: diamond-rotate 0.7s cubic-bezier(0.4,0,0.2,1);
     color: #28a745;
 }
 
-@keyframes drop-in {
-    from {
-        transform: translateY(-12px);
-        opacity: 0;
-    }
+.feature-card:hover .diamond-frame {
+  animation: diamond-rotate 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.diamond-frame {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background: none;
+}
+.diamond-frame, .diamond-frame * {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+.animated-icon {
+  font-size: 3rem;
+  color: #198754;
+  display: inline-block;
+  transition: color 0.3s, transform 0.3s;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
 
-    to {
-        transform: translateY(0);
-        opacity: 1;
+@keyframes diamond-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    20% {
+        transform: rotate(-12deg);
+    }
+    40% {
+        transform: rotate(12deg);
+    }
+    60% {
+        transform: rotate(-8deg);
+    }
+    80% {
+        transform: rotate(8deg);
+    }
+    100% {
+        transform: rotate(0deg);
     }
 }
 

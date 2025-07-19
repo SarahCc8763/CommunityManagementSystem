@@ -65,6 +65,8 @@ public class UsersController {
 	public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
 		String email = body.get("email");
 		String password = body.get("password");
+		System.out.println("Login request: " + email + " / " + password);
+
 		// 嘗試登入
 		Users user = usersService.login(email, password);
 		// 登入成功
@@ -130,5 +132,11 @@ public class UsersController {
 	public ResponseEntity<ApiResponse<List<Users>>> findByCommunity(@RequestParam("communityId") Integer communityId) {
 		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
+	}
+
+	@GetMapping("/by-community")
+	public ResponseEntity<List<Users>> getUsersByCommunity(@RequestParam Integer communityId) {
+		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
+		return ResponseEntity.ok(users);
 	}
 }

@@ -10,17 +10,13 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  server: {
-    proxy: {
-      '^/finance/.*': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    },
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
   },
 })

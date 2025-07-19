@@ -13,12 +13,17 @@ import finalProj.domain.feedback.Feedback;
 import finalProj.domain.feedback.FeedbackAttachment;
 import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackStatusHistory;
+import finalProj.domain.notifications.Notifications;
+import finalProj.domain.notifications.UnitsNotifications;
+import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
 import finalProj.repository.community.CommunityRepository;
 import finalProj.repository.feedback.FeedbackAttachmentRepository;
 import finalProj.repository.feedback.FeedbackCategoryRepository;
 import finalProj.repository.feedback.FeedbackRepository;
 import finalProj.repository.feedback.FeedbackStatusHistoryRepository;
+import finalProj.repository.notifications.NotificationsRepository;
+import finalProj.repository.notifications.UnitsNotificationsRepository;
 import finalProj.repository.users.UsersRepository;
 import finalProj.service.users.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +46,10 @@ public class FeedbackService {
     private CommunityRepository communityRepository;
     @Autowired
     private FeedbackStatusHistoryRepository feedbackStatusHistoryRepository;
+    @Autowired
+    private UnitsNotificationsRepository unitsNotificationsRepository;
+    @Autowired
+    private NotificationsRepository notificationsRepository;
 
     FeedbackService(UsersService usersService) {
         this.usersService = usersService;
@@ -122,6 +131,7 @@ public class FeedbackService {
         if (feedback.getCategory() == null || feedback.getCategory().getId() == null
                 || feedback.getUser() == null || feedback.getUser().getUsersId() == null
                 || feedback.getCommunity() == null || feedback.getCommunity().getCommunityId() == null) {
+            log.info("資料不完整");
             return null;
         }
 
@@ -132,6 +142,7 @@ public class FeedbackService {
         Optional<Community> optionalCommunity = communityRepository.findById(feedback.getCommunity().getCommunityId());
 
         if (optionalCategory.isEmpty() || optionalUser.isEmpty() || optionalCommunity.isEmpty()) {
+            log.info("找不到對應的類別、反映使用者、處理者或社區");
             return null;
         }
 
@@ -212,9 +223,11 @@ public class FeedbackService {
             history.setOldStatus(originalStatus);
             history.setNewStatus(feedback.getStatus());
             history.setChangedAt(LocalDateTime.now());
+            System.out.println("87364357367374354"+history.getChangedAt());
             history.setChangedBy(user);
             feedbackStatusHistoryRepository.save(history);
             log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
+
         }
 
         return feedbackRepository.save(existing);
@@ -267,6 +280,35 @@ public class FeedbackService {
             history.setChangedBy(usersService.findById(feedback.getHandler().getUsersId()));
             feedbackStatusHistoryRepository.save(history);
             log.info("狀態已變更，新增歷史紀錄：{} -> {}", originalStatus, feedback.getStatus());
+
+            // 5. 發送通知
+            // 建立通知
+            Notifications notification = new Notifications();
+            notification.setTitle("您的回饋處理狀態已更新");
+            String text = "已結案".equals(feedback.getStatus())
+                    ? "您的回饋：「" + existing.getTitle() + "」已結案，感謝您的支持與建議！邀請您給予評分，以幫助我們改進服務。"
+                    : "您的回饋：「" + existing.getTitle() + "」狀態已更新為：" + feedback.getStatus();
+            notification.setDescription(text);
+            notification.setCreatedTime(LocalDateTime.now());
+            notification.setCommunity(existing.getCommunity());
+            notificationsRepository.save(notification);
+
+            // 綁定通知
+            Users user = existing.getUser();
+            Units unitObj = null;
+            if (user.getUnitsUsersList() != null
+                    && !user.getUnitsUsersList().isEmpty()
+                    && user.getUnitsUsersList().getFirst().getUnit() != null) {
+                unitObj = user.getUnitsUsersList().getFirst().getUnit();
+            }
+
+            UnitsNotifications unitsNotifications = new UnitsNotifications();
+            unitsNotifications.setNotifications(notification);
+            unitsNotifications.setUnits(unitObj);
+            unitsNotificationsRepository.save(unitsNotifications);
+
+            log.info("回饋狀態更新通知 1 筆已發送");
+
         }
 
         return feedbackRepository.save(existing);
