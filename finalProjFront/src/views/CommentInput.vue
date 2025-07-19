@@ -1,11 +1,11 @@
 <template>
   <div class="comment-input">
-    <textarea v-model="commentText" placeholder="Add a comment..." rows="3" class="input" />
+    <textarea v-model="commentText" placeholder="新增你的留言..." rows="3" class="input" />
     <div class="suggestions">
-      <span @click="quickComment('Looks good!')">🎉 Looks good!</span>
-      <span @click="quickComment('Need help?')">🧠 Need help?</span>
-      <span @click="quickComment('This is blocked...')">⛔ This is blocked...</span>
-      <span @click="quickComment('Can you clarify...?')">💬 Can you clarify...?</span>
+      <span @click="quickComment('Looks good!')">🎉 看起來太棒了!</span>
+      <span @click="quickComment('Need help?')">🧠 需要幫忙嗎?</span>
+      <span @click="quickComment('This is blocked...')">⛔ 這裡已被阻止...</span>
+      <span @click="quickComment('Can you clarify...?')">💬 能澄清一下嗎...?</span>
     </div>
 
     <!-- 圖片留言上傳區 -->
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <button class="btn btn-primary mt-2" @click="submit">Comment</button>
+    <button class="btn btn-primary mt-2" @click="submit">送出</button>
   </div>
 </template>
 
@@ -94,7 +94,7 @@ async function submit() {
           return {
             fileName: f.file.name,
             base64Data: await toBase64(f.file),
-            uploadedBy: 1,
+            uploadedBy: userStore.userId,
             commentId: newComment.id
           }
         })
