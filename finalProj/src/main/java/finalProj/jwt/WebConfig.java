@@ -1,5 +1,8 @@
 package finalProj.jwt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -21,23 +24,29 @@ public class WebConfig implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
-				.allowedOrigins("http://localhost:5173",
-						"https://payment-stage.ecpay.com.tw",
-						"https://payment.ecpay.com.tw",
-						"http://192.168.36.64",
-						"http://192.168.36.85",
-						"http://192.168.36.92",
-						"http://192.168.36.64",
-						"http://192.168.36.64",
-						"http://192.168.36.64",
-						"http://192.168.36.64",
-						"null")
-				.allowedMethods("GET", "POST", "PUT", "DELETE")
-				.allowedHeaders("*")
-				.allowCredentials(true);
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(buildAllowedOrigins())
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
 
-	}
+    private String[] buildAllowedOrigins() {
+        List<String> origins = new ArrayList<>();
+        origins.add("http://localhost:5173");
+        origins.add("https://payment-stage.ecpay.com.tw");
+        origins.add("https://payment.ecpay.com.tw");
+		origins.add("null");		
+
+        for (int i = 1; i <= 255; i++) {
+            origins.add("http://192.168.36." + i);
+			origins.add("https://192.168.36." + i);
+        }
+
+        return origins.toArray(new String[0]);
+    }
+
+
 
 }

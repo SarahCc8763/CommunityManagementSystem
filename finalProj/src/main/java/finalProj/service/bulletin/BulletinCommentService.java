@@ -72,10 +72,10 @@ public class BulletinCommentService {
             log.warn("使用者提供的留言對應到的公告與原資料不符");
             return null;
         }
-        if (original.getUser().getUsersId() != entity.getUser().getUsersId()) {
-            log.warn("修改人非原留言人");
-            return null;
-        }
+        // if (original.getUser().getUsersId() != entity.getUser().getUsersId()) {
+        // log.warn("修改人非原留言人");
+        // return null;
+        // }
 
         if (Boolean.FALSE.equals(entity.getIsAlive())) { // 如果要刪除留言，則刪除其所有子留言
             List<BulletinComment> replies = bulletinCommentRepository.findByParentComment_Id(entity.getId());
