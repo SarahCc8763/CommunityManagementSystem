@@ -639,7 +639,7 @@ function goToLotteryApply() {
     const modalEl = document.getElementById('bulletinModal')
     const modalInstance = bootstrap.Modal.getInstance(modalEl)
     modalInstance?.hide()
-    
+
     setTimeout(() => {
         router.push('/pages/park/lottery-apply')
     }, 300)
