@@ -370,7 +370,7 @@ create table ticket_issue_cost_attachment(
 )
 ------------------------------------------------------------------------------johnson結束
 
-/*
+
 ------------------------------------------------------------------------------------yu開始
 
 DROP TABLE if exists faq_faq_keyword;
@@ -668,10 +668,13 @@ CREATE TABLE feedback_status_history (
 
 CREATE TABLE parking_type (
     id INT IDENTITY(1,1) PRIMARY KEY,         -- 流水號
+
     community_id INT NOT NULL,                -- 所屬社區
     [type] NVARCHAR(10) NOT NULL,               -- 車位種類
+
     -- FK 約束
-    CONSTRAINT FK_parking_type_community FOREIGN KEY (community_id) REFERENCES community(id)
+    CONSTRAINT FK_parking_type_community FOREIGN KEY (community_id)
+        REFERENCES community(id)
 );
 
 CREATE TABLE parking_slot (
@@ -740,14 +743,14 @@ CREATE TABLE lottery_events (
     title NVARCHAR(50) NOT NULL,                          -- 標題
     started_at DATETIME NOT NULL,                         -- 開始時間
     ended_at DATETIME NOT NULL,                           -- 結束時間
-    created_at DATETIME DEFAULT GETDATE(),                         -- 創建時間
-	rental_start DATETIME NOT NULL,
-	rental_end DATETIME NOT NULL,
-	status BIT NOT NULL,                                  -- 是否已抽籤
+    created_at DATETIME DEFAULT GETDATE(),                -- 創建時間
+	rental_start DATETIME NOT NULL,                       -- 承租開始時間
+	rental_end DATETIME NOT NULL,                         -- 承租截止時間
+    status BIT NOT NULL,                                  -- 是否已抽籤
 
     -- 外鍵約束
     CONSTRAINT FK_lottery_event_bulletin FOREIGN KEY (bulletin_id)
-        REFERENCES bulletin(bulletin_id),                          -- bulletin.id 為主鍵
+        REFERENCES [dbo].[bulletin](bulletin_id),                          -- bulletin.id 為主鍵
 
     CONSTRAINT FK_lottery_event_users FOREIGN KEY (users_id)
         REFERENCES users(users_id),
@@ -755,7 +758,6 @@ CREATE TABLE lottery_events (
     CONSTRAINT FK_lottery_event_parking_type FOREIGN KEY (parking_type_id)
         REFERENCES parking_type(id)
 );
-
 
 CREATE TABLE lottery_event_spaces (
     id INT IDENTITY(1,1) PRIMARY KEY,               -- 流水號
@@ -771,13 +773,12 @@ CREATE TABLE lottery_event_spaces (
         REFERENCES parking_slot(id)
 );
 
-
 CREATE TABLE lottery_apply (
     id INT IDENTITY(1,1) PRIMARY KEY,               -- 流水號
 
     users_id INT NOT NULL,                          -- 申請人
     lottery_events_id INT NOT NULL,                 -- 所屬抽籤活動（對應 bulletin_id）
-    lottery_event_spaces_id INT,               -- 中籤車位，可為 NULL（尚未抽中）
+    lottery_event_spaces_id INT,                    -- 中籤車位，可為 NULL（尚未抽中）
     
     applied_at DATETIME                             -- 申請時間（可為 NULL）
 
@@ -791,7 +792,9 @@ CREATE TABLE lottery_apply (
     CONSTRAINT FK_lottery_apply_space FOREIGN KEY (lottery_event_spaces_id)
         REFERENCES lottery_event_spaces(id)
 );
+
 ------------------------------------------------------------------------------julie結束
+/*
 ------------------------------------------------------------------------------Sara開始
 
 -- 費用類別 table

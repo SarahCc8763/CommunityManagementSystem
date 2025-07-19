@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import finalProj.domain.parking.ParkingType;
+
 public class RentalHistoryDTO {
 	private Integer id;
 	private String licensePlate;
@@ -22,7 +24,7 @@ public class RentalHistoryDTO {
 	private String slotNumber;
 	private Integer slotId;
 	private String location;
-	private String parkingType;
+	private ParkingType parkingType;
 	private String userName;
 	private Integer usersId;
 	private String approverName;
@@ -124,14 +126,6 @@ public class RentalHistoryDTO {
 		this.location = location;
 	}
 
-	public String getParkingType() {
-		return parkingType;
-	}
-
-	public void setParkingType(String parkingType) {
-		this.parkingType = parkingType;
-	}
-
 	public String getUserName() {
 		return userName;
 	}
@@ -155,5 +149,13 @@ public class RentalHistoryDTO {
 	public void setSlotId(Integer slotId) {
 		this.slotId = slotId;
 	}
+
+    public ParkingType getParkingType() {
+        return parkingType;
+    }
+
+    public void setParkingType(ParkingType parkingType) {
+        this.parkingType = parkingType;
+    }
 
 }

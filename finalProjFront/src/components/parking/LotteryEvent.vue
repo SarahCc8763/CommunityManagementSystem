@@ -62,84 +62,102 @@
           </button>
         </div>
         <div class="form-group">
+          <div class="row g-3">
+            
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">活動名稱：</label>
+              <input v-model="form.title" class="form-control" maxlength="20" placeholder="例如： 114 年度機車未抽籤" />
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">車位種類：</label>
+              <select v-model="form.typeId" class="form-select">
+                <option disabled value="">請選擇</option>
+                <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
+              </select>
+            </div>
+              
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">起始時間：</label>
+              <input type="datetime-local" v-model="form.startedAt" class="form-control" />
+            </div>
 
-          <label class="form-label fw-semibold">活動名稱：</label>
-          <input v-model="form.title" class="form-control" maxlength="20" placeholder="例如： 114 年度機車未抽籤" />
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">結束時間：</label>
+              <input type="datetime-local" v-model="form.endedAt" class="form-control" />
+            </div>
 
-          <label class="form-label fw-semibold">車位種類：</label>
-          <select v-model="form.typeId" class="form-select">
-            <option disabled value="">請選擇</option>
-            <option v-for="type in parkingTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
-          </select>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">承租起始日：</label>
+              <input type="month" v-model="form.rentalStart" class="form-control" :min="minMonth" />
+            </div>
+              
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">承租截止日：</label>
+              <input type="month" v-model="form.rentalEnd" class="form-control" :min="minMonth" />
+            </div>
+              
 
-          <label class="form-label fw-semibold">起始時間：</label>
-          <input type="datetime-local" v-model="form.startedAt" class="form-control" />
+            <!-- 想要抽的數量 -->
+            <div class="d-flex align-items-baseline gap-2">
+              <label class="form-label fw-semibold fs-5 mb-0">想要抽的車位數量：</label>
+              <input type="number" class="form-control py-1" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length"
+              :class="{ 'is-invalid': touched && desiredSlotCount < 1 }" @blur="validateInput" style="width: 100px; font-size: 1.1rem;"/>
+            </div>
+            <div v-if="touched && desiredSlotCount < 1" class="invalid-feedback">
+              車位數量不得小於 1
+            </div>
 
-          <label class="form-label fw-semibold">結束時間：</label>
-          <input type="datetime-local" v-model="form.endedAt" class="form-control" />
+            <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+              <div v-if="parkingSlots.length" class="fw-semibold">已選擇車位：</div>
+              <a href="#" class="text-decoration-none link-light small me-3" @click.prevent="startEditSlots">
+                <i class="bi bi-pencil me-1"></i>修改
+              </a>
+            </div>
 
-          <label class="form-label fw-semibold">承租起始日：</label>
-          <input type="month" v-model="form.rentalStart" class="form-control" :min="minMonth" />
+            <div v-if="parkingSlots.length && !rawSlotIds.length" class="text-muted">請先輸入欲選車位數量</div>
+            <!-- 顯示已選車位 -->
+            <div v-if="!editingSlots && rawSlotIds.length" class="scroll-container">
+              <ul>
+                <li v-for="id in rawSlotIds" :key="id">
+                  {{ getSlotLabel(id) }}
+                </li>
+              </ul>
+              
+            </div>
 
-          <label class="form-label fw-semibold">承租截止日：</label>
-          <input type="month" v-model="form.rentalEnd" class="form-control" :min="minMonth" />
-
-          <!-- 想要抽的數量 -->
-          <label class="form-label fw-semibold">想要抽的車位數量：</label>
-          <input type="number" class="form-control" v-model.number="desiredSlotCount" min="1" :max="parkingSlots.length"
-            :class="{ 'is-invalid': touched && desiredSlotCount < 1 }" @blur="validateInput" />
-          <div v-if="touched && desiredSlotCount < 1" class="invalid-feedback">
-            車位數量不得小於 1
-          </div>
-
-          <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
-            <div v-if="parkingSlots.length" class="fw-semibold">已選擇車位：</div>
-            <a href="#" class="text-decoration-none link-light small me-3" @click.prevent="startEditSlots">
-              <i class="bi bi-pencil me-1"></i>修改
-            </a>
-          </div>
-
-          <div v-if="parkingSlots.length && !rawSlotIds.length" class="text-muted">請先輸入欲選車位數量</div>
-          <!-- 顯示已選車位 -->
-          <div v-if="!editingSlots && rawSlotIds.length">
-            <ul>
-              <li v-for="id in rawSlotIds" :key="id">
-                {{ getSlotLabel(id) }}
-              </li>
-            </ul>
-
-          </div>
-
-          <!-- 顯示 checkbox 編輯車位 -->
-          <div v-if="editingSlots && rawSlotIds.length" class="scroll-container">
-            <div class="form-check d-flex align-items-center gap-2 mb-2" v-for="slot in parkingSlots" :key="slot.id">
-              <input class="form-check-input" type="checkbox" :id="'slot-' + slot.id" :value="slot.id"
+            <!-- 顯示 checkbox 編輯車位 -->
+            <div v-if="editingSlots && rawSlotIds.length" class="scroll-container">
+              <div class="form-check d-flex align-items-center gap-2 mb-2" v-for="slot in parkingSlots" :key="slot.id">
+                <input class="form-check-input" type="checkbox" :id="'slot-' + slot.id" :value="slot.id"
                 v-model="tempSlotIds" />
-              <label class="form-check-label" :for="'slot-' + slot.id">
-                {{ slot.slotNumber }} - {{ slot.location }}
-              </label>
+                <label class="form-check-label" :for="'slot-' + slot.id">
+                  {{ slot.slotNumber }} - {{ slot.location }}
+                </label>
+              </div>
+              <div class="d-flex gap-2 mt-3 justify-content-start">
+                <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-semibold" @click="confirmSlotEdit">
+                  <i class="bi bi-check-lg me-2"></i>確認選擇車位
+                </button>
+                <button class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm fw-semibold" @click="cancelSlotEdit">
+                  <i class="bi bi-x-lg me-2"></i>取消
+                </button>
+              </div>
             </div>
-            <div class="d-flex gap-2 mt-3 justify-content-start">
-              <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-semibold" @click="confirmSlotEdit">
-                <i class="bi bi-check-lg me-2"></i>確認選擇車位
-              </button>
-              <button class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm fw-semibold" @click="cancelSlotEdit">
-                <i class="bi bi-x-lg me-2"></i>取消
-              </button>
+
+            <div v-if="parkingSlots.length === 0 && !editingSlots" class="text-muted">（請先輸入車位條件或無可選車位）</div>
+
+            <div class="text-end">
+              <button v-if="isEditing" class="btn btn-danger me-2" @click="deleteEvent(form.id)">刪除</button>
+              <button class="btn btn-primary" @click="submitForm">確認</button>
             </div>
-          </div>
 
-
-          <div v-if="parkingSlots.length === 0 && !editingSlots" class="text-muted">（請先輸入車位條件或無可選車位）</div>
-
-          <div class="text-end">
-            <button v-if="isEditing" class="btn btn-danger me-2" @click="deleteEvent(form.id)">刪除</button>
-            <button class="btn btn-primary" @click="submitForm">確認</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- 參與名單 Modal -->
   <div class="modal fade" id="participantModal" tabindex="-1" ref="participantModalRef">
@@ -558,6 +576,7 @@ async function deleteEvent(id) {
 // 關閉新增修改 Modal
 function handleClose() {
   modalInstance?.hide()
+  parkingSlots.value = []
   touched.value = false
 }
 

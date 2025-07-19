@@ -47,6 +47,7 @@ import { jsPDF } from 'jspdf'
 // import '@/assets/fonts/msjh_regular-normal.js'
 import { useUserStore } from '@/stores/UserStore'
 import JsBarcode from 'jsbarcode'
+import Swal from 'sweetalert2'
 
 const userStore = useUserStore()
 const receipts = ref([])
@@ -67,23 +68,34 @@ watch(() => userStore.userId, (newVal) => {
 
 
 
-
 const downloadPDF = async (r) => {
-  await import('@/assets/fonts/msjh_regular-normal.js')
-  const doc = new jsPDF()
-  doc.setFont('msjh_regular')
-
-  // 載入 logo
-  const loadLogo = () => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => resolve(img)
-      img.onerror = reject
-      img.src = '/src/assets/images/main/ZhLogo.jpg'
-    })
-  }
+  // ✅ 顯示 SweetAlert 等待視窗
+  Swal.fire({
+    title: '下載準備中...',
+    text: '請稍候，正在產生收據 PDF',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
 
   try {
+    // ✅ 載入字體（SweetAlert 保持開啟中）
+    await import('@/assets/fonts/msjh_regular-normal.js')
+
+    const doc = new jsPDF()
+    doc.setFont('msjh_regular')
+
+    // 載入 logo
+    const loadLogo = () => {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.src = '/src/assets/images/main/ZhLogo.jpg'
+      })
+    }
+
     const logoImg = await loadLogo()
 
     // 白底全頁
@@ -115,7 +127,7 @@ const downloadPDF = async (r) => {
     doc.text(`收據號碼: ${r.receiptNum || ''}`, 140, 20)
     doc.text(`開立日期: ${formatDate(r.paidAt)}`, 140, 25)
 
-    // 社區區塊（無框線）
+    // 社區區塊
     doc.setFontSize(14)
     doc.text('River Bank社區', 105, 55, { align: 'center' })
     doc.setFontSize(10)
@@ -158,7 +170,7 @@ const downloadPDF = async (r) => {
     doc.text('收款人簽名', leftX, y + 8)
     doc.text('客戶簽名', rightX, y + 8)
 
-    // 條碼區（使用 canvas + JsBarcode）
+    // 條碼區
     const barcodeCanvas = document.createElement('canvas')
     JsBarcode(barcodeCanvas, r.receiptNum || 'RB000000001', {
       format: 'CODE128',
@@ -179,11 +191,27 @@ const downloadPDF = async (r) => {
     doc.setFontSize(9)
     doc.text('打造台灣最值得信賴的建築品牌', 105, y + 15, { align: 'center' })
 
+    // ✅ 儲存 PDF 並結束 loading
     doc.save(`receipt_${r.receiptNum || r.receiptId}.pdf`)
+    Swal.close()
+    Swal.fire('下載完成', '收據已成功產生並下載', 'success')
   } catch (e) {
     console.error('產生 PDF 失敗:', e)
+    Swal.close()
+    Swal.fire('錯誤', '下載失敗，請稍後再試', 'error')
+  }
+
+  function formatDate(date) {
+    if (!date) return ''
+    const d = new Date(date)
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0') + ' ' +
+      String(d.getHours()).padStart(2, '0') + ':' +
+      String(d.getMinutes()).padStart(2, '0')
   }
 }
+
 
 function formatDate(date) {
   if (!date) return ''

@@ -2,7 +2,7 @@
     <div class="notification-center">
         <h1>通知中心</h1>
 
-        <div v-for="notice in notifications" :key="notice.unitsNotificationsId" class="notification-item"
+        <div v-for="notice in visibleNotifications" :key="notice.unitsNotificationsId" class="notification-item"
             :class="{ unread: notice.isRead == 0 || notice.isRead === '0' }" @click="toggleRead(notice)">
             <h3>{{ notice.title }}</h3>
             <!-- <p>{{ notice.message }}</p> -->
@@ -11,11 +11,16 @@
         <div v-if="!notifications.length" class="no-data">
             尚無通知
         </div>
+
+        <!-- ✅ 載入更多按鈕 -->
+        <div v-if="visibleCount < notifications.length" class="text-center mt-3">
+          <button class="btn btn-outline-primary" @click="loadMore">載入更多</button>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { onMounted, ref, onBeforeUnmount, computed } from 'vue'
 import { useUserStore } from '@/stores/UserStore';
 import axios from '@/plugins/axios';
 import Swal from 'sweetalert2'
@@ -30,7 +35,22 @@ async function pollNotifications() {
         const res = await axios.get(`/notifications/unit/${unitId}`)
         console.log('📬 收到通知', res.data.data)
         // 寫入陣列並按未讀、已讀排序、顯示10筆
-        notifications.value = res.data.data.sort((a,b)=>Number(a.isRead) - Number(b.isRead)).slice(0,10) 
+        notifications.value = res.data.data.sort((a, b) => {
+          // 1️⃣ 未讀優先
+          if (a.isRead !== b.isRead) {
+            return Number(a.isRead) - Number(b.isRead); // 0 < 1 → 未讀排前面
+          }
+          
+          // 2️⃣ 皆為已讀時 → 比 readTime（新→舊）
+          if (a.isRead == 1 && b.isRead == 1) {
+            const timeA = new Date(a.readTime).getTime();
+            const timeB = new Date(b.readTime).getTime();
+            return timeB - timeA; // 新的時間在前
+          }
+          
+          return 0; // 其他保持不變
+        })
+
     } catch (error) {
         console.error('❌ 輪詢失敗', error)
     }
@@ -39,8 +59,10 @@ async function pollNotifications() {
 let intervalId = null
 
 onMounted(() => {
+  if (unitId){
     pollNotifications()
     intervalId = setInterval(pollNotifications, 2000) // 每 2 秒輪詢一次
+    }
 })
 
 onBeforeUnmount(() => {
@@ -54,19 +76,31 @@ async function toggleRead(notice) {
     await Swal.fire({
         icon: 'info',
         title: notice.title,
-        text: notice.description,
+        html: notice.description,
         confirmButtonText: '知道了'
     })
 
     try {
-        // 呼叫後端更新已讀
-        await axios.put(`${path}/notifications/isRead/${notice.unitsNotificationsId}`)
+      // 成功後，前端也標記已讀（或重新撈）
+      notice.isRead = 1  // 或 true，看你的欄位怎麼回來
+      // 呼叫後端更新已讀
+      await axios.put(`${path}/notifications/isRead/${notice.unitsNotificationsId}`)
 
-        // 成功後，前端也標記已讀（或重新撈）
-        notice.isRead = 1  // 或 true，看你的欄位怎麼回來
     } catch (error) {
         console.error('❌ 更新已讀失敗', error)
     }
+}
+
+const visibleCount = ref(5)
+// 動態計算可見通知
+const visibleNotifications = computed(() => {
+  return notifications.value.slice(0, visibleCount.value)
+})
+
+
+// 載入更多通知
+function loadMore() {
+    visibleCount.value += 5
 }
 
 </script>

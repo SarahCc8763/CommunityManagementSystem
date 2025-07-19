@@ -85,14 +85,6 @@ public class ParkingRentals {
 
 	// ---------------------------------------------------------------------------------------
 
-	@Override
-	public String toString() {
-		return "ParkingRentals [id=" + id + ", community=" + community + ", parkingSlot=" + parkingSlot + ", users="
-				+ users + ", approver=" + approver + ", rentBuyStart=" + rentBuyStart + ", rentEnd=" + rentEnd
-				+ ", licensePlate=" + licensePlate + ", status=" + status + ", approved=" + approved + ", updatedAt="
-				+ updatedAt + ", createdAt=" + createdAt + "]";
-	}
-
 	public Integer getId() {
 		return id;
 	}
