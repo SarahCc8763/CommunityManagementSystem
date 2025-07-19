@@ -232,27 +232,14 @@ Swal.mixin({
 
 /* 響應式設計 */
 @media (max-width: 1200px) {
+  .right-side-nav {
+    width: 220px;
+  }
+
   .main-area {
-    margin-left: 80px;
     margin-right: 220px;
   }
 }
-
-@media (max-width: 992px) {
-  .main-area {
-    margin-left: 80px;
-    margin-right: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-area {
-    margin-left: 0;
-    margin-right: 0;
-    padding: 60px 16px 72px 16px;
-  }
-}
-
 
 .drawer-tab {
   position: fixed;
@@ -361,5 +348,9 @@ Swal.mixin({
 /* 把swtteAlert放上面 */
 .swal-on-top {
   z-index: 99999 !important;
+}
+
+.swal2-container {
+  z-index: 100000 !important;
 }
 </style>

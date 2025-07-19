@@ -148,7 +148,8 @@ public class InvoiceResponseServiceImpl implements InvoiceResponseService {
 
     @Override
     public List<InvoiceDTO> findUnpaidInvoiceWithResponseByCommunityId(Integer communityId) {
-        return invoiceResponseRepository.findUnpaidInvoiceWithResponseByCommunityId(communityId);
+        List<InvoiceDTO> result = invoiceResponseRepository.findUnpaidInvoiceWithResponseByCommunityId(communityId);
+        return result;
     }
 
     @Override

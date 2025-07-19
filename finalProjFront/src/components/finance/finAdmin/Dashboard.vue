@@ -343,7 +343,12 @@ const goTo = (target) => {
     case 'home':
       router.push('/')
       break
-
+    case 'adminDashboard':
+      router.push('/AdminDashboard')
+      break
+    case 'finBack':
+      router.push('/finance/admin-dashboard')
+      break
   }
 }
 </script>

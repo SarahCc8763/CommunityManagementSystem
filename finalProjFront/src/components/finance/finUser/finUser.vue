@@ -5,7 +5,9 @@
         <main>
             <BannerImage :imageSrc="OO" heading="財務管理區" subtext="快速查帳、繳費與明細查詢，提醒您 : 別忘了定期查看帳單與費用明細" textAlign="left" />
             <FeatureCards :features="cards" />
-
+            <button @click="goHome" class="btn btn-primary" style="margin-top: 20px;">
+                <i class="bi bi-house-door-fill me-1"></i> 回首頁
+            </button>
         </main>
     </div>
 </template>
@@ -28,12 +30,7 @@ const cards = [
         description: '查看過往繳費明細與下載收據',
         link: '/finance/receipt/my'
     },
-    {
-        icon: 'bi-bar-chart-line',
-        title: '財務報表',
-        description: '查看大樓每月的收支總覽與統計',
-        link: '/finance/report'
-    },
+
     {
         icon: 'bi-question-circle-fill',
         title: '常見問題與支援',
@@ -41,7 +38,12 @@ const cards = [
         link: '/package'
     },]
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
+const goHome = () => {
+    router.push('/home')
+}
 
 </script>
 

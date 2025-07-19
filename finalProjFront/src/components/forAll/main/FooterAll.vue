@@ -13,7 +13,8 @@
           </div>
           <p class="mb-2 small">打造智慧生活的每一磚一瓦</p>
           <div class="small lh-sm">
-            <div>Email：<a href="mailto:OO123@gmail.com" class="text-white text-decoration-underline">OO123@gmail.com</a>
+            <div>Email：<a href="mailto:OO123@gmail.com"
+                class="text-white text-decoration-underline">ZHconstruct@gmail.com</a>
             </div>
             <div>電話：02-1234-5678</div>
             <div>地址：12345 假地址市 建設路100號</div>

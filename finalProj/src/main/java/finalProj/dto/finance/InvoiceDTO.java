@@ -65,7 +65,8 @@ public class InvoiceDTO {
             this.invoiceResponses = new ArrayList<>();
         }
 
-        System.out.println("InvoiceDTO from invoiceId = " + i.getInvoiceId() + ", status = " + i.getPaymentStatus());
+        System.out.println(
+                "InvoiceDTO from invoiceId = " + i.getInvoiceId() + ", status = " + i.getPaymentStatus());
         System.out.println("invoiceId=" + i.getInvoiceId()
                 + ", periodName=" + this.periodName
                 + ", billingPeriod=" + (this.billingPeriod != null ? this.billingPeriod.getPeriodName() : "null"));

@@ -11,7 +11,7 @@
           <div class="member-info-texts">
             <div class="user-name">{{ UserStore.name }}</div>
             <div class="user-row">
-              <span class="user-username">@{{ UserStore.username }}</span>
+              <span class="user-username">{{ UserStore.username }}</span>
               <span class="user-badge">{{ UserStore.roleId === 2 ? '管理員' : '一般會員' }}</span>
             </div>
           </div>
@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted,computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -135,7 +135,7 @@ function logout() {
   UserStore.logout()
   // 觸發全局登出事件
   window.dispatchEvent(new CustomEvent('logout'))
-  router.push('/BeforeLogIn')
+  router.push('/')
 }
 
 function showLoginModal() {
