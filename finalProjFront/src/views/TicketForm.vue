@@ -48,7 +48,7 @@
 
       <!-- Buttons -->
       <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn">Create</button>
+        <button type="submit" class="btn">送出報修單</button>
         <!-- <button type="button" class="btn btn-secondary" @click="$emit('close')">Cancel</button> -->
       </div>
     </form>

@@ -3,6 +3,7 @@ package finalProj.service.users;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import finalProj.domain.users.RolesUsers;
 import finalProj.domain.users.Users;
+import finalProj.dto.users.UsersDTO;
 import finalProj.repository.users.RolesUsersRepository;
 import finalProj.repository.users.UsersRepository;
 
@@ -115,8 +117,16 @@ public class UsersService {
 	// return false;
 	// }
 
-	public List<Users> findAll() {
-
-		return usersRepository.findAll();
+	public List<UsersDTO> findAll() {
+		List<Users> data = usersRepository.findAll();
+	
+		return data.stream()
+			.map(user -> {
+				UsersDTO dto = new UsersDTO();
+				dto.setUsersId(user.getUsersId());
+				dto.setName(user.getName());
+				return dto;
+			})
+			.collect(Collectors.toList());
 	}
 }

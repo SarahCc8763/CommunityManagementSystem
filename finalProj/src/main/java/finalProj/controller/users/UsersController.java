@@ -125,11 +125,9 @@ public class UsersController {
 	}
 
 	@GetMapping("/ticket")
-	public List<Users> findAll() {
-		// 呼叫 service.findAll()
-		return usersService.findAll(); // 空清單回傳
+	public List<UsersDTO> findAll() {
+		return usersService.findAll();
 	}
-
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<UsersDTO>>> findByCommunity(
 			@RequestParam("communityId") Integer communityId) {
