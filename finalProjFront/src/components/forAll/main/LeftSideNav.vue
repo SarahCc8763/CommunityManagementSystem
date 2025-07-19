@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted,computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
@@ -121,8 +121,8 @@ const menuItems = [
       { label: '改別的', link: '/service/claim' }
     ]
   },
-  { label: '最新消息', link: '/news' },
-  { label: '聯絡我們', link: '/contact' }
+  { label: '最新消息', link: '/announcement-latest' },
+  { label: '聯絡我們', link: '/contact-us' }
 ]
 
 const openIdx = ref(null)
