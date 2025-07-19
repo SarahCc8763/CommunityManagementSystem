@@ -64,7 +64,7 @@ const allFunctionOptions = [
       { label: '提交報修', key: 'TICKETFORM' },
       { label: '維修進度查詢', key: 'TICKETLIST' },
       { label: '報修內容', key: 'TICKETDETAIL' },
-      { label: 'AllTicketsByAssignment', key: 'TICKETASSIGN' },
+      { label: '報修單指派管理', key: 'TICKETASSIGN' },
     ]
   },
   {

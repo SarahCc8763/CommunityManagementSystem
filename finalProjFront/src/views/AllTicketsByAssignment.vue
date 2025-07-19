@@ -803,6 +803,11 @@ img {
   background-color: #4e65f9;
   color: #fff;
 }
-
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #999;
+  opacity: 1;
+}
 
 </style>
