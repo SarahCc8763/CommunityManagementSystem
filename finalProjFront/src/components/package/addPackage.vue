@@ -1,70 +1,64 @@
 <template>
-    <div class="resident-packages-container" :class="{ 'dark-mode': isDarkMode }">
-        <h1>管理員新增包裹</h1>
+  <div class="resident-packages-container" :class="{ 'dark-mode': isDarkMode }">
+    <h1>管理員新增包裹</h1>
 
-        <div class="search-bar" >
-          <div class="search-row">
-          <label>
-            <select v-model="unit1">
-              <option disabled value="">請選擇門牌號</option>
-              <option v-for="n in [10,12,14,16,18,20,22,24,26,28]" :key="'unit1-' + n" :value="n">{{ n }}</option>
-            </select> 之
-          </label>
+    <div class="search-bar">
+      <div class="search-row">
+        <label>
+          <select v-model="unit1">
+            <option disabled value="">請選擇門牌號</option>
+            <option v-for="n in [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]" :key="'unit1-' + n" :value="n">{{ n }}</option>
+          </select> 之
+        </label>
 
-          <label>
-            <select v-model="unit2">
-              <option value=""></option>
-              <option value="1">1</option>
-            </select> 號
-          </label>
+        <label>
+          <select v-model="unit2">
+            <option value=""></option>
+            <option value="1">1</option>
+          </select> 號
+        </label>
 
-          <label>
-            <select v-model="floor1">
-              <option disabled value="">請選擇樓層</option>
-              <option v-for="n in 12" :key="'floor-' + n" :value="n + 1">{{ n + 1 }}</option>
-            </select> 樓
-          </label>
-        </div>
+        <label>
+          <select v-model="floor1">
+            <option disabled value="">請選擇樓層</option>
+            <option v-for="n in 12" :key="'floor-' + n" :value="n + 1">{{ n + 1 }}</option>
+          </select> 樓
+        </label>
+      </div>
 
-        <div class="search-row2">
-          <!-- 種類 -->
-          <label>
-            <select v-model="type">
-              <option disabled value="">選擇種類</option>
-              <option value="包裹">包裹</option>
-              <option value="掛號">掛號</option>
-              <option value="冷凍包裹">冷凍包裹</option>
-            </select>
-          </label>
+      <div class="search-row2">
+        <!-- 種類 -->
+        <label>
+          <select v-model="type">
+            <option disabled value="">選擇種類</option>
+            <option value="包裹">包裹</option>
+            <option value="掛號">掛號</option>
+            <option value="冷凍包裹">冷凍包裹</option>
+          </select>
+        </label>
 
-          <!-- 件數 -->
-          <label>
-            <input
-              type="number"
-              v-model="piece"
-              min="1"
-              max="10"
-              placeholder="件數 (1-10)"
-            /> 件
-          </label>
+        <!-- 件數 -->
+        <label>
+          <input type="number" v-model="piece" min="1" max="10" placeholder="件數 (1-10)" /> 件
+        </label>
 
-          <!-- 放置位置 -->
-          <label class="place">
-            <select v-model="place">
-              <option disabled value="">放置位置</option>
-              <option value="管理室">管理室</option>
-              <option value="管理室冰箱">管理室冰箱</option>
-            </select>
-          </label>
-          
-          <button @click="addPackages">新增包裹</button>
-        </div>
+        <!-- 放置位置 -->
+        <label class="place">
+          <select v-model="place">
+            <option disabled value="">放置位置</option>
+            <option value="管理室">管理室</option>
+            <option value="管理室冰箱">管理室冰箱</option>
+          </select>
+        </label>
+
+        <button @click="addPackages">新增包裹</button>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref,onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios';
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs';
@@ -82,85 +76,86 @@ const status = ref('');
 
 async function addPackages() {
 
-    // 檢查是否有選擇門牌號1
-    if(!unit1.value){
-      Swal.fire({
-                    text: "請選擇門牌號1", icon: "warning" });
-      return;
-    }
-
-    // 組合 unit 字串
-    let unit = unit1.value;
-    if (unit2.value && unit2.value !== '') {
-      unit += '-' + unit2.value;
-    }
-console.log(unit);
-    // 檢查樓層
-    let floor = floor1.value;
-    if (!floor1.value) {
-      Swal.fire({
-                    text: "請選擇樓層", icon: "warning" });
-      return;
-    }
-    floor += 'F';
-
-    if (!piece.value || piece.value < 1) {
-      Swal.fire({ text: "請輸入有效件數", icon: "warning" });
-      return;
-    }
-    if (!type.value) {
-      Swal.fire({ text: "請選擇種類", icon: "warning" });
-      return;
-    }
-    if (!place.value) {
-      Swal.fire({ text: "請選擇放置位置", icon: "warning" });
-      return;
-    }
-
-    const payload = {
-      unit,
-      floor,
-      type: type.value,
-      piece: piece.value,
-      place: place.value,
-      status: status.value,
-      communityId: userStore.communityId,
-    }
-    console.log(floor);
-    console.log('🚀 payload:', payload);
-  try{
-    const res = await axios.post(`/packages`,payload);
-    if(res.data.success){
-    console.log(res.data.success);
-    Swal.fire({ text: "新增成功", icon: "success" });
-    unit1.value = '';
-    unit2.value = '';
-    floor1.value = '';
-    piece.value = 1;
-    type.value = '';
-    place.value = '';
-    status.value = '';
-    }else
-    Swal.fire({ text: "無此門牌", icon: "warning" });
-  } catch(error) {
+  // 檢查是否有選擇門牌號1
+  if (!unit1.value) {
     Swal.fire({
-                  text: "新增錯誤",
-                  icon: "error",
-              });
+      text: "請選擇門牌號1", icon: "warning"
+    });
+    return;
   }
-    
+
+  // 組合 unit 字串
+  let unit = unit1.value;
+  if (unit2.value && unit2.value !== '') {
+    unit += '-' + unit2.value;
+  }
+  console.log(unit);
+  // 檢查樓層
+  let floor = floor1.value;
+  if (!floor1.value) {
+    Swal.fire({
+      text: "請選擇樓層", icon: "warning"
+    });
+    return;
+  }
+  floor += 'F';
+
+  if (!piece.value || piece.value < 1) {
+    Swal.fire({ text: "請輸入有效件數", icon: "warning" });
+    return;
+  }
+  if (!type.value) {
+    Swal.fire({ text: "請選擇種類", icon: "warning" });
+    return;
+  }
+  if (!place.value) {
+    Swal.fire({ text: "請選擇放置位置", icon: "warning" });
+    return;
+  }
+
+  const payload = {
+    unit,
+    floor,
+    type: type.value,
+    piece: piece.value,
+    place: place.value,
+    status: status.value,
+    communityId: userStore.communityId,
+  }
+  console.log(floor);
+  console.log('🚀 payload:', payload);
+  try {
+    const res = await axios.post(`/packages`, payload);
+    if (res.data.success) {
+      console.log(res.data.success);
+      Swal.fire({ text: "新增成功", icon: "success" });
+      unit1.value = '';
+      unit2.value = '';
+      floor1.value = '';
+      piece.value = 1;
+      type.value = '';
+      place.value = '';
+      status.value = '';
+    } else
+      Swal.fire({ text: "無此門牌", icon: "warning" });
+  } catch (error) {
+    Swal.fire({
+      text: "新增錯誤",
+      icon: "error",
+    });
+  }
+
 }
 
 </script>
 
 <style scoped>
-
-
 .resident-packages-container {
   display: block;
   width: 100%;
   max-width: 1000px;
-  min-width: 600px;  /* 撐住 */
+  min-width: 600px;
+  /* 撐住 */
   margin: 80px auto;
   padding: 3rem;
   background: #fefefe;
@@ -179,7 +174,8 @@ console.log(unit);
 .search-bar {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;   /* 左對齊每一行 */
+  align-items: flex-start;
+  /* 左對齊每一行 */
   gap: 20px;
   margin-bottom: 2rem;
   padding: 20px;
@@ -192,19 +188,25 @@ console.log(unit);
 .search-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;      /* 垂直置中 */
-  justify-content: flex-start; /* 這裡改為左對齊 */
+  align-items: center;
+  /* 垂直置中 */
+  justify-content: flex-start;
+  /* 這裡改為左對齊 */
   gap: 20px;
-  width: 100%; /* 讓對齊效果一致 */
+  width: 100%;
+  /* 讓對齊效果一致 */
 }
 
 .search-row2 {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;      /* 垂直置中 */
-  justify-content: flex-start; /* 這裡改為左對齊 */
+  align-items: center;
+  /* 垂直置中 */
+  justify-content: flex-start;
+  /* 這裡改為左對齊 */
   gap: 45px;
-  width: 100%; /* 讓對齊效果一致 */
+  width: 100%;
+  /* 讓對齊效果一致 */
 }
 
 .search-bar label {
@@ -218,8 +220,9 @@ console.log(unit);
 
 .search-bar select,
 .search-bar input {
-  width: 150px;         
-  box-sizing: border-box;  /* 包含 padding */
+  width: 150px;
+  box-sizing: border-box;
+  /* 包含 padding */
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -243,7 +246,8 @@ console.log(unit);
 }
 
 .search-bar button {
-  min-width: 150px;   /* 按鈕統一寬度 */
+  min-width: 150px;
+  /* 按鈕統一寬度 */
   padding: 12px 24px;
   background: #4a90e2;
   color: #fff;
@@ -273,11 +277,11 @@ console.log(unit);
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .packages-table thead {
-  background-color: #e0e7ef; 
+  background-color: #e0e7ef;
 }
 
 .packages-table th,
@@ -289,17 +293,17 @@ console.log(unit);
 
 .packages-table th {
   font-weight: 600;
-  color: #222; 
-  border-bottom: 2px solid #ddd; 
+  color: #222;
+  border-bottom: 2px solid #ddd;
 }
 
 .packages-table td {
   color: #222;
-  border-bottom: 1px solid #eee; 
+  border-bottom: 1px solid #eee;
 }
 
 .packages-table tbody tr:last-child td {
-  border-bottom: none; 
+  border-bottom: none;
 }
 
 .packages-table tbody tr:hover {
@@ -377,7 +381,4 @@ console.log(unit);
 .dark-mode .packages-table tbody tr:hover {
   background-color: #444;
 }
-
-
-
 </style>
