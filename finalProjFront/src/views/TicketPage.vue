@@ -27,7 +27,7 @@
                         <div class="mb-3">
                             <label class="form-label">問題描述</label>
                             <QuillEditor style="min-height:150px" v-model:content="form.description" contentType="html"
-                                class="form-control" placeholder=" 請描述修區域..." />
+                                class="form-control" placeholder=" 請描述報修區域..." />
 
                             <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent
                                 @drop.prevent="handleDrop">

@@ -25,7 +25,7 @@
          style="min-height:300px"
          v-model:content="form.description" 
          contentType="html"
-          placeholder=" 請描述修區域..." 
+          placeholder=" 請描述報修區域..." 
           class="input" />
 
         <div class="upload-area mt-3 p-3 border rounded" @dragover.prevent @drop.prevent="handleDrop">
