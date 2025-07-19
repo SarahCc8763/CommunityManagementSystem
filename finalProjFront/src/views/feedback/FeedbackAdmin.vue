@@ -95,7 +95,7 @@
 
 
 
-                                            <h5 class="fw-normal">主旨：span{{ feedback.title }} </h5>
+                                            <h5 class="fw-normal">主旨：{{ feedback.title }} </h5>
                                             <p class="card-text mx-2">內容：{{ feedback.description }}</p>
                                             <!-- 確保你先載入 feedback.statusHistory 資料 -->
 
