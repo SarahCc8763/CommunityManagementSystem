@@ -8,7 +8,7 @@
       </h2>
 
       <div class="section">
-        <h3>Description</h3>
+        <h3>報修單描述</h3>
         <QuillEditor style="min-height:300px" v-model:content="edited.issueDescription" contentType="html"
           @focus="isEditing.issueDescription = true" class="custom-quill" />
         <div v-if="isEditing.issueDescription" class="edit-controls">
@@ -30,8 +30,9 @@
         <img :src="previewImageUrl" class="image-preview" @click.stop />
       </div>
 
+
       <div class="section">
-        <h3>Comments</h3>
+        <h3>留言</h3>
         <CommentInput :ticket-id="ticketId" :onSuccess="handleCommentAdded" />
 
         <div class="comment-list mt-3">
@@ -40,7 +41,7 @@
               <div class="avatar me-2">{{ getInitials(comment.displayName) }}</div>
               <div class="meta">
                 <strong>{{ comment.displayName }}</strong>
-                <span class="text-secondary ms-2">{{ comment.time }}</span>
+                <span class="text-secondary small" :title="comment.time">🕒 {{ timeAgo(comment.time) }}</span>
               </div>
             </div>
             <div class="comment-body">
@@ -289,7 +290,7 @@ const reversedComments = computed(() =>
     id: c.id,
     displayName: c.name || c.commenter?.name || '匿名',
     text: c.text || c.comment,
-    time: c.time || c.createdAt || '',
+    time: c.commentTime || '',
     attachments: c.attachments || []
   }))
 )
@@ -319,6 +320,23 @@ async function saveCommentEdit(commentId) {
   } catch (err) {
     alert('儲存失敗：' + (err.response?.data?.message || err.message))
   }
+}
+
+function timeAgo(dateTimeString) {
+  if (!dateTimeString) return ''
+
+  const safeDate = dateTimeString.replace(' ', 'T') // 👉 修正格式
+  const commentTime = new Date(safeDate)
+
+  if (isNaN(commentTime.getTime())) return ''
+
+  const now = new Date()
+  const diff = Math.floor((now - commentTime) / 1000)
+
+  if (diff < 60) return `${diff} 秒前`
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分鐘前`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小時前`
+  return `${Math.floor(diff / 86400)} 天前`
 }
 
 </script>

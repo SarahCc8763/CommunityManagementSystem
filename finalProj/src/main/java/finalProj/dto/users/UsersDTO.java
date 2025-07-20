@@ -21,6 +21,9 @@ public class UsersDTO {
 		this.email = user.getEmail();
 		this.unit = user.getUnit();
 	}
+	public UsersDTO() {
+	}
+
 
 	public Integer getUsersId() {
 		return usersId;
