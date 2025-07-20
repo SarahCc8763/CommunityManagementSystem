@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" id="feedbackModal" tabindex="-1">
+    <div class="modal fade" id="feedbackManageModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content modal-content-x">
                 <div class="modal-header position-relative justify-content-center bg-title">
