@@ -140,11 +140,12 @@ watch(() => props.visible, val => {
         now.setDate(now.getDate() + 7)
         form.value.removeTime = now.toISOString().slice(0, 19)
     }
+    else {
+        initPost()
+    }
 })
 function initPost() {
     emit('update:visible', false)
-
-
 
     form.value = {
         title: '',
@@ -163,12 +164,17 @@ function initPost() {
 
 function pollInit() {
     if (!addPoll.value) {
+        const now = new Date()
+
+        now.setHours(now.getHours() + 8)
+        now.setDate(now.getDate() + 7)
+
 
         form.value.poll = {
             title: '',
             isMultiple: false,
-            start: '',
-            end: '',
+            start: form.value.postTime,
+            end: form.value.removeTime,
             options: [
                 { text: '' },
                 { text: '' },
@@ -185,6 +191,7 @@ function pollInit() {
 
 
 // })
+
 function addOption() {
     form.value.poll.options.push({ text: '' })
 }
@@ -288,6 +295,7 @@ async function submitEdit() {
             html: '新增公告成功！<br>提醒您！新增後預設為草稿狀態，需另外修改為「已發佈」才會對外顯示。',
 
         })
+        addPoll.value = false
         initPost()
 
     } catch (err) {

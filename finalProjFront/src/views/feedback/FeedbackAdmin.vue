@@ -62,15 +62,22 @@
 
 
                                         <!-- 狀態 Badge -->
-                                        <span class="badge" :class="'bg-' + getStatusVariant(feedback.status)"
-                                            style="font-size: 90%;">
-                                            {{ feedback.status }}
-                                        </span>
+                                        <div>
+
+                                            <span class="badge" :class="'bg-' + getStatusVariant(feedback.status)"
+                                                style="font-size: 90%;">
+                                                {{ feedback.status }}
+
+                                            </span>
+
+                                        </div>
+
 
                                         <!-- 使用者與時間（上下排列） -->
                                         <div class="text-start small " style="color: lightgray;">
                                             <div>反映人：{{ feedback.frontEndData.userName }}</div>
                                             <div>提交時間：{{ formatDate(feedback.submittedAt) }}</div>
+
                                         </div>
                                     </div>
 
@@ -100,13 +107,15 @@
                                             <!-- 確保你先載入 feedback.statusHistory 資料 -->
 
                                             <div>
-                                                <h6>最新進度：</h6>
+                                                <h6>最新進度：
+                                                </h6>
                                                 <div v-if="feedback.replies && feedback.replies.length > 0"
                                                     class="mx-2">
                                                     {{ feedback.replies[feedback.replies.length - 1].reply }}
                                                     <div class="lh-lg" style="font-size: 70%;">{{
                                                         formatDateTime(feedback.replies[feedback.replies.length -
                                                             1].repliedAt) }}</div>
+
                                                 </div>
                                                 <div v-else>尚無回覆</div>
 
@@ -118,7 +127,7 @@
                                                     <li v-for="file in feedback.attachments" :key="file.id"
                                                         class="d-flex align-items-center gap-2 mb-2">
                                                         <!-- 檔案下載連結 -->
-                                                        <a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
+                                                        ．<a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
                                                             :download="file.fileName"
                                                             class="text-info text-decoration-underline" target="_blank">
                                                             {{ file.fileName }}
@@ -198,6 +207,10 @@
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column align-items-center" style="min-width: 180px;">
+                                            <div v-if="feedback.userRating && feedback.status === '已結案'"
+                                                style="border: 2px solid ; border-radius: 10px;padding: 5px 19px;background-color: #FFF8E1; color: black;"
+                                                class=" fw-bold ">
+                                                用戶評分：{{ feedback.userRating }} 星</div>
                                             <FeedbackProgress :feedback="feedback"
                                                 @show-history-detail="showFeedbackHistoryDetail" />
                                             <button class="btn btn-outline-secondary btn-sm btn-nn mt-1"
@@ -435,7 +448,7 @@ const openEditModal = async (feedbackId) => {
         const res = await axios.get(`/api/feedback/${feedbackId}`)
         const feedback = res.data
         //console.log(feedback);
-        const modalEl = document.getElementById('feedbackModal')
+        const modalEl = document.getElementById('feedbackManageModal')
         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)
         modalInstance.show()
 
