@@ -31,7 +31,7 @@
                     class=" border p-3 rounded bg-light shadow-sm my-1">
                     <span class="fs-6 text-secondary fw-normal">{{ bulletin.postStatus ? '（已發佈）' :
                         "（草稿）"
-                        }}</span>
+                    }}</span>
                     <div class="d-flex justify-content-between align-items-center mb-2">
 
                         <div class="fw-bold text-dark fs-5"><span v-if="bulletin.isPinned">[置頂]</span> <span
@@ -210,7 +210,10 @@ function normalizeNewline(text) {
 function searchBulletins() {
     axios.post('/api/bulletin/searchby', {
         title: searchTitle.value || undefined,
-        category: searchCategory.value ? { name: searchCategory.value } : undefined
+        category: searchCategory.value ? { name: searchCategory.value } : undefined,
+        community: {
+            communityId: communityId
+        }
     }).then(res => {
         bulletins.value = res.data.list
     })

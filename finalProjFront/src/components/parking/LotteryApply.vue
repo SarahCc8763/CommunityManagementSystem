@@ -212,13 +212,20 @@ async function showWinnerList(winners, isUserWinner) {
     return
   }
 
+  // 將名字中間一個字變成 O，例如：王志明 => 王O明，林怡廷 => 林O廷
   const htmlList = winners.map(w => {
+    const maskedName = w.userName.length >= 3
+    ? w.userName[0] + 'O' + w.userName[2]
+    : w.userName[0] + 'O'  // 對於兩個字的名字，例如 王明 => 王O
+    
     const isCurrentUser = w.userId === userId
     const nameHtml = isCurrentUser
-      ? `<span style="color:green; font-weight:bold;">${w.userName}</span>`
-      : w.userName
+    ? `<span style="color:green; font-weight:bold;">${maskedName}</span>`
+    : maskedName
+    
     return `<li>${nameHtml} - ${w.slotNumber}（${w.parkingType}）</li>`
   }).join('')
+
 
   const header = !isUserWinner
     ? `<p style="color:red; font-weight:bold;">您未中籤</p>`
