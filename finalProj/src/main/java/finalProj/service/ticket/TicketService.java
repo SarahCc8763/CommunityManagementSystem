@@ -167,8 +167,14 @@ public class TicketService {
 		Users reporter = usersRepository.findById(dto.getReporterId())
 				.orElseThrow(() -> new IllegalArgumentException("使用者 ID 不存在：" + dto.getReporterId()));
 
-		Users assigner = usersRepository.findById(dto.getAssignerId())
-				.orElseThrow(() -> new IllegalArgumentException("管理者 ID 不存在：" + dto.getReporterId()));
+		// Users assigner = usersRepository.findById(dto.getAssignerId())
+		// .orElseThrow(() -> new IllegalArgumentException("管理者 ID 不存在：" +
+		// dto.getReporterId()));
+		Users assigner = null;
+		if (dto.getAssignerId() != null) {
+			assigner = usersRepository.findById(dto.getAssignerId())
+					.orElseThrow(() -> new IllegalArgumentException("管理者 ID 不存在：" + dto.getAssignerId()));
+		}
 
 		ticket.setId(id);
 		ticket.setCommunity(community);

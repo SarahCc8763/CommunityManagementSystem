@@ -9,7 +9,7 @@
 
       <div class="section">
         <h3>報修單描述</h3>
-        <QuillEditor style="min-height:300px" v-model:content="edited.issueDescription" contentType="html"
+        <QuillEditor  style="min-height:300px" v-model:content="edited.issueDescription" contentType="html"
           @focus="isEditing.issueDescription = true" class="custom-quill" />
         <div v-if="isEditing.issueDescription" class="edit-controls">
           <button @click="cancelEdit('issueDescription')" class="btn-cancel">取消</button>
@@ -84,11 +84,11 @@
     <!-- 右側詳情 -->
     <div class="ticket-side p-4 bg-light border-start" style="width: 320px; overflow-y: auto;">
       <div class="mb-3">
-  <label class="label">Status</label>
+  <label class="label">狀態</label>
 
   <!-- 管理員才可以編輯 -->
       <select v-if="isAdmin" v-model="ticket.status" @change="saveStatus" class="form-control">
-        <option value="To Do">TO DO</option>
+        <option value="to do">TO DO</option>
         <option value="In Progress">IN PROGRESS</option>
         <option value="Done">DONE</option>
       </select>
@@ -167,7 +167,7 @@ const isEditing = ref({ issueDescription: false, title: false })
 const selectedIssueTypes = ref([])
 const allIssueTypes = ref([])
 function convertStatusFromBackend(s) {
-  if (s === 'to do') return 'To Do'
+  if (s === 'to do') return 'to do'
   if (s === 'In Progress') return 'In Progress'
   if (s === 'Done') return 'Done'
   return s
@@ -181,14 +181,19 @@ async function loadTicket() {
   try {
     const res = await axios.get(`/ticket/${ticketId}`)
     const data = res.data
+       // 👉 加這段，補 assigner
+    if (!data.assigner && data.assignerName) {
+      data.assigner = { name: data.assignerName }
+    }
 
     // 設定 ticket 主要資料
     ticket.value = data
+    
     edited.value.issueDescription = data.issueDescription
 
-    if (!data.assigner) {
-      ticket.value.assigner = { name: userStore.name } // 補上目前登入者名稱
-    }
+    // if (!data.assigner) {
+    //   ticket.value.assigner = { name: userStore.name } // 補上目前登入者名稱
+    // }
 
     // 設定留言（其實 data.comments 就有了）
     ticket.value.comments = data.comments
@@ -259,12 +264,15 @@ async function saveEdit(field) {
       const payload = {
         reporterId: 1,
         title: ticket.value.title,
-        assignerId: 2,
+        // assignerId: 31,
         status: ticket.value.status,
         issueDescription: edited.value.issueDescription,
         notes: ticket.value.notes,
         communityId: 1,
         actionBy: 1
+      }
+       if (ticket.value.assignerId) {
+        payload.assignerId = ticket.value.assignerId
       }
       await axios.put(`/ticket/${ticketId}`, payload)
       ticket.value.issueDescription = edited.value.issueDescription
