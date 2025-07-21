@@ -79,7 +79,7 @@ public class ReservationProcessingService {
 
 		// === 建立預約扣點 Notifications ===
 		Notifications notification = new Notifications();
-		notification.setTitle("預約成功");
+		notification.setTitle("您已成功預約 " + request.getReservationStartTime() + facility.getFacilityName());
 		notification.setDescription("您已成功預約 " + facility.getFacilityName() + "，扣點" + deductAmount + "點");	
 		notification.setCreatedTime(LocalDateTime.now());
 		notification.setCommunity(account.getUnit().getCommunity());
