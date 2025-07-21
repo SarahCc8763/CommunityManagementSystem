@@ -1,0 +1,14 @@
+#authtoken: 2zanYfsfxLTTJwBXTu37WM0lewN_26Xw9DKCaQjA793fr6Sd4
+#authtoken: 3054vgvCErQNOK76OcpN8f1T35m_5A7Xnwsuq9PnwG1hFnxh5 tim
+#authtoken: 3054zAZILi2y7rSSjBwds9OEiqE_2rNvmsgCAH6SR7XRfpE5E julie
+#authtoken: 3054v92uWS6uDj8M6NPnjkTAIVe_71CKmCezpZiga7MUJ7rF7 yu
+#authtoken: 3054yG1B2mD1dfmy9gz6ITVzjv5_5ULpW7rheV181faPoZE3w johnson
+authtoken: 30552yJSmXRsYkgrxyPCSGagFS6_6uyhzXcgnWrA1a65aVarT
+version: 2
+tunnels:
+  backend:
+    addr: 8080
+    proto: http
+  frontend:
+    addr: 4173
+    proto: http
