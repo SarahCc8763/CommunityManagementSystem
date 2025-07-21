@@ -60,8 +60,8 @@ public class PointRefundProcessor {
 
             // === 建立取消反點 Notifications ===
             Notifications notification = new Notifications();
-            notification.setTitle("取消成功");
-            notification.setDescription("您已成功預約 " + facilityName + "，反點" + refundAmount + "點");	
+            notification.setTitle("您已成功取消 " + reservation.getReservationEndTime() + facilityName);
+            notification.setDescription("您已成功取消 " + facilityName + "，反點" + refundAmount + "點");	
             notification.setCreatedTime(LocalDateTime.now());
             notification.setCommunity(account.getUnit().getCommunity());
             notificationsRepository.save(notification);
