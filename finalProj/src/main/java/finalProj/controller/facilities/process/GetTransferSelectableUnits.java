@@ -39,7 +39,7 @@ public class GetTransferSelectableUnits {
 	    	        .thenComparing(Units::getFloor))
 	    	    .map(unit -> {
 	    	        String userName = unit.getUnitsUsersList() != null && !unit.getUnitsUsersList().isEmpty()
-	    	            ? unit.getUnitsUsersList().get(0).getUser().getName()
+	    	            ? unit.getUnitsUsersList().get(0).getUser().getName().replaceFirst("^(.).", "$1O")
 	    	            : "—"; // 預設名稱
 
 	    	        return new UnitOptionDTO(

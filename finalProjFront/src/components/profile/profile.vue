@@ -38,11 +38,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
-import { useRouter } from 'vue-router'; 
+import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const router = useRouter();
-const imagePath = `/images/users/user${userStore.userId}.png?v=${Date.now()}`
+const imagePath = `/images/users/user${userStore.userId}.jpg?v=${Date.now()}`
 
 function uploadPhoto() {
     alert('上傳大頭貼功能開發中...')
