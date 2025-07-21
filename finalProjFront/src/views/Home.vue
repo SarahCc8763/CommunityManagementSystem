@@ -199,7 +199,7 @@ const features = [
         icon: 'bi-car-front-fill',
         title: '停車場管理',
         description: '掌握社區停車位使用狀況，並支援訪客車輛申請與排程。',
-        link: '/parking',
+        link: '/pages/park/parking-front',
         key: 'PARK'
     },
     {
@@ -211,7 +211,7 @@ const features = [
     {
         icon: 'bi bi-cash',
         title: '帳務資訊',
-        description: '把你的錢錢交出來。',
+        description: '快速查帳，繳費與明細查詢。',
         link: '/finUser'
     },
     {

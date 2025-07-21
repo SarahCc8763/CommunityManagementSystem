@@ -87,8 +87,8 @@ public class PointTransferService {
 		pointAccountsService.update(toAccount);
 
 
-		String toUserName = getFirstUserNameByUnitId(toUnitId);
-		String fromUserName = getFirstUserNameByUnitId(fromUnitId);
+		String toUserName = getFirstUserNameByUnitId(toUnitId).replaceFirst("^(.).", "$1O");
+		String fromUserName = getFirstUserNameByUnitId(fromUnitId).replaceFirst("^(.).", "$1O");
 		
 		
 		
