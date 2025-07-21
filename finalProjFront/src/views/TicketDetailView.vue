@@ -66,7 +66,7 @@
                   :alt="img.fileName" class="rounded border"
                   style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" @click="openPreview(img)" />
               </div>
-                <div class="mt-2" v-if="userStore.roleId === 2">
+                <div class="mt-2" v-if="userStore.roleId === 3">
                   <button
                   class="btn-edit"
                   v-if="userStore.roleId === 2 && isEditingComment !== i"
