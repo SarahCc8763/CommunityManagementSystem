@@ -2,10 +2,10 @@
   <div class="comment-input">
     <textarea v-model="commentText" placeholder="新增你的留言..." rows="3" class="input" />
     <div class="suggestions">
-      <span @click="quickComment('Looks good!')">🎉 看起來太棒了!</span>
-      <span @click="quickComment('Need help?')">🧠 需要幫忙嗎?</span>
-      <span @click="quickComment('This is blocked...')">⛔ 這裡已被阻止...</span>
-      <span @click="quickComment('Can you clarify...?')">💬 能澄清一下嗎...?</span>
+      <span @click="quickComment('🎉看起來太棒了!')">🎉 看起來太棒了!</span>
+      <span @click="quickComment('🧠需要幫忙嗎?')">🧠 需要幫忙嗎?</span>
+      <span @click="quickComment('⛔ 這裡已被阻止...')">⛔ 這裡已被阻止...</span>
+      <span @click="quickComment('💬 能澄清一下嗎...?')">💬 能澄清一下嗎...?</span>
     </div>
 
     <!-- 圖片留言上傳區 -->
