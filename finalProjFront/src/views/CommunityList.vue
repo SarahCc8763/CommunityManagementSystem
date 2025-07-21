@@ -14,6 +14,12 @@
       </div>
 
       <div class="function-section">
+        <div class="mb-4 border-bottom pb-3">
+          <input class="form-check-input" type="checkbox" id="all" v-model="selectAll" @change="toggleAllFunctions" />
+          <label class="form-check-label fw-bold" for="all">
+            &nbsp;&nbsp;全選功能
+          </label>
+        </div>
         <div v-for="module in allFunctionOptions" :key="module.value" class="mb-4 border-bottom pb-3">
           <!-- 主功能 Checkbox -->
           <div class="form-check mb-2">
@@ -49,6 +55,28 @@ import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/plugins/axios'
 import { useUserStore } from '@/stores/UserStore'
 import Swal from 'sweetalert2'
+
+const selectAll = computed({
+  get() {
+    const totalFunctionCount = allFunctionOptions.reduce(
+      (sum, module) => sum + 1 + module.children.length,
+      0
+    )
+    return selectedFunctionNames.value.length === totalFunctionCount
+  },
+  set(val) {
+    if (val) {
+      const allKeys = []
+      allFunctionOptions.forEach(module => {
+        allKeys.push(module.value) // 主功能
+        module.children.forEach(child => allKeys.push(child.key))
+      })
+      selectedFunctionNames.value = allKeys
+    } else {
+      selectedFunctionNames.value = []
+    }
+  }
+})
 
 
 const userStore = useUserStore()
@@ -204,6 +232,8 @@ watch(selectedCommunity, async (newVal) => {
   }
 })
 
+
+
 function isModuleChecked(module) {
   return selectedFunctionNames.value.includes(module.value)
 }
@@ -232,6 +262,22 @@ function toggleChildFunction(key) {
     selectedFunctionNames.value.splice(idx, 1)
   }
 }
+// function toggleAllFunctions() {
+//   if (selectAll.value) {
+//     // ✅ 全選
+//     const allKeys = []
+
+//     allFunctionOptions.forEach(module => {
+//       allKeys.push(module.value) // 主功能
+//       module.children.forEach(child => allKeys.push(child.key)) // 子功能
+//     })
+
+//     selectedFunctionNames.value = allKeys
+//   } else {
+//     // ❌ 全不選
+//     selectedFunctionNames.value = []
+//   }
+// }
 
 async function saveFunction() {
   try {
@@ -276,6 +322,13 @@ async function saveFunction() {
     })
   }
 }
+// watch(selectedFunctionNames, (newVal) => {
+//   const totalFunctionCount = allFunctionOptions.reduce(
+//     (sum, module) => sum + 1 + module.children.length,
+//     0
+//   )
+//   selectAll.value = newVal.length === totalFunctionCount
+// })
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleString()

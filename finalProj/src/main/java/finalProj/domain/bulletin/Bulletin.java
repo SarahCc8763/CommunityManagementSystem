@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.parking.LotteryEvents;
@@ -85,7 +86,8 @@ public class Bulletin {
 
     @ManyToOne
     @JoinColumn(name = "community_id", nullable = true)
-    @JsonBackReference("community-bulletin")
+    // @JsonBackReference("community-bulletin")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Community community;
 
     @OneToOne(mappedBy = "bulletin", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

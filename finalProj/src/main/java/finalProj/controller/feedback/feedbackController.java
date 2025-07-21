@@ -29,6 +29,7 @@ import finalProj.domain.feedback.FeedbackCategory;
 import finalProj.domain.feedback.FeedbackReply;
 import finalProj.domain.feedback.FeedbackStatusHistory;
 import finalProj.domain.users.Users;
+import finalProj.dto.feedback.FeedbackDto;
 import finalProj.dto.feedback.FeedbackResponse;
 import finalProj.service.feedback.FeedbackAttachmentService;
 import finalProj.service.feedback.FeedbackCategoryService;
@@ -41,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/feedback")
 @Slf4j
+
 public class feedbackController {
     @Autowired
     private UsersService usersService;
@@ -160,9 +162,13 @@ public class feedbackController {
     //
 
     @PutMapping("/status/{id}")
-    public FeedbackResponse updateStatus(@PathVariable Integer id, @RequestBody Feedback feedback) {
+    public FeedbackResponse updateStatus(@PathVariable Integer id, @RequestBody FeedbackDto feedbackdto) {
+
+        Feedback feedback = new Feedback();
+        feedback.setStatus(feedbackdto.getStatus());
+        feedback.setHandler(usersService.findById(feedbackdto.getHandlerId()));
         FeedbackResponse response = new FeedbackResponse();
-        if (feedback == null || id == null) {
+        if (feedbackdto == null || id == null) {
             response.setSuccess(false);
             response.setMessage("缺少必要欄位資料");
             return response;

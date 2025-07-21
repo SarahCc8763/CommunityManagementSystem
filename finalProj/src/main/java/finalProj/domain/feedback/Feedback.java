@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import finalProj.domain.community.Community;
 import finalProj.domain.users.Users;
@@ -46,13 +47,16 @@ public class Feedback {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference("feedback-user")
+    // @JsonBackReference("feedback-user")
+    // @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "handler_id")
-    @JsonBackReference("feedback-handler")
-    // @JsonIgnoreProperties("feedback-handler")
+    // @JsonBackReference("feedback-handler")
+    // @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Users handler;
 
     @Column(name = "feedback_submit_at", insertable = false)
@@ -225,6 +229,10 @@ public class Feedback {
             frontEndData.put("usersId", user.getUsersId());
             frontEndData.put("userName", user.getName());
             frontEndData.put("userEmail", user.getEmail());
+        }
+        if (handler != null) {
+
+            frontEndData.put("handlerId", handler.getUsersId());
         }
         return frontEndData;
     }

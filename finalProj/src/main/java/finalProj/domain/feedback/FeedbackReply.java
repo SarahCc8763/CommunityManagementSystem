@@ -3,7 +3,7 @@ package finalProj.domain.feedback;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import finalProj.domain.users.Users;
 import jakarta.persistence.Column;
@@ -31,7 +31,8 @@ public class FeedbackReply {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({ "feedbacks", "replies", "password" })
+    // @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Users user;
 
     @Column(name = "feedback_reply", nullable = false, length = 2000)
@@ -45,6 +46,20 @@ public class FeedbackReply {
 
     @Transient
     private String newFeedBackStatus;
+
+    @Transient
+    private String userName;
+
+    public String getUserName() {
+        if (user != null) {
+            userName = user.getName();
+        }
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     // Getters and Setters
     public Integer getId() {
