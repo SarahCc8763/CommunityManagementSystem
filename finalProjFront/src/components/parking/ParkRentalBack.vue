@@ -71,14 +71,14 @@
                             placeholder="例如：ABC-123" />
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">起始時間（租用）</label>
+                        <label class="form-label">起始時間</label>
                         <input type="date" class="form-control" v-model="filter.startTime" />
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label class="form-label">結束時間（租用）</label>
+                        <label class="form-label">結束時間</label>
                         <input type="date" class="form-control" v-model="filter.endTime" />
                     </div>
                     <div class="col-md-4">
@@ -372,8 +372,8 @@ const filteredRecords = computed(() => {
         const filterEnd = filter.value.endTime ? new Date(filter.value.endTime) : null
 
         const timeMatch =
-            (!filterStart || recordEnd >= filterStart) &&
-            (!filterEnd || recordStart <= filterEnd)
+            (!filterStart || recordStart >= filterStart) &&
+            (!filterEnd || recordEnd <= filterEnd)
 
 
         return (
@@ -931,6 +931,10 @@ select.form-select {
 }
 
 input[type="month"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
 

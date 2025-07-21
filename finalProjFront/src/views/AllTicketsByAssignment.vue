@@ -147,7 +147,7 @@
           <!-- 左側：未指派卡片列表 -->
           <div class="flex-grow-1">
             <div v-for="(ticket, index) in paginatedUnassignedTickets" :key="ticket.id"
-              class="card mb-3 p-3  position-relative bg-dark text-light" @click="toggleExpanded(index)"
+              class="card mb-3 p-3  position-relative bg-dark text-light" @click="toggleExpanded(ticket.id)"
               style="cursor: pointer">
               <!-- 狀態標籤 -->
               <span class="badge position-absolute top-0 end-0 m-2" :class="{
@@ -169,7 +169,7 @@
 
               <!-- 展開詳細 -->
               <transition name="fade">
-                <div v-show="expanded.includes(index)" class="mt-3 border-top pt-2 text-secondary small">
+                <div v-show="expanded.has(ticket.id)" class="mt-3 border-top pt-2 text-secondary small">
                   <!-- 問題種類 -->
                   <div class="mb-2">
                     <p class="text-light"><strong>問題種類：</strong></p>
@@ -265,7 +265,7 @@ const userStore = useUserStore()
 const selectedTab = ref('未指派')
 const tickets = ref([])
 const vendors = ref([])
-const expanded = ref([])
+const expanded = ref(new Set())
 const previewImageUrl = ref(null)
 const showDetailModal = ref(false)
 const selectedTicket = ref(null)
@@ -372,11 +372,11 @@ async function applySearch() {
 }
 
 
-function toggleExpanded(index) {
-  if (expanded.value.includes(index)) {
-    expanded.value = expanded.value.filter(i => i !== index)
+function toggleExpanded(ticketId) {
+  if (expanded.value.has(ticketId)) {
+    expanded.value.delete(ticketId)
   } else {
-    expanded.value.push(index)
+    expanded.value.add(ticketId)
   }
 }
 function openDetail(ticket) {

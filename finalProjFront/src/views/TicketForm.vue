@@ -6,7 +6,7 @@
       <!-- 標題 -->
       <div class="mb-3">
         <label class="label">標題</label>
-        <input type="text" v-model="form.title" class="form-control input" />
+        <input type="text" v-model="form.title" class="form-control input" placeholder="請填寫標題"/>
       </div>
 
       <!-- 問題種類 -->

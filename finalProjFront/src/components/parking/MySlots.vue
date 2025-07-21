@@ -16,7 +16,7 @@
     <div class="tag-style px-4 py-2 mb-4">
       <h2 class="mb-0 fw-bold text-primary section-title">我的車位</h2>
     </div>
-    <div class="row g-4">
+    <div class="row g-4" v-if="userSlotsFiltered">
       <div class="col-md-4" v-for="slot in userSlotsFiltered" :key="slot.slotNumber">
         <div class="card h-100 shadow-sm border-0" @click="openModal(slot)" style="cursor: pointer;">
           <div class="card-header d-flex justify-content-between align-items-center bg-light">
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    
+    <div v-else>目前無擁有車位</div>
     <!-- 登記車位 Modal -->
     <div class="modal fade" id="plateModal" tabindex="-1" ref="plateModalRef">
       <div class="modal-dialog">

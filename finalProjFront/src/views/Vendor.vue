@@ -23,6 +23,10 @@
           <input v-model="newVendor.address" class="form-control" />
         </div>
         <div class="col-md-4 mb-2">
+      <label class="form-label">統一編號</label>
+      <input v-model="newVendor.taxIDNumber" class="form-control" />
+    </div>
+        <div class="col-md-8 mb-2">
           <label class="form-label">備註</label>
           <input v-model="newVendor.notes" class="form-control" />
         </div>
@@ -45,6 +49,7 @@
             <div>
               <h5 class="mb-1">{{ vendor.vendorName }}</h5>
               <p class="mb-0">👤 {{ vendor.contactPerson }}　📞 {{ vendor.phoneNumber }}</p>
+              <p class="mb-0">統編: {{ vendor.taxIDNumber }}</p>
             </div>
             <span class="badge bg-secondary">#{{ vendor.vendorID }}</span>
           </div>
@@ -123,7 +128,8 @@ const newVendor = ref({
   contactPerson: '',
   phoneNumber: '',
   address: '',
-  notes: ''
+  notes: '',
+  taxIDNumber:''
 })
 
 async function fetchVendors() {
@@ -144,7 +150,8 @@ async function createVendor() {
       contactPerson: '',
       phoneNumber: '',
       address: '',
-      notes: ''
+      notes: '',
+      taxIDNumber:''
     })
 
 
