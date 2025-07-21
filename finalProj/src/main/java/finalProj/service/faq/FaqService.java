@@ -173,7 +173,7 @@ public class FaqService {
             }
 
             faq.setLastModified(LocalDateTime.now());
-            faq.setPostStatus(false);
+            faq.setPostStatus(entity.getPostStatus());
             return faq;
 
         }

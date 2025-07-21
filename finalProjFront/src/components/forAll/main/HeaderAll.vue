@@ -97,7 +97,7 @@ const userStore = useUserStore()
 const facilitiesStore = useFacilitiesStore()
 const isLoggedIn = ref(false)
 const showDropdown = ref(false)
-const imagePath = computed(() => `/images/users/user${userStore.userId}.png?v=${Date.now()}`)
+const imagePath = computed(() => `/images/users/user${userStore.userId}.jpg?v=${Date.now()}`)
 
 //存放社區功能
 const communityFunctions = ref([])

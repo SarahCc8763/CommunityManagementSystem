@@ -6,7 +6,7 @@
                 <img :src="FeedbackBg" alt="Hero Image" class="img-fluid hero-image" />
                 <div :class="['hero-text', 'text-left']">
                     <h2 class="fw-bold" style="color: #383838">回饋提交紀錄</h2>
-                    <p cstyle="color: #5e5e5e">您可以在此查看您已提交的回饋歷史紀錄</p>
+                    <p style="color: #5e5e5e">您可以在此查看您已提交的回饋歷史紀錄</p>
                 </div>
             </div>
         </div>
@@ -23,6 +23,9 @@
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
+        </div>
+        <div v-if="feedbackList.length === 0 && !loading" class="d-flex justify-content-center">
+            <p>您尚未提交任何回饋。</p>
         </div>
 
         <div v-else class="d-flex justify-content-center">
@@ -59,7 +62,30 @@
                                     <div class="flex-grow-1">
                                         <h5 class="fw-bold">主旨：{{ feedback.title }}</h5>
                                         <p class="card-text">內容：{{ feedback.description }}</p>
+                                        <!-- 附件 -->
+                                        <div v-if="feedback.attachments?.length" class="mt-4">
+                                            <strong>附件：</strong>
+                                            <ul>
+                                                <li v-for="file in feedback.attachments" :key="file.id"
+                                                    class="d-flex align-items-center gap-2 mb-2">．
+                                                    <!-- 檔案下載連結 -->
+                                                    <a :href="'data:' + file.mimeType + ';base64,' + file.attachment"
+                                                        :download="file.fileName"
+                                                        class="text-dark text-decoration-underline" target="_blank">
+                                                        {{ file.fileName }}
+                                                    </a>
 
+                                                    <!-- 如果是圖片，加一個「放大」按鈕 -->
+                                                    <button v-if="file.mimeType?.startsWith('image/')"
+                                                        class="btn btn-outline-light btn-sm btn-expand"
+                                                        @click="openImageModal('data:' + file.mimeType + ';base64,' + file.attachment)">
+                                                        <i class="bi bi-arrows-angle-expand"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <br>
                                         <div>
                                             <strong>最新進度：</strong>
                                             <div v-if="feedback.replies && feedback.replies.length > 0">
@@ -108,11 +134,11 @@
                                                 <div class="me-2">
                                                     <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
                                                         style="width: 40px; height: 40px; font-size: 0.9rem">
-                                                        {{ reply.user?.name?.charAt(0) || '?' }}
+                                                        {{ reply.userName?.charAt(0) || '?' }}
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold">{{ reply.user?.name || '未知使用者' }}</div>
+                                                    <div class="fw-bold">{{ reply.userName || '未知使用者' }}</div>
                                                     <div class="bg-light rounded p-2">{{ reply.reply }}</div>
                                                     <div class="text-muted small">{{ formatDateTime(reply.repliedAt) }}
                                                     </div>
@@ -160,7 +186,19 @@
                 </div>
             </div>
         </div>
+        <!-- 點擊圖片後的放大 Modal -->
+        <!-- 改寫為純 Vue Modal，不依賴 Bootstrap JS -->
+        <div v-if="showImageModal" class="custom-image-modal">
+            <!-- 背景可點擊關閉 -->
+            <div class="modal-backdrop" @click="showImageModal = false"></div>
 
+            <!-- 圖片容器 -->
+            <div class="modal-content-box">
+                <button class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                    @click="showImageModal = false"></button>
+                <img :src="enlargedImageSrc" class="img-fluid" style="max-height: 80vh;" />
+            </div>
+        </div>
 
         <!-- 引入編輯 Modal 元件 -->
         <feedback-modal />
@@ -176,7 +214,14 @@ import FeedbackModal from '@/components/feedback/FeedbackModal.vue'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/UserStore'
 import FeedbackProgress from '@/components/feedback/FeedbackProgress.vue'
+const showImageModal = ref(false)
+const enlargedImageSrc = ref('')
 
+function openImageModal(imageBase64) {
+    enlargedImageSrc.value = imageBase64
+    console.log(enlargedImageSrc.value);
+    showImageModal.value = true
+}
 
 const userStore = useUserStore()
 const userId = userStore.userId || 0 // 假設當前使用者 id
@@ -655,5 +700,37 @@ ul {
     background: linear-gradient(0deg, #834444 0%, #c09595 100%);
     color: rgb(255, 255, 255);
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.custom-image-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1055;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content-box {
+    position: relative;
+    z-index: 1060;
+    background: #2e2e2e;
+    padding: 0.6rem;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.btn-expand {
+    background: #8e8e8e4b !important;
+    padding: 4px 7px;
+    border-radius: 5px;
+    color: gray;
 }
 </style>

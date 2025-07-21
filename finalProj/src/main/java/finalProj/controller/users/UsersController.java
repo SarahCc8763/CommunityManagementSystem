@@ -3,6 +3,7 @@ package finalProj.controller.users;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import finalProj.domain.users.Units;
 import finalProj.domain.users.Users;
 import finalProj.dto.parking.ApiResponse;
+import finalProj.dto.users.UsersDTO;
 import finalProj.jwt.JsonWebTokenUtility;
 import finalProj.repository.users.UsersRepository;
 import finalProj.service.users.UsersService;
@@ -123,15 +125,16 @@ public class UsersController {
 	}
 
 	@GetMapping("/ticket")
-	public List<Users> findAll() {
-		// 呼叫 service.findAll()
-		return usersService.findAll(); // 空清單回傳
+	public List<UsersDTO> findAll() {
+		return usersService.findAll();
 	}
-
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<Users>>> findByCommunity(@RequestParam("communityId") Integer communityId) {
+	public ResponseEntity<ApiResponse<List<UsersDTO>>> findByCommunity(
+			@RequestParam("communityId") Integer communityId) {
 		List<Users> users = usersRepository.findByCommunity_CommunityId(communityId);
-		return ResponseEntity.ok(ApiResponse.success("查詢成功", users));
+		List<UsersDTO> dtos = users.stream().map(UsersDTO::new)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", dtos));
 	}
 
 	@GetMapping("/by-community")

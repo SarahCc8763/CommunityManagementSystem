@@ -559,7 +559,8 @@ async function deleteEvent(id) {
     title: '確認刪除？',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: '刪除'
+    confirmButtonText: '刪除',
+    cancelButtonText: '取消'
   })
   if (!result.isConfirmed) return
 

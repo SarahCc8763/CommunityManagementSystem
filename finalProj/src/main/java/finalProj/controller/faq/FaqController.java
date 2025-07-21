@@ -67,7 +67,7 @@ public class FaqController {
         } else {
             body.setId(id);
             Faq faq = faqService.modify(body);
-            System.out.println(faq);
+            // System.out.println(faq);
             if (faq == null) {
                 response.setSuccess(false);
                 response.setMessage("修改失敗");

@@ -110,7 +110,7 @@ import { useUserStore } from '@/stores/UserStore'
 
 const UserStore = useUserStore()
 const router = useRouter()
-const imagePath = computed(() => `/images/users/user${UserStore.userId}.png?v=${Date.now()}`)
+const imagePath = computed(() => `/images/users/user${UserStore.userId}.jpg?v=${Date.now()}`)
 
 const menuItems = [
   {

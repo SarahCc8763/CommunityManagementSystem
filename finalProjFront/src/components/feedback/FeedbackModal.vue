@@ -7,7 +7,8 @@
 
                     <h5 class="modal-title fw-bolder text-center w-100">💬 聯絡客服</h5>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        @click="resetForm"></button>
                 </div>
                 <img src="@/assets/images/feedback/postfeedback.jpg" alt="" width="100%">
                 <div class="modal-body">
@@ -50,7 +51,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" @click="resetForm">取消</button>
                     <button class="btn btn-primary" @click="submitFeedback">送出</button>
                 </div>
             </div>
@@ -146,7 +147,10 @@ const submitFeedback = async () => {
             swal.fire({ icon: 'success', title: '成功', text: form.id ? '意見更新成功' : '意見已成功送出！', showConfirmButton: false, timer: 1500 }).then(() => {
                 closeModal()
                 resetForm()
-                // location.reload();
+                // ✅ 加入這段判斷目前頁面
+                if (window.location.pathname.includes('/feedback')) {
+                    location.reload()
+                }
 
             })
         } else {
