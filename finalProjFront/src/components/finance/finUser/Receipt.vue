@@ -48,6 +48,8 @@ import { jsPDF } from 'jspdf'
 import { useUserStore } from '@/stores/UserStore'
 import JsBarcode from 'jsbarcode'
 import Swal from 'sweetalert2'
+import ZhLogo from '@/assets/images/main/ZhLogo.jpg'
+
 
 const userStore = useUserStore()
 const receipts = ref([])
@@ -69,6 +71,7 @@ watch(() => userStore.userId, (newVal) => {
 
 
 const downloadPDF = async (r) => {
+
   // ✅ 顯示 SweetAlert 等待視窗
   Swal.fire({
     title: '下載準備中...',
@@ -80,9 +83,8 @@ const downloadPDF = async (r) => {
   })
 
   try {
-    // ✅ 載入字體（SweetAlert 保持開啟中）
+    // ✅ 載入字體（SweetAlert 保持開啟中）   
     await import('@/assets/fonts/msjh_regular-normal.js')
-
     const doc = new jsPDF()
     doc.setFont('msjh_regular')
 
@@ -92,12 +94,13 @@ const downloadPDF = async (r) => {
         const img = new Image()
         img.onload = () => resolve(img)
         img.onerror = reject
-        img.src = '/src/assets/images/main/ZhLogo.jpg'
+        // img.src = '/src/assets/images/main/ZhLogo.jpg'
+        img.src = ZhLogo
       })
     }
-
+    console.log('1')
     const logoImg = await loadLogo()
-
+    console.log('2')
     // 白底全頁
     doc.setFillColor(255, 255, 255)
     doc.rect(0, 0, 210, 297, 'F')
@@ -105,7 +108,7 @@ const downloadPDF = async (r) => {
     // 灰色 header（高度 35）
     doc.setFillColor(240, 240, 240)
     doc.rect(0, 0, 210, 35, 'F')
-
+    console.log('3')
     // 插入 logo
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -114,7 +117,7 @@ const downloadPDF = async (r) => {
     ctx.drawImage(logoImg, 0, 0)
     const logoDataUrl = canvas.toDataURL('image/jpeg')
     doc.addImage(logoDataUrl, 'JPEG', 15, 11, 30, 15)
-
+    console.log('4')
     // 標題
     doc.setFontSize(18)
     doc.setTextColor(0, 0, 0)
@@ -137,7 +140,7 @@ const downloadPDF = async (r) => {
     doc.setDrawColor(0, 0, 0)
     doc.setLineWidth(0.5)
     doc.line(15, 75, 195, 75)
-
+    console.log('5')
     // 資訊區塊
     let y = 90
     const leftX = 25
@@ -169,7 +172,7 @@ const downloadPDF = async (r) => {
     doc.setFontSize(10)
     doc.text('收款人簽名', leftX, y + 8)
     doc.text('客戶簽名', rightX, y + 8)
-
+    console.log('6')
     // 條碼區
     const barcodeCanvas = document.createElement('canvas')
     JsBarcode(barcodeCanvas, r.receiptNum || 'RB000000001', {
@@ -178,6 +181,7 @@ const downloadPDF = async (r) => {
       height: 40,
       displayValue: false
     })
+    console.log('7')
     const barcodeDataUrl = barcodeCanvas.toDataURL('image/png')
     doc.addImage(barcodeDataUrl, 'PNG', 25, 170, 40, 10)
 
@@ -190,7 +194,7 @@ const downloadPDF = async (r) => {
     doc.text('智匯建設', 105, y + 8, { align: 'center' })
     doc.setFontSize(9)
     doc.text('打造台灣最值得信賴的建築品牌', 105, y + 15, { align: 'center' })
-
+    console.log('8')
     // ✅ 儲存 PDF 並結束 loading
     doc.save(`receipt_${r.receiptNum || r.receiptId}.pdf`)
     Swal.close()
@@ -200,7 +204,6 @@ const downloadPDF = async (r) => {
     Swal.close()
     Swal.fire('錯誤', '下載失敗，請稍後再試', 'error')
   }
-
   function formatDate(date) {
     if (!date) return ''
     const d = new Date(date)

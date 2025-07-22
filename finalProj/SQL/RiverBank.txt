@@ -1,12 +1,15 @@
 通用
-http://localhost:8080	https://1855cb033892.ngrok-free.app
-http://localhost:4173	https://88fdae7fc1a8.ngrok-free.app
+http://localhost:8080	https://12bd2cb1e054.ngrok-free.app
+http://localhost:4173	https://450067482914.ngrok-free.app
+
 	
 	/images/facilities/tabletennis1.jpg
-	https://1855cb033892.ngrok-free.app/images/facilities/tabletennis1.jpg
+	https://12bd2cb1e054.ngrok-free.app/images/facilities/tabletennis1.jpg
 	
 顯示100%
-ticket型別要改varchar(MAX)
+ticket型別要改varbinary(MAX)
+linlin的下載PDF要先載入字體
+車位建置預載
 ---------------------------------------------------------------------------------------
 tim javert
 
